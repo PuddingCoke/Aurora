@@ -43,7 +43,7 @@ private:
 
 	friend class SpriteBatch;
 
-	RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const DirectX::XMVECTORF32& color);
+	RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4]);
 
 	Texture2D* texture;
 

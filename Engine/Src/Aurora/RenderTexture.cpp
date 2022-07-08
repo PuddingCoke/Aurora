@@ -30,7 +30,7 @@ Texture2D* RenderTexture::getTexture() const
 	return texture;
 }
 
-RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const DirectX::XMVECTORF32& color) :
+RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4]) :
 	width(width), height(height), format(format), texture(new Texture2D())
 {
 	//´´½¨msaaTextureºÍmsaaTarget
