@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _RANDOM_HPP_
-#define _RANDOM_HPP_
+#ifndef _RANDOM_H_
+#define _RANDOM_H_
 
 #include<random>
 #include<cstdlib>
@@ -33,4 +33,4 @@ private:
 
 };
 
-#endif // !_RANDOM_HPP_
+#endif // !_RANDOM_H_

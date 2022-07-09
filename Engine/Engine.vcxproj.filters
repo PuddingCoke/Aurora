@@ -42,7 +42,7 @@
     <ClInclude Include="Inc\Aurora\PrimitiveBatch.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Random.hpp">
+    <ClInclude Include="Inc\Aurora\Random.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Shader.h">
@@ -76,6 +76,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Color.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\Math.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

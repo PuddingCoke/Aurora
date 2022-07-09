@@ -12,7 +12,7 @@
 #include"Graphics.h"
 #include"Configuration.h"
 #include"Game.h"
-#include"Random.hpp"
+#include"Random.h"
 #include"Mouse.h"
 #include"Keyboard.h"
 #include"StateCommon.h"

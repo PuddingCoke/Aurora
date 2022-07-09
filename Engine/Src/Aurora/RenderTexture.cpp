@@ -1,21 +1,23 @@
 #include<Aurora/RenderTexture.h>
 
+ID3D11RenderTargetView* RenderTexture::renderTargetViews[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
+
 RenderTexture::~RenderTexture()
 {
 	delete texture;
 }
 
-RenderTexture* RenderTexture::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const DirectX::XMVECTORF32& color)
+RenderTexture* RenderTexture::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4])
 {
 	return new RenderTexture(width, height, format, color);
 }
 
-void RenderTexture::setMSAARTV(const UINT& slot, ID3D11DepthStencilView* const view) const
+void RenderTexture::setMSAARTV(ID3D11DepthStencilView* const view) const
 {
 	Graphics::context->OMSetRenderTargets(1, msaaTarget.GetAddressOf(), view);
 }
 
-void RenderTexture::setRTV(const UINT& slot, ID3D11DepthStencilView* const view) const
+void RenderTexture::setRTV(ID3D11DepthStencilView* const view) const
 {
 	Graphics::context->OMSetRenderTargets(1, normalTarget.GetAddressOf(), view);
 }
@@ -28,6 +30,28 @@ void RenderTexture::resolve() const
 Texture2D* RenderTexture::getTexture() const
 {
 	return texture;
+}
+
+void RenderTexture::setRTVs(std::initializer_list<RenderTexture*> renderTextures, ID3D11DepthStencilView* view)
+{
+	std::initializer_list<RenderTexture*>::iterator it = renderTextures.begin();
+	for (int i = 0; i < renderTextures.size(); i++)
+	{
+		renderTargetViews[i] = it[0]->normalTarget.Get();
+		++it;
+	}
+	Graphics::context->OMSetRenderTargets(renderTextures.size(), renderTargetViews, view);
+}
+
+void RenderTexture::setMSAARTVs(std::initializer_list<RenderTexture*> renderTextures, ID3D11DepthStencilView* msaaView)
+{
+	std::initializer_list<RenderTexture*>::iterator it = renderTextures.begin();
+	for (int i = 0; i < renderTextures.size(); i++)
+	{
+		renderTargetViews[i] = it[0]->msaaTarget.Get();
+		++it;
+	}
+	Graphics::context->OMSetRenderTargets(renderTextures.size(), renderTargetViews, msaaView);
 }
 
 RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4]) :

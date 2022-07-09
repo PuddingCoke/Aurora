@@ -14,7 +14,7 @@ Texture2D* BlurEffect::process(Texture2D* const texture2D) const
 {
 	Graphics::setViewport(width / 2, height / 2);
 
-	renderTexture->setRTV(0);
+	renderTexture->setRTV();
 	Graphics::context->ClearRenderTargetView(renderTexture->normalTarget.Get(), DirectX::Colors::Transparent);
 
 	Shader::displayPShader->use();
@@ -27,7 +27,7 @@ Texture2D* BlurEffect::process(Texture2D* const texture2D) const
 	Graphics::context->Draw(3, 0);
 
 	Graphics::setViewport(width, height);
-	defRenderTexture->setRTV(0);
+	defRenderTexture->setRTV();
 	Graphics::context->ClearRenderTargetView(defRenderTexture->normalTarget.Get(), DirectX::Colors::Transparent);
 	renderTexture->getTexture()->setSRV(0);
 

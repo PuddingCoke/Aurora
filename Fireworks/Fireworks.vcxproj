@@ -133,9 +133,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="ShellConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyGame.h" />
+    <ClInclude Include="Objects.h" />
+    <ClInclude Include="ShellConfig.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

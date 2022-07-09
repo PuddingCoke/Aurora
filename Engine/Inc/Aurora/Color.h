@@ -3,7 +3,7 @@
 #ifndef _COLOR_H_
 #define _COLOR_H_
 
-#include"Random.hpp"
+#include"Random.h"
 
 struct Color
 {
@@ -25,6 +25,8 @@ struct Color
 	static const Color White;
 
 	static const Color Invisible;
+
+	static const Color Black;
 
 };
 

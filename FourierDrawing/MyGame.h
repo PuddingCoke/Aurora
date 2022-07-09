@@ -160,7 +160,7 @@ public:
 		}
 		pBatch->end();
 
-		renderTexture->setMSAARTV(0);
+		renderTexture->setMSAARTV();
 		pBatch->begin();
 		if (curFrame++ == length)
 		{

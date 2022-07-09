@@ -144,11 +144,12 @@
     <ClInclude Include="Inc\Aurora\Game.h" />
     <ClInclude Include="Inc\Aurora\Graphics.h" />
     <ClInclude Include="Inc\Aurora\Keyboard.h" />
+    <ClInclude Include="Inc\Aurora\Math.h" />
     <ClInclude Include="Inc\Aurora\Mouse.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\BlurEffect.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h" />
     <ClInclude Include="Inc\Aurora\PrimitiveBatch.h" />
-    <ClInclude Include="Inc\Aurora\Random.hpp" />
+    <ClInclude Include="Inc\Aurora\Random.h" />
     <ClInclude Include="Inc\Aurora\RenderTexture.h" />
     <ClInclude Include="Inc\Aurora\Shader.h" />
     <ClInclude Include="Inc\Aurora\SpriteBatch.h" />

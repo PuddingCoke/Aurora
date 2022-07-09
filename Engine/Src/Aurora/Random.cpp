@@ -1,4 +1,4 @@
-#include<Aurora/Random.hpp>
+#include<Aurora/Random.h>
 
 std::mt19937 Random::randomEngine;
 
