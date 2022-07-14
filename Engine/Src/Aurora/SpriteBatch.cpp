@@ -31,11 +31,9 @@ SpriteBatch::~SpriteBatch()
 	delete[] texturePool;
 }
 
-void SpriteBatch::begin() const
+void SpriteBatch::begin()
 {
-	Graphics::context->PSSetSamplers(0, 1, samplerState.GetAddressOf());
-	Graphics::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	fontPool.clear();
 }
 
 void SpriteBatch::end()
@@ -60,8 +58,6 @@ void SpriteBatch::end()
 		Graphics::context->IASetVertexBuffers(0, 1, fontPool[i]->vertexBuffer.GetAddressOf(), &stride, &offset);
 		fontPool[i]->render();
 	}
-
-	fontPool.clear();
 }
 
 void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y)
@@ -117,17 +113,17 @@ void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y,
 
 void SpriteBatch::draw(RenderTexture* const renderTexture, const float& x, const float& y)
 {
-	draw(renderTexture->texture, x, y);
+	draw(renderTexture->getTexture(), x, y);
 }
 
 void SpriteBatch::draw(RenderTexture* const renderTexture, const float& x, const float& y, const float& originX, const float& originY)
 {
-	draw(renderTexture->texture, x, y, originX, originY);
+	draw(renderTexture->getTexture(), x, y, originX, originY);
 }
 
 void SpriteBatch::draw(RenderTexture* const renderTexture, const float& x, const float& y, const float& originX, const float& originY, const float& rotation)
 {
-	draw(renderTexture->texture, x, y, originX, originY, rotation);
+	draw(renderTexture->getTexture(), x, y, originX, originY, rotation);
 }
 
 void SpriteBatch::draw(BitmapFont* const font, const std::string& context, const float& x, const float& y, const float& r, const float& g, const float& b, const float& a)
@@ -365,6 +361,10 @@ void SpriteBatch::texturePoolAdd(Texture2D* const texture)
 
 void SpriteBatch::flush()
 {
+	Graphics::context->PSSetSamplers(0, 1, samplerState.GetAddressOf());
+	Graphics::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	spritePShader->use();
 	spriteVShader->use();
 

@@ -14,7 +14,7 @@ struct Color
 
 	int toInt() const;
 
-	bool operator==(const Color& color);
+	bool operator==(const Color& color) const;
 
 	static Color random();
 

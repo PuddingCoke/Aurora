@@ -32,7 +32,7 @@ Color Color::HSVtoRGB(const Color& c)
 	return { r,g,b,1.f };
 }
 
-bool Color::operator==(const Color& color)
+bool Color::operator==(const Color& color) const
 {
 	return toInt() == color.toInt();
 }

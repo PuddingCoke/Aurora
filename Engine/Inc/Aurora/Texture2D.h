@@ -16,6 +16,8 @@ class Texture2D
 {
 public:
 
+	Texture2D() = delete;
+
 	Texture2D(const Texture2D&) = delete;
 
 	void operator=(const Texture2D&) = delete;
@@ -34,11 +36,13 @@ public:
 
 	void setSRV(const UINT& slot = 0) const;
 
+	ID3D11ShaderResourceView* getSRV() const;
+
+	ID3D11Texture2D* getTexture2D() const;
+
 private:
 
-	Texture2D();
-
-	friend class RenderTexture;
+	friend class SpriteBatch;
 
 	Texture2D(const std::wstring& path);
 
@@ -57,8 +61,6 @@ private:
 	int poolIndex;
 
 	DXGI_FORMAT format;
-
-	friend class SpriteBatch;
 
 };
 

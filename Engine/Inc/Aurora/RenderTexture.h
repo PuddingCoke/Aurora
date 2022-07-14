@@ -22,13 +22,13 @@ public:
 
 	static RenderTexture* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4] = DirectX::Colors::Transparent);
 
-	ComPtr<ID3D11RenderTargetView> msaaTarget;
-
-	ComPtr<ID3D11RenderTargetView> normalTarget;
-
 	void setMSAARTV(ID3D11DepthStencilView* const view = nullptr) const;
 
 	void setRTV(ID3D11DepthStencilView* const view = nullptr) const;
+
+	void clearMSAARTV(const float color[4]);
+
+	void clearRTV(const float color[4]);
 
 	void resolve() const;
 
@@ -45,16 +45,18 @@ public:
 	static void setMSAARTVs(std::initializer_list<RenderTexture*> renderTextures, ID3D11DepthStencilView* msaaView = nullptr);
 
 private:
-
+	
 	static ID3D11RenderTargetView* renderTargetViews[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
-
-	friend class SpriteBatch;
 
 	RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4]);
 
-	Texture2D* texture;
+	Texture2D* const texture;
 
 	ComPtr<ID3D11Texture2D> msaaTexture;
+
+	ComPtr<ID3D11RenderTargetView> msaaTarget;
+
+	ComPtr<ID3D11RenderTargetView> normalTarget;
 
 };
 

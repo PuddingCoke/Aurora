@@ -52,7 +52,7 @@ void createBurst(const int& count, void (*particleFactory)(const float&, const f
 	const float R = 0.5f * sqrtf(count / Math::pi);
 
 	const float C = 2.f * R * Math::pi;
-	
+
 	const float C_HALF = C / 2.f;
 
 	for (int i = 0; i <= C_HALF; i++)
@@ -215,19 +215,6 @@ void Star::returnInstance(Star* const star)
 	pool->push_back(star);
 }
 
-void Star::free()
-{
-	for (std::list<Star*>::iterator it = active->begin(); it != active->end(); it++)
-	{
-		delete* it;
-	}
-
-	for (std::list<Star*>::iterator it = pool->begin(); it != pool->end(); it++)
-	{
-		delete* it;
-	}
-}
-
 Spark* Spark::add(const float& x, const float& y, const Color& color, const float& angle, const float& speed, const float& life)
 {
 	Spark* instance;
@@ -258,19 +245,6 @@ Spark* Spark::add(const float& x, const float& y, const Color& color, const floa
 void Spark::returnInstance(Spark* const spark)
 {
 	pool->push_back(spark);
-}
-
-void Spark::free()
-{
-	for (std::list<Spark*>::iterator it = active->begin(); it != active->end(); it++)
-	{
-		delete* it;
-	}
-
-	for (std::list<Spark*>::iterator it = pool->begin(); it != pool->end(); it++)
-	{
-		delete* it;
-	}
 }
 
 Shell::Shell(const ShellConfiguration& config) :

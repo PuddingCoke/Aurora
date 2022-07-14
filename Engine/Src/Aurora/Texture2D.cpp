@@ -34,9 +34,14 @@ void Texture2D::setSRV(const UINT& slot) const
 	Graphics::context->PSSetShaderResources(slot, 1, resourceView.GetAddressOf());
 }
 
-Texture2D::Texture2D():
-	poolIndex(-1)
+ID3D11ShaderResourceView* Texture2D::getSRV() const
 {
+	return resourceView.Get();
+}
+
+ID3D11Texture2D* Texture2D::getTexture2D() const
+{
+	return texture2D.Get();
 }
 
 Texture2D::Texture2D(const std::wstring& path):

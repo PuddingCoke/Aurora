@@ -114,8 +114,8 @@ LRESULT Aurora::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_MOUSEMOVE:
 	{
-		const float curX = GET_X_LPARAM(lParam);
-		const float curY = config->height - GET_Y_LPARAM(lParam);
+		const float curX = (float)GET_X_LPARAM(lParam);
+		const float curY = (float)config->height - (float)GET_Y_LPARAM(lParam);
 
 		Mouse::dx = curX - Mouse::x;
 		Mouse::dy = curY - Mouse::y;
@@ -264,17 +264,17 @@ HRESULT Aurora::iniDevice()
 		dxgiFactory11.As(&dxgiFactory);
 	}
 
-	DXGI_SWAP_CHAIN_DESC1 sd = {};
-	sd.Width = config->width;
-	sd.Height = config->height;
-	sd.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.BufferCount = 3;
-	sd.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_FLIP_DISCARD;
-
 	{
+		DXGI_SWAP_CHAIN_DESC1 sd = {};
+		sd.Width = config->width;
+		sd.Height = config->height;
+		sd.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+		sd.SampleDesc.Count = 1;
+		sd.SampleDesc.Quality = 0;
+		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		sd.BufferCount = 3;
+		sd.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_FLIP_DISCARD;
+
 		ComPtr<IDXGISwapChain1> sc;
 		dxgiFactory->CreateSwapChainForHwnd(Graphics::device.Get(), hwnd, &sd, nullptr, nullptr, sc.GetAddressOf());
 		sc.As(&swapChain);
@@ -291,92 +291,115 @@ HRESULT Aurora::iniDevice()
 
 	Graphics::setViewport((float)config->width, (float)config->height);
 
-	ComPtr<ID3D11BlendState1> blendState;
-	D3D11_BLEND_DESC1 blendStateDesc = {};
+	{
 
-	blendStateDesc.IndependentBlendEnable = false;
+		D3D11_BLEND_DESC blendStateDesc = {};
 
-	blendStateDesc.RenderTarget[0].BlendEnable = true;
-	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		blendStateDesc.IndependentBlendEnable = false;
 
-	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		blendStateDesc.RenderTarget[0].BlendEnable = true;
+		blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
+		blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 
-	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
-	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+		blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+		blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 
-	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-	Graphics::device->CreateBlendState1(&blendStateDesc, blendState.ReleaseAndGetAddressOf());
+		Graphics::device->CreateBlendState(&blendStateDesc, StateCommon::defBlendState.ReleaseAndGetAddressOf());
 
-	float blendFactor[4] = { 0,0,0,0 };
+		Graphics::setBlendState(StateCommon::defBlendState.Get());
 
-	Graphics::context->OMSetBlendState(blendState.Get(), blendFactor, 0xffffffff);
+	}
 
-	ComPtr<ID3D11RasterizerState> rasterizerState;
+	{
+		ComPtr<ID3D11RasterizerState> rasterizerState;
 
-	D3D11_RASTERIZER_DESC rasterizerDesc = {};
-	rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+		D3D11_RASTERIZER_DESC rasterizerDesc = {};
+		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
 
-	Graphics::device->CreateRasterizerState(&rasterizerDesc, rasterizerState.ReleaseAndGetAddressOf());
+		Graphics::device->CreateRasterizerState(&rasterizerDesc, rasterizerState.ReleaseAndGetAddressOf());
 
-	Graphics::context->RSSetState(rasterizerState.Get());
+		Graphics::context->RSSetState(rasterizerState.Get());
 
-	D3D11_TEXTURE2D_DESC tDesc = {};
-	tDesc.Width = config->width;
-	tDesc.Height = config->height;
-	tDesc.MipLevels = 1;
-	tDesc.ArraySize = 1;
-	tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
-	tDesc.SampleDesc.Count = config->msaaLevel;
-	tDesc.SampleDesc.Quality = 0;
-	tDesc.Usage = D3D11_USAGE_DEFAULT;
-	tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-	tDesc.CPUAccessFlags = 0;
-	tDesc.MiscFlags = 0;
+	}
 
-	Graphics::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
+	{
+		D3D11_TEXTURE2D_DESC tDesc = {};
+		tDesc.Width = config->width;
+		tDesc.Height = config->height;
+		tDesc.MipLevels = 1;
+		tDesc.ArraySize = 1;
+		tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+		tDesc.SampleDesc.Count = Graphics::msaaLevel;
+		tDesc.SampleDesc.Quality = 0;
+		tDesc.Usage = D3D11_USAGE_DEFAULT;
+		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+		tDesc.CPUAccessFlags = 0;
+		tDesc.MiscFlags = 0;
 
-	D3D11_RENDER_TARGET_VIEW_DESC msaaViewDesc = {};
-	msaaViewDesc.Format = tDesc.Format;
-	msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2DMS;
-	msaaViewDesc.Texture2D.MipSlice = 0;
+		Graphics::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
 
-	Graphics::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, Graphics::defaultTargetView.ReleaseAndGetAddressOf());
+		D3D11_RENDER_TARGET_VIEW_DESC msaaViewDesc = {};
+		msaaViewDesc.Format = tDesc.Format;
+		msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2DMS;
+		msaaViewDesc.Texture2D.MipSlice = 0;
+
+		Graphics::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, Graphics::defaultTargetView.ReleaseAndGetAddressOf());
+
+		Graphics::clearDefRTV(DirectX::Colors::Black);
+
+	}
 
 	return S_OK;
 }
 
 HRESULT Aurora::iniGameConstant()
 {
-	D3D11_BUFFER_DESC cbd = {};
-	cbd.Usage = D3D11_USAGE_DYNAMIC;
-	cbd.ByteWidth = sizeof(DirectX::XMMATRIX);
-	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-	Graphics::device->CreateBuffer(&cbd, nullptr, Graphics::cBufferProj.ReleaseAndGetAddressOf());
-	Graphics::device->CreateBuffer(&cbd, nullptr, Graphics::cBufferView.ReleaseAndGetAddressOf());
-
-	switch (config->cameraType)
 	{
-	default:
-	case Configuration::CameraType::Orthogonal:
-		Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)config->width, 0, (float)config->height, 0.f, 1.f)));
-		Graphics::setView(DirectX::XMMatrixIdentity());
-		break;
-	case Configuration::CameraType::Perspective:
+		D3D11_BUFFER_DESC cbd = {};
+		cbd.Usage = D3D11_USAGE_DYNAMIC;
+		cbd.ByteWidth = sizeof(DirectX::XMMATRIX);
+		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-		break;
+		Graphics::device->CreateBuffer(&cbd, nullptr, Graphics::cBufferProj.ReleaseAndGetAddressOf());
+		Graphics::device->CreateBuffer(&cbd, nullptr, Graphics::cBufferView.ReleaseAndGetAddressOf());
+
+		switch (config->cameraType)
+		{
+		default:
+		case Configuration::CameraType::Orthogonal:
+			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)config->width, 0, (float)config->height, 0.f, 1.f)));
+			Graphics::setView(DirectX::XMMatrixIdentity());
+			break;
+		case Configuration::CameraType::Perspective:
+
+			break;
+		}
+
+		ID3D11Buffer* buffers[2] = { Graphics::cBufferProj.Get(),Graphics::cBufferView.Get() };
+
+		Graphics::context->VSSetConstantBuffers(0, 2, buffers);
+		Graphics::context->GSSetConstantBuffers(0, 2, buffers);
+
 	}
 
-	ID3D11Buffer* buffers[2] = { Graphics::cBufferProj.Get(),Graphics::cBufferView.Get() };
+	{
+		D3D11_BUFFER_DESC cbd = {};
+		cbd.Usage = D3D11_USAGE_DYNAMIC;
+		cbd.ByteWidth = 16u;
+		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	Graphics::context->VSSetConstantBuffers(0, 2, buffers);
-	Graphics::context->GSSetConstantBuffers(0, 2, buffers);
+		Graphics::device->CreateBuffer(&cbd, nullptr, Graphics::cBufferDeltaTimes.ReleaseAndGetAddressOf());
+		Graphics::updateGPUDeltaTimes();
+		Graphics::context->PSSetConstantBuffers(0, 1, Graphics::cBufferDeltaTimes.GetAddressOf());
+	}
 
 	return S_OK;
 }
@@ -402,6 +425,7 @@ void Aurora::runGame()
 			swapChain->Present(1, 0);
 			timeEnd = timer.now();
 			Graphics::deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
+			Graphics::updateGPUDeltaTimes();
 		}
 	}
 }

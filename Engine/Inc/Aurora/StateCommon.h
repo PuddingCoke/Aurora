@@ -13,6 +13,9 @@ public:
 
 	static ComPtr<ID3D11SamplerState> defSamplerState;
 
+	//SRC_ALPHA INV_SRC_ALPHA
+	static ComPtr<ID3D11BlendState> defBlendState;
+
 private:
 
 	friend class Aurora;

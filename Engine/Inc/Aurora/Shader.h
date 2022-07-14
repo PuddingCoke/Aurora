@@ -45,7 +45,7 @@ public:
 
 	static constexpr UINT  compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
-	static void useDisplayShader();
+	//static void useDisplayShader();
 
 	static Shader* displayVShader;
 

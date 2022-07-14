@@ -32,19 +32,33 @@ public:
 
 	static const int& getHeight();
 
+	static unsigned int& getMSAALevel();
+
 	static void setViewport(const float& vWidth, const float& vHeight);
+
+	static void setBlendState(ID3D11BlendState* const blendState);
 
 private:
 
 	friend class Aurora;
 
-	friend class RenderTexture;
-
 	static void setProj(const DirectX::XMMATRIX& proj);
+
+	static void updateGPUDeltaTimes();
 
 	static ComPtr<ID3D11Buffer> cBufferProj;//投影矩阵通常在窗口大小变化时更改
 
 	static ComPtr<ID3D11Buffer> cBufferView;//视图矩阵可由用户随意修改
+
+	static ComPtr<ID3D11Buffer> cBufferDeltaTimes;
+
+	static struct GPUDeltaTimes
+	{
+		float deltaTime = 0;
+		float v1 = 0;
+		float v2 = 0;
+		float v3 = 0;
+	} gpuDeltaTimes;
 
 	static ComPtr<ID3D11RenderTargetView> defaultTargetView;
 

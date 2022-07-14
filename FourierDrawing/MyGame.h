@@ -11,7 +11,6 @@
 #include<Aurora/Event.h>
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
-#include<Aurora/PostProcessing/BlurEffect.h>
 
 #include"Epicycle.hpp"
 #include"json.hpp"
@@ -155,8 +154,8 @@ public:
 			preY = y;
 			x += epicycles[i].re;
 			y += epicycles[i].im;
-			pBatch->drawCircle(preX, preY, epicycles[i].length, 0, 0, 0);
-			pBatch->drawLine(preX, preY, x, y, 0, 0, 0);
+			pBatch->drawCircle(preX, preY, epicycles[i].length, 0, 0, 0, 0.25f);
+			pBatch->drawLine(preX, preY, x, y, 0, 0, 0, 0.25f);
 		}
 		pBatch->end();
 

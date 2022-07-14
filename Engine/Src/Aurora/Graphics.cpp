@@ -4,11 +4,15 @@ ComPtr<ID3D11Device4> Graphics::device;
 
 ComPtr<ID3D11DeviceContext4> Graphics::context;
 
-ComPtr<ID3D11RenderTargetView> Graphics::defaultTargetView;
-
 ComPtr<ID3D11Buffer> Graphics::cBufferProj;
 
 ComPtr<ID3D11Buffer> Graphics::cBufferView;
+
+ComPtr<ID3D11Buffer> Graphics::cBufferDeltaTimes;
+
+Graphics::GPUDeltaTimes Graphics::gpuDeltaTimes;
+
+ComPtr<ID3D11RenderTargetView> Graphics::defaultTargetView;
 
 float Graphics::deltaTime = 0;
 
@@ -74,11 +78,21 @@ const int& Graphics::getHeight()
 	return height;
 }
 
+unsigned int& Graphics::getMSAALevel()
+{
+	return msaaLevel;
+}
+
 void Graphics::setViewport(const float& vWidth, const float& vHeight)
 {
 	vp.Width = vWidth;
 	vp.Height = vHeight;
 	Graphics::context->RSSetViewports(1, &vp);
+}
+
+void Graphics::setBlendState(ID3D11BlendState* const blendState)
+{
+	Graphics::context->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
 }
 
 void Graphics::setProj(const DirectX::XMMATRIX& proj)
@@ -87,4 +101,18 @@ void Graphics::setProj(const DirectX::XMMATRIX& proj)
 	Graphics::context->Map(cBufferProj.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	memcpy(mappedData.pData, &proj, sizeof(DirectX::XMMATRIX));
 	Graphics::context->Unmap(cBufferProj.Get(), 0);
+}
+
+void Graphics::updateGPUDeltaTimes()
+{
+	gpuDeltaTimes.deltaTime = Graphics::deltaTime;
+	//v1=
+	//v2=
+	//v3=
+
+
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	Graphics::context->Map(cBufferDeltaTimes.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, &gpuDeltaTimes, sizeof(GPUDeltaTimes));
+	Graphics::context->Unmap(cBufferDeltaTimes.Get(), 0);
 }

@@ -6,7 +6,29 @@ EffectBase::EffectBase(const unsigned int& width, const unsigned int& height) :
 	outputTexture = defRenderTexture->getTexture();
 }
 
+EffectBase::EffectBase(RenderTexture* defRenderTexture) :
+	defRenderTexture(defRenderTexture), width(defRenderTexture->width), height(defRenderTexture->height), outputTexture(nullptr)
+{
+}
+
 EffectBase::~EffectBase()
 {
-	delete defRenderTexture;
+	if (outputTexture)
+	{
+		delete defRenderTexture;
+	}
+}
+
+Texture2D* EffectBase::process(Texture2D* const texture2D) const
+{
+	return texture2D;
+}
+
+void EffectBase::process() const
+{
+}
+
+Texture2D* EffectBase::getOutputTexture() const
+{
+	return outputTexture;
 }

@@ -24,7 +24,7 @@ public:
 
 	~SpriteBatch();
 
-	void begin() const;
+	void begin();
 
 	void end();
 

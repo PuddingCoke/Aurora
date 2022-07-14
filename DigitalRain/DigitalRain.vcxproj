@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{3d64dc47-6aff-4483-98ec-13da323a0a66}</ProjectGuid>
-    <RootNamespace>Engine</RootNamespace>
+    <ProjectGuid>{4e60c483-7e7f-4539-b883-0e33618dfd29}</ProjectGuid>
+    <RootNamespace>DigitalRain</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -46,7 +46,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -70,11 +70,8 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)Inc;$(IncludePath)</IncludePath>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)Inc;$(SolutionDir)ImageLoader\Inc;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Engine\Inc;$(SolutionDir)ImageLoader\Inc;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -127,58 +124,19 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ImageLoader.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ImageLoader.lib;Engine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Inc\Aurora\Aurora.h" />
-    <ClInclude Include="Inc\Aurora\BitmapFont.h" />
-    <ClInclude Include="Inc\Aurora\Color.h" />
-    <ClInclude Include="Inc\Aurora\Configuration.h" />
-    <ClInclude Include="Inc\Aurora\DoubleRTV.h" />
-    <ClInclude Include="Inc\Aurora\Event.h" />
-    <ClInclude Include="Inc\Aurora\Game.h" />
-    <ClInclude Include="Inc\Aurora\Graphics.h" />
-    <ClInclude Include="Inc\Aurora\Keyboard.h" />
-    <ClInclude Include="Inc\Aurora\Math.h" />
-    <ClInclude Include="Inc\Aurora\Mouse.h" />
-    <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h" />
-    <ClInclude Include="Inc\Aurora\PostProcessing\FadeEffect.h" />
-    <ClInclude Include="Inc\Aurora\PrimitiveBatch.h" />
-    <ClInclude Include="Inc\Aurora\Random.h" />
-    <ClInclude Include="Inc\Aurora\RenderTexture.h" />
-    <ClInclude Include="Inc\Aurora\Shader.h" />
-    <ClInclude Include="Inc\Aurora\SpriteBatch.h" />
-    <ClInclude Include="Inc\Aurora\StateCommon.h" />
-    <ClInclude Include="Inc\Aurora\Texture2D.h" />
-    <ClInclude Include="Inc\Aurora\Timer.h" />
-    <ClInclude Include="Inc\Aurora\Utils.h" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\Aurora\Color.cpp" />
-    <ClCompile Include="Src\Aurora\Aurora.cpp" />
-    <ClCompile Include="Src\Aurora\BitmapFont.cpp" />
-    <ClCompile Include="Src\Aurora\Configuration.cpp" />
-    <ClCompile Include="Src\Aurora\DoubleRTV.cpp" />
-    <ClCompile Include="Src\Aurora\Event.cpp" />
-    <ClCompile Include="Src\Aurora\Graphics.cpp" />
-    <ClCompile Include="Src\Aurora\Keyboard.cpp" />
-    <ClCompile Include="Src\Aurora\Mouse.cpp" />
-    <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp" />
-    <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp" />
-    <ClCompile Include="Src\Aurora\PrimitiveBatch.cpp" />
-    <ClCompile Include="Src\Aurora\Random.cpp" />
-    <ClCompile Include="Src\Aurora\RenderTexture.cpp" />
-    <ClCompile Include="Src\Aurora\Shader.cpp" />
-    <ClCompile Include="Src\Aurora\SpriteBatch.cpp" />
-    <ClCompile Include="Src\Aurora\StateCommon.cpp" />
-    <ClCompile Include="Src\Aurora\Texture2D.cpp" />
-    <ClCompile Include="Src\Aurora\Timer.cpp" />
-    <ClCompile Include="Src\Aurora\Utils.cpp" />
+    <ClInclude Include="MyGame.h" />
+    <ClInclude Include="Rain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

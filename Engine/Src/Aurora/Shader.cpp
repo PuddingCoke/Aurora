@@ -21,13 +21,12 @@ Shader* Shader::fromStr(const std::string& source, const ShaderType& type)
 	return new Shader(source, type);
 }
 
-void Shader::useDisplayShader()
-{
-	Shader::displayPShader->use();
-	Shader::displayVShader->use();
-	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
-}
+//void Shader::useDisplayShader()
+//{
+//	Shader::displayVShader->use();
+//	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//	Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+//}
 
 void Shader::ini()
 {

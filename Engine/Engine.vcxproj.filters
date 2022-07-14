@@ -72,13 +72,13 @@
     <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\BlurEffect.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\Color.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Math.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\PostProcessing\FadeEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -137,14 +137,11 @@
     <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\BlurEffect.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Aurora\Color.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Shaders\FadePShader.hlsl" />
+    <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

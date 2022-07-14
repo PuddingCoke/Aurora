@@ -21,7 +21,7 @@ class Star
 {
 public:
 
-	static constexpr float drawWidth = 1.7f;
+	static constexpr float drawWidth = 3.0f;
 
 	static constexpr float airDrag = 0.98f;
 
@@ -36,8 +36,6 @@ public:
 	static Star* add(const float& x, const float& y, const Color& color, const float& angle, const float& speed, const float& life, const float& speedOffX = 0.f, const float& speedOffY = 0.f);
 
 	static void returnInstance(Star* const star);
-
-	static void free();
 
 	bool visible;
 
@@ -114,8 +112,6 @@ public:
 	static Spark* add(const float& x, const float& y, const Color& color, const float& angle, const float& speed, const float& life);
 
 	static void returnInstance(Spark* const spark);
-
-	static void free();
 
 	float x;
 

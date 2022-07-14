@@ -2,6 +2,8 @@
 
 ComPtr<ID3D11SamplerState> StateCommon::defSamplerState;
 
+ComPtr<ID3D11BlendState> StateCommon::defBlendState;
+
 HRESULT StateCommon::ini()
 {
 	//≥ı ºªØdefSamplerState
