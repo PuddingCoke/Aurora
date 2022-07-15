@@ -66,7 +66,7 @@ public:
 
 	void update(const float& dt) override
 	{
-		const float scaledDT = dt * 1.3f;
+		const float scaledDT = dt * 1.5f;
 		const float width = Graphics::getWidth();
 		const float height = Graphics::getHeight();
 		speed = 1000.f / 16.6667f * scaledDT;
