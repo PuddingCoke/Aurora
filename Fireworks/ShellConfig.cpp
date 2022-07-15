@@ -2,6 +2,33 @@
 
 float ShellConfiguration::globalShellSize = 2.f;
 
+Color whiteOrGold()
+{
+	return Random::Float() < 0.5f ? Color::Gold : Color::White;
+}
+
+Color makeDifColor(const Color& color)
+{
+	Color outColor = Color::random();
+	while (outColor == color)
+	{
+		outColor = Color::random();
+	}
+	return outColor;
+}
+
+Color makePistilColor(const Color& shellColor)
+{
+	if (shellColor == Color::White || shellColor == Color::Gold)
+	{
+		return makeDifColor(shellColor);
+	}
+	else
+	{
+		return whiteOrGold();
+	}
+}
+
 ShellConfiguration crysanthemumShell()
 {
 	ShellConfiguration config;
@@ -10,18 +37,9 @@ ShellConfiguration crysanthemumShell()
 
 	const bool singleColor = Random::Float() < 0.72f;
 
-	if (singleColor)
-	{
-		config.color = Color::random();
-	}
-	else
-	{
-		config.haveSecondColor = true;
-		config.color = Color::random();
-		config.secondColor = Color::random();
-	}
-
 	const bool pistil = singleColor && Random::Float() < 0.42f;
+
+	config.color = Color::random();
 
 	config.shellSize = ShellConfiguration::globalShellSize;
 
@@ -29,17 +47,33 @@ ShellConfiguration crysanthemumShell()
 
 	config.starLife = 0.9f + config.shellSize * 0.2f;
 
-	config.starDensity = 1.2f;
+	config.starDensity = glitter ? 1.1f : 1.25f;
 
 	config.glitter = glitter ? Glitter::light : Glitter::none;
 
-	config.glitterColor = Random::Float() > 0.5f ? Color::White : Color::Gold;
+	config.glitterColor = whiteOrGold();
 
 	config.pistil = pistil;
 
-	config.pistilColor = Color::random();
+	if (pistil)
+	{
+		config.pistilColor = makePistilColor(config.color);
+	}
 
-	config.streamers = !pistil && Random::Float() < 0.42f;
+	if (!singleColor)
+	{
+		config.haveSecondColor = true;
+		if (pistil)
+		{
+			config.secondColor = config.pistilColor;
+		}
+		else
+		{
+			config.secondColor = makeDifColor(config.color);
+		}
+	}
+
+	config.streamers = !pistil && config.color != Color::White && Random::Float() < 0.42f;
 
 	return config;
 }
@@ -50,15 +84,22 @@ ShellConfiguration ghostShell()
 
 	config.starLife *= 1.5f;
 
+	const Color ghostColor = makeDifColor(Color::White);
+
 	config.streamers = true;
 
 	config.pistil = Random::Float() < 0.42f;
 
-	config.pistilColor = Color::random();
+	if (config.pistil)
+	{
+		config.pistilColor = makePistilColor(ghostColor);
+	}
 
 	config.color = Color::Invisible;
 
-	config.secondColor = Color::random();
+	config.haveSecondColor = true;
+
+	config.secondColor = ghostColor;
 
 	config.glitter = Glitter::none;
 
@@ -89,13 +130,22 @@ ShellConfiguration strobeShell()
 
 	config.strobe = true;
 
-	config.haveStrobeColor = true;
-
-	config.strobeColor = Random::Float() < 0.5f ? Color::White : Color::Invisible;
+	if (Random::Float() < 0.5f)
+	{
+		config.haveStrobeColor = true;
+		config.strobeColor = Color::White;
+	}
+	else
+	{
+		config.haveStrobeColor = false;
+	}
 
 	config.pistil = Random::Float() < 0.5f;
 
-	config.pistilColor = Color::random();
+	if (config.pistil)
+	{
+		config.pistilColor = makePistilColor(config.color);
+	}
 
 	return config;
 }
@@ -141,11 +191,14 @@ ShellConfiguration ringShell()
 
 	config.pistil = pistil;
 
-	config.pistilColor = Color::random();
+	if (pistil)
+	{
+		config.pistilColor = makePistilColor(config.color);
+	}
 
 	config.glitter = !pistil ? Glitter::light : Glitter::none;
 
-	config.glitterColor = Color::White;
+	config.glitterColor = config.color == Color::Gold ? Color::Gold : Color::White;
 
 	config.streamers = Random::Float() < 0.3f;
 
@@ -172,7 +225,10 @@ ShellConfiguration crossetteShell()
 
 	config.pistil = Random::Float() < 0.5f;
 
-	config.pistilColor = Color::random();
+	if (config.pistil)
+	{
+		config.pistilColor = makePistilColor(config.color);
+	}
 
 	return config;
 }
@@ -269,7 +325,10 @@ ShellConfiguration crackleShell()
 
 	config.pistil = Random::Float() < 0.65f;
 
-	config.pistilColor = Color::random();
+	if (config.pistil)
+	{
+		config.pistilColor = makePistilColor(config.color);
+	}
 
 	return config;
 }
@@ -291,12 +350,13 @@ ShellConfiguration horsetailShell()
 	config.starLife = 2.5f + ShellConfiguration::globalShellSize * 0.3f;
 
 	config.glitter = Glitter::medium;
+	
+	config.glitterColor = Random::Float() < 0.5f ? whiteOrGold() : config.color;
 
-	config.glitterColor = Random::Float() < 0.5f ? Color::White : Color::Gold;
-
-	config.strobe = true;
-
-	config.strobeColor = Color::White;
+	if (config.color == Color::White)
+	{
+		config.strobe = true;
+	}
 
 	return config;
 }

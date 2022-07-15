@@ -25,6 +25,8 @@ float global_ringSquash;
 float global_x;
 float global_y;
 
+Color randomColor;
+
 void createParticleArc(const float& start, const float& arcLength, const int& count, const float& randomness, void (*particleFactory)(const float&))
 {
 	const float angleDelta = arcLength / count;
@@ -94,13 +96,15 @@ void crossetteEffect()
 
 void floralEffect()
 {
+	randomColor = Color::random();
+
 	const int count = 30;
 	auto particleFactory = [](const float& angle, const float& speedMult)
 	{
 		Star* const star = Star::add(
 			Star::global->x,
 			Star::global->y,
-			Star::global->color,
+			randomColor,
 			angle,
 			speedMult * 2.4f,
 			1.f + Random::Float() * .3f,
@@ -353,7 +357,7 @@ void Shell::launch(const float& launchWidth, const float& launchHeight)
 		comet->sparkColor = Color::Gold;
 	}
 
-	if (Random::Float() > 0.4f && horseTail)
+	if (Random::Float() > 0.4f && !horseTail)
 	{
 		comet->haveSecondColor = true;
 		comet->secondColor = Color::Invisible;
@@ -435,7 +439,7 @@ void Shell::burst()
 			Shell::global->color,
 			anlge,
 			speedMult * speed,
-			Shell::global->starLife + Random::Float() * Shell::global->starLifeVariation,
+			Shell::global->starLife + Random::Float() * Shell::global->starLife * Shell::global->starLifeVariation,
 			local_speedOffX,
 			local_speedOffY
 		);
@@ -533,7 +537,7 @@ void Shell::burst()
 		innerConfig.starDensity = 1.4f;
 		innerConfig.color = pistilColor;
 		innerConfig.glitter = Glitter::light;
-		innerConfig.glitterColor = Random::Float() > 0.5f ? Color::Gold : Color::White;
+		innerConfig.glitterColor = pistilColor == Color::Gold ? Color::Gold : Color::White;
 		Shell* innerShell = new Shell(innerConfig);
 		Shell::inner = innerShell;
 		global_x = comet->x;
@@ -596,7 +600,7 @@ void Shell::burstInner()
 			Shell::inner->color,
 			anlge,
 			speedMult * speed,
-			Shell::inner->starLife + Random::Float() * Shell::inner->starLifeVariation,
+			Shell::inner->starLife + Random::Float() * Shell::inner->starLife * Shell::inner->starLifeVariation,
 			0,
 			standardInitialSpeed
 		);

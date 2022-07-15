@@ -57,7 +57,7 @@ cbuffer DeltaTimes : register(b0)
 
 float4 main() : SV_TARGET
 {
-    return float4(0.0, 0.0, 0.0, 4.0*deltaTime);
+    return float4(0.0, 0.0, 0.0, 5.0*deltaTime);
 }
 			)";
 		fadePShader = Shader::fromStr(source, ShaderType::Pixel);

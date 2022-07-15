@@ -66,7 +66,7 @@ public:
 
 	void update(const float& dt) override
 	{
-		const float scaledDT = dt * 1.2f;
+		const float scaledDT = dt * 1.3f;
 		const float width = Graphics::getWidth();
 		const float height = Graphics::getHeight();
 		speed = 1000.f / 16.6667f * scaledDT;
@@ -141,7 +141,7 @@ public:
 						star->colorChanged = true;
 						star->color = star->secondColor;
 
-						if (star->color == Color({ 0,0,0 }))
+						if (star->color == Color::Invisible)
 						{
 							star->sparkFreq = 0;
 						}

@@ -37,6 +37,11 @@ bool Color::operator==(const Color& color) const
 	return toInt() == color.toInt();
 }
 
+bool Color::operator!=(const Color& color) const
+{
+	return toInt() != color.toInt();
+}
+
 const Color Color::Gold{ 1.f,0.843f,0.f,1.f };
 
 const Color Color::White{ 1.f,1.f,1.f,1.f };
