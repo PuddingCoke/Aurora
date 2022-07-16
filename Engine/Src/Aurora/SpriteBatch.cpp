@@ -51,6 +51,10 @@ void SpriteBatch::end()
 	const unsigned int stride = sizeof(float) * 8;
 	const unsigned int offset = 0;
 
+	Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+	Graphics::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	for (int i = 0; i < fontPool.size(); i++)
 	{
 		fontPool[i]->updateVerticesData();
@@ -361,7 +365,7 @@ void SpriteBatch::texturePoolAdd(Texture2D* const texture)
 
 void SpriteBatch::flush()
 {
-	Graphics::context->PSSetSamplers(0, 1, samplerState.GetAddressOf());
+	Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 	Graphics::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -447,20 +451,6 @@ SpriteBatch::SpriteBatch() :
 			bitmapVShader->shaderBlob->GetBufferPointer(),
 			bitmapVShader->shaderBlob->GetBufferSize(),
 			bitmapInputLayout.ReleaseAndGetAddressOf());
-	}
-
-	//初始化samplerState
-	{
-		D3D11_SAMPLER_DESC sampDesc = {};
-		sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
-		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
-		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
-		sampDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_NEVER;
-		sampDesc.MinLOD = 0;
-		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-		Graphics::device->CreateSamplerState(&sampDesc, samplerState.ReleaseAndGetAddressOf());
 	}
 }
 

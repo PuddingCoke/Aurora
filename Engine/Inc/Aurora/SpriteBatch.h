@@ -64,8 +64,6 @@ private:
 
 	ComPtr<ID3D11Buffer> indexBuffer;
 
-	ComPtr<ID3D11SamplerState> samplerState;
-
 	Shader* spriteVShader;
 	Shader* spritePShader;
 
