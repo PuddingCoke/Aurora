@@ -60,6 +60,11 @@ const float& Graphics::getFPS()
 	return framePerSec;
 }
 
+const float& Graphics::getAspectRatio()
+{
+	return aspectRatio;
+}
+
 void Graphics::setView(const DirectX::XMMATRIX& view)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData;

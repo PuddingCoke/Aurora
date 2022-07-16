@@ -34,6 +34,10 @@ public:
 
 	const unsigned int& getHeight() const;
 
+	const float& getTexelSizeX() const;
+
+	const float& getTexelSizeY() const;
+
 	void setSRV(const UINT& slot = 0) const;
 
 	ID3D11ShaderResourceView* getSRV() const;
@@ -46,8 +50,6 @@ private:
 
 	Texture2D(const std::wstring& path);
 
-	Texture2D(ID3D11Texture2D* const texture);
-
 	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
 
 	ComPtr<ID3D11ShaderResourceView> resourceView;
@@ -57,6 +59,10 @@ private:
 	unsigned int width;
 
 	unsigned int height;
+
+	float texelSizeX;
+
+	float texelSizeY;
 
 	int poolIndex;
 

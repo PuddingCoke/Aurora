@@ -42,6 +42,11 @@ bool Color::operator!=(const Color& color) const
 	return toInt() != color.toInt();
 }
 
+Color::operator const float* () const
+{
+	return (const float*)this;
+}
+
 const Color Color::Gold{ 1.f,0.843f,0.f,1.f };
 
 const Color Color::White{ 1.f,1.f,1.f,1.f };

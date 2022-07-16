@@ -16,6 +16,9 @@ public:
 	//SRC_ALPHA INV_SRC_ALPHA
 	static ComPtr<ID3D11BlendState> defBlendState;
 
+	//ONE ZERO
+	static ComPtr<ID3D11BlendState> blendReplace;
+
 private:
 
 	friend class Aurora;

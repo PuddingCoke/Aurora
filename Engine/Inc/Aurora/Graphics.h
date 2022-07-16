@@ -26,6 +26,8 @@ public:
 
 	static const float& getFPS();
 
+	static const float& getAspectRatio();
+
 	static void setView(const DirectX::XMMATRIX& view);
 
 	static const int& getWidth();

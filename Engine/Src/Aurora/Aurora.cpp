@@ -292,30 +292,6 @@ HRESULT Aurora::iniDevice()
 	Graphics::setViewport((float)config->width, (float)config->height);
 
 	{
-
-		D3D11_BLEND_DESC blendStateDesc = {};
-
-		blendStateDesc.IndependentBlendEnable = false;
-
-		blendStateDesc.RenderTarget[0].BlendEnable = true;
-		blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-		blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-
-		blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
-		blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
-
-		blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-
-		Graphics::device->CreateBlendState(&blendStateDesc, StateCommon::defBlendState.ReleaseAndGetAddressOf());
-
-		Graphics::setBlendState(StateCommon::defBlendState.Get());
-
-	}
-
-	{
 		ComPtr<ID3D11RasterizerState> rasterizerState;
 
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};

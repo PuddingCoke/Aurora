@@ -7,9 +7,9 @@ RenderTexture::~RenderTexture()
 	delete texture;
 }
 
-RenderTexture* RenderTexture::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4])
+RenderTexture* RenderTexture::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4],const bool& enableMSAA)
 {
-	return new RenderTexture(width, height, format, color);
+	return new RenderTexture(width, height, format, color, enableMSAA);
 }
 
 void RenderTexture::setMSAARTV(ID3D11DepthStencilView* const view) const
@@ -64,10 +64,20 @@ void RenderTexture::setMSAARTVs(std::initializer_list<RenderTexture*> renderText
 	Graphics::context->OMSetRenderTargets((UINT)renderTextures.size(), renderTargetViews, msaaView);
 }
 
-RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4]) :
+RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4],const bool& enableMSAA) :
 	width(width), height(height), format(format), texture(Texture2D::create(width, height, format, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE))
 {
-	//创建抗锯齿材质以及RenderTargetView
+	//创建普通材质的RenderTargetView
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC viewDesc = {};
+		viewDesc.Format = format;
+		viewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
+		viewDesc.Texture2D.MipSlice = 0;
+
+		Graphics::device->CreateRenderTargetView(texture->getTexture2D(), &viewDesc, normalTarget.ReleaseAndGetAddressOf());
+	}
+
+	if(enableMSAA)//创建抗锯齿材质以及RenderTargetView
 	{
 		D3D11_TEXTURE2D_DESC tDesc = {};
 		tDesc.Width = width;
@@ -90,21 +100,13 @@ RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& heig
 		msaaViewDesc.Texture2D.MipSlice = 0;
 
 		Graphics::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, msaaTarget.ReleaseAndGetAddressOf());
-	}
 
-	//创建普通材质的RenderTargetView
+		Graphics::context->ClearRenderTargetView(msaaTarget.Get(), color);
+
+		resolve();
+	}
+	else
 	{
-		D3D11_RENDER_TARGET_VIEW_DESC viewDesc = {};
-		viewDesc.Format = format;
-		viewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
-		viewDesc.Texture2D.MipSlice = 0;
-
-		Graphics::device->CreateRenderTargetView(texture->getTexture2D(), &viewDesc, normalTarget.ReleaseAndGetAddressOf());
+		Graphics::context->ClearRenderTargetView(normalTarget.Get(), color);
 	}
-
-	Graphics::context->OMSetRenderTargets(1, msaaTarget.GetAddressOf(), nullptr);
-
-	Graphics::context->ClearRenderTargetView(msaaTarget.Get(), color);
-
-	resolve();
 }

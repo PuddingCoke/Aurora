@@ -18,6 +18,8 @@ struct Color
 
 	bool operator!=(const Color& color) const;
 
+	operator const float* () const;
+
 	static Color random();
 
 	static Color HSVtoRGB(const Color& c);

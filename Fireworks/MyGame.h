@@ -207,7 +207,6 @@ public:
 
 		colorSky();
 		Graphics::setDefRTV();
-		Graphics::clearDefRTV((float*)&currentSkyColor);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
@@ -269,6 +268,7 @@ public:
 		currentSkyColor.g += (targetSkyColor.g - currentSkyColor.g) / colorChange * speed;
 		currentSkyColor.b += (targetSkyColor.b - currentSkyColor.b) / colorChange * speed;
 
+		Graphics::clearDefRTV(currentSkyColor);
 	}
 
 	const float GRAVITY = 0.9f;

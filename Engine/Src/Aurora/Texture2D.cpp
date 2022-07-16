@@ -5,11 +5,6 @@ Texture2D* Texture2D::create(const std::wstring& path)
 	return new Texture2D(path);
 }
 
-Texture2D* Texture2D::create(ID3D11Texture2D* const texture)
-{
-	return new Texture2D(texture);
-}
-
 Texture2D* Texture2D::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags)
 {
 	return new Texture2D(width, height, format, bindFlags);
@@ -29,6 +24,16 @@ const unsigned int& Texture2D::getHeight() const
 	return height;
 }
 
+const float& Texture2D::getTexelSizeX() const
+{
+	return texelSizeX;
+}
+
+const float& Texture2D::getTexelSizeY() const
+{
+	return texelSizeY;
+}
+
 void Texture2D::setSRV(const UINT& slot) const
 {
 	Graphics::context->PSSetShaderResources(slot, 1, resourceView.GetAddressOf());
@@ -44,7 +49,7 @@ ID3D11Texture2D* Texture2D::getTexture2D() const
 	return texture2D.Get();
 }
 
-Texture2D::Texture2D(const std::wstring& path):
+Texture2D::Texture2D(const std::wstring& path) :
 	poolIndex(-1)
 {
 	DirectX::CreateWICTextureFromFile(Graphics::device.Get(), path.c_str(), nullptr, resourceView.ReleaseAndGetAddressOf());
@@ -58,40 +63,22 @@ Texture2D::Texture2D(const std::wstring& path):
 	D3D11_TEXTURE2D_DESC desc;
 
 	texture2D->GetDesc(&desc);
- 
+
 	width = desc.Width;
 
 	height = desc.Height;
+
+	texelSizeX = 1.f / width;
+
+	texelSizeY = 1.f / height;
 
 	format = desc.Format;
 
 	std::wcout << "[class Texture2D] " << path << " create successfully!\n";
 }
 
-Texture2D::Texture2D(ID3D11Texture2D* const texture):
-	poolIndex(-1),texture2D(texture)
-{
-	D3D11_TEXTURE2D_DESC desc;
-
-	texture2D->GetDesc(&desc);
-
-	width = desc.Width;
-
-	height = desc.Height;
-
-	format = desc.Format;
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = desc.Format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = -1;
-
-	Graphics::device->CreateShaderResourceView(texture, &srvDesc, resourceView.ReleaseAndGetAddressOf());
-}
-
-Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags):
-	poolIndex(-1), width(width), height(height), format(format)
+Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags) :
+	poolIndex(-1), width(width), height(height), format(format), texelSizeX(1.f / width), texelSizeY(1.f / height)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 	tDesc.Width = width;
