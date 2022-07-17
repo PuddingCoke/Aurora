@@ -26,6 +26,9 @@
     <ClInclude Include="Config.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Pointer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\VelocityVertexShader.hlsl" />
@@ -33,10 +36,8 @@
     <FxCompile Include="Shaders\BlurVertexShaderV.hlsl" />
     <FxCompile Include="Shaders\DisplayVertexShader.hlsl" />
     <FxCompile Include="Shaders\AdvectionVelDissipation.hlsl" />
-    <FxCompile Include="Shaders\AdvectionDenDissipation.hlsl" />
     <FxCompile Include="Shaders\BlurShader.hlsl" />
     <FxCompile Include="Shaders\ClearShader.hlsl" />
-    <FxCompile Include="Shaders\ColorShader.hlsl" />
     <FxCompile Include="Shaders\CurlShader.hlsl" />
     <FxCompile Include="Shaders\DisplayShader.hlsl" />
     <FxCompile Include="Shaders\DivergenceShader.hlsl" />
@@ -47,5 +48,6 @@
     <FxCompile Include="Shaders\SplatShaderColor1.hlsl" />
     <FxCompile Include="Shaders\SunraysShader.hlsl" />
     <FxCompile Include="Shaders\VorticityShader.hlsl" />
+    <FxCompile Include="Shaders\AdvectionDenDissipation.hlsl" />
   </ItemGroup>
 </Project>
