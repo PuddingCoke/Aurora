@@ -38,6 +38,8 @@ public:
 
 	static void setViewport(const float& vWidth, const float& vHeight);
 
+	static void setPrimitiveTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology);
+
 	static void setBlendState(ID3D11BlendState* const blendState);
 
 private:

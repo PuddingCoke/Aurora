@@ -3,8 +3,6 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/Mouse.h>
-#include<Aurora/SpriteBatch.h>
-#include<Aurora/PrimitiveBatch.h>
 #include<Aurora/Event.h>
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
@@ -36,8 +34,34 @@ public:
 	RenderTexture* sunrays;//LINEAR
 	RenderTexture* sunraysTemp;//LINEAR
 
+	Shader* advVelShader;
+	Shader* advDenShader;
+	Shader* blurShader;
+	Shader* clearShader;
+	Shader* colorShader;
+	Shader* curlShader;
+	Shader* displayShader;
+	Shader* divergenceShader;
+	Shader* gradientSubtractShader;
+	Shader* pressureShader;
+	Shader* splatColor0;
+	Shader* splatColor1;
+	Shader* sunrayMaskShader;
+	Shader* sunraysShader;
+	Shader* vorticityShader;
+
+	Shader* blurHVertex;
+	Shader* blurVVertex;
+	Shader* velocityVertex;
+	Shader* displayVertex;
+
+	Shader* pixelShader;
+
 	MyGame()
 	{
+		displayVertex = Shader::fromFile("Shaders\\DisplayVertexShader.hlsl", ShaderType::Vertex);
+		pixelShader = Shader::fromFile("Shaders\\PixelShader.hlsl", ShaderType::Pixel);
+
 		{
 			const DirectX::XMINT2 simRes = getResolution(config.SIM_RESOLUTION);
 			const DirectX::XMINT2 dyeRes = getResolution(config.DYE_RESOLUTION);
@@ -105,6 +129,7 @@ public:
 			cbd.ByteWidth = sizeof(BufferDynamic);
 			cbd.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
 			cbd.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
+			cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 			Graphics::device->CreateBuffer(&cbd, nullptr, constantb2.ReleaseAndGetAddressOf());
 		}
@@ -126,6 +151,9 @@ public:
 		delete curl;
 		delete sunrays;
 		delete sunraysTemp;
+
+		delete displayVertex;
+		delete pixelShader;
 	}
 
 	void update(const float& dt) override
@@ -137,5 +165,13 @@ public:
 	{
 		Graphics::setDefRTV();
 		Graphics::clearDefRTV(Color::Black);
+
+		Graphics::setBlendState(StateCommon::defBlendState.Get());
+		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		displayVertex->use();
+		pixelShader->use();
+
+		Graphics::context->Draw(3, 0);
+
 	}
 };

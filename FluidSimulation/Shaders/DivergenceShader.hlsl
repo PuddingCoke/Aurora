@@ -44,7 +44,7 @@ cbuffer SimulationDynamic : register(b2)
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
-Texture2D tVelocity;
+Texture2D tVelocity : register(t0);
 
 float4 main(PixelInput input) : SV_TARGET
 {

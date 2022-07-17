@@ -1,11 +1,11 @@
 struct VertexOutput
 {
-    float4 position : SV_Position;
     float2 vUv : TEXCOORD0;
     float2 vL : TEXCOORD1;
     float2 vR : TEXCOORD2;
     float2 vT : TEXCOORD3;
     float2 vB : TEXCOORD4;
+    float4 position : SV_Position;
 };
 
 static const float2 positions[] =

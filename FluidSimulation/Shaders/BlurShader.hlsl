@@ -3,8 +3,6 @@ struct PixelInput
     float2 vUv : TEXCOORD0;
     float2 vL : TEXCOORD1;
     float2 vR : TEXCOORD2;
-    float2 vT : TEXCOORD3;
-    float2 vB : TEXCOORD4;
 };
 
 cbuffer DeltaTimes : register(b0)

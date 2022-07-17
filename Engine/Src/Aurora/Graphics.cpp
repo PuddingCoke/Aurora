@@ -95,6 +95,11 @@ void Graphics::setViewport(const float& vWidth, const float& vHeight)
 	Graphics::context->RSSetViewports(1, &vp);
 }
 
+void Graphics::setPrimitiveTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology)
+{
+	Graphics::context->IASetPrimitiveTopology(topology);
+}
+
 void Graphics::setBlendState(ID3D11BlendState* const blendState)
 {
 	Graphics::context->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
