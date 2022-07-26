@@ -10,11 +10,34 @@
 #include<Aurora/DoubleRTV.h>
 
 #include"Config.h"
-#include"Pointer.h"
 
 class MyGame :public Game
 {
 public:
+
+	struct Pointer
+	{
+		float texcoordX = 0;
+		float texcoordY = 0;
+		float prevTexcoordX = 0;
+		float prevTexcoordY = 0;
+		float deltaX = 0;
+		float deltaY = 0;
+		bool down = false;
+		bool moved = false;
+		float r = 30;
+		float g = 0;
+		float b = 300;
+
+		void makeColorRandom()
+		{
+			const Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
+			r = c.r * 0.15f;
+			g = c.g * 0.15f;
+			b = c.b * 0.15f;
+		}
+
+	} pointer;
 
 	//USAGE IMMUTABLE ConstantBufferB1
 	ComPtr<ID3D11Buffer> constantb1;
@@ -39,8 +62,6 @@ public:
 	RenderTexture* curl;//POINT
 	RenderTexture* sunrays;//LINEAR
 	RenderTexture* sunraysTemp;//LINEAR
-
-	RenderTexture* finalOutput;
 
 	Shader* advVelShader;
 	Shader* advDenShader;
@@ -158,8 +179,6 @@ public:
 
 			sunraysTemp = RenderTexture::create(sunRes.x, sunRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent, false);
 
-			finalOutput = RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT::DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false);
-
 			//创建数据不变的ConstantBuffer
 			{
 				struct ConstantBuffer
@@ -178,10 +197,10 @@ public:
 					float v0;
 				} constantBuffer{};
 
-				constantBuffer.velocityTexelSize = DirectX::XMFLOAT2(velocity->renderTexture1->getTexture()->getTexelSizeX(), velocity->renderTexture1->getTexture()->getTexelSizeY());
+				constantBuffer.velocityTexelSize = DirectX::XMFLOAT2(1.f / velocity->read()->getTexture()->getWidth(), 1.f / velocity->read()->getTexture()->getHeight());
 				constantBuffer.screenTexelSize = DirectX::XMFLOAT2(1.f / Graphics::getWidth(), 1.f / Graphics::getHeight());
-				constantBuffer.sunraysTexelSizeX = DirectX::XMFLOAT2(sunrays->getTexture()->getTexelSizeX(), 0);
-				constantBuffer.sunraysTexelSizeY = DirectX::XMFLOAT2(0, sunrays->getTexture()->getTexelSizeY());
+				constantBuffer.sunraysTexelSizeX = DirectX::XMFLOAT2(1.f / sunrays->getTexture()->getWidth(), 0);
+				constantBuffer.sunraysTexelSizeY = DirectX::XMFLOAT2(0, 1.f / sunrays->getTexture()->getHeight());
 				constantBuffer.velocity_dissipation = config.VELOCITY_DISSIPATION;
 				constantBuffer.density_dissipation = config.DENSITY_DISSIPATION;
 				constantBuffer.value = config.PRESSURE;
@@ -223,7 +242,6 @@ public:
 
 		Mouse::addLeftDownEvent([this]()
 			{
-				std::cout << "DOWN\n";
 				updatePointerDownData(-1, Mouse::getX(), Graphics::getHeight() - Mouse::getY());
 			});
 
@@ -280,12 +298,6 @@ public:
 		{
 			Graphics::setDefRTV();
 			Graphics::clearDefRTV(DirectX::Colors::Black);
-
-			Shader::displayVShader->use();
-			Shader::displayPShader->use();
-
-			finalOutput->getTexture()->setSRV(0);
-
 		}
 		else
 		{
@@ -299,7 +311,6 @@ public:
 
 		ID3D11ShaderResourceView* resourceViews[2] = { nullptr,nullptr };
 		Graphics::context->PSSetShaderResources(0, 2, resourceViews);
-
 	}
 
 	void updateColors(const float& dt)
@@ -374,10 +385,10 @@ public:
 		pressure->swap();
 
 		pressureShader->use();
-		divergence->getTexture()->setSRV(0);
 		for (int i = 0; i < config.PRESSURE_ITERATIONS; i++)
 		{
-			pressure->read()->getTexture()->setSRV(1);
+			pressure->read()->getTexture()->setSRV(0);
+			divergence->getTexture()->setSRV(1);
 			blit(pressure->write());
 			pressure->swap();
 		}
@@ -424,12 +435,12 @@ public:
 		blurShader->use();
 		for (int i = 0; i < iterations; i++)
 		{
-			blurVVertex->use();
+			blurHVertex->use();
 
 			target->getTexture()->setSRV(0);
 			blit(temp);
 
-			blurHVertex->use();
+			blurVVertex->use();
 
 			temp->getTexture()->setSRV(0);
 			blit(target);
@@ -449,22 +460,18 @@ public:
 		blur(sunrays, sunraysTemp, 1);
 
 		Graphics::setBlendState(blendState.Get());
+
 		Graphics::setViewport(Graphics::getWidth(), Graphics::getHeight());
 
 		displayVertex->use();
 		displayShader->use();
 		dye->read()->getTexture()->setSRV(0);
 		sunrays->getTexture()->setSRV(1);
-
-		finalOutput->clearRTV(DirectX::Colors::Transparent);
-		blit(finalOutput);
-
 		blit(nullptr);
 	}
 
 	void updatePointerDownData(const int& id, const float& posX, const float& posY)
 	{
-		pointer.id = id;
 		pointer.down = true;
 		pointer.moved = false;
 		pointer.texcoordX = posX / Graphics::getWidth();
@@ -483,20 +490,13 @@ public:
 		pointer.texcoordX = posX / Graphics::getWidth();
 		pointer.texcoordY = posY / Graphics::getHeight();
 		pointer.deltaX = pointer.texcoordX - pointer.prevTexcoordX;
-		pointer.deltaY = correctDeltaY(pointer.texcoordY - pointer.prevTexcoordY);
+		pointer.deltaY = (pointer.texcoordY - pointer.prevTexcoordY) / Graphics::getAspectRatio();
 		pointer.moved = fabsf(pointer.deltaX) > 0 || fabsf(pointer.deltaY) > 0;
 	}
 
 	void updatePointerUpData()
 	{
 		pointer.down = false;
-	}
-
-	float correctDeltaY(float delta)
-	{
-		const float aspectRatio = (float)Graphics::getWidth() / Graphics::getHeight();
-		delta /= aspectRatio;
-		return delta;
 	}
 
 };

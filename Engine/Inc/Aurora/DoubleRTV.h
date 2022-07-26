@@ -13,23 +13,21 @@ public:
 
 	~DoubleRTV();
 
-	RenderTexture* renderTexture1;
-
-	RenderTexture* renderTexture2;
-
 	const unsigned int width;
 
 	const unsigned int height;
 
 	RenderTexture* read();
 
-	void read(RenderTexture* const renderTexture);
-
 	RenderTexture* write();
 
-	void write(RenderTexture* const renderTexture);
-
 	void swap();
+
+private:
+
+	RenderTexture* renderTexture1;
+
+	RenderTexture* renderTexture2;
 
 };
 

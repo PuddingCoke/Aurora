@@ -18,21 +18,9 @@ RenderTexture* DoubleRTV::read()
 	return renderTexture1;
 }
 
-void DoubleRTV::read(RenderTexture* const renderTexture)
-{
-	delete renderTexture1;
-	renderTexture1 = renderTexture;
-}
-
 RenderTexture* DoubleRTV::write()
 {
 	return renderTexture2;
-}
-
-void DoubleRTV::write(RenderTexture* const renderTexture)
-{
-	delete renderTexture2;
-	renderTexture2 = renderTexture;
 }
 
 void DoubleRTV::swap()

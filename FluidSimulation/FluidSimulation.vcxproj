@@ -137,7 +137,6 @@
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="MyGame.h" />
-    <ClInclude Include="Pointer.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\AdvectionDenDissipation.hlsl">

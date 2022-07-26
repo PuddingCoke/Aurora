@@ -24,16 +24,6 @@ const unsigned int& Texture2D::getHeight() const
 	return height;
 }
 
-const float& Texture2D::getTexelSizeX() const
-{
-	return texelSizeX;
-}
-
-const float& Texture2D::getTexelSizeY() const
-{
-	return texelSizeY;
-}
-
 void Texture2D::setSRV(const UINT& slot) const
 {
 	Graphics::context->PSSetShaderResources(slot, 1, resourceView.GetAddressOf());
@@ -68,17 +58,13 @@ Texture2D::Texture2D(const std::wstring& path) :
 
 	height = desc.Height;
 
-	texelSizeX = 1.f / width;
-
-	texelSizeY = 1.f / height;
-
 	format = desc.Format;
 
 	std::wcout << "[class Texture2D] " << path << " create successfully!\n";
 }
 
 Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags) :
-	poolIndex(-1), width(width), height(height), format(format), texelSizeX(1.f / width), texelSizeY(1.f / height)
+	poolIndex(-1), width(width), height(height), format(format)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 	tDesc.Width = width;

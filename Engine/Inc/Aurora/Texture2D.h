@@ -34,10 +34,6 @@ public:
 
 	const unsigned int& getHeight() const;
 
-	const float& getTexelSizeX() const;
-
-	const float& getTexelSizeY() const;
-
 	void setSRV(const UINT& slot = 0) const;
 
 	ID3D11ShaderResourceView* getSRV() const;
@@ -59,10 +55,6 @@ private:
 	unsigned int width;
 
 	unsigned int height;
-
-	float texelSizeX;
-
-	float texelSizeY;
 
 	int poolIndex;
 

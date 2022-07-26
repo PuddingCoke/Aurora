@@ -36,6 +36,9 @@ int Aurora::iniEngine(const Configuration& config)
 	Graphics::aspectRatio = (float)Graphics::width / (float)Graphics::height;
 	Graphics::msaaLevel = config.msaaLevel;
 
+	std::cout << "[class Aurora] resolution:" << Graphics::width << " " << Graphics::height << "\n";
+	std::cout << "[class Aurora] aspectRatio:" << Graphics::aspectRatio << "\n";
+
 	std::cout << "[class Aurora] multisample level " << config.msaaLevel << "\n";
 
 	if (SUCCEEDED(iniWindow()))
