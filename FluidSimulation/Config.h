@@ -7,19 +7,19 @@
 
 struct SimulationConfig
 {
-	const float COLOR_UPDATE_SPEED = 10;
-	const float CURL = 30;
-	const float DENSITY_DISSIPATION = 1;
-	const float DYE_RESOLUTION = 1024;
-	const float PRESSURE = 0.8f;
-	const int PRESSURE_ITERATIONS = 20;
-	const float SIM_RESOLUTION = 256;
-	const float SPLAT_FORCE = 6000;
-	const float SPLAT_RADIUS = 0.25f;
-	const float SUNRAYS_RESOLUTION = 196;
-	const float SUNRAYS_WEIGHT = 1;
-	const float VELOCITY_DISSIPATION = 0.2f;
-} config;
+	static constexpr float COLOR_UPDATE_SPEED = 10;
+	static constexpr float CURL = 30;
+	static constexpr float DENSITY_DISSIPATION = 1;
+	static constexpr float DYE_RESOLUTION = 1024;
+	static constexpr float PRESSURE = 0.8f;
+	static constexpr int PRESSURE_ITERATIONS = 20;
+	static constexpr float SIM_RESOLUTION = 256;
+	static constexpr float SPLAT_FORCE = 6000;
+	static constexpr float SPLAT_RADIUS = 0.25f;
+	static constexpr float SUNRAYS_RESOLUTION = 196;
+	static constexpr float SUNRAYS_WEIGHT = 1;
+	static constexpr float VELOCITY_DISSIPATION = 0.2f;
+};
 
 DirectX::XMINT2 getResolution(const float& resolution)
 {

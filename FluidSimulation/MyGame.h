@@ -161,9 +161,9 @@ public:
 		Graphics::context->PSSetSamplers(0, 2, samplers);
 
 		{
-			const DirectX::XMINT2 simRes = getResolution(config.SIM_RESOLUTION);
-			const DirectX::XMINT2 dyeRes = getResolution(config.DYE_RESOLUTION);
-			const DirectX::XMINT2 sunRes = getResolution(config.SUNRAYS_RESOLUTION);
+			const DirectX::XMINT2 simRes = getResolution(SimulationConfig::SIM_RESOLUTION);
+			const DirectX::XMINT2 dyeRes = getResolution(SimulationConfig::DYE_RESOLUTION);
+			const DirectX::XMINT2 sunRes = getResolution(SimulationConfig::SUNRAYS_RESOLUTION);
 
 			dye = new DoubleRTV(dyeRes.x, dyeRes.y, DXGI_FORMAT::DXGI_FORMAT_R16G16B16A16_FLOAT);
 
@@ -201,13 +201,13 @@ public:
 				constantBuffer.screenTexelSize = DirectX::XMFLOAT2(1.f / Graphics::getWidth(), 1.f / Graphics::getHeight());
 				constantBuffer.sunraysTexelSizeX = DirectX::XMFLOAT2(1.f / sunrays->getTexture()->getWidth(), 0);
 				constantBuffer.sunraysTexelSizeY = DirectX::XMFLOAT2(0, 1.f / sunrays->getTexture()->getHeight());
-				constantBuffer.velocity_dissipation = config.VELOCITY_DISSIPATION;
-				constantBuffer.density_dissipation = config.DENSITY_DISSIPATION;
-				constantBuffer.value = config.PRESSURE;
+				constantBuffer.velocity_dissipation = SimulationConfig::VELOCITY_DISSIPATION;
+				constantBuffer.density_dissipation = SimulationConfig::DENSITY_DISSIPATION;
+				constantBuffer.value = SimulationConfig::PRESSURE;
 				constantBuffer.aspectRatio = Graphics::getAspectRatio();
-				constantBuffer.curl = config.CURL;
-				constantBuffer.radius = config.SPLAT_RADIUS / 100.f * Graphics::getAspectRatio();
-				constantBuffer.weight = config.SUNRAYS_WEIGHT;
+				constantBuffer.curl = SimulationConfig::CURL;
+				constantBuffer.radius = SimulationConfig::SPLAT_RADIUS / 100.f * Graphics::getAspectRatio();
+				constantBuffer.weight = SimulationConfig::SUNRAYS_WEIGHT;
 
 				D3D11_BUFFER_DESC cbd = {};
 				cbd.ByteWidth = sizeof(ConstantBuffer);
@@ -315,7 +315,7 @@ public:
 
 	void updateColors(const float& dt)
 	{
-		colorUpdateTimer += dt * config.COLOR_UPDATE_SPEED;
+		colorUpdateTimer += dt * SimulationConfig::COLOR_UPDATE_SPEED;
 		if (colorUpdateTimer >= 1.f)
 		{
 			colorUpdateTimer = 0;
@@ -328,8 +328,8 @@ public:
 		if (pointer.moved)
 		{
 			pointer.moved = false;
-			const float dx = pointer.deltaX * config.SPLAT_FORCE;
-			const float dy = pointer.deltaY * config.SPLAT_FORCE;
+			const float dx = pointer.deltaX * SimulationConfig::SPLAT_FORCE;
+			const float dy = pointer.deltaY * SimulationConfig::SPLAT_FORCE;
 			splat(pointer.texcoordX, pointer.texcoordY, dx, dy, pointer.r, pointer.g, pointer.b);
 		}
 	}
@@ -385,7 +385,7 @@ public:
 		pressure->swap();
 
 		pressureShader->use();
-		for (int i = 0; i < config.PRESSURE_ITERATIONS; i++)
+		for (int i = 0; i < SimulationConfig::PRESSURE_ITERATIONS; i++)
 		{
 			pressure->read()->getTexture()->setSRV(0);
 			divergence->getTexture()->setSRV(1);
@@ -492,11 +492,6 @@ public:
 		pointer.deltaX = pointer.texcoordX - pointer.prevTexcoordX;
 		pointer.deltaY = (pointer.texcoordY - pointer.prevTexcoordY) / Graphics::getAspectRatio();
 		pointer.moved = fabsf(pointer.deltaX) > 0 || fabsf(pointer.deltaY) > 0;
-	}
-
-	void updatePointerUpData()
-	{
-		pointer.down = false;
 	}
 
 };
