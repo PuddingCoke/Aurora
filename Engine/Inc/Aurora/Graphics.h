@@ -56,6 +56,8 @@ private:
 
 	static ComPtr<ID3D11Buffer> cBufferDeltaTimes;
 
+	static ComPtr<ID3D11Debug> d3dDebug;
+
 	static struct GPUDeltaTimes
 	{
 		float deltaTime = 0;

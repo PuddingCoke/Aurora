@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DigitalRain", "DigitalRain\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FluidSimulation", "FluidSimulation\FluidSimulation.vcxproj", "{12B0657A-6E17-417B-8429-1CBD91E53F8A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThomasStrangeAttractor", "ThomasStrangeAttractor\ThomasStrangeAttractor.vcxproj", "{290133B2-2F08-419E-883F-4378DC3C2A71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -81,6 +83,14 @@ Global
 		{12B0657A-6E17-417B-8429-1CBD91E53F8A}.Release|x64.Build.0 = Release|x64
 		{12B0657A-6E17-417B-8429-1CBD91E53F8A}.Release|x86.ActiveCfg = Release|Win32
 		{12B0657A-6E17-417B-8429-1CBD91E53F8A}.Release|x86.Build.0 = Release|Win32
+		{290133B2-2F08-419E-883F-4378DC3C2A71}.Debug|x64.ActiveCfg = Debug|x64
+		{290133B2-2F08-419E-883F-4378DC3C2A71}.Debug|x64.Build.0 = Debug|x64
+		{290133B2-2F08-419E-883F-4378DC3C2A71}.Debug|x86.ActiveCfg = Debug|Win32
+		{290133B2-2F08-419E-883F-4378DC3C2A71}.Debug|x86.Build.0 = Debug|Win32
+		{290133B2-2F08-419E-883F-4378DC3C2A71}.Release|x64.ActiveCfg = Release|x64
+		{290133B2-2F08-419E-883F-4378DC3C2A71}.Release|x64.Build.0 = Release|x64
+		{290133B2-2F08-419E-883F-4378DC3C2A71}.Release|x86.ActiveCfg = Release|Win32
+		{290133B2-2F08-419E-883F-4378DC3C2A71}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

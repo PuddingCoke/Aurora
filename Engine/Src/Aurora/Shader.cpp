@@ -3,6 +3,11 @@
 Shader* Shader::displayVShader;
 Shader* Shader::displayPShader;
 
+Shader::~Shader()
+{
+	releaseFunc();
+}
+
 void Shader::use()
 {
 	useFunc();
@@ -20,13 +25,6 @@ Shader* Shader::fromStr(const std::string& source, const ShaderType& type)
 	std::cout << "[class Shader] Raw string ";
 	return new Shader(source, type);
 }
-
-//void Shader::useDisplayShader()
-//{
-//	Shader::displayVShader->use();
-//	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//	Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
-//}
 
 void Shader::ini()
 {
@@ -107,6 +105,10 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		{
 			Graphics::context->CSSetShader((ID3D11ComputeShader*)shaderPtr.Get(), nullptr, 0);
 		};
+		releaseFunc = [this]()
+		{
+			((ID3D11ComputeShader*)shaderPtr.Get())->Release();
+		};
 	}
 	break;
 	case ShaderType::Domain:
@@ -118,6 +120,10 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		useFunc = [this]()
 		{
 			Graphics::context->DSSetShader((ID3D11DomainShader*)shaderPtr.Get(), nullptr, 0);
+		};
+		releaseFunc = [this]()
+		{
+			((ID3D11DomainShader*)shaderPtr.Get())->Release();
 		};
 	}
 	break;
@@ -131,6 +137,10 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		{
 			Graphics::context->GSSetShader((ID3D11GeometryShader*)shaderPtr.Get(), nullptr, 0);
 		};
+		releaseFunc = [this]()
+		{
+			((ID3D11GeometryShader*)shaderPtr.Get())->Release();
+		};
 	}
 	break;
 	case ShaderType::Hull:
@@ -142,6 +152,10 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		useFunc = [this]()
 		{
 			Graphics::context->HSSetShader((ID3D11HullShader*)shaderPtr.Get(), nullptr, 0);
+		};
+		releaseFunc = [this]()
+		{
+			((ID3D11HullShader*)shaderPtr.Get())->Release();
 		};
 	}
 	break;
@@ -155,6 +169,10 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		{
 			Graphics::context->PSSetShader((ID3D11PixelShader*)shaderPtr.Get(), nullptr, 0);
 		};
+		releaseFunc = [this]()
+		{
+			((ID3D11PixelShader*)shaderPtr.Get())->Release();
+		};
 	}
 	break;
 	case ShaderType::Vertex:
@@ -166,6 +184,10 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		useFunc = [this]()
 		{
 			Graphics::context->VSSetShader((ID3D11VertexShader*)shaderPtr.Get(), nullptr, 0);
+		};
+		releaseFunc = [this]()
+		{
+			((ID3D11VertexShader*)shaderPtr.Get())->Release();
 		};
 	}
 	break;

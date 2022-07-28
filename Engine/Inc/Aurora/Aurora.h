@@ -17,6 +17,7 @@
 #include"Keyboard.h"
 #include"StateCommon.h"
 #include"Shader.h"
+#include"Math.h"
 
 class Aurora
 {

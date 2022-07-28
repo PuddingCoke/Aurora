@@ -19,6 +19,11 @@ public:
 	//ONE ZERO
 	static ComPtr<ID3D11BlendState> blendReplace;
 
+	//ONE ONE ALPHA ONE ZERO
+	static ComPtr<ID3D11BlendState> addtiveBlend;
+
+	static ComPtr<ID3D11DepthStencilState> defDepthStencilState;
+
 private:
 
 	friend class Aurora;

@@ -10,6 +10,8 @@ ComPtr<ID3D11Buffer> Graphics::cBufferView;
 
 ComPtr<ID3D11Buffer> Graphics::cBufferDeltaTimes;
 
+ComPtr<ID3D11Debug> Graphics::d3dDebug;
+
 Graphics::GPUDeltaTimes Graphics::gpuDeltaTimes;
 
 ComPtr<ID3D11RenderTargetView> Graphics::defaultTargetView;

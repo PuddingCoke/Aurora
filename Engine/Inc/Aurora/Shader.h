@@ -31,6 +31,8 @@ public:
 
 	Shader(const Shader&) = delete;
 
+	~Shader();
+
 	void operator=(const Shader&) = delete;
 
 	ComPtr<ID3DBlob> shaderBlob;
@@ -44,8 +46,6 @@ public:
 	static Shader* fromStr(const std::string& source, const ShaderType& type);
 
 	static constexpr UINT  compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
-
-	//static void useDisplayShader();
 
 	static Shader* displayVShader;
 
@@ -62,6 +62,8 @@ private:
 	Shader(const std::string& source, const ShaderType& type);
 
 	std::function<void(void)> useFunc;
+
+	std::function<void(void)> releaseFunc;
 };
 
 #endif // !_SHADER_H_

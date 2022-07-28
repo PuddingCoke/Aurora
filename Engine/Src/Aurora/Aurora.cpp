@@ -101,6 +101,11 @@ void Aurora::iniGame(Game* const game)
 	Shader::release();
 
 	Graphics::context->ClearState();
+
+	if (config->enableDebug)
+	{
+		Graphics::d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+	}
 }
 
 LRESULT Aurora::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -285,6 +290,11 @@ HRESULT Aurora::iniDevice()
 
 	dxgiFactory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
 
+	if (config->enableDebug)
+	{
+		Graphics::device->QueryInterface(IID_ID3D11Debug, (void**)Graphics::d3dDebug.ReleaseAndGetAddressOf());
+	}
+
 	swapChain->GetBuffer(0, IID_ID3D11Texture2D, (void**)&backBuffer);
 
 	Graphics::vp.MinDepth = 0.0f;
@@ -353,11 +363,13 @@ HRESULT Aurora::iniGameConstant()
 		{
 		default:
 		case Configuration::CameraType::Orthogonal:
+			std::cout << "[class Aurora] Orthogonal camera\n";
 			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)config->width, 0, (float)config->height, 0.f, 1.f)));
 			Graphics::setView(DirectX::XMMatrixIdentity());
 			break;
 		case Configuration::CameraType::Perspective:
-
+			std::cout << "[class Aurora] Perspective camera\n";
+			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f)));
 			break;
 		}
 
@@ -378,6 +390,7 @@ HRESULT Aurora::iniGameConstant()
 		Graphics::device->CreateBuffer(&cbd, nullptr, Graphics::cBufferDeltaTimes.ReleaseAndGetAddressOf());
 		Graphics::updateGPUDeltaTimes();
 		Graphics::context->PSSetConstantBuffers(0, 1, Graphics::cBufferDeltaTimes.GetAddressOf());
+		Graphics::context->CSSetConstantBuffers(0, 1, Graphics::cBufferDeltaTimes.GetAddressOf());
 	}
 
 	return S_OK;

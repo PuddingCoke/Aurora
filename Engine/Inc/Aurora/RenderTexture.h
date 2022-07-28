@@ -44,6 +44,8 @@ public:
 
 	static void setMSAARTVs(std::initializer_list<RenderTexture*> renderTextures, ID3D11DepthStencilView* msaaView = nullptr);
 
+	static void unbindAll();
+
 private:
 	
 	static ID3D11RenderTargetView* renderTargetViews[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];

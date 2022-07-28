@@ -64,6 +64,19 @@ void RenderTexture::setMSAARTVs(std::initializer_list<RenderTexture*> renderText
 	Graphics::context->OMSetRenderTargets((UINT)renderTextures.size(), renderTargetViews, msaaView);
 }
 
+void RenderTexture::unbindAll()
+{
+	renderTargetViews[0] = nullptr;
+	renderTargetViews[1] = nullptr;
+	renderTargetViews[2] = nullptr;
+	renderTargetViews[3] = nullptr;
+	renderTargetViews[4] = nullptr;
+	renderTargetViews[5] = nullptr;
+	renderTargetViews[6] = nullptr;
+	renderTargetViews[7] = nullptr;
+	Graphics::context->OMSetRenderTargets(8, renderTargetViews, nullptr);
+}
+
 RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4],const bool& enableMSAA) :
 	width(width), height(height), format(format), texture(Texture2D::create(width, height, format, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE))
 {
