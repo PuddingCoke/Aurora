@@ -33,6 +33,8 @@ public:
 
 	void iniGame(Game* const game);
 
+	LRESULT WINAPI WallpaperMouseProc(int nCode, WPARAM wParam, LPARAM lParam);
+
 	LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	LRESULT CALLBACK WallpaperProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -68,6 +70,14 @@ private:
 	void runGame();
 
 	Aurora();
+
+	//这个钩子是用于动态壁纸的
+	HHOOK mouseHook;
+
+	static constexpr DWORD normalWndStyle = WS_CAPTION | WS_SYSMENU;
+
+	static constexpr DWORD wallpaperWndStyle = WS_POPUP;
+
 };
 
 #endif // !_AURORA_H_

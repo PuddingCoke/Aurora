@@ -7,6 +7,46 @@ Aurora& Aurora::get()
 	return instance;
 }
 
+static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
+{
+	HWND p = FindWindowEx(hwnd, nullptr, L"SHELLDLL_DefView", nullptr);
+	HWND* ret = (HWND*)lParam;
+
+	if (p)
+	{
+		// Gets the WorkerW Window after the current one.
+		*ret = FindWindowEx(nullptr, hwnd, L"WorkerW", nullptr);
+	}
+	return true;
+}
+
+static HWND get_wallpaper_window()
+{
+	// Fetch the Progman window
+	HWND progman = FindWindow(L"ProgMan", nullptr);
+	// Send 0x052C to Progman. This message directs Progman to spawn a 
+	// WorkerW behind the desktop icons. If it is already there, nothing 
+	// happens.
+	SendMessageTimeout(progman, 0x052C, 0, 0, SMTO_NORMAL, 1000, nullptr);
+	// We enumerate all Windows, until we find one, that has the SHELLDLL_DefView 
+	// as a child. 
+	// If we found that window, we take its next sibling and assign it to workerw.
+	HWND wallpaper_hwnd = nullptr;
+	EnumWindows(EnumWindowsProc, (LPARAM)&wallpaper_hwnd);
+	// Return the handle you're looking for.
+	return wallpaper_hwnd;
+}
+
+static void getSysResolution(int& width, int& height)
+{
+	HMONITOR monitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTONEAREST);
+	MONITORINFO info;
+	info.cbSize = sizeof(MONITORINFO);
+	GetMonitorInfo(monitor, &info);
+	width = info.rcMonitor.right - info.rcMonitor.left;
+	height = info.rcMonitor.bottom - info.rcMonitor.top;
+}
+
 #pragma managed(push, off)
 void InitConsole()
 {
@@ -31,14 +71,27 @@ int Aurora::iniEngine(const Configuration& config)
 
 	this->config = &config;
 
-	Graphics::width = config.width;
-	Graphics::height = config.height;
+	if (config.usage == Configuration::EngineUsage::Wallpaper)
+	{
+		int width;
+		int height;
+		getSysResolution(width, height);
+		Graphics::width = width;
+		Graphics::height = height;
+	}
+	else
+	{
+		Graphics::width = config.width;
+		Graphics::height = config.height;
+	}
+
 	Graphics::aspectRatio = (float)Graphics::width / (float)Graphics::height;
+
+
 	Graphics::msaaLevel = config.msaaLevel;
 
 	std::cout << "[class Aurora] resolution:" << Graphics::width << " " << Graphics::height << "\n";
 	std::cout << "[class Aurora] aspectRatio:" << Graphics::aspectRatio << "\n";
-
 	std::cout << "[class Aurora] multisample level " << config.msaaLevel << "\n";
 
 	if (SUCCEEDED(iniWindow()))
@@ -88,11 +141,11 @@ void Aurora::iniGame(Game* const game)
 	this->game = game;
 	switch (config->usage)
 	{
+	case Configuration::EngineUsage::Wallpaper:
 	case Configuration::EngineUsage::Normal:
 		runGame();
 		break;
 	default:
-
 		break;
 	}
 
@@ -106,6 +159,59 @@ void Aurora::iniGame(Game* const game)
 	{
 		Graphics::d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 	}
+
+	if (config->usage == Configuration::EngineUsage::Wallpaper)
+	{
+		UnhookWindowsHookEx(mouseHook);
+	}
+}
+
+LRESULT __stdcall Aurora::WallpaperMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	if (nCode == HC_ACTION)
+	{
+		MSLLHOOKSTRUCT* pMouseStruct = (MSLLHOOKSTRUCT*)lParam;
+
+		switch (wParam)
+		{
+		case WM_MOUSEMOVE:
+		{
+			const float curX = (float)pMouseStruct->pt.x;
+			const float curY = (float)Graphics::height - (float)pMouseStruct->pt.y;
+
+			Mouse::dx = curX - Mouse::x;
+			Mouse::dy = curY - Mouse::y;
+			Mouse::x = curX;
+			Mouse::y = curY;
+
+			Mouse::moveEvent();
+
+		}
+		break;
+
+		case WM_LBUTTONDOWN:
+			Mouse::leftDown = true;
+			Mouse::leftDownEvent();
+			break;
+
+		case WM_RBUTTONDOWN:
+			Mouse::rightDown = true;
+			Mouse::rightDownEvent();
+			break;
+
+		case WM_LBUTTONUP:
+			Mouse::leftDown = false;
+			Mouse::leftUpEvent();
+			break;
+
+		case WM_RBUTTONUP:
+			Mouse::rightDown = false;
+			Mouse::rightUpEvent();
+			break;
+		}
+
+	}
+	return CallNextHookEx(mouseHook, nCode, wParam, lParam);
 }
 
 LRESULT Aurora::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -123,7 +229,7 @@ LRESULT Aurora::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_MOUSEMOVE:
 	{
 		const float curX = (float)GET_X_LPARAM(lParam);
-		const float curY = (float)config->height - (float)GET_Y_LPARAM(lParam);
+		const float curY = (float)Graphics::height - (float)GET_Y_LPARAM(lParam);
 
 		Mouse::dx = curX - Mouse::x;
 		Mouse::dy = curY - Mouse::y;
@@ -190,59 +296,9 @@ LRESULT Aurora::WallpaperProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		EndPaint(hWnd, &ps);
 	}
 	break;
-
-	case WM_MOUSEMOVE:
-	{
-		const float curX = (float)GET_X_LPARAM(lParam);
-		const float curY = (float)config->height - (float)GET_Y_LPARAM(lParam);
-
-		Mouse::dx = curX - Mouse::x;
-		Mouse::dy = curY - Mouse::y;
-		Mouse::x = curX;
-		Mouse::y = curY;
-
-		Mouse::moveEvent();
-
-	}
-	break;
-
-	case WM_LBUTTONDOWN:
-		Mouse::leftDown = true;
-		Mouse::leftDownEvent();
-		break;
-
-	case WM_RBUTTONDOWN:
-		Mouse::rightDown = true;
-		Mouse::rightDownEvent();
-		break;
-
-	case WM_LBUTTONUP:
-		Mouse::leftDown = false;
-		Mouse::leftUpEvent();
-		break;
-
-	case WM_RBUTTONUP:
-		Mouse::rightDown = false;
-		Mouse::rightUpEvent();
-		break;
-
-	case WM_KEYDOWN:
-		if ((HIWORD(lParam) & KF_REPEAT) == 0)
-		{
-			Keyboard::keyDownMap[(Keyboard::Key)wParam] = true;
-			Keyboard::keyDownEvents[(Keyboard::Key)wParam]();
-		}
-		break;
-
-	case WM_KEYUP:
-		Keyboard::keyDownMap[(Keyboard::Key)wParam] = false;
-		Keyboard::keyUpEvents[(Keyboard::Key)wParam]();
-		break;
-
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
-
 	default:
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
@@ -266,22 +322,52 @@ HRESULT Aurora::iniWindow()
 
 	wcex.hInstance = config->hInstance;
 
-	auto  wndProc = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
+	LRESULT(*wndProc)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = nullptr;
+
+	DWORD wndStyle = normalWndStyle;
+
+	switch (config->usage)
 	{
-		return Aurora::get().WindowProc(hwnd, msg, wParam, lParam);
-	};
+	default:
+	case Configuration::EngineUsage::Normal:
+		std::cout << "[class Aurora] usage normal\n";
+		wndStyle = normalWndStyle;
+		wndProc= [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
+		{
+			return Aurora::get().WindowProc(hwnd, msg, wParam, lParam);
+		};
+		break;
+	case Configuration::EngineUsage::Wallpaper:
+		std::cout << "[class Aurora] usage wallpaper\n";
+		wndStyle = wallpaperWndStyle;
+		wndProc= [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
+		{
+			return Aurora::get().WallpaperProc(hwnd, msg, wParam, lParam);
+		};
+		break;
+	case Configuration::EngineUsage::AnimationRender:
+		std::cout << "[class Aurora] usage animation render\n";
+		break;
+	}
 
 	wcex.lpfnWndProc = wndProc;
 
 	RegisterClassEx(&wcex);
 
-	RECT rect = { 0,0,config->width,config->height };
+	RECT rect = { 0,0,Graphics::width,Graphics::height };
 
-	AdjustWindowRect(&rect, WS_CAPTION | WS_SYSMENU, false);
-
+	AdjustWindowRect(&rect, wndStyle, false);
+	
 	std::cout << "[class Aurora] Window size " << rect.right - rect.left << " " << rect.bottom - rect.top << "\n";
 
-	hwnd = CreateWindow(L"MyWindowClass", config->title.c_str(), WS_CAPTION | WS_SYSMENU, 100, 100, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, config->hInstance, nullptr);
+	if (config->usage == Configuration::EngineUsage::Wallpaper)
+	{
+		hwnd = CreateWindow(L"MyWindowClass", config->title.c_str(), wndStyle, 0, 0, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, config->hInstance, nullptr);
+	}
+	else
+	{
+		hwnd = CreateWindow(L"MyWindowClass", config->title.c_str(), wndStyle, 100, 100, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, config->hInstance, nullptr);
+	}
 
 	if (!hwnd)
 	{
@@ -289,6 +375,21 @@ HRESULT Aurora::iniWindow()
 	}
 
 	ShowWindow(hwnd, SW_SHOW);
+
+	if (config->usage == Configuration::EngineUsage::Wallpaper)
+	{
+		auto mouseProc = [](int nCode, WPARAM wParam, LPARAM lParam)
+		{
+			return Aurora::get().WallpaperMouseProc(nCode, wParam, lParam);
+		};
+
+		mouseHook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, NULL, 0);
+
+		HWND window = FindWindowW(nullptr, config->title.c_str());
+		HWND bg = get_wallpaper_window();
+		SetParent(window, bg);
+		MoveWindow(window, 0, 0, Graphics::width, Graphics::height, 0);
+	}
 
 	return S_OK;
 }
@@ -345,8 +446,8 @@ HRESULT Aurora::iniDevice()
 
 	{
 		DXGI_SWAP_CHAIN_DESC1 sd = {};
-		sd.Width = config->width;
-		sd.Height = config->height;
+		sd.Width = Graphics::width;
+		sd.Height = Graphics::height;
 		sd.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
 		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
@@ -373,7 +474,7 @@ HRESULT Aurora::iniDevice()
 	Graphics::vp.TopLeftX = 0;
 	Graphics::vp.TopLeftY = 0;
 
-	Graphics::setViewport((float)config->width, (float)config->height);
+	Graphics::setViewport((float)Graphics::width, (float)Graphics::height);
 
 	{
 		ComPtr<ID3D11RasterizerState> rasterizerState;
@@ -390,8 +491,8 @@ HRESULT Aurora::iniDevice()
 
 	{
 		D3D11_TEXTURE2D_DESC tDesc = {};
-		tDesc.Width = config->width;
-		tDesc.Height = config->height;
+		tDesc.Width = Graphics::width;
+		tDesc.Height = Graphics::height;
 		tDesc.MipLevels = 1;
 		tDesc.ArraySize = 1;
 		tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -435,7 +536,7 @@ HRESULT Aurora::iniGameConstant()
 		default:
 		case Configuration::CameraType::Orthogonal:
 			std::cout << "[class Aurora] Orthogonal camera\n";
-			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)config->width, 0, (float)config->height, 0.f, 1.f)));
+			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::width, 0, (float)Graphics::height, 0.f, 1.f)));
 			Graphics::setView(DirectX::XMMatrixIdentity());
 			break;
 		case Configuration::CameraType::Perspective:
