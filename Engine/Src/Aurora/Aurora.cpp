@@ -179,6 +179,77 @@ LRESULT Aurora::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+LRESULT Aurora::WallpaperProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		BeginPaint(hWnd, &ps);
+		EndPaint(hWnd, &ps);
+	}
+	break;
+
+	case WM_MOUSEMOVE:
+	{
+		const float curX = (float)GET_X_LPARAM(lParam);
+		const float curY = (float)config->height - (float)GET_Y_LPARAM(lParam);
+
+		Mouse::dx = curX - Mouse::x;
+		Mouse::dy = curY - Mouse::y;
+		Mouse::x = curX;
+		Mouse::y = curY;
+
+		Mouse::moveEvent();
+
+	}
+	break;
+
+	case WM_LBUTTONDOWN:
+		Mouse::leftDown = true;
+		Mouse::leftDownEvent();
+		break;
+
+	case WM_RBUTTONDOWN:
+		Mouse::rightDown = true;
+		Mouse::rightDownEvent();
+		break;
+
+	case WM_LBUTTONUP:
+		Mouse::leftDown = false;
+		Mouse::leftUpEvent();
+		break;
+
+	case WM_RBUTTONUP:
+		Mouse::rightDown = false;
+		Mouse::rightUpEvent();
+		break;
+
+	case WM_KEYDOWN:
+		if ((HIWORD(lParam) & KF_REPEAT) == 0)
+		{
+			Keyboard::keyDownMap[(Keyboard::Key)wParam] = true;
+			Keyboard::keyDownEvents[(Keyboard::Key)wParam]();
+		}
+		break;
+
+	case WM_KEYUP:
+		Keyboard::keyDownMap[(Keyboard::Key)wParam] = false;
+		Keyboard::keyUpEvents[(Keyboard::Key)wParam]();
+		break;
+
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+
+	default:
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
+
+	return 0;
+}
+
 HRESULT Aurora::iniWindow()
 {
 	WNDCLASSEX wcex = {};
