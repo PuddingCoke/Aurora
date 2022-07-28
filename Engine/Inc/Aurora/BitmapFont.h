@@ -62,7 +62,7 @@ private:
 
 	float scale;
 
-	Texture2D* texture2D;
+	Texture2D* const texture2D;
 
 	ComPtr<ID3D11Buffer> vertexBuffer;
 

@@ -266,6 +266,7 @@ public:
 		delete dye;
 		delete velocity;
 		delete pressure;
+
 		delete divergence;
 		delete curl;
 		delete sunrays;

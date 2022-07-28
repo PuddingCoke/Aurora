@@ -12,6 +12,8 @@
 
 #include"StrangeAttractor.h"
 
+//关于这种吸引子
+//https://gereshes.com/2020/01/13/attracted-to-attractors/
 class MyGame :public Game
 {
 public:
