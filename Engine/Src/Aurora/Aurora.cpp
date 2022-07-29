@@ -149,11 +149,13 @@ void Aurora::iniGame(Game* const game)
 	this->game = game;
 	switch (config->usage)
 	{
+	default:
 	case Configuration::EngineUsage::Wallpaper:
 	case Configuration::EngineUsage::Normal:
 		runGame();
 		break;
-	default:
+	case Configuration::EngineUsage::AnimationRender:
+		runEncode();
 		break;
 	}
 
@@ -345,6 +347,7 @@ HRESULT Aurora::iniWindow()
 			return Aurora::get().WindowProc(hwnd, msg, wParam, lParam);
 		};
 		break;
+
 	case Configuration::EngineUsage::Wallpaper:
 		std::cout << "[class Aurora] usage wallpaper\n";
 		wndStyle = wallpaperWndStyle;
@@ -353,8 +356,14 @@ HRESULT Aurora::iniWindow()
 			return Aurora::get().WallpaperProc(hwnd, msg, wParam, lParam);
 		};
 		break;
+
 	case Configuration::EngineUsage::AnimationRender:
 		std::cout << "[class Aurora] usage animation render\n";
+		wndStyle = normalWndStyle;
+		wndProc = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
+		{
+			return Aurora::get().WallpaperProc(hwnd, msg, wParam, lParam);
+		};
 		break;
 	}
 
@@ -365,8 +374,6 @@ HRESULT Aurora::iniWindow()
 	RECT rect = { 0,0,Graphics::width,Graphics::height };
 
 	AdjustWindowRect(&rect, wndStyle, false);
-	
-	std::cout << "[class Aurora] Window size " << rect.right - rect.left << " " << rect.bottom - rect.top << "\n";
 
 	if (config->usage == Configuration::EngineUsage::Wallpaper)
 	{
@@ -381,7 +388,7 @@ HRESULT Aurora::iniWindow()
 	{
 		return S_FALSE;
 	}
-
+	
 	ShowWindow(hwnd, SW_SHOW);
 
 	if (config->usage == Configuration::EngineUsage::Wallpaper)
@@ -397,6 +404,10 @@ HRESULT Aurora::iniWindow()
 		HWND bg = get_wallpaper_window();
 		SetParent(window, bg);
 		MoveWindow(window, 0, 0, Graphics::width, Graphics::height, 0);
+	}
+	else if (config->usage == Configuration::EngineUsage::AnimationRender)
+	{
+		ShowWindow(hwnd, SW_HIDE);
 	}
 
 	return S_OK;
@@ -429,6 +440,7 @@ HRESULT Aurora::iniDevice()
 		}
 		else
 		{
+			std::cout << "[class Aurora] Disable debug!\n";
 			deviceFlag = (D3D11_CREATE_DEVICE_FLAG)0;
 		}
 
@@ -475,7 +487,7 @@ HRESULT Aurora::iniDevice()
 		Graphics::device->QueryInterface(IID_ID3D11Debug, (void**)Graphics::d3dDebug.ReleaseAndGetAddressOf());
 	}
 
-	swapChain->GetBuffer(0, IID_ID3D11Texture2D, (void**)&backBuffer);
+	swapChain->GetBuffer(0, IID_ID3D11Texture2D, (void**)&Graphics::backBuffer);
 
 	Graphics::vp.MinDepth = 0.0f;
 	Graphics::vp.MaxDepth = 1.0f;
@@ -522,6 +534,26 @@ HRESULT Aurora::iniDevice()
 
 		Graphics::clearDefRTV(DirectX::Colors::Black);
 
+	}
+
+	if (config->usage == Configuration::EngineUsage::AnimationRender)
+	{
+		D3D11_TEXTURE2D_DESC tDesc = {};
+		tDesc.Width = Graphics::width;
+		tDesc.Height = Graphics::height;
+		tDesc.MipLevels = 1;
+		tDesc.ArraySize = 1;
+		tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+		tDesc.SampleDesc.Count = 1;
+		tDesc.SampleDesc.Quality = 0;
+		tDesc.Usage = D3D11_USAGE_DEFAULT;
+		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+		tDesc.CPUAccessFlags = 0;
+		tDesc.MiscFlags = 0;
+
+		Graphics::device->CreateTexture2D(&tDesc, nullptr, Graphics::encodeTexture.ReleaseAndGetAddressOf());
+
+		std::cout << "[class Aurora] initialize encode texture complete\n";
 	}
 
 	return S_OK;
@@ -591,7 +623,7 @@ void Aurora::runGame()
 		timeStart = timer.now();
 		game->update(Graphics::deltaTime);
 		game->render();
-		Graphics::context->ResolveSubresource(backBuffer, 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+		Graphics::context->ResolveSubresource(Graphics::backBuffer, 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
 		swapChain->Present(1, 0);
 		timeEnd = timer.now();
 		Graphics::deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
@@ -599,8 +631,21 @@ void Aurora::runGame()
 	}
 }
 
+void Aurora::runEncode()
+{
+	NvidiaEncoder nvidiaEncoder(1000, 60);
+	Graphics::deltaTime = 1.f / 60.f;
+	Graphics::updateGPUDeltaTimes();
+	do
+	{
+		game->update(Graphics::deltaTime);
+		game->render();
+		Graphics::context->ResolveSubresource(Graphics::encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+	} while (nvidiaEncoder.encode());
+}
+
 Aurora::Aurora() :
-	hwnd(0), config(nullptr), game(nullptr), backBuffer(nullptr)
+	hwnd(0), config(nullptr), game(nullptr),mouseHook(nullptr)
 {
 
 }

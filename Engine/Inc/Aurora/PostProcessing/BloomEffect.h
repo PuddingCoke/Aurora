@@ -2,6 +2,9 @@
 
 #include"EffectBase.h"
 
+#ifndef _BLOOMEFFECT_H_
+#define _BLOOMEFFECT_H_
+
 // 关于如何实现的
 //https://de45xmedrsdbp.cloudfront.net/Resources/files/The_Technology_Behind_the_Elemental_Demo_16x9-1248544805.pdf p60
 //https://www.intel.com/content/www/us/en/developer/articles/technical/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms.html
@@ -44,3 +47,5 @@ private:
 	const unsigned int bloomHeight;
 
 };
+
+#endif // !_BLOOMEFFECT_H_

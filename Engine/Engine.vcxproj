@@ -74,8 +74,8 @@
     <IncludePath>$(ProjectDir)Inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)Inc;$(SolutionDir)ImageLoader\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)Inc;$(SolutionDir)ImageLoader\Inc;$(SolutionDir)Tools;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -146,6 +146,7 @@
     <ClInclude Include="Inc\Aurora\Keyboard.h" />
     <ClInclude Include="Inc\Aurora\Math.h" />
     <ClInclude Include="Inc\Aurora\Mouse.h" />
+    <ClInclude Include="Inc\Aurora\NvidiaEncoder.h" />
     <ClInclude Include="Inc\Aurora\ParticleSystem.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="Src\Aurora\Graphics.cpp" />
     <ClCompile Include="Src\Aurora\Keyboard.cpp" />
     <ClCompile Include="Src\Aurora\Mouse.cpp" />
+    <ClCompile Include="Src\Aurora\NvidiaEncoder.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp" />

@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FluidSimulation", "FluidSim
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThomasStrangeAttractor", "ThomasStrangeAttractor\ThomasStrangeAttractor.vcxproj", "{290133B2-2F08-419E-883F-4378DC3C2A71}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXEncode", "DirectXEncode\DirectXEncode.vcxproj", "{974F9A3A-002F-4176-8C0D-B9CF375C781B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -91,6 +93,14 @@ Global
 		{290133B2-2F08-419E-883F-4378DC3C2A71}.Release|x64.Build.0 = Release|x64
 		{290133B2-2F08-419E-883F-4378DC3C2A71}.Release|x86.ActiveCfg = Release|Win32
 		{290133B2-2F08-419E-883F-4378DC3C2A71}.Release|x86.Build.0 = Release|Win32
+		{974F9A3A-002F-4176-8C0D-B9CF375C781B}.Debug|x64.ActiveCfg = Debug|x64
+		{974F9A3A-002F-4176-8C0D-B9CF375C781B}.Debug|x64.Build.0 = Debug|x64
+		{974F9A3A-002F-4176-8C0D-B9CF375C781B}.Debug|x86.ActiveCfg = Debug|Win32
+		{974F9A3A-002F-4176-8C0D-B9CF375C781B}.Debug|x86.Build.0 = Debug|Win32
+		{974F9A3A-002F-4176-8C0D-B9CF375C781B}.Release|x64.ActiveCfg = Release|x64
+		{974F9A3A-002F-4176-8C0D-B9CF375C781B}.Release|x64.Build.0 = Release|x64
+		{974F9A3A-002F-4176-8C0D-B9CF375C781B}.Release|x86.ActiveCfg = Release|Win32
+		{974F9A3A-002F-4176-8C0D-B9CF375C781B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

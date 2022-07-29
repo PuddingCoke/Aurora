@@ -46,6 +46,8 @@ private:
 
 	friend class Aurora;
 
+	friend class NvidiaEncoder;
+
 	static void setProj(const DirectX::XMMATRIX& proj);
 
 	static void updateGPUDeltaTimes();
@@ -57,6 +59,11 @@ private:
 	static ComPtr<ID3D11Buffer> cBufferDeltaTimes;
 
 	static ComPtr<ID3D11Debug> d3dDebug;
+
+	//R8G8B8A8_UNORM
+	static ComPtr<ID3D11Texture2D> encodeTexture;
+
+	static ID3D11Texture2D* backBuffer;
 
 	static struct GPUDeltaTimes
 	{

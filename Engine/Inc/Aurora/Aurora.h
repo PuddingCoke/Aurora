@@ -19,6 +19,8 @@
 #include"Shader.h"
 #include"Math.h"
 
+#include"NvidiaEncoder.h"
+
 class Aurora
 {
 public:
@@ -47,8 +49,6 @@ private:
 
 	ComPtr<ID3D11Texture2D> msaaTexture;
 
-	ID3D11Texture2D* backBuffer;
-
 	ComPtr<IDXGISwapChain4> swapChain;
 
 	const Configuration* config;
@@ -68,6 +68,8 @@ private:
 	HRESULT iniGameConstant();
 
 	void runGame();
+
+	void runEncode();
 
 	Aurora();
 

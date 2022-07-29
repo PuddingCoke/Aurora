@@ -1,5 +1,9 @@
 ﻿#include<Aurora/Graphics.h>
 
+ID3D11Texture2D* Graphics::backBuffer = nullptr;
+
+ComPtr<ID3D11Texture2D> Graphics::encodeTexture;
+
 ComPtr<ID3D11Device4> Graphics::device;
 
 ComPtr<ID3D11DeviceContext4> Graphics::context;
