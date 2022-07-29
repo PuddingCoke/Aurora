@@ -45,6 +45,14 @@ static void getSysResolution(int& width, int& height)
 	GetMonitorInfo(monitor, &info);
 	width = info.rcMonitor.right - info.rcMonitor.left;
 	height = info.rcMonitor.bottom - info.rcMonitor.top;
+	//以上代码获取的width和height实际上是 windowWidth/dpi windowHeight/dpi所以还得获取屏幕缩放比例
+
+	UINT dpi = GetDpiForWindow(GetDesktopWindow());
+
+	std::cout << "[class Aurora] system dpi " << dpi << "\n";
+
+	width *= dpi / 96.f;
+	height *= dpi / 96.f;
 }
 
 #pragma managed(push, off)
