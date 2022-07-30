@@ -57,8 +57,7 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	Shader::displayVShader->use();
 
 	ID3D11ShaderResourceView* const nullSRV = nullptr;
-
-	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
+	ID3D11RenderTargetView* const nullRTV = nullptr;
 
 	bloomExtract->use();
 	Graphics::setViewport((float)bloomWidth, (float)bloomHeight);
@@ -68,16 +67,12 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	texture2D->setSRV(0);
 	Graphics::context->Draw(3, 0);
 
-	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
-
 	Shader::displayPShader->use();
 	Graphics::setViewport((float)resolutionX[0], (float)resolutionY[0]);
 	renderTextures[0]->clearRTV(DirectX::Colors::Transparent);
 	renderTextures[0]->setRTV();
 	bloomTexture->getTexture()->setSRV(0);
 	Graphics::context->Draw(3, 0);
-
-	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
@@ -104,8 +99,6 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 		renderTextures[i * 2 + 2]->setRTV();
 		renderTextures[i * 2]->getTexture()->setSRV(0);
 		Graphics::context->Draw(3, 0);
-
-		Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
 	}
 
 	blurShaders[(blurSteps - 1) * 2]->use();
@@ -137,8 +130,6 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	renderTextures[(blurSteps - 1) * 2]->setRTV();
 	renderTextures[(blurSteps - 1) * 2 + 1]->getTexture()->setSRV(0);
 	Graphics::context->Draw(3, 0);
-
-	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
@@ -164,16 +155,12 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 		renderTextures[(blurSteps - 2 - i) * 2]->setRTV();
 		renderTextures[(blurSteps - 1 - i) * 2]->getTexture()->setSRV();
 		Graphics::context->Draw(3, 0);
-
-		Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
 	}
 
 	Graphics::setViewport((float)bloomWidth, (float)bloomHeight);
 	originTexture->setRTV();
-	renderTextures[0]->getTexture()->setSRV();
+	renderTextures[0]->getTexture()->setSRV(0);
 	Graphics::context->Draw(3, 0);
-
-	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
 
 	bloomFinal->use();
 	defRenderTexture->clearRTV(DirectX::Colors::Transparent);
@@ -181,7 +168,7 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	originTexture->getTexture()->setSRV(0);
 	Graphics::context->Draw(3, 0);
 
-	RenderTexture::unbindAll();
+	Graphics::context->OMSetRenderTargets(1, &nullRTV, nullptr);
 	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
 
 	return outputTexture;

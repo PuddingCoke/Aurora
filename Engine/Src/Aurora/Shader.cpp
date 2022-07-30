@@ -103,11 +103,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		shaderPtr = cs;
 		useFunc = [this]()
 		{
-			Graphics::context->CSSetShader((ID3D11ComputeShader*)shaderPtr.Get(), nullptr, 0);
+			Graphics::context->CSSetShader((ID3D11ComputeShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
-			((ID3D11ComputeShader*)shaderPtr.Get())->Release();
+			((ID3D11ComputeShader*)shaderPtr)->Release();
 		};
 	}
 	break;
@@ -119,11 +119,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		shaderPtr = ds;
 		useFunc = [this]()
 		{
-			Graphics::context->DSSetShader((ID3D11DomainShader*)shaderPtr.Get(), nullptr, 0);
+			Graphics::context->DSSetShader((ID3D11DomainShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
-			((ID3D11DomainShader*)shaderPtr.Get())->Release();
+			((ID3D11DomainShader*)shaderPtr)->Release();
 		};
 	}
 	break;
@@ -135,11 +135,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		shaderPtr = gs;
 		useFunc = [this]()
 		{
-			Graphics::context->GSSetShader((ID3D11GeometryShader*)shaderPtr.Get(), nullptr, 0);
+			Graphics::context->GSSetShader((ID3D11GeometryShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
-			((ID3D11GeometryShader*)shaderPtr.Get())->Release();
+			((ID3D11GeometryShader*)shaderPtr)->Release();
 		};
 	}
 	break;
@@ -151,11 +151,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		shaderPtr = hs;
 		useFunc = [this]()
 		{
-			Graphics::context->HSSetShader((ID3D11HullShader*)shaderPtr.Get(), nullptr, 0);
+			Graphics::context->HSSetShader((ID3D11HullShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
-			((ID3D11HullShader*)shaderPtr.Get())->Release();
+			((ID3D11HullShader*)shaderPtr)->Release();
 		};
 	}
 	break;
@@ -167,11 +167,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		shaderPtr = ps;
 		useFunc = [this]()
 		{
-			Graphics::context->PSSetShader((ID3D11PixelShader*)shaderPtr.Get(), nullptr, 0);
+			Graphics::context->PSSetShader((ID3D11PixelShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
-			((ID3D11PixelShader*)shaderPtr.Get())->Release();
+			((ID3D11PixelShader*)shaderPtr)->Release();
 		};
 	}
 	break;
@@ -183,11 +183,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		shaderPtr = vs;
 		useFunc = [this]()
 		{
-			Graphics::context->VSSetShader((ID3D11VertexShader*)shaderPtr.Get(), nullptr, 0);
+			Graphics::context->VSSetShader((ID3D11VertexShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
-			((ID3D11VertexShader*)shaderPtr.Get())->Release();
+			((ID3D11VertexShader*)shaderPtr)->Release();
 		};
 	}
 	break;

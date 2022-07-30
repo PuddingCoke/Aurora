@@ -37,7 +37,7 @@ public:
 
 	ComPtr<ID3DBlob> shaderBlob;
 
-	ComPtr<ID3D11DeviceChild> shaderPtr;
+	ID3D11DeviceChild* shaderPtr;
 
 	void use();
 
