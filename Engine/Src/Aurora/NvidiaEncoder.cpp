@@ -114,18 +114,18 @@ NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate, b
 
 	apiCreateInstance = (APICreateInstance)GetProcAddress(moduleNvEncAPI, "NvEncodeAPICreateInstance");
 
-	std::cout << "class [NvidiaEncoder] api instance create status " << apiCreateInstance(&nvencAPI) << "\n";
+	std::cout << "[class NvidiaEncoder] api instance create status " << apiCreateInstance(&nvencAPI) << "\n";
 
 	NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS sessionParams = { NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER };
 	sessionParams.device = Graphics::device.Get();
 	sessionParams.deviceType = NV_ENC_DEVICE_TYPE_DIRECTX;
 	sessionParams.apiVersion = NVENCAPI_VERSION;
 
-	std::cout << "class [NvidiaEncoder] open encode session status " << nvencAPI.nvEncOpenEncodeSessionEx(&sessionParams, &encoder) << "\n";
+	std::cout << "[class NvidiaEncoder] open encode session status " << nvencAPI.nvEncOpenEncodeSessionEx(&sessionParams, &encoder) << "\n";
 
 	NV_ENC_PRESET_CONFIG presetConfig = { NV_ENC_PRESET_CONFIG_VER,{NV_ENC_CONFIG_VER} };
 
-	std::cout << "get preset config status " << nvencAPI.nvEncGetEncodePresetConfigEx(encoder, codec, preset, tuningInfo, &presetConfig) << "\n";
+	std::cout << "[class NvidiaEncoder] get preset config status " << nvencAPI.nvEncGetEncodePresetConfigEx(encoder, codec, preset, tuningInfo, &presetConfig) << "\n";
 
 	NV_ENC_CONFIG config;
 	memcpy(&config, &presetConfig.presetCfg, sizeof(NV_ENC_CONFIG));
@@ -158,15 +158,15 @@ NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate, b
 	encoderParams.enablePTD = 1;
 	encoderParams.enableEncodeAsync = 0;
 
-	std::cout << "class [NvidiaEncoder] ini encoder status " << nvencAPI.nvEncInitializeEncoder(encoder, &encoderParams) << "\n";
+	std::cout << "[class NvidiaEncoder] ini encoder status " << nvencAPI.nvEncInitializeEncoder(encoder, &encoderParams) << "\n";
 
 	bitstream = { NV_ENC_CREATE_BITSTREAM_BUFFER_VER };
 
-	std::cout << "class [NvidiaEncoder] create bitstream status " << nvencAPI.nvEncCreateBitstreamBuffer(encoder, &bitstream) << "\n";
+	std::cout << "[class NvidiaEncoder] create bitstream status " << nvencAPI.nvEncCreateBitstreamBuffer(encoder, &bitstream) << "\n";
 
-	std::cout << "class [NvidiaEncoder] render at " << Graphics::getWidth() << " x " << Graphics::getHeight() << "\n";
-	std::cout << "class [NvidiaEncoder] frameRate " << frameRate << "\n";
-	std::cout << "class [NvidiaEncoder] frameToEncode " << frameToEncode << "\n";
+	std::cout << "[class NvidiaEncoder] render at " << Graphics::getWidth() << " x " << Graphics::getHeight() << "\n";
+	std::cout << "[class NvidiaEncoder] frameRate " << frameRate << "\n";
+	std::cout << "[class NvidiaEncoder] frameToEncode " << frameToEncode << "\n";
 
 	stream = _popen("ffmpeg -y -f h264 -i pipe: -c copy output.mp4", "wb");
 
