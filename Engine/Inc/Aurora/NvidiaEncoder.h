@@ -21,7 +21,7 @@ public:
 
 	bool encode();
 
-	NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate);
+	NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate,bool& initializeStatus);
 
 	~NvidiaEncoder();
 
@@ -40,6 +40,8 @@ private:
 	NV_ENC_CREATE_BITSTREAM_BUFFER bitstream;
 
 	FILE* stream;
+
+	HMODULE moduleNvEncAPI;
 
 	const GUID codec = NV_ENC_CODEC_H264_GUID;
 

@@ -633,7 +633,20 @@ void Aurora::runGame()
 
 void Aurora::runEncode()
 {
-	NvidiaEncoder nvidiaEncoder(1000, 60);
+	bool initializeStatus;
+
+	NvidiaEncoder nvidiaEncoder(1000, 60, initializeStatus);
+
+	if (initializeStatus)
+	{
+		std::cout << "[class Aurora] Initialize encoder successfully\n";
+	}
+	else
+	{
+		std::cout << "[class Aurora] Failed to initialize encoder\n";
+		return;
+	}
+
 	Graphics::deltaTime = 1.f / 60.f;
 	Graphics::updateGPUDeltaTimes();
 	do
