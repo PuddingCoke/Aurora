@@ -92,7 +92,7 @@ bool NvidiaEncoder::encode()
 	return encoding;
 }
 
-NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate,bool& initializeStatus) :
+NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate, bool& initializeStatus) :
 	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0)
 {
 	nvencAPI = { NV_ENCODE_API_FUNCTION_LIST_VER };
@@ -174,12 +174,10 @@ NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate,bo
 
 NvidiaEncoder::~NvidiaEncoder()
 {
-	nvencAPI.nvEncDestroyBitstreamBuffer(encoder, bitstream.bitstreamBuffer);
-	nvencAPI.nvEncDestroyEncoder(encoder);
-
 	if (moduleNvEncAPI)
 	{
+		nvencAPI.nvEncDestroyBitstreamBuffer(encoder, bitstream.bitstreamBuffer);
+		nvencAPI.nvEncDestroyEncoder(encoder);
 		FreeLibrary(moduleNvEncAPI);
 	}
-
 }
