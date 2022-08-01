@@ -46,16 +46,15 @@ public:
 		Graphics::setDefRTV();
 		Graphics::clearDefRTV(DirectX::Colors::Black);
 
-		Graphics::setViewport(Graphics::getWidth(), Graphics::getHeight());
 		Graphics::setBlendState(StateCommon::addtiveBlend.Get());
 		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 
-		noiseTexture->setSRV(0);
-		dustTexture->setSRV(1);
-
 		Shader::displayVShader->use();
 		pixelShader->use();
+
+		noiseTexture->setSRV(0);
+		dustTexture->setSRV(1);
 
 		Graphics::context->Draw(3, 0);
 

@@ -1,11 +1,9 @@
-static const float3 MainColor = float3(1.0, 1.0, 1.0);
+#define ITERATIONS 200
 
-static const int ITERATIONS = 200;
+SamplerState linearSampler : register(s0);
 
 Texture2D tNoise : register(t0);
 Texture2D tDust : register(t1);
-
-SamplerState samplerState : register(s0);
 
 cbuffer DeltaTimes : register(b0)
 {
@@ -21,18 +19,8 @@ float noise(in float3 x)
     float3 f = frac(x);
     f = f * f * (3.0 - 2.0 * f);
     float2 uv = (p.xy + float2(37.0, 17.0) * p.z) + f.xy;
-    float2 rg = tNoise.Sample(samplerState, (uv + 0.5) / 256.0).yx;
+    float2 rg = tNoise.Sample(linearSampler, (uv + 0.5) / 256.0).yx;
     return -1.0 + 2.0 * lerp(rg.x, rg.y, f.z);
-}
-
-float saturate(float x)
-{
-    return clamp(x, 0.0, 1.0);
-}
-
-float3 saturate(float3 x)
-{
-    return clamp(x, float3(0.0, 0.0, 0.0), float3(1.0, 1.0, 1.0));
 }
 
 float rand(float2 coord)
@@ -64,7 +52,7 @@ void Haze(inout float3 color, float3 pos, float alpha)
     float torusDist = length(sdTorus(pos + float3(0.0, -0.05, 0.0), t));
 
     float bloomDisc = 1.0 / (pow(torusDist, 2.0) + 0.001);
-    float3 col = MainColor;
+    float3 col = float3(1.0, 1.0, 1.0);
     bloomDisc *= length(pos) < 0.5 ? 0.0 : 1.0;
 
     color += col * bloomDisc * (2.9 / float(ITERATIONS)) * (1.0 - alpha * 1.0);
@@ -78,7 +66,7 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
     float discOuter = discRadius + discWidth * 0.5;
     
     float3 origin = float3(0.0, 0.0, 0.0);
-    float3 discNormal = normalize(float3(0.0, 1.0, 0.0));
+    float3 discNormal = float3(0.0, 1.0, 0.0);
     float discThickness = 0.1;
 
     float distFromCenter = distance(pos, origin);
@@ -91,7 +79,7 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
     discThickness *= radialGradient;
     coverage *= saturate(1.0 - abs(distFromDisc) / discThickness);
 
-    float3 dustColorLit = MainColor;
+    float3 dustColorLit = float3(1.0, 1.0, 1.0);
     float3 dustColorDark = float3(0.0, 0.0, 0.0);
 
     float dustGlow = 1.0 / (pow(1.0 - radialGradient, 2.0) * 290.0 + 0.002);
@@ -157,7 +145,7 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
     
     radialCoords.y += sTime * speed * 0.5;
     
-    dustColor *= pow(tDust.Sample(samplerState, radialCoords.yx * float2(0.15, 0.27)).rgb, float3(2.0, 2.0, 2.0)) * 4.0;
+    dustColor *= pow(tDust.Sample(linearSampler, radialCoords.yx * float2(0.15, 0.27)).rgb, float3(2.0, 2.0, 2.0)) * 4.0;
 
     coverage = saturate(coverage * 1200.0 / float(ITERATIONS));
     dustColor = max(float3(0.0, 0.0, 0.0), dustColor);
@@ -169,29 +157,8 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
     alpha = (1.0 - alpha) * coverage + alpha;
 }
 
-
-
 float3 rotate(float3 p, float x, float y, float z)
 {
-    //float3x3 matx = float3x3(
-    //                 1.0, 0.0, 0.0,
-    //                 0.0, cos(x), sin(x),
-    //                 0.0, -sin(x), cos(x));
-
-    //float3x3 maty = float3x3(
-    //                 cos(y), 0.0, -sin(y),
-    //                 0.0, 1.0, 0.0,
-    //                 sin(y), 0.0, cos(y));
-
-    //float3x3 matz = float3x3(
-    //                 cos(z), sin(z), 0.0,
-    //                 -sin(z), cos(z), 0.0,
-    //                 0.0, 0.0, 1.0);
-
-    //p = matx * p;
-    //p = matz * p;
-    //p = maty * p;
-    
     float3x3 matx = float3x3(
     1.0, 0.0, 0.0,
     0.0, cos(x), -sin(x),
@@ -242,16 +209,11 @@ void WarpSpace(inout float3 eyevec, inout float3 raypos)
     eyevec = normalize(eyevec + singularityVector * warpFactor * warpAmount / float(ITERATIONS));
 }
 
-float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
+float4 main(float2 texCoord:TEXCOORD) : SV_Target
 {
     float2 uveye = texCoord;
     
-#ifdef TEMPORAL_AA
-    uveye.x += (rand(uv + sin(sTime * 1.0)) / iResolution.x) * (iMouse.z > 1.0 ? 0.0 : 1.0);
-    uveye.y += (rand(uv + 1.0 + sin(sTime * 1.0)) / iResolution.y) * (iMouse.z > 1.0 ? 0.0 : 1.0);
-#endif
-    
-    float3 eyevec = normalize(float3((uveye * 2.0 - 1.0) * float2(16.0/9.0, 1.0), 6.0));
+    float3 eyevec = normalize(float3((uveye * 2.0 - 1.0) * float2(16.0 / 9.0, 1.0), 6.0));
     float3 eyepos = float3(0.0, -0.0, -10.0);
     
     float2 mousepos = float2(0.5, 1.0);
@@ -260,19 +222,13 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     const float far = 15.0;
 
     RotateCamera(eyevec, eyepos);
-
-    float3 color = float3(0.0, 0.0, 0.0);
     
-    float dither = rand(texCoord
-#ifdef TEMPORAL_AA
-                        + sin(sTime * 1.0) * (iMouse.z > 1.0 ? 0.0 : 1.0)
-#endif
-                       ) * 2.0;
+    float dither = rand(texCoord) * 2.0;
 
-
-    float alpha = 0.0;
     float3 raypos = eyepos + eyevec * dither * far / float(ITERATIONS);
     
+    float3 color = float3(0.0, 0.0, 0.0);
+    float alpha = 0.0;
     
     for (int i = 0; i < ITERATIONS; i++)
     {
@@ -283,29 +239,15 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     }
     
     color *= 0.0001;
-
-    
-#ifdef TEMPORAL_AA
-    const float p = 1.0;
-    float3 previous = pow(texture(iChannel2, uv).rgb, float3(1.0 / p));
-    
-    color = pow(color, float3(1.0 / p));
-    
-    float blendWeight = 0.9 * (iMouse.z > 1.0 ? 0.0 : 1.0);
-    
-    color = lerp(color, previous, blendWeight);
-    
-    color = pow(color, float3(p));
-#endif
     
     color = saturate(color);
     
     color *= 200.0;
     
-    //Tonemapping and color grading
     color = pow(color, float3(1.5, 1.5, 1.5));
     color = color / (1.0 + color);
     color = pow(color, float3(1.0 / 1.5, 1.0 / 1.5, 1.0 / 1.5));
+
     
     color = lerp(color, color * color * (3.0 - 2.0 * color), float3(1.0, 1.0, 1.0));
     color = pow(color, float3(1.3, 1.20, 1.0));
@@ -314,5 +256,5 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     color = pow(color, float3(0.7 / 2.2, 0.7 / 2.2, 0.7 / 2.2));
     
-    return float4(color, 1.0);
+     return float4(color, 1.0);
 }
