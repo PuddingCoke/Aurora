@@ -22,6 +22,8 @@ ComPtr<ID3D11RenderTargetView> Graphics::defaultTargetView;
 
 float Graphics::deltaTime = 0;
 
+float Graphics::sTime = 0;
+
 float Graphics::frameDuration = 0;
 
 int Graphics::frameCount = 0;
@@ -51,6 +53,11 @@ void Graphics::clearDefRTV(const float color[4])
 const float& Graphics::getDeltaTime()
 {
 	return deltaTime;
+}
+
+const float& Graphics::getSTime()
+{
+	return sTime;
 }
 
 const float& Graphics::getFPS()
@@ -122,7 +129,7 @@ void Graphics::setProj(const DirectX::XMMATRIX& proj)
 void Graphics::updateGPUDeltaTimes()
 {
 	gpuDeltaTimes.deltaTime = Graphics::deltaTime;
-	//v1=
+	gpuDeltaTimes.sTime = Graphics::sTime;
 	//v2=
 	//v3=
 

@@ -627,6 +627,7 @@ void Aurora::runGame()
 		swapChain->Present(1, 0);
 		timeEnd = timer.now();
 		Graphics::deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
+		Graphics::sTime += Graphics::deltaTime;
 		Graphics::updateGPUDeltaTimes();
 	}
 }
@@ -648,12 +649,13 @@ void Aurora::runEncode()
 	}
 
 	Graphics::deltaTime = 1.f / 60.f;
-	Graphics::updateGPUDeltaTimes();
 	do
 	{
 		game->update(Graphics::deltaTime);
 		game->render();
 		Graphics::context->ResolveSubresource(Graphics::encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+		Graphics::sTime += Graphics::deltaTime;
+		Graphics::updateGPUDeltaTimes();
 	} while (nvidiaEncoder.encode());
 }
 

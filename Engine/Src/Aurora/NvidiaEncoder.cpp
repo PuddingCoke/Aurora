@@ -47,6 +47,8 @@ bool NvidiaEncoder::encode()
 		std::cout << "[class NvidiaEncoder] encode complete!\n";
 
 		std::cout << "[class NvidiaEncoder] frame encode avg speed " << frameToEncode / encodeTime << "\n";
+
+		std::cin.get();
 	}
 	else
 	{

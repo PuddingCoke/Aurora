@@ -24,6 +24,8 @@ public:
 
 	static const float& getDeltaTime();
 
+	static const float& getSTime();
+
 	static const float& getFPS();
 
 	static const float& getAspectRatio();
@@ -68,7 +70,7 @@ private:
 	static struct GPUDeltaTimes
 	{
 		float deltaTime = 0;
-		float v1 = 0;
+		float sTime = 0;
 		float v2 = 0;
 		float v3 = 0;
 	} gpuDeltaTimes;
@@ -76,6 +78,8 @@ private:
 	static ComPtr<ID3D11RenderTargetView> defaultTargetView;
 
 	static float deltaTime;
+
+	static float sTime;
 
 	static float frameDuration;
 

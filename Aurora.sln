@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXEncode", "DirectXEnc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TimeTableCardioid", "TimeTableCardioid\TimeTableCardioid.vcxproj", "{90936AD4-AF3F-4573-8090-4532C3273734}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GargantuaBlackHole", "GargantuaBlackHole\GargantuaBlackHole.vcxproj", "{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -111,6 +113,14 @@ Global
 		{90936AD4-AF3F-4573-8090-4532C3273734}.Release|x64.Build.0 = Release|x64
 		{90936AD4-AF3F-4573-8090-4532C3273734}.Release|x86.ActiveCfg = Release|Win32
 		{90936AD4-AF3F-4573-8090-4532C3273734}.Release|x86.Build.0 = Release|Win32
+		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Debug|x64.ActiveCfg = Debug|x64
+		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Debug|x64.Build.0 = Debug|x64
+		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Debug|x86.ActiveCfg = Debug|Win32
+		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Debug|x86.Build.0 = Debug|Win32
+		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Release|x64.ActiveCfg = Release|x64
+		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Release|x64.Build.0 = Release|x64
+		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Release|x86.ActiveCfg = Release|Win32
+		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
