@@ -636,7 +636,7 @@ void Aurora::runEncode()
 {
 	bool initializeStatus;
 
-	NvidiaEncoder nvidiaEncoder(1000, 60, initializeStatus);
+	NvidiaEncoder nvidiaEncoder(3600, 60, initializeStatus);
 
 	if (initializeStatus)
 	{

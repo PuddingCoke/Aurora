@@ -193,14 +193,15 @@ PixelOutput main(float2 texCoord : TEXCOORD)
     PixelOutput output;
     const float4 color = tTexture.Sample(samplerState, texCoord);
     output.color = color;
-    if (dot(color.rgb, float3(0.2126, 0.7152, 0.0722))>1.0)
-    {
-        output.brightColor = color;
-    }
-    else
-    {
-        output.brightColor = float4(0.0, 0.0, 0.0, 1.0);
-    }
+    //if (dot(color.rgb, float3(0.2126, 0.7152, 0.0722))>1.0)
+    //{
+    //    output.brightColor = color;
+    //}
+    //else
+    //{
+    //    output.brightColor = float4(0.0, 0.0, 0.0, 1.0);
+    //}
+	output.brightColor = color;
     return output;
 }
 )";
@@ -214,14 +215,29 @@ Texture2D tTexture : register(t0);
 SamplerState samplerState : register(s0);
 
 static const float exposure = 0.36;
-static const float gamma = 1.0f;
+static const float gamma = 1.0;
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float3 hdrColor = tTexture.Sample(samplerState, texCoord).rgb;
-    float3 result = float3(1.0, 1.0, 1.0) - exp(-hdrColor * exposure);
-    result = pow(result, float3(1.0 / gamma, 1.0 / gamma, 1.0 / gamma));
-    return float4(result, 1.0);
+    //float3 hdrColor = tTexture.Sample(samplerState, texCoord).rgb;
+    //float3 result = float3(1.0, 1.0, 1.0) - exp(-hdrColor * exposure);
+    //result = pow(result, float3(1.0 / gamma, 1.0 / gamma, 1.0 / gamma));
+    //return float4(result, 1.0);
+	float3 color = tTexture.Sample(samplerState, texCoord).rgb;
+
+	color = pow(color, float3(1.5, 1.5, 1.5));
+    color = color / (1.0 + color);
+    color = pow(color, float3(1.0 / 1.5, 1.0 / 1.5, 1.0 / 1.5));
+
+    
+    color = lerp(color, color * color * (3.0 - 2.0 * color), float3(1.0, 1.0, 1.0));
+    color = pow(color, float3(1.3, 1.20, 1.0));
+
+    color = saturate(color * 1.01);
+    
+    color = pow(color, float3(0.7 / 2.2, 0.7 / 2.2, 0.7 / 2.2));
+
+	return float4(color,1.0);
 }
 )";
 

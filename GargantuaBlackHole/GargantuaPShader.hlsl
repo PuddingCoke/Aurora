@@ -4,6 +4,7 @@ SamplerState linearSampler : register(s0);
 
 Texture2D tNoise : register(t0);
 Texture2D tDust : register(t1);
+Texture2D tLast : register(t2);
 
 cbuffer DeltaTimes : register(b0)
 {
@@ -17,9 +18,9 @@ float noise(in float3 x)
 {
     float3 p = floor(x);
     float3 f = frac(x);
-    f = f * f * (3.0 - 2.0 * f);
+    f = f * f * (float3(3.0, 3.0, 3.0) - float3(2.0, 2.0, 2.0) * f);
     float2 uv = (p.xy + float2(37.0, 17.0) * p.z) + f.xy;
-    float2 rg = tNoise.Sample(linearSampler, (uv + 0.5) / 256.0).yx;
+    float2 rg = tNoise.Sample(linearSampler, (uv + float2(0.5, 0.5)) / 256.0).yx;
     return -1.0 + 2.0 * lerp(rg.x, rg.y, f.z);
 }
 
@@ -40,56 +41,48 @@ float sdTorus(float3 p, float2 t)
     return length(q) - t.y;
 }
 
-float sdSphere(float3 p, float r)
-{
-    return length(p) - r;
-}
-
 void Haze(inout float3 color, float3 pos, float alpha)
 {
     float2 t = float2(1.0, 0.01);
 
-    float torusDist = length(sdTorus(pos + float3(0.0, -0.05, 0.0), t));
+    float torusDist = abs(sdTorus(pos + float3(0.0, -0.05, 0.0), t));
 
     float bloomDisc = 1.0 / (pow(torusDist, 2.0) + 0.001);
-    float3 col = float3(1.0, 1.0, 1.0);
     bloomDisc *= length(pos) < 0.5 ? 0.0 : 1.0;
 
-    color += col * bloomDisc * (2.9 / float(ITERATIONS)) * (1.0 - alpha * 1.0);
+    float d = bloomDisc * (2.9 / float(ITERATIONS)) * (1.0 - alpha * 1.0);
+    
+    color += float3(d, d, d);
 }
 
 void GasDisc(inout float3 color, inout float alpha, float3 pos)
 {
-    float discRadius = 3.2;
-    float discWidth = 5.3;
-    float discInner = discRadius - discWidth * 0.5;
-    float discOuter = discRadius + discWidth * 0.5;
+    const float discRadius = 3.2;
+    const float discWidth = 5.3;
+    const float discInner = discRadius - discWidth * 0.5;
     
-    float3 origin = float3(0.0, 0.0, 0.0);
-    float3 discNormal = float3(0.0, 1.0, 0.0);
     float discThickness = 0.1;
 
-    float distFromCenter = distance(pos, origin);
-    float distFromDisc = dot(discNormal, pos - origin);
+    const float distFromCenter = length(pos);
+    const float distFromDisc = pos.y;
     
-    float radialGradient = 1.0 - saturate((distFromCenter - discInner) / discWidth * 0.5);
+    const float radialGradient = 1.0 - saturate((distFromCenter - discInner) / discWidth * 0.5);
 
     float coverage = pcurve(radialGradient, 4.0, 0.9);
 
     discThickness *= radialGradient;
     coverage *= saturate(1.0 - abs(distFromDisc) / discThickness);
 
-    float3 dustColorLit = float3(1.0, 1.0, 1.0);
-    float3 dustColorDark = float3(0.0, 0.0, 0.0);
+    const float3 dustColorLit = float3(1.0, 1.0, 1.0);
 
-    float dustGlow = 1.0 / (pow(1.0 - radialGradient, 2.0) * 290.0 + 0.002);
+    const float dustGlow = 1.0 / (pow(1.0 - radialGradient, 2.0) * 290.0 + 0.002);
     float3 dustColor = dustColorLit * dustGlow * 8.2;
 
     coverage = saturate(coverage * 0.7);
 
 
-    float fade = pow((abs(distFromCenter - discInner) + 0.4), 4.0) * 0.04;
-    float bloomFactor = 1.0 / (pow(distFromDisc, 2.0) * 40.0 + fade + 0.00002);
+    const float fade = pow((abs(distFromCenter - discInner) + 0.4), 4.0) * 0.04;
+    const float bloomFactor = 1.0 / (pow(distFromDisc, 2.0) * 40.0 + fade + 0.00002);
     float3 b = dustColorLit * pow(bloomFactor, 1.5);
     
     b *= lerp(float3(1.7, 1.1, 1.0), float3(0.5, 0.6, 1.0), float3(pow(radialGradient, 2.0), pow(radialGradient, 2.0), pow(radialGradient, 2.0)));
@@ -111,10 +104,10 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
 
     radialCoords *= 0.95;
     
-    float speed = 0.06;
+    const float speed = 0.20;
     
     float noise1 = 1.0;
-    float3 rc = radialCoords + 0.0;
+    float3 rc = radialCoords;
     rc.y += sTime * speed;
     noise1 *= noise(rc * 3.0) * 0.5 + 0.5;
     rc.y -= sTime * speed;
@@ -126,7 +119,7 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
     rc.y += sTime * speed;
 
     float noise2 = 2.0;
-    rc = radialCoords + 30.0;
+    rc = radialCoords + float3(30.0, 30.0, 30.0);
     noise2 *= noise(rc * 3.0) * 0.5 + 0.5;
     rc.y += sTime * speed;
     noise2 *= noise(rc * 6.0) * 0.5 + 0.5;
@@ -138,7 +131,6 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
     noise2 *= noise(rc * 48.0) * 0.5 + 0.5;
     rc.y += sTime * speed;
     noise2 *= noise(rc * 92.0) * 0.5 + 0.5;
-    rc.y -= sTime * speed;
 
     dustColor *= noise1 * 0.998 + 0.002;
     coverage *= noise2;
@@ -146,15 +138,15 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
     radialCoords.y += sTime * speed * 0.5;
     
     dustColor *= pow(tDust.Sample(linearSampler, radialCoords.yx * float2(0.15, 0.27)).rgb, float3(2.0, 2.0, 2.0)) * 4.0;
-
+    
     coverage = saturate(coverage * 1200.0 / float(ITERATIONS));
     dustColor = max(float3(0.0, 0.0, 0.0), dustColor);
-
+    
     coverage *= pcurve(radialGradient, 4.0, 0.9);
+    
+    color += (1.0 - alpha) * dustColor * coverage;
 
-    color = (1.0 - alpha) * dustColor * coverage + color;
-
-    alpha = (1.0 - alpha) * coverage + alpha;
+    alpha += (1.0 - alpha) * coverage;
 }
 
 float3 rotate(float3 p, float x, float y, float z)
@@ -197,14 +189,14 @@ void RotateCamera(inout float3 eyevec, inout float3 eyepos)
 
 void WarpSpace(inout float3 eyevec, inout float3 raypos)
 {
-    float3 origin = float3(0.0, 0.0, 0.0);
+    const float3 origin = float3(0.0, 0.0, 0.0);
 
-    float singularityDist = distance(raypos, origin);
-    float warpFactor = 1.0 / (pow(singularityDist, 2.0) + 0.000001);
+    const float singularityDist = distance(raypos, origin);
+    const float warpFactor = 1.0 / (pow(singularityDist, 2.0) + 0.000001);
 
-    float3 singularityVector = normalize(origin - raypos);
+    const float3 singularityVector = normalize(origin - raypos);
     
-    float warpAmount = 5.0;
+    const float warpAmount = 5.0;
 
     eyevec = normalize(eyevec + singularityVector * warpFactor * warpAmount / float(ITERATIONS));
 }
@@ -212,6 +204,9 @@ void WarpSpace(inout float3 eyevec, inout float3 raypos)
 float4 main(float2 texCoord:TEXCOORD) : SV_Target
 {
     float2 uveye = texCoord;
+    
+    uveye.x += (rand(texCoord + sin(sTime * 1.0)) / 1920.0) * 1.0;
+    uveye.y += (rand(texCoord + 1.0 + sin(sTime * 1.0)) / 1080.0) * 1.0;
     
     float3 eyevec = normalize(float3((uveye * 2.0 - 1.0) * float2(16.0 / 9.0, 1.0), 6.0));
     float3 eyepos = float3(0.0, -0.0, -10.0);
@@ -223,7 +218,7 @@ float4 main(float2 texCoord:TEXCOORD) : SV_Target
 
     RotateCamera(eyevec, eyepos);
     
-    float dither = rand(texCoord) * 2.0;
+    const float dither = rand(texCoord + sin(sTime * 1.0)) * 2.0;
 
     float3 raypos = eyepos + eyevec * dither * far / float(ITERATIONS);
     
@@ -240,21 +235,16 @@ float4 main(float2 texCoord:TEXCOORD) : SV_Target
     
     color *= 0.0001;
     
-    color = saturate(color);
+    const float p = 1.0;
+    float3 previous = pow(tLast.Sample(linearSampler, texCoord).rgb, float3(1.0 / p, 1.0 / p, 1.0 / p));
     
-    color *= 200.0;
+    color = pow(color, float3(1.0 / p, 1.0 / p, 1.0 / p));
     
-    color = pow(color, float3(1.5, 1.5, 1.5));
-    color = color / (1.0 + color);
-    color = pow(color, float3(1.0 / 1.5, 1.0 / 1.5, 1.0 / 1.5));
-
+    float blendWeight = 0.9 * 1.0;
     
-    color = lerp(color, color * color * (3.0 - 2.0 * color), float3(1.0, 1.0, 1.0));
-    color = pow(color, float3(1.3, 1.20, 1.0));
-
-    color = saturate(color * 1.01);
+    color = lerp(color, previous, blendWeight);
     
-    color = pow(color, float3(0.7 / 2.2, 0.7 / 2.2, 0.7 / 2.2));
+    color = pow(color, float3(p, p, p));
     
-     return float4(color, 1.0);
+    return float4(saturate(color), 1.0);
 }
