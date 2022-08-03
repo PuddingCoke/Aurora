@@ -18,10 +18,6 @@ public:
 
 	Shader* pixelShader;
 
-	Shader* displayShader;
-
-	Shader* displayShader2;
-
 	Texture2D* noiseTexture;
 
 	Texture2D* dustTexture;
@@ -32,20 +28,25 @@ public:
 
 	BloomEffect effect;
 
-	RenderTexture* renderTexture;
-
 	bool bloom = true;
+
+	float exposure;
+
+	float gamma;
 
 	MyGame() :
 		pixelShader(Shader::fromFile("GargantuaPShader.hlsl", ShaderType::Pixel)),
-		displayShader(Shader::fromFile("DisplayPShader.hlsl", ShaderType::Pixel)),
-		displayShader2(Shader::fromFile("DisplayPShader2.hlsl",ShaderType::Pixel)),
 		noiseTexture(Texture2D::create(L"Noise.png")),
 		dustTexture(Texture2D::create(L"Dust.jpg")),
 		accTexture(new DoubleRTV(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		effect(Graphics::getWidth(), Graphics::getHeight()),
-		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black, false))
+		effect(Graphics::getWidth(), Graphics::getHeight(), false)
 	{
+		//exposure = effect.getExposure();
+		//gamma = effect.getGamma();
+
+		exposure = 0.629999757f;
+		gamma = 0.930000305f;
+
 		{
 			D3D11_SAMPLER_DESC sd = {};
 			sd.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -65,27 +66,50 @@ public:
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
 			bloom = !bloom;
 			});
+
+		effect.setExposure(exposure);
+		effect.setGamma(gamma);
+		effect.applyChange();
 	}
 
 	~MyGame()
 	{
 		delete pixelShader;
-		delete displayShader;
-		delete displayShader2;
 		delete noiseTexture;
 		delete dustTexture;
 		delete accTexture;
-		delete renderTexture;
 	}
 
 	void update(const float& dt) override
 	{
-
+		if (Keyboard::getKeyDown(Keyboard::A))
+		{
+			exposure += 0.01f;
+			effect.setExposure(exposure);
+			effect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::S))
+		{
+			exposure -= 0.01f;
+			effect.setExposure(exposure);
+			effect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::H))
+		{
+			gamma += 0.01f;
+			effect.setGamma(gamma);
+			effect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::J))
+		{
+			gamma -= 0.01f;
+			effect.setGamma(gamma);
+			effect.applyChange();
+		}
 	}
 
 	void render() override
 	{
-		ID3D11RenderTargetView* nullRTV = nullptr;
 		ID3D11ShaderResourceView* nullView[3] = { nullptr,nullptr,nullptr };
 
 		accTexture->write()->setRTV();
@@ -105,27 +129,15 @@ public:
 		Graphics::context->Draw(3, 0);
 		accTexture->swap();
 
-		Graphics::context->OMSetRenderTargets(1, &nullRTV, nullptr);
 		Graphics::context->PSSetShaderResources(0, 3, nullView);
+
+		Graphics::clearDefRTV(DirectX::Colors::Black);
 
 		if (bloom)
 		{
-			renderTexture->setRTV();
-			renderTexture->clearRTV(DirectX::Colors::Black);
-
-			displayShader->use();
-
-			accTexture->read()->getTexture()->setSRV(0);
-
-			Graphics::context->Draw(3, 0);
-
-			Graphics::context->OMSetRenderTargets(1, &nullRTV, nullptr);
-			Graphics::context->PSSetShaderResources(0, 3, nullView);
-
-			Texture2D* texture = effect.process(renderTexture->getTexture());
+			Texture2D* texture = effect.process(accTexture->read()->getTexture());
 
 			Graphics::setDefRTV();
-			Graphics::clearDefRTV(DirectX::Colors::Black);
 
 			Shader::displayPShader->use();
 
@@ -135,17 +147,15 @@ public:
 		else
 		{
 			Graphics::setDefRTV();
-			Graphics::clearDefRTV(DirectX::Colors::Black);
 
-			displayShader2->use();
+			Shader::displayPShader->use();
 
 			accTexture->read()->getTexture()->setSRV(0);
 		}
 
 		Graphics::context->Draw(3, 0);
 
-		Graphics::context->OMSetRenderTargets(1, &nullRTV, nullptr);
-		Graphics::context->PSSetShaderResources(0, 3, nullView);
 
+		Graphics::context->PSSetShaderResources(0, 3, nullView);
 	}
 };

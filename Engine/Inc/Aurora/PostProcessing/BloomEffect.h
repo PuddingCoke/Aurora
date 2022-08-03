@@ -15,7 +15,7 @@ public:
 
 	static constexpr unsigned int blurSteps = 5;
 
-	BloomEffect(const unsigned int& width, const unsigned int& height);
+	BloomEffect(const unsigned int& width, const unsigned int& height, const bool& enableBrightPixelExract = true);
 
 	~BloomEffect();
 
@@ -26,6 +26,17 @@ public:
 	Shader* bloomFinal;
 
 	Shader* blurShaders[blurSteps * 2];
+
+	void setExposure(const float& exposure);
+
+	void setGamma(const float& gamma);
+
+	const float& getExposure();
+
+	const float& getGamma();
+
+	//更新向着色器传入的exposure和gamma
+	void applyChange();
 
 private:
 
@@ -45,6 +56,17 @@ private:
 	const unsigned int bloomWidth;
 
 	const unsigned int bloomHeight;
+
+	std::function<void(Texture2D* const)> firstPass;
+
+	ComPtr<ID3D11Buffer> bloomParamBuffer;
+
+	struct BloomParam
+	{
+		float exposure;
+		float gamma;
+		float v0[2];
+	} bloomParam;
 
 };
 

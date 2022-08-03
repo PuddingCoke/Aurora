@@ -16,11 +16,11 @@ cbuffer DeltaTimes : register(b0)
 
 float noise(in float3 x)
 {
-    float3 p = floor(x);
+    const float3 p = floor(x);
     float3 f = frac(x);
     f = f * f * (float3(3.0, 3.0, 3.0) - float3(2.0, 2.0, 2.0) * f);
-    float2 uv = (p.xy + float2(37.0, 17.0) * p.z) + f.xy;
-    float2 rg = tNoise.Sample(linearSampler, (uv + float2(0.5, 0.5)) / 256.0).yx;
+    const float2 uv = (p.xy + float2(37.0, 17.0) * p.z) + f.xy;
+    const float2 rg = tNoise.Sample(linearSampler, (uv + float2(0.5, 0.5)) / 256.0).yx;
     return -1.0 + 2.0 * lerp(rg.x, rg.y, f.z);
 }
 
@@ -31,26 +31,26 @@ float rand(float2 coord)
 
 float pcurve(float x, float a, float b)
 {
-    float k = pow(a + b, a + b) / (pow(a, a) * pow(b, b));
+    const float k = pow(a + b, a + b) / (pow(a, a) * pow(b, b));
     return k * pow(x, a) * pow(1.0 - x, b);
 }
 
 float sdTorus(float3 p, float2 t)
 {
-    float2 q = float2(length(p.xz) - t.x, p.y);
+    const float2 q = float2(length(p.xz) - t.x, p.y);
     return length(q) - t.y;
 }
 
 void Haze(inout float3 color, float3 pos, float alpha)
 {
-    float2 t = float2(1.0, 0.01);
+    const float2 t = float2(1.0, 0.01);
 
-    float torusDist = abs(sdTorus(pos + float3(0.0, -0.05, 0.0), t));
+    const float torusDist = abs(sdTorus(pos + float3(0.0, -0.05, 0.0), t));
 
     float bloomDisc = 1.0 / (pow(torusDist, 2.0) + 0.001);
     bloomDisc *= length(pos) < 0.5 ? 0.0 : 1.0;
 
-    float d = bloomDisc * (2.9 / float(ITERATIONS)) * (1.0 - alpha * 1.0);
+    const float d = bloomDisc * (2.9 / float(ITERATIONS)) * (1.0 - alpha * 1.0);
     
     color += float3(d, d, d);
 }
@@ -151,19 +151,19 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
 
 float3 rotate(float3 p, float x, float y, float z)
 {
-    float3x3 matx = float3x3(
+    const float3x3 matx = float3x3(
     1.0, 0.0, 0.0,
     0.0, cos(x), -sin(x),
     0.0, sin(x), cos(x)
     );
     
-    float3x3 maty = float3x3(
+    const float3x3 maty = float3x3(
     cos(y), 0.0, sin(y),
     0.0, 1.0, 0.0,
     -sin(y), 0.0, cos(y)
     );
     
-    float3x3 matz = float3x3(
+    const float3x3 matz = float3x3(
     cos(z), -sin(z), 0.0,
     sin(z), cos(z), 0.0,
     0.0, 0.0, 1.0
@@ -178,10 +178,10 @@ float3 rotate(float3 p, float x, float y, float z)
 
 void RotateCamera(inout float3 eyevec, inout float3 eyepos)
 {
-    float mousePosY = 1.0;
-    float mousePosX = 0.5;
+    const float mousePosY = 1.0;
+    const float mousePosX = 0.5;
 
-    float3 angle = float3(mousePosY * 0.05 + 0.05, 1.0 + mousePosX * 1.0, -0.45);
+    const float3 angle = float3(mousePosY * 0.05 + 0.05, 1.0 + mousePosX * 1.0, -0.45);
 
     eyevec = rotate(eyevec, angle.x, angle.y, angle.z);
     eyepos = rotate(eyepos, angle.x, angle.y, angle.z);
@@ -233,18 +233,32 @@ float4 main(float2 texCoord:TEXCOORD) : SV_Target
         Haze(color, raypos, alpha);
     }
     
-    color *= 0.0001;
+    const float colorFactor = 200.0;
+    
+    color *= 0.0001 * colorFactor;
+    
+    color = pow(color, float3(1.5, 1.5, 1.5));
+    color = color / (1.0 + color);
+    color = pow(color, float3(1.0 / 1.5, 1.0 / 1.5, 1.0 / 1.5));
+
+    
+    color = lerp(color, color * color * (3.0 - 2.0 * color), float3(1.0, 1.0, 1.0));
+    color = pow(color, float3(1.3, 1.20, 1.0));
+
+    color = saturate(color * 1.01);
+    
+    color = pow(color, float3(0.7 / 2.2, 0.7 / 2.2, 0.7 / 2.2));
     
     const float p = 1.0;
     float3 previous = pow(tLast.Sample(linearSampler, texCoord).rgb, float3(1.0 / p, 1.0 / p, 1.0 / p));
     
     color = pow(color, float3(1.0 / p, 1.0 / p, 1.0 / p));
     
-    float blendWeight = 0.9 * 1.0;
+    const float blendWeight = 0.9 * 1.0;
     
     color = lerp(color, previous, blendWeight);
     
     color = pow(color, float3(p, p, p));
     
-    return float4(saturate(color), 1.0);
+    return float4(color, 1.0);
 }

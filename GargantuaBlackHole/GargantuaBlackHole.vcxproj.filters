@@ -26,7 +26,5 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="GargantuaPShader.hlsl" />
-    <FxCompile Include="DisplayPShader.hlsl" />
-    <FxCompile Include="DisplayPShader2.hlsl" />
   </ItemGroup>
 </Project>

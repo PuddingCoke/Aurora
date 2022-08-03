@@ -1,13 +1,19 @@
 #include<Aurora/PostProcessing/BloomEffect.h>
 
-BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) :
-	EffectBase(width, height), bloomWidth(width), bloomHeight(height)
+BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height,const bool& enableBrightPixelExract) :
+	EffectBase(width, height), bloomWidth(width), bloomHeight(height), bloomParam{}
 {
 	compileShaders();
 
+	bloomParam.exposure = 0.36f;
+	bloomParam.gamma = 1.0f;
+
 	originTexture = RenderTexture::create(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false);
 
-	bloomTexture = RenderTexture::create(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false);
+	if (enableBrightPixelExract)
+	{
+		bloomTexture = RenderTexture::create(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false);
+	}
 
 	{
 		unsigned int currentWidth = width;
@@ -24,6 +30,57 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 			renderTextures[i * 2u + 1u] = RenderTexture::create(currentWidth, currentHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false);
 
 		}
+	}
+
+	{
+		D3D11_BUFFER_DESC cbd = {};
+		cbd.Usage = D3D11_USAGE_DYNAMIC;
+		cbd.ByteWidth = 16u;
+		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+		Graphics::device->CreateBuffer(&cbd, nullptr, bloomParamBuffer.ReleaseAndGetAddressOf());
+
+		applyChange();
+	}
+
+	if (enableBrightPixelExract)
+	{
+		firstPass = [this](Texture2D* const texture2D)
+		{
+			bloomExtract->use();
+			Graphics::setViewport((float)bloomWidth, (float)bloomHeight);
+			RenderTexture::setRTVs({ originTexture,bloomTexture });
+			originTexture->clearRTV(DirectX::Colors::Transparent);
+			bloomTexture->clearRTV(DirectX::Colors::Transparent);
+			texture2D->setSRV(0);
+			Graphics::context->Draw(3, 0);
+
+			Shader::displayPShader->use();
+			Graphics::setViewport((float)resolutionX[0], (float)resolutionY[0]);
+			renderTextures[0]->clearRTV(DirectX::Colors::Transparent);
+			renderTextures[0]->setRTV();
+			bloomTexture->getTexture()->setSRV(0);
+			Graphics::context->Draw(3, 0);
+		};
+	}
+	else
+	{
+		firstPass = [this](Texture2D* const texture2D)
+		{
+			Shader::displayPShader->use();
+			Graphics::setViewport((float)bloomWidth, (float)bloomHeight);
+			originTexture->setRTV();
+			originTexture->clearRTV(DirectX::Colors::Transparent);
+			texture2D->setSRV(0);
+			Graphics::context->Draw(3, 0);
+
+			Graphics::setViewport((float)resolutionX[0], (float)resolutionY[0]);
+			renderTextures[0]->clearRTV(DirectX::Colors::Transparent);
+			renderTextures[0]->setRTV();
+			originTexture->getTexture()->setSRV(0);
+			Graphics::context->Draw(3, 0);
+		};
 	}
 
 }
@@ -57,22 +114,9 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	Shader::displayVShader->use();
 
 	ID3D11ShaderResourceView* const nullSRV = nullptr;
-	ID3D11RenderTargetView* const nullRTV = nullptr;
+	ID3D11RenderTargetView* const nullRTV[2] = { nullptr,nullptr };
 
-	bloomExtract->use();
-	Graphics::setViewport((float)bloomWidth, (float)bloomHeight);
-	RenderTexture::setRTVs({ originTexture,bloomTexture });
-	originTexture->clearRTV(DirectX::Colors::Transparent);
-	bloomTexture->clearRTV(DirectX::Colors::Transparent);
-	texture2D->setSRV(0);
-	Graphics::context->Draw(3, 0);
-
-	Shader::displayPShader->use();
-	Graphics::setViewport((float)resolutionX[0], (float)resolutionY[0]);
-	renderTextures[0]->clearRTV(DirectX::Colors::Transparent);
-	renderTextures[0]->setRTV();
-	bloomTexture->getTexture()->setSRV(0);
-	Graphics::context->Draw(3, 0);
+	firstPass(texture2D);
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
@@ -162,16 +206,46 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	renderTextures[0]->getTexture()->setSRV(0);
 	Graphics::context->Draw(3, 0);
 
+	Graphics::context->PSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
+
 	bloomFinal->use();
 	defRenderTexture->clearRTV(DirectX::Colors::Transparent);
 	defRenderTexture->setRTV();
 	originTexture->getTexture()->setSRV(0);
 	Graphics::context->Draw(3, 0);
 
-	Graphics::context->OMSetRenderTargets(1, &nullRTV, nullptr);
+	Graphics::context->OMSetRenderTargets(2, nullRTV, nullptr);
 	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
 
 	return outputTexture;
+}
+
+void BloomEffect::setExposure(const float& exposure)
+{
+	bloomParam.exposure = exposure;
+}
+
+void BloomEffect::setGamma(const float& gamma)
+{
+	bloomParam.gamma = gamma;
+}
+
+const float& BloomEffect::getExposure()
+{
+	return bloomParam.exposure;
+}
+
+const float& BloomEffect::getGamma()
+{
+	return bloomParam.gamma;
+}
+
+void BloomEffect::applyChange()
+{
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	Graphics::context->Map(bloomParamBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, &bloomParam, 16u);
+	Graphics::context->Unmap(bloomParamBuffer.Get(), 0);
 }
 
 void BloomEffect::compileShaders()
@@ -193,15 +267,14 @@ PixelOutput main(float2 texCoord : TEXCOORD)
     PixelOutput output;
     const float4 color = tTexture.Sample(samplerState, texCoord);
     output.color = color;
-    //if (dot(color.rgb, float3(0.2126, 0.7152, 0.0722))>1.0)
-    //{
-    //    output.brightColor = color;
-    //}
-    //else
-    //{
-    //    output.brightColor = float4(0.0, 0.0, 0.0, 1.0);
-    //}
-	output.brightColor = color;
+    if (dot(color.rgb, float3(0.2126, 0.7152, 0.0722))>1.0)
+    {
+        output.brightColor = color;
+    }
+    else
+    {
+        output.brightColor = float4(0.0, 0.0, 0.0, 1.0);
+    }
     return output;
 }
 )";
@@ -214,30 +287,19 @@ PixelOutput main(float2 texCoord : TEXCOORD)
 Texture2D tTexture : register(t0);
 SamplerState samplerState : register(s0);
 
-static const float exposure = 0.36;
-static const float gamma = 1.0;
+cbuffer DeltaTimes : register(b1)
+{
+    float exposure;
+    float gamma;
+    float2 v0;
+};
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    //float3 hdrColor = tTexture.Sample(samplerState, texCoord).rgb;
-    //float3 result = float3(1.0, 1.0, 1.0) - exp(-hdrColor * exposure);
-    //result = pow(result, float3(1.0 / gamma, 1.0 / gamma, 1.0 / gamma));
-    //return float4(result, 1.0);
-	float3 color = tTexture.Sample(samplerState, texCoord).rgb;
-
-	color = pow(color, float3(1.5, 1.5, 1.5));
-    color = color / (1.0 + color);
-    color = pow(color, float3(1.0 / 1.5, 1.0 / 1.5, 1.0 / 1.5));
-
-    
-    color = lerp(color, color * color * (3.0 - 2.0 * color), float3(1.0, 1.0, 1.0));
-    color = pow(color, float3(1.3, 1.20, 1.0));
-
-    color = saturate(color * 1.01);
-    
-    color = pow(color, float3(0.7 / 2.2, 0.7 / 2.2, 0.7 / 2.2));
-
-	return float4(color,1.0);
+    float3 hdrColor = tTexture.Sample(samplerState, texCoord).rgb;
+    float3 result = float3(1.0, 1.0, 1.0) - exp(-hdrColor * exposure);
+    result = pow(result, float3(1.0 / gamma, 1.0 / gamma, 1.0 / gamma));
+    return float4(result, 1.0);
 }
 )";
 

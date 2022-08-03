@@ -41,7 +41,7 @@ public:
 	MyGame() :
 		attractor(1000000),
 		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false)),
-		bloomEffect(Graphics::getWidth(),Graphics::getHeight())
+		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
 	{
 		{
 			D3D11_TEXTURE2D_DESC tDesc = {};
@@ -103,7 +103,7 @@ public:
 
 		Graphics::setDefRTV();
 		Graphics::clearDefRTV(DirectX::Colors::Black);
-		
+
 		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
