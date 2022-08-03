@@ -60,8 +60,6 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
     const float discRadius = 3.2;
     const float discWidth = 5.3;
     const float discInner = discRadius - discWidth * 0.5;
-    
-    float discThickness = 0.1;
 
     const float distFromCenter = length(pos);
     const float distFromDisc = pos.y;
@@ -70,7 +68,7 @@ void GasDisc(inout float3 color, inout float alpha, float3 pos)
 
     float coverage = pcurve(radialGradient, 4.0, 0.9);
 
-    discThickness *= radialGradient;
+    const float discThickness = radialGradient * 0.1;
     coverage *= saturate(1.0 - abs(distFromDisc) / discThickness);
 
     const float3 dustColorLit = float3(1.0, 1.0, 1.0);

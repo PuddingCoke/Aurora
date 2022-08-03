@@ -8,6 +8,7 @@
 #include<Aurora/Event.h>
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
+#include<Aurora/PostProcessing/BloomEffect.h>
 
 #include"Rain.h"
 
@@ -19,12 +20,30 @@ public:
 
 	BitmapFont* font;
 
+	BloomEffect effect;
+
 	std::vector<Rain> rains;
+
+	RenderTexture* renderTexture;
+
+	float exposure;
+
+	float gamma;
+
+	static constexpr float colorFactor = 4.5f;
 
 	MyGame() :
 		batch(SpriteBatch::create()),
-		font(BitmapFont::create(L"Game_0.png", "Game.fnt", 24))
+		font(BitmapFont::create(L"Game_0.png", "Game.fnt", 24)),
+		effect(Graphics::getWidth(), Graphics::getHeight(), false),
+		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black, false))
 	{
+		exposure = 0.64f;
+		gamma = 0.56f;
+		effect.setExposure(exposure);
+		effect.setGamma(gamma);
+		effect.applyChange();
+
 		Rain::stride = font->getFontSize();
 
 		for (size_t i = 0; i < Graphics::getWidth() / Rain::stride; i++)
@@ -37,10 +56,36 @@ public:
 	{
 		delete batch;
 		delete font;
+		delete renderTexture;
 	}
 
 	void update(const float& dt) override
 	{
+		if (Keyboard::getKeyDown(Keyboard::A))
+		{
+			exposure += 0.01f;
+			effect.setExposure(exposure);
+			effect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::S))
+		{
+			exposure -= 0.01f;
+			effect.setExposure(exposure);
+			effect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::H))
+		{
+			gamma += 0.01f;
+			effect.setGamma(gamma);
+			effect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::J))
+		{
+			gamma -= 0.01f;
+			effect.setGamma(gamma);
+			effect.applyChange();
+		}
+
 		for (int i = 0; i < rains.size(); i++)
 		{
 			rains[i].update(dt);
@@ -53,22 +98,31 @@ public:
 
 	void render() override
 	{
-
-		Graphics::setDefRTV();
-		Graphics::clearDefRTV(DirectX::Colors::Black);
-		
+		renderTexture->setRTV();
+		renderTexture->clearRTV(DirectX::Colors::Black);
 		Graphics::setBlendState(StateCommon::defBlendState.Get());
 
 		batch->begin();
 		for (int i = 0; i < rains.size(); i++)
 		{
-			batch->draw(font, rains[i].character[0], rains[i].x, rains[i].y, 1.f, 1.f, 1.f);
+			batch->draw(font, rains[i].character[0], rains[i].x, rains[i].y, colorFactor, colorFactor, colorFactor);
 			for (int j = 1; j < rains[i].character.size(); j++)
 			{
-				batch->draw(font, rains[i].character[j], rains[i].x, rains[i].y + Rain::stride * j, 0, 1, 0, 1.f - (float)j / rains[i].character.size());
+				batch->draw(font, rains[i].character[j], rains[i].x, rains[i].y + Rain::stride * j, 0.f, colorFactor * (1.f - (float)j / rains[i].character.size()), 0.f, 1.0f);
 			}
 		}
-		batch->draw(font, "FPS:" + std::to_string(Graphics::getFPS()), 0, Graphics::getHeight(), 1, 1, 1, 1);
+		batch->end();
+
+		Texture2D* texture2D = effect.process(renderTexture->getTexture());
+
+		Graphics::setDefRTV();
+		Graphics::clearDefRTV(DirectX::Colors::Black);
+
+		Graphics::setBlendState(StateCommon::defBlendState.Get());
+
+		batch->begin();
+		batch->draw(texture2D, 0, 0);
+		batch->draw(font, "FPS:" + std::to_string(Graphics::getFPS()), 0, Graphics::getHeight(), 1.f, 1.f, 1.f, 1.f);
 		batch->end();
 
 	}
