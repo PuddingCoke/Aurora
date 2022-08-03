@@ -87,7 +87,7 @@
     <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\NvidiaEncoder.h">
+    <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -155,7 +155,7 @@
     <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\NvidiaEncoder.cpp">
+    <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

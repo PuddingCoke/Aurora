@@ -146,7 +146,7 @@
     <ClInclude Include="Inc\Aurora\Keyboard.h" />
     <ClInclude Include="Inc\Aurora\Math.h" />
     <ClInclude Include="Inc\Aurora\Mouse.h" />
-    <ClInclude Include="Inc\Aurora\NvidiaEncoder.h" />
+    <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h" />
     <ClInclude Include="Inc\Aurora\ParticleSystem.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h" />
@@ -171,7 +171,7 @@
     <ClCompile Include="Src\Aurora\Graphics.cpp" />
     <ClCompile Include="Src\Aurora\Keyboard.cpp" />
     <ClCompile Include="Src\Aurora\Mouse.cpp" />
-    <ClCompile Include="Src\Aurora\NvidiaEncoder.cpp" />
+    <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp" />

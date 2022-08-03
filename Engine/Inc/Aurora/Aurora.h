@@ -19,7 +19,7 @@
 #include"Shader.h"
 #include"Math.h"
 
-#include"NvidiaEncoder.h"
+#include"VideoEncoder/NvidiaEncoder.h"
 
 class Aurora
 {

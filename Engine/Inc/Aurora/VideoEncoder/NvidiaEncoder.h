@@ -9,7 +9,7 @@
 
 #include<NvEnc/nvEncodeAPI.h>
 
-#include"Graphics.h"
+#include<Aurora/Graphics.h>
 
 class NvidiaEncoder
 {

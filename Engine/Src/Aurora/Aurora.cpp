@@ -657,6 +657,8 @@ void Aurora::runEncode()
 		Graphics::sTime += Graphics::deltaTime;
 		Graphics::updateGPUDeltaTimes();
 	} while (nvidiaEncoder.encode());
+
+	std::cin.get();
 }
 
 Aurora::Aurora() :
