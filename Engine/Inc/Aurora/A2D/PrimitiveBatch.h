@@ -3,7 +3,7 @@
 #ifndef _PRIMITIVEBATCH_H_
 #define _PRIMITIVEBATCH_H_
 
-#include"Shader.h"
+#include<Aurora/Shader.h>
 
 class PrimitiveBatch
 {

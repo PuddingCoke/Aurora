@@ -136,7 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Aurora\Aurora.h" />
-    <ClInclude Include="Inc\Aurora\BitmapFont.h" />
+    <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
     <ClInclude Include="Inc\Aurora\Color.h" />
     <ClInclude Include="Inc\Aurora\Configuration.h" />
     <ClInclude Include="Inc\Aurora\DoubleRTV.h" />
@@ -151,11 +151,11 @@
     <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\FadeEffect.h" />
-    <ClInclude Include="Inc\Aurora\PrimitiveBatch.h" />
+    <ClInclude Include="Inc\Aurora\A2D\PrimitiveBatch.h" />
     <ClInclude Include="Inc\Aurora\Random.h" />
     <ClInclude Include="Inc\Aurora\RenderTexture.h" />
     <ClInclude Include="Inc\Aurora\Shader.h" />
-    <ClInclude Include="Inc\Aurora\SpriteBatch.h" />
+    <ClInclude Include="Inc\Aurora\A2D\SpriteBatch.h" />
     <ClInclude Include="Inc\Aurora\StateCommon.h" />
     <ClInclude Include="Inc\Aurora\Texture2D.h" />
     <ClInclude Include="Inc\Aurora\Timer.h" />
@@ -164,7 +164,7 @@
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Color.cpp" />
     <ClCompile Include="Src\Aurora\Aurora.cpp" />
-    <ClCompile Include="Src\Aurora\BitmapFont.cpp" />
+    <ClCompile Include="Src\Aurora\A2D\BitmapFont.cpp" />
     <ClCompile Include="Src\Aurora\Configuration.cpp" />
     <ClCompile Include="Src\Aurora\DoubleRTV.cpp" />
     <ClCompile Include="Src\Aurora\Event.cpp" />
@@ -175,11 +175,11 @@
     <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp" />
-    <ClCompile Include="Src\Aurora\PrimitiveBatch.cpp" />
+    <ClCompile Include="Src\Aurora\A2D\PrimitiveBatch.cpp" />
     <ClCompile Include="Src\Aurora\Random.cpp" />
     <ClCompile Include="Src\Aurora\RenderTexture.cpp" />
     <ClCompile Include="Src\Aurora\Shader.cpp" />
-    <ClCompile Include="Src\Aurora\SpriteBatch.cpp" />
+    <ClCompile Include="Src\Aurora\A2D\SpriteBatch.cpp" />
     <ClCompile Include="Src\Aurora\StateCommon.cpp" />
     <ClCompile Include="Src\Aurora\Texture2D.cpp" />
     <ClCompile Include="Src\Aurora\Timer.cpp" />

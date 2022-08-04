@@ -18,7 +18,7 @@
     <ClInclude Include="Inc\Aurora\Aurora.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\BitmapFont.h">
+    <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Configuration.h">
@@ -39,7 +39,7 @@
     <ClInclude Include="Inc\Aurora\Mouse.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PrimitiveBatch.h">
+    <ClInclude Include="Inc\Aurora\A2D\PrimitiveBatch.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Random.h">
@@ -48,7 +48,7 @@
     <ClInclude Include="Inc\Aurora\Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\SpriteBatch.h">
+    <ClInclude Include="Inc\Aurora\A2D\SpriteBatch.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Texture2D.h">
@@ -95,7 +95,7 @@
     <ClCompile Include="Src\Aurora\Aurora.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\BitmapFont.cpp">
+    <ClCompile Include="Src\Aurora\A2D\BitmapFont.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Configuration.cpp">
@@ -113,7 +113,7 @@
     <ClCompile Include="Src\Aurora\Mouse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PrimitiveBatch.cpp">
+    <ClCompile Include="Src\Aurora\A2D\PrimitiveBatch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Random.cpp">
@@ -122,7 +122,7 @@
     <ClCompile Include="Src\Aurora\Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\SpriteBatch.cpp">
+    <ClCompile Include="Src\Aurora\A2D\SpriteBatch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Texture2D.cpp">

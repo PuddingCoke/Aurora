@@ -1,4 +1,4 @@
-#include<Aurora/BitmapFont.h>
+#include<Aurora/A2D/BitmapFont.h>
 
 BitmapFont* BitmapFont::create(const std::wstring& bitmapPath, const std::string& configFilePath, const int& fontSize)
 {

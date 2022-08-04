@@ -5,10 +5,10 @@
 
 #include<vector>
 
-#include"BitmapFont.h"
-#include"Texture2D.h"
-#include"RenderTexture.h"
-#include"Shader.h"
+#include<Aurora/A2D/BitmapFont.h>
+#include<Aurora/Texture2D.h>
+#include<Aurora/RenderTexture.h>
+#include<Aurora/Shader.h>
 
 class SpriteBatch
 {
