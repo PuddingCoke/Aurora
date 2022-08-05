@@ -3,6 +3,9 @@
 #ifndef _AURORA_H_
 #define _AURORA_H_
 
+//windows.h中也定义了min函数导致无法使用assimp https://github.com/assimp/assimp/issues/2271
+#define NOMINMAX
+
 #include<Windows.h>
 #include<d3d11_4.h>
 #include<chrono>

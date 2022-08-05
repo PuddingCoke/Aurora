@@ -9,8 +9,6 @@
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
 
-#include<WICTextureLoader.h>
-
 class MyGame :public Game
 {
 public:

@@ -90,6 +90,9 @@
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\A3D\Model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -156,6 +159,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\A3D\Model.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

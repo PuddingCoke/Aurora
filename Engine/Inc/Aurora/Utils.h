@@ -25,6 +25,8 @@ public:
 		File(const File&) = delete;
 
 		static std::string readAllText(const std::string& filePath);
+
+		static std::string getExtension(const std::string& fileName);
 	};
 
 };

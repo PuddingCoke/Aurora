@@ -13,7 +13,7 @@ using Microsoft::WRL::ComPtr;
 class Graphics
 {
 public:
-
+	
 	static ComPtr<ID3D11Device4> device;
 
 	static ComPtr<ID3D11DeviceContext4> context;

@@ -13,3 +13,9 @@ std::string Utils::File::readAllText(const std::string& filePath)
 	}
 	return str;
 }
+
+std::string Utils::File::getExtension(const std::string& fileName)
+{
+	size_t idx = fileName.find_last_of('.');
+	return fileName.substr(idx + 1, fileName.size() - idx - 1);
+}
