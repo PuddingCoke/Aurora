@@ -82,7 +82,7 @@ public:
 
 	void update(const float& dt) override
 	{
-		theta += dt;
+		theta += dt * 2.f;
 
 		const DirectX::XMVECTOR rotPoint = DirectX::XMVector4Transform(eye, DirectX::XMMatrixRotationAxis(up, theta));
 
