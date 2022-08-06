@@ -1,4 +1,4 @@
-#include<Aurora/PostProcessing/BloomEffect.h>
+﻿#include<Aurora/PostProcessing/BloomEffect.h>
 
 BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height,const bool& enableBrightPixelExract) :
 	EffectBase(width, height), bloomWidth(width), bloomHeight(height), bloomParam{}

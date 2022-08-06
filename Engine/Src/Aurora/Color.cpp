@@ -1,4 +1,4 @@
-#include<Aurora/Color.h>
+﻿#include<Aurora/Color.h>
 
 int Color::toInt() const
 {

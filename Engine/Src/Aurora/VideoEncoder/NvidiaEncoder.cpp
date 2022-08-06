@@ -1,4 +1,4 @@
-#include<Aurora/VideoEncoder/NvidiaEncoder.h>
+﻿#include<Aurora/VideoEncoder/NvidiaEncoder.h>
 
 bool NvidiaEncoder::encode()
 {

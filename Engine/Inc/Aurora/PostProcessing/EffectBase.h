@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _EFFECTBASE_H_
 #define _EFFECTBASE_H_

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _STATE_COMMON_H_
 #define _STATE_COMMON_H_

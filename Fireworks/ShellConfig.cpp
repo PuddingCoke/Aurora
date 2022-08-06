@@ -1,4 +1,4 @@
-#include"ShellConfig.h"
+﻿#include"ShellConfig.h"
 
 float ShellConfiguration::globalShellSize = 2.f;
 

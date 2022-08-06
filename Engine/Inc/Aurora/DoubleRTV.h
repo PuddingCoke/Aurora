@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _DOUBLERTV_H_
 #define _DOUBLERTV_H_

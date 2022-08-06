@@ -1,4 +1,4 @@
-#include"Objects.h"
+﻿#include"Objects.h"
 
 Star* Star::global;
 

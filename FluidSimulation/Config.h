@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include<Aurora/Graphics.h>
 
@@ -28,7 +28,7 @@ DirectX::XMINT2 getResolution(const float& resolution)
 	return DirectX::XMINT2(max, min);
 }
 
-//Ã¿Ö¡¸üĞÂÒ»´Î
+//æ¯å¸§æ›´æ–°ä¸€æ¬¡
 struct BufferDynamic
 {
 	DirectX::XMFLOAT3 color0;

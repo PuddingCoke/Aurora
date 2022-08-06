@@ -1,4 +1,4 @@
-#include<Aurora/PostProcessing/FadeEffect.h>
+﻿#include<Aurora/PostProcessing/FadeEffect.h>
 
 FadeEffect::FadeEffect(RenderTexture* defRenderTexture):
 	EffectBase(defRenderTexture)

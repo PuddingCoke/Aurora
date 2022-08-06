@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include<Aurora/ParticleSystem.h>
 
@@ -8,7 +8,7 @@ public:
 
 	const unsigned int particleNum;
 
-	//Õâ¸ö²ÎÊı¾ö¶¨ÁËÁ£×ÓµÄÃ÷ÁÁ¶È
+	//è¿™ä¸ªå‚æ•°å†³å®šäº†ç²’å­çš„æ˜äº®åº¦
 	static constexpr float colorFactor = 1.f;
 
 	ComPtr<ID3D11InputLayout> inputLayout;
@@ -53,7 +53,7 @@ public:
 			}
 		}
 
-		//³õÊ¼»¯Á£×ÓÎ»ÖÃĞÅÏ¢
+		//åˆå§‹åŒ–ç²’å­ä½ç½®ä¿¡æ¯
 		{
 			D3D11_BUFFER_DESC bd = {};
 			bd.ByteWidth = particleNum * sizeof(DirectX::XMFLOAT4);
@@ -66,7 +66,7 @@ public:
 			Graphics::device->CreateBuffer(&bd, &subresource, particlePosBuffer.ReleaseAndGetAddressOf());
 		}
 
-		//´´½¨UAV Buffer
+		//åˆ›å»ºUAV Buffer
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 			uavDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -78,7 +78,7 @@ public:
 			Graphics::device->CreateUnorderedAccessView(particlePosBuffer.Get(), &uavDesc, uavView.GetAddressOf());
 		}
 
-		//³õÊ¼»¯Á£×ÓÑÕÉ«ĞÅÏ¢
+		//åˆå§‹åŒ–ç²’å­é¢œè‰²ä¿¡æ¯
 		{
 			D3D11_BUFFER_DESC bd = {};
 			bd.ByteWidth = particleNum * sizeof(DirectX::XMFLOAT4);
@@ -94,7 +94,7 @@ public:
 		delete[] positions;
 		delete[] colors;
 
-		//³õÊ¼»¯inputLayout
+		//åˆå§‹åŒ–inputLayout
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[2] =
 			{

@@ -1,4 +1,4 @@
-#include<Aurora/StateCommon.h>
+Ôªø#include<Aurora/StateCommon.h>
 
 ComPtr<ID3D11SamplerState> StateCommon::defSamplerState;
 
@@ -12,7 +12,7 @@ ComPtr<ID3D11DepthStencilState> StateCommon::defDepthStencilState;
 
 HRESULT StateCommon::ini()
 {
-	//≥ı ºªØdefSamplerState
+	//ÂàùÂßãÂåñdefSamplerState
 	{
 		D3D11_SAMPLER_DESC sampDesc = {};
 		sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -26,7 +26,7 @@ HRESULT StateCommon::ini()
 		Graphics::device->CreateSamplerState(&sampDesc, defSamplerState.ReleaseAndGetAddressOf());
 	}
 
-	//≥ı ºªØdefBlendState
+	//ÂàùÂßãÂåñdefBlendState
 	{
 		D3D11_BLEND_DESC blendStateDesc = {};
 
@@ -50,7 +50,7 @@ HRESULT StateCommon::ini()
 
 	}
 
-	//≥ı ºªØblendReplace
+	//ÂàùÂßãÂåñblendReplace
 	{
 		D3D11_BLEND_DESC blendStateDesc = {};
 
@@ -71,7 +71,7 @@ HRESULT StateCommon::ini()
 		Graphics::device->CreateBlendState(&blendStateDesc, blendReplace.ReleaseAndGetAddressOf());
 	}
 
-	//≥ı ºªØaddtiveBlend
+	//ÂàùÂßãÂåñaddtiveBlend
 	{
 		D3D11_BLEND_DESC blendStateDesc = {};
 
@@ -92,7 +92,7 @@ HRESULT StateCommon::ini()
 		Graphics::device->CreateBlendState(&blendStateDesc, addtiveBlend.ReleaseAndGetAddressOf());
 	}
 
-	//≥ı ºªØdefDepthStencilState
+	//ÂàùÂßãÂåñdefDepthStencilState
 	{
 		D3D11_DEPTH_STENCIL_DESC dsDesc = {};
 		dsDesc.DepthEnable = true;

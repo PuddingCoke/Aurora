@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _RANDOM_H_
 #define _RANDOM_H_

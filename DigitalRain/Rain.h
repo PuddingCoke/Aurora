@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/Graphics.h>

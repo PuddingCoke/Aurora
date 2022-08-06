@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _PRIMITIVEBATCH_H_
 #define _PRIMITIVEBATCH_H_

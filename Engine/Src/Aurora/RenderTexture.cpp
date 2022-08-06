@@ -1,4 +1,4 @@
-#include<Aurora/RenderTexture.h>
+ï»¿#include<Aurora/RenderTexture.h>
 
 ID3D11RenderTargetView* RenderTexture::renderTargetViews[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
 
@@ -80,7 +80,7 @@ void RenderTexture::unbindAll()
 RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4],const bool& enableMSAA) :
 	width(width), height(height), format(format), texture(Texture2D::create(width, height, format, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE))
 {
-	//´´½¨ÆÕÍ¨²ÄÖÊµÄRenderTargetView
+	//åˆ›å»ºæ™®é€šæè´¨çš„RenderTargetView
 	{
 		D3D11_RENDER_TARGET_VIEW_DESC viewDesc = {};
 		viewDesc.Format = format;
@@ -90,7 +90,7 @@ RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& heig
 		Graphics::device->CreateRenderTargetView(texture->getTexture2D(), &viewDesc, normalTarget.ReleaseAndGetAddressOf());
 	}
 
-	if(enableMSAA)//´´½¨¿¹¾â³İ²ÄÖÊÒÔ¼°RenderTargetView
+	if(enableMSAA)//åˆ›å»ºæŠ—é”¯é½¿æè´¨ä»¥åŠRenderTargetView
 	{
 		D3D11_TEXTURE2D_DESC tDesc = {};
 		tDesc.Width = width;

@@ -1,4 +1,4 @@
-#include<Aurora/Event.h>
+﻿#include<Aurora/Event.h>
 
 Event::Event():
 	idx(0)

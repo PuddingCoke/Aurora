@@ -1,4 +1,4 @@
-#include<Aurora/Utils.h>
+﻿#include<Aurora/Utils.h>
 
 std::string Utils::File::readAllText(const std::string& filePath)
 {

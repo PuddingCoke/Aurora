@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _NVIDIAENCODER_H_
 #define _NVIDIAENCODER_H_

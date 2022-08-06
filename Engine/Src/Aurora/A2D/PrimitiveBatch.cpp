@@ -1,4 +1,4 @@
-#include<Aurora/A2D/PrimitiveBatch.h>
+Ôªø#include<Aurora/A2D/PrimitiveBatch.h>
 
 PrimitiveBatch* PrimitiveBatch::instance = nullptr;
 
@@ -6,7 +6,7 @@ PrimitiveBatch::PrimitiveBatch()
 {
 	compileShaders();
 
-	//≥ı ºªØprimitiveInputLayout
+	//ÂàùÂßãÂåñprimitiveInputLayout
 	{
 		D3D11_INPUT_ELEMENT_DESC layout[2] =
 		{
@@ -20,7 +20,7 @@ PrimitiveBatch::PrimitiveBatch()
 			primitiveInputLayout.ReleaseAndGetAddressOf());
 	}
 
-	//≥ı ºªØcircleInputLayout
+	//ÂàùÂßãÂåñcircleInputLayout
 	{
 		D3D11_INPUT_ELEMENT_DESC layout[4] =
 		{
@@ -36,7 +36,7 @@ PrimitiveBatch::PrimitiveBatch()
 			circleInputLayout.ReleaseAndGetAddressOf());
 	}
 
-	//≥ı ºªØrcLineInputLayout
+	//ÂàùÂßãÂåñrcLineInputLayout
 	{
 		D3D11_INPUT_ELEMENT_DESC layout[3] =
 		{
@@ -417,7 +417,7 @@ void PrimitiveBatch::drawRoundCapLine(const float& x1, const float& y1, const fl
 PrimitiveBatch::LineRenderer::LineRenderer() :
 	vertices(new float[2 * 6 * maxLineNum]), idx(0)
 {
-	//≥ı ºªØvertexBuffer
+	//ÂàùÂßãÂåñvertexBuffer
 	{
 		D3D11_BUFFER_DESC vertexBufferDesc = {};
 		vertexBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
@@ -480,7 +480,7 @@ void PrimitiveBatch::LineRenderer::addLine(const float& x1, const float& y1, con
 PrimitiveBatch::CircleRenderer::CircleRenderer() :
 	vertices(new float[maxCircleNum * 7]), idx(0)
 {
-	//≥ı ºªØcircleBuffer
+	//ÂàùÂßãÂåñcircleBuffer
 	{
 		float unitCircle[256];
 
@@ -508,7 +508,7 @@ PrimitiveBatch::CircleRenderer::CircleRenderer() :
 		Graphics::device->CreateBuffer(&circleBufferDesc, &subResource, circleBuffer.ReleaseAndGetAddressOf());
 	}
 
-	//≥ı ºªØvertexBuffer
+	//ÂàùÂßãÂåñvertexBuffer
 	{
 		D3D11_BUFFER_DESC vertexBufferDesc = {};
 		vertexBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
@@ -573,7 +573,7 @@ void PrimitiveBatch::CircleRenderer::addCircle(const float& x, const float& y, c
 PrimitiveBatch::RCLineRenderer::RCLineRenderer() :
 	vertices(new float[maxLineNum * 7 * 2]), idx(0)
 {
-	//≥ı ºªØvertexBuffer
+	//ÂàùÂßãÂåñvertexBuffer
 	{
 		D3D11_BUFFER_DESC vertexBufferDesc = {};
 		vertexBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;

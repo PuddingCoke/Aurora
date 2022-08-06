@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include<iostream>
 
 #include<Aurora/Game.h>
@@ -107,7 +107,7 @@ public:
 		velocityVertex = Shader::fromFile("Shaders\\VelocityVertexShader.hlsl", ShaderType::Vertex);
 		displayVertex = Shader::fromFile("Shaders\\DisplayVertexShader.hlsl", ShaderType::Vertex);
 
-		//´´½¨×Ô¶¨ÒåµÄblendState
+		//åˆ›å»ºè‡ªå®šä¹‰çš„blendState
 		{
 			D3D11_BLEND_DESC blendStateDesc = {};
 
@@ -128,7 +128,7 @@ public:
 			Graphics::device->CreateBlendState(&blendStateDesc, blendState.ReleaseAndGetAddressOf());
 		}
 
-		//´´½¨linearSampler
+		//åˆ›å»ºlinearSampler
 		{
 			D3D11_SAMPLER_DESC sampDesc = {};
 			sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -142,7 +142,7 @@ public:
 			Graphics::device->CreateSamplerState(&sampDesc, linearSampler.ReleaseAndGetAddressOf());
 		}
 
-		//´´½¨pointSampler
+		//åˆ›å»ºpointSampler
 		{
 			D3D11_SAMPLER_DESC sampDesc = {};
 			sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -179,7 +179,7 @@ public:
 
 			sunraysTemp = RenderTexture::create(sunRes.x, sunRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent, false);
 
-			//´´½¨Êı¾İ²»±äµÄConstantBuffer
+			//åˆ›å»ºæ•°æ®ä¸å˜çš„ConstantBuffer
 			{
 				struct ConstantBuffer
 				{
@@ -221,7 +221,7 @@ public:
 			}
 		}
 
-		//´´½¨Ã¿Ö¡Òª¸üĞÂµÄConstantBuffer
+		//åˆ›å»ºæ¯å¸§è¦æ›´æ–°çš„ConstantBuffer
 		{
 			D3D11_BUFFER_DESC cbd = {};
 			cbd.ByteWidth = sizeof(BufferDynamic);

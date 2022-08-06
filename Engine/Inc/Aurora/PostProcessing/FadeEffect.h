@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _FADEEFFECT_H_
 #define _FADEEFFECT_H_

@@ -1,4 +1,4 @@
-#include<Aurora/Timer.h>
+﻿#include<Aurora/Timer.h>
 
 Timer::Timer() :
 	curTime(0), timeLimit(0)

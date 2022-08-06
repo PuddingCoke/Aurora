@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include"EffectBase.h"
 
 #ifndef _BLOOMEFFECT_H_
 #define _BLOOMEFFECT_H_
 
-// ¹ØÓÚÈçºÎÊµÏÖµÄ
+// å…³äºå¦‚ä½•å®ç°çš„
 //https://de45xmedrsdbp.cloudfront.net/Resources/files/The_Technology_Behind_the_Elemental_Demo_16x9-1248544805.pdf p60
 //https://www.intel.com/content/www/us/en/developer/articles/technical/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms.html
 //https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
@@ -35,7 +35,7 @@ public:
 
 	const float& getGamma() const;
 
-	//¸üĞÂÏò×ÅÉ«Æ÷´«ÈëµÄexposureºÍgamma
+	//æ›´æ–°å‘ç€è‰²å™¨ä¼ å…¥çš„exposureå’Œgamma
 	void applyChange() const;
 
 private:
@@ -50,7 +50,7 @@ private:
 
 	RenderTexture* originTexture;
 
-	//Ã÷ÁÁµÄÏñËØ»á±»ÌáÈ¡µ½Õâ¸öÌùÍ¼ÉÏ
+	//æ˜äº®çš„åƒç´ ä¼šè¢«æå–åˆ°è¿™ä¸ªè´´å›¾ä¸Š
 	RenderTexture* bloomTexture;
 
 	const unsigned int bloomWidth;

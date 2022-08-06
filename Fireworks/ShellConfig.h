@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _SHELLCONFIG_H_
 #define _SHELLCONFIG_H_

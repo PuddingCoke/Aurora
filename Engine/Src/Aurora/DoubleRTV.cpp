@@ -1,4 +1,4 @@
-#include<Aurora/DoubleRTV.h>
+﻿#include<Aurora/DoubleRTV.h>
 
 DoubleRTV::DoubleRTV(const UINT& width, const UINT& height, const DXGI_FORMAT& format) :
 	width(width), height(height),
