@@ -33,7 +33,7 @@ void Timer::setTimeLimit(const float& timeLimit)
 	this->timeLimit = timeLimit;
 }
 
-const float& Timer::getTimeLimit()
+const float& Timer::getTimeLimit() const
 {
 	return timeLimit;
 }

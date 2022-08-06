@@ -29,7 +29,7 @@ Model::~Model()
 
 }
 
-void Model::draw()
+void Model::draw() const
 {
 	Graphics::context->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
 

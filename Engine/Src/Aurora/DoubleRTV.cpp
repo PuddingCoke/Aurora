@@ -13,12 +13,12 @@ DoubleRTV::~DoubleRTV()
 	delete renderTexture2;
 }
 
-RenderTexture* DoubleRTV::read()
+RenderTexture* DoubleRTV::read() const
 {
 	return renderTexture1;
 }
 
-RenderTexture* DoubleRTV::write()
+RenderTexture* DoubleRTV::write() const
 {
 	return renderTexture2;
 }

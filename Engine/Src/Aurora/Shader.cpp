@@ -8,7 +8,7 @@ Shader::~Shader()
 	releaseFunc();
 }
 
-void Shader::use()
+void Shader::use() const
 {
 	useFunc();
 }

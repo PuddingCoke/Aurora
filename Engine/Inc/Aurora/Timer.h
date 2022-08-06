@@ -17,7 +17,7 @@ public:
 
 	void setTimeLimit(const float& timeLimit);
 
-	const float& getTimeLimit();
+	const float& getTimeLimit() const;
 
 private:
 

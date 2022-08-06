@@ -39,7 +39,7 @@ public:
 
 	ID3D11DeviceChild* shaderPtr;
 
-	void use();
+	void use() const;
 
 	static Shader* fromFile(const std::string& filePath, const ShaderType& type);
 

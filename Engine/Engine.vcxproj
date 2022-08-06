@@ -140,6 +140,7 @@
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
     <ClInclude Include="Inc\Aurora\Color.h" />
     <ClInclude Include="Inc\Aurora\Configuration.h" />
+    <ClInclude Include="Inc\Aurora\DepthStencilView.h" />
     <ClInclude Include="Inc\Aurora\DoubleRTV.h" />
     <ClInclude Include="Inc\Aurora\Event.h" />
     <ClInclude Include="Inc\Aurora\Game.h" />
@@ -168,6 +169,7 @@
     <ClCompile Include="Src\Aurora\Aurora.cpp" />
     <ClCompile Include="Src\Aurora\A2D\BitmapFont.cpp" />
     <ClCompile Include="Src\Aurora\Configuration.cpp" />
+    <ClCompile Include="Src\Aurora\DepthStencilView.cpp" />
     <ClCompile Include="Src\Aurora\DoubleRTV.cpp" />
     <ClCompile Include="Src\Aurora\Event.cpp" />
     <ClCompile Include="Src\Aurora\Graphics.cpp" />

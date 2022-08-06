@@ -23,7 +23,7 @@ public:
 	
 	~Model();
 
-	void draw();
+	void draw() const;
 
 	static void ini();
 

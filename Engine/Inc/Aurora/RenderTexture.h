@@ -26,9 +26,9 @@ public:
 
 	void setRTV(ID3D11DepthStencilView* const view = nullptr) const;
 
-	void clearMSAARTV(const float color[4]);
+	void clearMSAARTV(const float color[4]) const;
 
-	void clearRTV(const float color[4]);
+	void clearRTV(const float color[4]) const;
 
 	void resolve() const;
 

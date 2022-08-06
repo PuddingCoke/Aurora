@@ -230,17 +230,17 @@ void BloomEffect::setGamma(const float& gamma)
 	bloomParam.gamma = gamma;
 }
 
-const float& BloomEffect::getExposure()
+const float& BloomEffect::getExposure() const
 {
 	return bloomParam.exposure;
 }
 
-const float& BloomEffect::getGamma()
+const float& BloomEffect::getGamma() const
 {
 	return bloomParam.gamma;
 }
 
-void BloomEffect::applyChange()
+void BloomEffect::applyChange() const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData;
 	Graphics::context->Map(bloomParamBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);

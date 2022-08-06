@@ -7,6 +7,7 @@
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/A3D/Model.h>
+#include<Aurora/DepthStencilView.h>
 
 class MyGame :public Game
 {
@@ -22,9 +23,7 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	ComPtr<ID3D11Texture2D> depthStencilTexture;
-
-	ComPtr<ID3D11DepthStencilView> depthStencilView;
+	DepthStencilView* depthStencilView;
 
 	static constexpr DirectX::XMVECTORF32 up = { 0.f, 0.f, 1.f , 0.f };
 
@@ -47,7 +46,8 @@ public:
 	MyGame() :
 		models(Model::create("untitled.obj", numModels)),
 		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
-		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel))
+		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
+		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT))
 	{
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[3] =
@@ -70,29 +70,6 @@ public:
 			Graphics::device->CreateBuffer(&bd, nullptr, lightBuffer.ReleaseAndGetAddressOf());
 		}
 
-		{
-			D3D11_TEXTURE2D_DESC tDesc = {};
-			tDesc.Width = Graphics::getWidth();
-			tDesc.Height = Graphics::getHeight();
-			tDesc.MipLevels = 1;
-			tDesc.ArraySize = 1;
-			tDesc.Format = DXGI_FORMAT_D32_FLOAT;
-			tDesc.SampleDesc.Count = Graphics::getMSAALevel();
-			tDesc.SampleDesc.Quality = 0;
-			tDesc.Usage = D3D11_USAGE_DEFAULT;
-			tDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-			tDesc.CPUAccessFlags = 0;
-			tDesc.MiscFlags = 0;
-
-			Graphics::device->CreateTexture2D(&tDesc, nullptr, depthStencilTexture.ReleaseAndGetAddressOf());
-
-			D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-			dsvDesc.Format = tDesc.Format;
-			dsvDesc.ViewDimension = D3D11_DSV_DIMENSION::D3D11_DSV_DIMENSION_TEXTURE2DMS;
-			dsvDesc.Texture2D.MipSlice = 0;
-
-			Graphics::device->CreateDepthStencilView(depthStencilTexture.Get(), &dsvDesc, depthStencilView.ReleaseAndGetAddressOf());
-		}
 	}
 
 	~MyGame()
@@ -100,6 +77,7 @@ public:
 		delete[] models;
 		delete modelVShader;
 		delete modelPShader;
+		delete depthStencilView;
 	}
 
 	void update(const float& dt) override
@@ -126,8 +104,8 @@ public:
 
 	void render() override
 	{
-		Graphics::context->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-		Graphics::setDefRTV(depthStencilView.Get());
+		Graphics::context->ClearDepthStencilView(depthStencilView->get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		Graphics::setDefRTV(depthStencilView->get());
 		Graphics::clearDefRTV(DirectX::Colors::Black);
 
 		Graphics::setBlendState(StateCommon::defBlendState.Get());

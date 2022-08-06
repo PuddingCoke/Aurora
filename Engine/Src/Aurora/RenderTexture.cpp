@@ -22,12 +22,12 @@ void RenderTexture::setRTV(ID3D11DepthStencilView* const view) const
 	Graphics::context->OMSetRenderTargets(1, normalTarget.GetAddressOf(), view);
 }
 
-void RenderTexture::clearMSAARTV(const float color[4])
+void RenderTexture::clearMSAARTV(const float color[4]) const
 {
 	Graphics::context->ClearRenderTargetView(msaaTarget.Get(), color);
 }
 
-void RenderTexture::clearRTV(const float color[4])
+void RenderTexture::clearRTV(const float color[4]) const
 {
 	Graphics::context->ClearRenderTargetView(normalTarget.Get(), color);
 }

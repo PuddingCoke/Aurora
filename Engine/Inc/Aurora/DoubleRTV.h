@@ -17,9 +17,9 @@ public:
 
 	const unsigned int height;
 
-	RenderTexture* read();
+	RenderTexture* read() const;
 
-	RenderTexture* write();
+	RenderTexture* write() const;
 
 	void swap();
 

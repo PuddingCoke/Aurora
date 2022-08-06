@@ -31,12 +31,12 @@ public:
 
 	void setGamma(const float& gamma);
 
-	const float& getExposure();
+	const float& getExposure() const;
 
-	const float& getGamma();
+	const float& getGamma() const;
 
 	//更新向着色器传入的exposure和gamma
-	void applyChange();
+	void applyChange() const;
 
 private:
 
