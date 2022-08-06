@@ -19,7 +19,7 @@ public:
 
 	Model(const Model&) = delete;
 
-	static Model* create(const std::string& path, unsigned int& numMesh);
+	static Model* create(const std::string& path, unsigned int& numModels);
 	
 	~Model();
 
@@ -43,6 +43,21 @@ private:
 
 	//vertex texCoord normal
 	ComPtr<ID3D11Buffer> meshBuffer;
+
+	//ambient diffuse ...
+	ComPtr<ID3D11Buffer> materialBuffer;
+
+	struct MaterialProperty
+	{
+		DirectX::XMFLOAT3 ambientColor;
+		float shininess;
+		DirectX::XMFLOAT3 diffuseColor;
+		float refraction;
+		DirectX::XMFLOAT3 specularColor;
+		float opacity;
+		DirectX::XMFLOAT3 emmisiveColor;
+		float v3;
+	};
 
 };
 
