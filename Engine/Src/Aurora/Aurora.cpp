@@ -658,6 +658,8 @@ void Aurora::runEncode()
 		Graphics::updateGPUDeltaTimes();
 	} while (nvidiaEncoder.encode());
 
+	std::cout << "[class Aurora] encoding complete!\n";
+
 	std::cin.get();
 }
 

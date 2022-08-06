@@ -131,7 +131,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate, b
 	memcpy(&config, &presetConfig.presetCfg, sizeof(NV_ENC_CONFIG));
 	config.version = NV_ENC_CONFIG_VER;
 	config.profileGUID = profile;
-	config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_MODE::NV_ENC_PARAMS_RC_CBR;
+	config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_MODE::NV_ENC_PARAMS_RC_VBR;
 	config.rcParams.averageBitRate = 30000000U;
 	config.rcParams.maxBitRate = 40000000U;
 	config.gopLength = NVENC_INFINITE_GOPLENGTH;
@@ -167,6 +167,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate, b
 	std::cout << "[class NvidiaEncoder] render at " << Graphics::getWidth() << " x " << Graphics::getHeight() << "\n";
 	std::cout << "[class NvidiaEncoder] frameRate " << frameRate << "\n";
 	std::cout << "[class NvidiaEncoder] frameToEncode " << frameToEncode << "\n";
+	std::cout << "[class NvidiaEncoder] start encoding\n";
 
 	stream = _popen("ffmpeg -y -f h264 -i pipe: -c copy output.mp4", "wb");
 
