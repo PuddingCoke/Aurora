@@ -35,7 +35,7 @@ public:
 
 	float theta = 0.f;
 
-	float theta2 = 0.f;
+	float theta2 = 0.25f;
 
 	float curRadius = 1.5f;
 
