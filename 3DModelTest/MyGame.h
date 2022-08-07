@@ -128,7 +128,7 @@ public:
 
 		Graphics::setView(DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eyeRotated), focusPoint, up)));
 
-		const float lightRadius = 1.25f;
+		const float lightRadius = 1.15f;
 
 		lightInfo.lightPos = DirectX::XMFLOAT3(lightRadius * cosf(theta2) * cosf(theta) + eyeOrigin.x, lightRadius * cosf(theta2) * sinf(theta) + eyeOrigin.y, lightRadius * sinf(theta2) + eyeOrigin.z);
 		lightInfo.viewPos = DirectX::XMFLOAT3(eyeRotated.x, eyeRotated.y, eyeRotated.z);

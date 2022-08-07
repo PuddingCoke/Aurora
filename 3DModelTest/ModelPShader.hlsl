@@ -96,7 +96,7 @@ float4 main(PixelInput input) : SV_TARGET
     float distance = length(lightPos - input.position);
     float attenuation = 1.0 / (distance * distance);
     
-    const float3 lightColor = float3(6.0, 6.0, 6.0);
+    const float3 lightColor = float3(8.0, 8.0, 8.0);
     
     float3 radiance = lightColor * attenuation;
     
