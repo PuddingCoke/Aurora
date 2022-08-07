@@ -51,8 +51,8 @@ static void getSysResolution(int& width, int& height)
 
 	std::cout << "[class Aurora] system dpi " << dpi << "\n";
 
-	width *= dpi / 96.f;
-	height *= dpi / 96.f;
+	width = width * dpi / 96;
+	height = height * dpi / 96;
 }
 
 #pragma managed(push, off)
@@ -218,6 +218,11 @@ LRESULT __stdcall Aurora::WallpaperMouseProc(int nCode, WPARAM wParam, LPARAM lP
 			Mouse::rightDown = false;
 			Mouse::rightUpEvent();
 			break;
+
+		case WM_MOUSEWHEEL:
+			Mouse::wheelDelta = (float)GET_WHEEL_DELTA_WPARAM(wParam);
+			Mouse::scrollEvent();
+			break;
 		}
 
 	}
@@ -269,6 +274,11 @@ LRESULT Aurora::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONUP:
 		Mouse::rightDown = false;
 		Mouse::rightUpEvent();
+		break;
+
+	case WM_MOUSEWHEEL:
+		Mouse::wheelDelta = (float)GET_WHEEL_DELTA_WPARAM(wParam);
+		Mouse::scrollEvent();
 		break;
 
 	case WM_KEYDOWN:
@@ -658,7 +668,7 @@ void Aurora::runEncode()
 		Graphics::updateGPUDeltaTimes();
 	} while (nvidiaEncoder.encode());
 
-	std::cout << "[class Aurora] encoding complete!\n";
+	std::cout << "[class Aurora] encode complete!\n";
 
 	std::cin.get();
 }

@@ -25,13 +25,21 @@ public:
 
 	DepthStencilView* depthStencilView;
 
+	static constexpr float focusY = 0.60f;
+
 	static constexpr DirectX::XMVECTORF32 up = { 0.f, 0.f, 1.f , 0.f };
 
-	static constexpr DirectX::XMVECTORF32 focusPoint = { 0.f,0.f,0.5f,1.f };
+	static constexpr DirectX::XMVECTORF32 focusPoint = { 0.f,0.f,focusY,1.f };
 
-	static constexpr DirectX::XMVECTORF32 eye = { 0.f,-1.f,1.f,1.f };
+	static constexpr DirectX::XMFLOAT3 eyeOrigin = DirectX::XMFLOAT3(0.f, 0.f, focusY);
 
-	float theta = 0.1f;
+	float theta = 0.f;
+
+	float theta2 = 0.f;
+
+	float curRadius = 1.5f;
+
+	float targetRadius = 1.5f;
 
 	struct LightInfo
 	{
@@ -44,7 +52,7 @@ public:
 	ComPtr<ID3D11Buffer> lightBuffer;
 
 	MyGame() :
-		models(Model::create("untitled.obj", numModels)),
+		models(Model::create("DNA.obj", numModels)),
 		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
 		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT))
@@ -70,6 +78,28 @@ public:
 			Graphics::device->CreateBuffer(&bd, nullptr, lightBuffer.ReleaseAndGetAddressOf());
 		}
 
+		Mouse::addMoveEvent([this]()
+			{
+				if (Mouse::getLeftDown())
+				{
+					theta += Mouse::getDX() * Graphics::getDeltaTime();
+					theta2 -= Mouse::getDY() * Graphics::getDeltaTime();
+
+					if (theta2 > Math::half_pi - 0.1f)
+					{
+						theta2 = Math::half_pi - 0.1f;
+					}
+					else if (theta2 < -Math::half_pi + 0.1f)
+					{
+						theta2 = -Math::half_pi + 0.1f;
+					}
+				}
+			});
+
+		Mouse::addScrollEvent([this]()
+			{
+				targetRadius -= Mouse::getWheelDelta() * Graphics::getDeltaTime() * 0.3f;
+			});
 	}
 
 	~MyGame()
@@ -80,18 +110,27 @@ public:
 		delete depthStencilView;
 	}
 
+	float lerp(const float& x, const float& y, const float& s)
+	{
+		return x * (1 - s) + y * s;
+	}
+
 	void update(const float& dt) override
 	{
-		theta += dt * 2.f;
+		if (abs(curRadius - targetRadius) > 0.001f)
+		{
+			curRadius = lerp(curRadius, targetRadius, 10.f * Graphics::getDeltaTime());
+		}
 
-		const DirectX::XMVECTOR rotPoint = DirectX::XMVector4Transform(eye, DirectX::XMMatrixRotationAxis(up, theta));
+		DirectX::XMFLOAT4 eyeRotated = DirectX::XMFLOAT4(curRadius * cosf(theta2) * cosf(theta) + eyeOrigin.x, curRadius * cosf(theta2) * sinf(theta) + eyeOrigin.y, curRadius * sinf(theta2) + eyeOrigin.z, 1.f);
 
-		Graphics::setView(DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(rotPoint, focusPoint, up)));
+		DirectX::XMLoadFloat4(&eyeRotated);
 
-		DirectX::XMFLOAT4 eyeRotated;
-		DirectX::XMStoreFloat4(&eyeRotated, rotPoint);
+		Graphics::setView(DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eyeRotated), focusPoint, up)));
 
-		lightInfo.lightPos = DirectX::XMFLOAT3(eyeRotated.x, eyeRotated.y, eyeRotated.z);
+		const float lightRadius = 1.25f;
+
+		lightInfo.lightPos = DirectX::XMFLOAT3(lightRadius * cosf(theta2) * cosf(theta) + eyeOrigin.x, lightRadius * cosf(theta2) * sinf(theta) + eyeOrigin.y, lightRadius * sinf(theta2) + eyeOrigin.z);
 		lightInfo.viewPos = DirectX::XMFLOAT3(eyeRotated.x, eyeRotated.y, eyeRotated.z);
 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -106,7 +145,7 @@ public:
 	{
 		Graphics::context->ClearDepthStencilView(depthStencilView->get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 		Graphics::setDefRTV(depthStencilView->get());
-		Graphics::clearDefRTV(DirectX::Colors::Black);
+		Graphics::clearDefRTV(DirectX::Colors::DimGray);
 
 		Graphics::setBlendState(StateCommon::defBlendState.Get());
 		modelVShader->use();

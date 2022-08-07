@@ -21,6 +21,8 @@ public:
 
 	static const float& getDY();
 
+	static const float& getWheelDelta();
+
 	static const bool& getLeftDown();
 
 	static const bool& getRightDown();
@@ -35,6 +37,8 @@ public:
 
 	static int addRightUpEvent(std::function<void(void)> func);
 
+	static int addScrollEvent(std::function<void(void)> func);
+
 	static void removeMoveEvent(const int& id);
 
 	static void removeLeftDownEvent(const int& id);
@@ -44,6 +48,8 @@ public:
 	static void removeLeftUpEvent(const int& id);
 
 	static void removeRightUpEvent(const int& id);
+
+	static void removeScrollEvent(const int& id);
 
 private:
 
@@ -56,6 +62,8 @@ private:
 	static float dx;
 
 	static float dy;
+
+	static float wheelDelta;
 
 	static bool leftDown;
 
@@ -70,6 +78,8 @@ private:
 	static Event leftUpEvent;
 
 	static Event rightUpEvent;
+
+	static Event scrollEvent;
 
 };
 
