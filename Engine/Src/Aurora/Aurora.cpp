@@ -220,7 +220,7 @@ LRESULT __stdcall Aurora::WallpaperMouseProc(int nCode, WPARAM wParam, LPARAM lP
 			break;
 
 		case WM_MOUSEWHEEL:
-			Mouse::wheelDelta = (float)GET_WHEEL_DELTA_WPARAM(wParam);
+			Mouse::wheelDelta = (float)GET_WHEEL_DELTA_WPARAM(wParam) / 120.f;
 			Mouse::scrollEvent();
 			break;
 		}
@@ -277,7 +277,7 @@ LRESULT Aurora::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_MOUSEWHEEL:
-		Mouse::wheelDelta = (float)GET_WHEEL_DELTA_WPARAM(wParam);
+		Mouse::wheelDelta = (float)GET_WHEEL_DELTA_WPARAM(wParam) / 120.f;
 		Mouse::scrollEvent();
 		break;
 

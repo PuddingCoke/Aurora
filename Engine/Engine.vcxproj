@@ -189,6 +189,7 @@
     <ClCompile Include="Src\Aurora\Texture2D.cpp" />
     <ClCompile Include="Src\Aurora\Timer.cpp" />
     <ClCompile Include="Src\Aurora\Utils.cpp" />
+    <ClCompile Include="Src\Aurora\Math.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

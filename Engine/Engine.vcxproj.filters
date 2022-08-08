@@ -170,5 +170,8 @@
     <ClCompile Include="Src\Aurora\DepthStencilView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Aurora\Math.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

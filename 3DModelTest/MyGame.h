@@ -82,23 +82,19 @@ public:
 			{
 				if (Mouse::getLeftDown())
 				{
-					theta += Mouse::getDX() * Graphics::getDeltaTime();
-					theta2 -= Mouse::getDY() * Graphics::getDeltaTime();
-
-					if (theta2 > Math::half_pi - 0.1f)
-					{
-						theta2 = Math::half_pi - 0.1f;
-					}
-					else if (theta2 < -Math::half_pi + 0.1f)
-					{
-						theta2 = -Math::half_pi + 0.1f;
-					}
+					theta += Mouse::getDX() * 0.02f;
+					theta2 -= Mouse::getDY() * 0.02f;
+					theta2 = Math::clamp(theta2, -Math::half_pi + 0.1f, Math::half_pi - 0.1f);
 				}
 			});
 
 		Mouse::addScrollEvent([this]()
 			{
-				targetRadius -= Mouse::getWheelDelta() * Graphics::getDeltaTime() * 0.3f;
+				targetRadius -= Mouse::getWheelDelta() * 0.5f;
+				if (targetRadius < 0.1f)
+				{
+					targetRadius = 0.1f;
+				}
 			});
 	}
 
@@ -110,22 +106,17 @@ public:
 		delete depthStencilView;
 	}
 
-	float lerp(const float& x, const float& y, const float& s)
-	{
-		return x * (1 - s) + y * s;
-	}
-
 	void update(const float& dt) override
 	{
-		if (abs(curRadius - targetRadius) > 0.001f)
+		if (abs(curRadius - targetRadius) > 0.01f)
 		{
-			curRadius = lerp(curRadius, targetRadius, 10.f * Graphics::getDeltaTime());
+			curRadius = Math::lerp(curRadius, targetRadius, 10.f * Graphics::getDeltaTime());
 		}
-
+		
 		DirectX::XMFLOAT4 eyeRotated = DirectX::XMFLOAT4(curRadius * cosf(theta2) * cosf(theta) + eyeOrigin.x, curRadius * cosf(theta2) * sinf(theta) + eyeOrigin.y, curRadius * sinf(theta2) + eyeOrigin.z, 1.f);
 
 		DirectX::XMLoadFloat4(&eyeRotated);
-
+		
 		Graphics::setView(DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eyeRotated), focusPoint, up)));
 
 		const float lightRadius = 1.15f;
