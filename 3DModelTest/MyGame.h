@@ -61,7 +61,7 @@ public:
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
 		tonemapShader(Shader::fromFile("TonemapPShader.hlsl",ShaderType::Pixel)),
 		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT)),
-		envTexture(Texture2D::create("Alexs_Apt_2k.hdr"))
+		envTexture(Texture2D::create("Tufts-Parking-Lot_Ref.hdr"))
 	{
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[3] =

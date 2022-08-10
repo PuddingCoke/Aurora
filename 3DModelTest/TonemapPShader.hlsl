@@ -1,8 +1,8 @@
 Texture2D tTexture : register(t0);
 SamplerState samplerState : register(s0);
 
-static const float exposure = 1.0;
-static const float gamma = 1.0;
+static const float exposure = 1.5;
+static const float gamma = 2.2;
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
