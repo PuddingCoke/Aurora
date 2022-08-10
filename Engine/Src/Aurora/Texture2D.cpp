@@ -73,11 +73,10 @@ Texture2D::Texture2D(const std::string& path) :
 			tDesc.Height = (UINT)textureHeight;
 			tDesc.SampleDesc.Count = 1;
 			tDesc.SampleDesc.Quality = 0;
-			tDesc.Usage = D3D11_USAGE_DEFAULT;
+			tDesc.Usage = D3D11_USAGE_IMMUTABLE;
 			
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 4u;
-			subresource.SysMemSlicePitch = width * height * 4u;
 			
 			Graphics::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
 
