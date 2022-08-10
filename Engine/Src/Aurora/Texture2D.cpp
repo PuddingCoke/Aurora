@@ -87,11 +87,37 @@ Texture2D::Texture2D(const std::string& path) :
 	}
 	else if (fileExtension == "hdr")
 	{
-		float* pixels = stbi_loadf(path.c_str(), &textureWidth, &textureHeight, &channels, 0);
+		float* pixels = stbi_loadf(path.c_str(), &textureWidth, &textureHeight, &channels, 4);
 
-		std::cout << channels << "\n";
+		width = textureWidth;
+		height = textureHeight;
+		format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 
-		stbi_image_free(pixels);
+		if (pixels)
+		{
+			tDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			tDesc.ArraySize = 1;
+			tDesc.MipLevels = 1;
+			tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			tDesc.Width = (UINT)textureWidth;
+			tDesc.Height = (UINT)textureHeight;
+			tDesc.SampleDesc.Count = 1;
+			tDesc.SampleDesc.Quality = 0;
+			tDesc.Usage = D3D11_USAGE_IMMUTABLE;
+
+			subresource.pSysMem = pixels;
+			subresource.SysMemPitch = width * 16u;
+
+			Graphics::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
+
+			stbi_image_free(pixels);
+
+			createShaderResource();
+		}
+	}
+	else
+	{
+		std::cout << "[class Texture2D] image format is not supported!\n";
 	}
 
 	std::cout << "[class Texture2D] " << path << " create successfully!\n";

@@ -104,39 +104,39 @@ int Aurora::iniEngine(const Configuration& config)
 
 	if (SUCCEEDED(iniWindow()))
 	{
-		std::cout << "[class Aurora] Create window successfully!\n";
+		std::cout << "[class Aurora] create window successfully!\n";
 	}
 	else
 	{
-		std::cout << "[class Aurora] Create window failed!\n";
+		std::cout << "[class Aurora] create window failed!\n";
 		return 1;
 	}
 
 	if (SUCCEEDED(iniDevice()))
 	{
-		std::cout << "[class Aurora] Create device successfully!\n";
+		std::cout << "[class Aurora] create device successfully!\n";
 	}
 	else
 	{
-		std::cout << "[class Aurora] Create device failed!\n";
+		std::cout << "[class Aurora] create device failed!\n";
 	}
 
 	if (SUCCEEDED(iniGameConstant()))
 	{
-		std::cout << "[class Aurora] Create game constants successfully!\n";
+		std::cout << "[class Aurora] create game constants successfully!\n";
 	}
 	else
 	{
-		std::cout << "[class Aurora] Create game constants failed!\n";
+		std::cout << "[class Aurora] create game constants failed!\n";
 	}
 
 	if (SUCCEEDED(StateCommon::ini()))
 	{
-		std::cout << "[class Aurora] StateCommon initialize successfully\n";
+		std::cout << "[class Aurora] stateCommon initialize successfully\n";
 	}
 	else
 	{
-		std::cout << "[class Aurora] StateCommon initialize failed\n";
+		std::cout << "[class Aurora] stateCommon initialize failed\n";
 	}
 
 	Shader::ini();
@@ -445,12 +445,12 @@ HRESULT Aurora::iniDevice()
 
 		if (config->enableDebug)
 		{
-			std::cout << "[class Aurora] Enable debug!\n";
+			std::cout << "[class Aurora] enable debug!\n";
 			deviceFlag = D3D11_CREATE_DEVICE_DEBUG;
 		}
 		else
 		{
-			std::cout << "[class Aurora] Disable debug!\n";
+			std::cout << "[class Aurora] disable debug!\n";
 			deviceFlag = (D3D11_CREATE_DEVICE_FLAG)0;
 		}
 
@@ -585,12 +585,12 @@ HRESULT Aurora::iniGameConstant()
 		{
 		default:
 		case Configuration::CameraType::Orthogonal:
-			std::cout << "[class Aurora] Orthogonal camera\n";
+			std::cout << "[class Aurora] orthogonal camera\n";
 			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::width, 0, (float)Graphics::height, 0.f, 1.f)));
 			Graphics::setView(DirectX::XMMatrixIdentity());
 			break;
 		case Configuration::CameraType::Perspective:
-			std::cout << "[class Aurora] Perspective camera\n";
+			std::cout << "[class Aurora] perspective camera\n";
 			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f)));
 			break;
 		}
@@ -650,11 +650,11 @@ void Aurora::runEncode()
 
 	if (initializeStatus)
 	{
-		std::cout << "[class Aurora] Initialize encoder successfully\n";
+		std::cout << "[class Aurora] initialize encoder successfully\n";
 	}
 	else
 	{
-		std::cout << "[class Aurora] Failed to initialize encoder\n";
+		std::cout << "[class Aurora] failed to initialize encoder\n";
 		return;
 	}
 

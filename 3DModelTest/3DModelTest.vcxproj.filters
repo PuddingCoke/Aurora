@@ -27,5 +27,6 @@
   <ItemGroup>
     <FxCompile Include="ModelVShader.hlsl" />
     <FxCompile Include="ModelPShader.hlsl" />
+    <FxCompile Include="TonemapPShader.hlsl" />
   </ItemGroup>
 </Project>

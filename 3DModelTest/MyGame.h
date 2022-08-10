@@ -51,11 +51,17 @@ public:
 
 	ComPtr<ID3D11Buffer> lightBuffer;
 
+	Texture2D* envTexture;
+
+	Shader* tonemapShader;
+
 	MyGame() :
 		models(Model::create("DNA.obj", numModels)),
 		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
-		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT))
+		tonemapShader(Shader::fromFile("TonemapPShader.hlsl",ShaderType::Pixel)),
+		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT)),
+		envTexture(Texture2D::create("Alexs_Apt_2k.hdr"))
 	{
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[3] =
@@ -104,6 +110,8 @@ public:
 		delete modelVShader;
 		delete modelPShader;
 		delete depthStencilView;
+		delete envTexture;
+		delete tonemapShader;
 	}
 
 	void update(const float& dt) override
@@ -133,8 +141,21 @@ public:
 	void render() override
 	{
 		depthStencilView->clear(D3D11_CLEAR_DEPTH);
-		Graphics::setDefRTV(depthStencilView->get());
+
 		Graphics::clearDefRTV(DirectX::Colors::DimGray);
+
+		Graphics::setDefRTV();
+
+		Shader::displayVShader->use();
+		tonemapShader->use();
+
+		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		envTexture->setSRV(0);
+
+		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Graphics::context->Draw(3, 0);
+
+		Graphics::setDefRTV(depthStencilView->get());
 
 		Graphics::setBlendState(StateCommon::defBlendState.Get());
 		modelVShader->use();
