@@ -176,6 +176,7 @@
     <ClCompile Include="Src\Aurora\Graphics.cpp" />
     <ClCompile Include="Src\Aurora\Keyboard.cpp" />
     <ClCompile Include="Src\Aurora\Mouse.cpp" />
+    <ClCompile Include="Src\Aurora\stb_image.cpp" />
     <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp" />

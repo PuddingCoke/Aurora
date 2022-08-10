@@ -8,9 +8,10 @@
 #include<memory>
 #include<iostream>
 
-#include<WICTextureLoader.h>
+#include<stb_image/stb_image.h>
 
 #include"Graphics.h"
+#include"Utils.h"
 
 class Texture2D
 {
@@ -22,9 +23,7 @@ public:
 
 	void operator=(const Texture2D&) = delete;
 
-	static Texture2D* create(const std::wstring& path);
-
-	static Texture2D* create(ID3D11Texture2D* const texture);
+	static Texture2D* create(const std::string& path);
 	
 	static Texture2D* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
 
@@ -44,9 +43,11 @@ private:
 
 	friend class SpriteBatch;
 
-	Texture2D(const std::wstring& path);
+	Texture2D(const std::string& path);
 
 	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
+
+	void createShaderResource();
 
 	ComPtr<ID3D11ShaderResourceView> resourceView;
 

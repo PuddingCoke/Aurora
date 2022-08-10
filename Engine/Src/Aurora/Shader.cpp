@@ -62,6 +62,8 @@ VertexOutput main(uint vertexID : SV_VertexID)
 
 		const ShaderType type = ShaderType::Vertex;
 
+		std::cout << "displayVShader ";
+
 		displayVShader = Shader::fromStr(source, type);
 	}
 
@@ -78,6 +80,8 @@ float4 main(float2 texCoord:TEXCOORD) : SV_TARGET
 		)";
 
 		const ShaderType type = ShaderType::Pixel;
+
+		std::cout << "displayPShader ";
 
 		displayPShader = Shader::fromStr(source, type);
 	}

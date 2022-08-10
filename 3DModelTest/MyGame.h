@@ -108,15 +108,13 @@ public:
 
 	void update(const float& dt) override
 	{
-		if (abs(curRadius - targetRadius) > 0.01f)
+		if ((curRadius - targetRadius) * (curRadius - targetRadius) > 0.0001f)
 		{
 			curRadius = Math::lerp(curRadius, targetRadius, 10.f * Graphics::getDeltaTime());
 		}
-		
+
 		DirectX::XMFLOAT4 eyeRotated = DirectX::XMFLOAT4(curRadius * cosf(theta2) * cosf(theta) + eyeOrigin.x, curRadius * cosf(theta2) * sinf(theta) + eyeOrigin.y, curRadius * sinf(theta2) + eyeOrigin.z, 1.f);
 
-		DirectX::XMLoadFloat4(&eyeRotated);
-		
 		Graphics::setView(DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eyeRotated), focusPoint, up)));
 
 		const float lightRadius = 1.15f;
@@ -134,7 +132,7 @@ public:
 
 	void render() override
 	{
-		Graphics::context->ClearDepthStencilView(depthStencilView->get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		depthStencilView->clear(D3D11_CLEAR_DEPTH);
 		Graphics::setDefRTV(depthStencilView->get());
 		Graphics::clearDefRTV(DirectX::Colors::DimGray);
 

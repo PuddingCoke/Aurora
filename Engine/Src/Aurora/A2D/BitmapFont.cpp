@@ -1,6 +1,6 @@
 ﻿#include<Aurora/A2D/BitmapFont.h>
 
-BitmapFont* BitmapFont::create(const std::wstring& bitmapPath, const std::string& configFilePath, const int& fontSize)
+BitmapFont* BitmapFont::create(const std::string& bitmapPath, const std::string& configFilePath, const int& fontSize)
 {
 	return new BitmapFont(bitmapPath, configFilePath, fontSize);
 }
@@ -32,7 +32,7 @@ const float& BitmapFont::getScale() const
 	return scale;
 }
 
-BitmapFont::BitmapFont(const std::wstring& bitmapPath, const std::string& configFilePath, const int& fontSize) :
+BitmapFont::BitmapFont(const std::string& bitmapPath, const std::string& configFilePath, const int& fontSize) :
 	fontSize(fontSize), originFontSize(0), scale(1), idx(0), vertices(new float[maxCharacterCount * 32]), texture2D(Texture2D::create(bitmapPath))
 {
 	std::ifstream stream(configFilePath);

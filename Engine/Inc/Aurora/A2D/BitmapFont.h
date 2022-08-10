@@ -13,7 +13,7 @@ class BitmapFont
 {
 public:
 
-	static BitmapFont* create(const std::wstring& bitmapPath, const std::string& configFilePath, const int& fontSize = -1);
+	static BitmapFont* create(const std::string& bitmapPath, const std::string& configFilePath, const int& fontSize = -1);
 
 	BitmapFont() = delete;
 
@@ -50,7 +50,7 @@ private:
 
 	friend class SpriteBatch;
 
-	BitmapFont(const std::wstring& bitmapPath, const std::string& configFilePath, const int& fontSize);
+	BitmapFont(const std::string& bitmapPath, const std::string& configFilePath, const int& fontSize);
 
 	void updateVerticesData() const;
 

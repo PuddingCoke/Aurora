@@ -30,6 +30,8 @@ public:
 
 	static const float& getAspectRatio();
 
+	static void setProj(const DirectX::XMMATRIX& proj);
+
 	static void setView(const DirectX::XMMATRIX& view);
 
 	static const int& getWidth();
@@ -49,8 +51,6 @@ private:
 	friend class Aurora;
 
 	friend class NvidiaEncoder;
-
-	static void setProj(const DirectX::XMMATRIX& proj);
 
 	static void updateGPUDeltaTimes();
 

@@ -1,6 +1,6 @@
 ﻿#include<Aurora/Texture2D.h>
 
-Texture2D* Texture2D::create(const std::wstring& path)
+Texture2D* Texture2D::create(const std::string& path)
 {
 	return new Texture2D(path);
 }
@@ -39,28 +39,63 @@ ID3D11Texture2D* Texture2D::getTexture2D() const
 	return texture2D.Get();
 }
 
-Texture2D::Texture2D(const std::wstring& path) :
+Texture2D::Texture2D(const std::string& path) :
 	poolIndex(-1)
 {
-	DirectX::CreateWICTextureFromFile(Graphics::device.Get(), path.c_str(), nullptr, resourceView.ReleaseAndGetAddressOf());
+	D3D11_TEXTURE2D_DESC tDesc = {};
 
-	ComPtr<ID3D11Resource> resource;
+	D3D11_SUBRESOURCE_DATA subresource = {};
 
-	resourceView->GetResource(resource.GetAddressOf());
+	int textureWidth, textureHeight, channels;
 
-	resource.As(&texture2D);
+	std::string fileExtension = Utils::File::getExtension(path);
 
-	D3D11_TEXTURE2D_DESC desc;
+	for (char& c : fileExtension)
+	{
+		c = std::tolower(c);
+	}
 
-	texture2D->GetDesc(&desc);
+	if (fileExtension == "jpg" || fileExtension == "jpeg" || fileExtension == "png")
+	{
+		unsigned char* pixels = stbi_load(path.c_str(), &textureWidth, &textureHeight, &channels, 4);
 
-	width = desc.Width;
+		width = textureWidth;
+		height = textureHeight;
+		format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-	height = desc.Height;
+		if (pixels)
+		{
+			tDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			tDesc.ArraySize = 1;
+			tDesc.MipLevels = 1;
+			tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			tDesc.Width = (UINT)textureWidth;
+			tDesc.Height = (UINT)textureHeight;
+			tDesc.SampleDesc.Count = 1;
+			tDesc.SampleDesc.Quality = 0;
+			tDesc.Usage = D3D11_USAGE_DEFAULT;
+			
+			subresource.pSysMem = pixels;
+			subresource.SysMemPitch = width * 4u;
+			subresource.SysMemSlicePitch = width * height * 4u;
+			
+			Graphics::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
 
-	format = desc.Format;
+			stbi_image_free(pixels);
 
-	std::wcout << "[class Texture2D] " << path << " create successfully!\n";
+			createShaderResource();
+		}
+	}
+	else if (fileExtension == "hdr")
+	{
+		float* pixels = stbi_loadf(path.c_str(), &textureWidth, &textureHeight, &channels, 0);
+
+		std::cout << channels << "\n";
+
+		stbi_image_free(pixels);
+	}
+
+	std::cout << "[class Texture2D] " << path << " create successfully!\n";
 }
 
 Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags) :
@@ -81,8 +116,16 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 
 	Graphics::device->CreateTexture2D(&tDesc, nullptr, texture2D.ReleaseAndGetAddressOf());
 
+	if (bindFlags & D3D11_BIND_SHADER_RESOURCE)
+	{
+		createShaderResource();
+	}
+}
+
+void Texture2D::createShaderResource()
+{
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = tDesc.Format;
+	srvDesc.Format = format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = -1;
