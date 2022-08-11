@@ -33,6 +33,8 @@ public:
 
 	const unsigned int& getHeight() const;
 
+	const DXGI_FORMAT& getFormat() const;
+
 	void setSRV(const UINT& slot = 0) const;
 
 	ID3D11ShaderResourceView* getSRV() const;

@@ -29,13 +29,13 @@ public:
 
 	static constexpr DirectX::XMVECTORF32 up = { 0.f, 0.f, 1.f , 0.f };
 
-	static constexpr DirectX::XMVECTORF32 focusPoint = { 0.f,0.f,focusY,1.f };
+	static constexpr DirectX::XMVECTORF32 focusPoint = { 0.f,0.f,0.f,1.f };
 
-	static constexpr DirectX::XMFLOAT3 eyeOrigin = DirectX::XMFLOAT3(0.f, 0.f, focusY);
+	static constexpr DirectX::XMFLOAT3 eyeOrigin = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 
 	float theta = 0.f;
 
-	float theta2 = 0.25f;
+	float theta2 = 0.f;
 
 	float curRadius = 1.5f;
 
@@ -51,17 +51,32 @@ public:
 
 	ComPtr<ID3D11Buffer> lightBuffer;
 
+	static constexpr UINT skySize = 1024;
+
 	Texture2D* envTexture;
 
-	Shader* tonemapShader;
+	Shader* cubeVShader;
+
+	Shader* cubePShader;
+
+	ComPtr<ID3D11Texture2D> envCube;
+
+	ComPtr<ID3D11ShaderResourceView> cubeSRV;
+
+	Shader* bgVShader;
+
+	Shader* bgPShader;
 
 	MyGame() :
 		models(Model::create("DNA.obj", numModels)),
 		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
-		tonemapShader(Shader::fromFile("TonemapPShader.hlsl",ShaderType::Pixel)),
 		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT)),
-		envTexture(Texture2D::create("Tufts-Parking-Lot_Ref.hdr"))
+		envTexture(Texture2D::create("Tufts-Parking-Lot_Ref.hdr")),
+		cubeVShader(Shader::fromFile("cubeVShader.hlsl", ShaderType::Vertex)),
+		cubePShader(Shader::fromFile("cubePShader.hlsl", ShaderType::Pixel)),
+		bgVShader(Shader::fromFile("BackgroundVShader.hlsl", ShaderType::Vertex)),
+		bgPShader(Shader::fromFile("BackgroundPShader.hlsl", ShaderType::Pixel))
 	{
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[3] =
@@ -79,15 +94,120 @@ public:
 			bd.ByteWidth = sizeof(LightInfo);
 			bd.Usage = D3D11_USAGE_DYNAMIC;
 			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 			Graphics::device->CreateBuffer(&bd, nullptr, lightBuffer.ReleaseAndGetAddressOf());
+		}
+
+		{
+			D3D11_TEXTURE2D_DESC tDesc = {};
+			tDesc.Width = skySize;
+			tDesc.Height = skySize;
+			tDesc.SampleDesc.Count = 1;
+			tDesc.SampleDesc.Quality = 0;
+			tDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+			tDesc.Format = envTexture->getFormat();
+			tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			tDesc.ArraySize = 6;
+			tDesc.MipLevels = 1;
+			Graphics::device->CreateTexture2D(&tDesc, nullptr, envCube.ReleaseAndGetAddressOf());
+		}
+
+		{
+			const DirectX::XMFLOAT4 eye = { 0,0,0,1 };
+
+			const DirectX::XMFLOAT4 focusPoints[6] =
+			{
+				DirectX::XMFLOAT4(1.0f,  0.0f,  0.0f,1.0f),
+				DirectX::XMFLOAT4(-1.0f,  0.0f,  0.0f,1.0f),
+				DirectX::XMFLOAT4(0.0f,  1.0f,  0.0f,1.0f),
+				DirectX::XMFLOAT4(0.0f, -1.0f,  0.0f,1.0f),
+				DirectX::XMFLOAT4(0.0f,  0.0f,  1.0f,1.0f),
+				DirectX::XMFLOAT4(0.0f,  0.0f, -1.0f,1.0f)
+			};
+
+			const DirectX::XMFLOAT4 upVectors[6] =
+			{
+				DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f),
+				DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f),
+				DirectX::XMFLOAT4(0.0f,  0.0f,  -1.0f,1.0f),
+				DirectX::XMFLOAT4(0.0f,  0.0f, 1.0f,1.0f),
+				DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f),
+				DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f)
+			};
+
+			DirectX::XMMATRIX viewMatrices[6];
+
+			for (int i = 0; i < 6; i++)
+			{
+				viewMatrices[i] = DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eye), DirectX::XMLoadFloat4(&focusPoints[i]), DirectX::XMLoadFloat4(&upVectors[i]));
+			}
+
+			ComPtr<ID3D11Texture2D> texture;
+
+			D3D11_TEXTURE2D_DESC tDesc = {};
+			tDesc.Format = envTexture->getFormat();
+			tDesc.Width = skySize;
+			tDesc.Height = skySize;
+			tDesc.ArraySize = 1;
+			tDesc.MipLevels = 1;
+			tDesc.Usage = D3D11_USAGE_STAGING;
+			tDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+			tDesc.SampleDesc.Count = 1;
+			tDesc.SampleDesc.Quality = 0;
+
+			Graphics::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+
+			RenderTexture* renderTexture = RenderTexture::create(skySize, skySize, tDesc.Format, DirectX::Colors::Black, false);
+
+			Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+			envTexture->setSRV(0);
+
+			cubeVShader->use();
+			cubePShader->use();
+
+			Graphics::setBlendState(StateCommon::defBlendState.Get());
+
+			renderTexture->setRTV();
+
+			Graphics::setViewport(skySize, skySize);
+
+			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 1000.f)));
+
+			for (int i = 0; i < 6; i++)
+			{
+				renderTexture->clearRTV(DirectX::Colors::Black);
+				Graphics::setView(DirectX::XMMatrixTranspose(viewMatrices[i]));
+				Graphics::context->Draw(36, 0);
+				Graphics::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
+				D3D11_MAPPED_SUBRESOURCE mappedData;
+				Graphics::context->Map(texture.Get(), 0, D3D11_MAP_READ, 0, &mappedData);
+				Graphics::context->UpdateSubresource(envCube.Get(), i, 0,
+					mappedData.pData, mappedData.RowPitch, mappedData.DepthPitch);
+				Graphics::context->Unmap(texture.Get(), 0);
+			}
+
+			delete renderTexture;
+
+			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+			srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+			srvDesc.TextureCube.MipLevels = 1;
+			srvDesc.TextureCube.MostDetailedMip = 0;
+
+			Graphics::device->CreateShaderResourceView(envCube.Get(), &srvDesc, cubeSRV.GetAddressOf());
+
+			Graphics::setViewport(Graphics::getWidth(), Graphics::getHeight());
+			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 1000.f)));
 		}
 
 		Mouse::addMoveEvent([this]()
 			{
 				if (Mouse::getLeftDown())
 				{
+					std::cout << theta << " " << theta2 << "\n";
 					theta += Mouse::getDX() * 0.02f;
 					theta2 -= Mouse::getDY() * 0.02f;
 					theta2 = Math::clamp(theta2, -Math::half_pi + 0.1f, Math::half_pi - 0.1f);
@@ -111,7 +231,10 @@ public:
 		delete modelPShader;
 		delete depthStencilView;
 		delete envTexture;
-		delete tonemapShader;
+		delete cubePShader;
+		delete cubeVShader;
+		delete bgPShader;
+		delete bgVShader;
 	}
 
 	void update(const float& dt) override
@@ -144,17 +267,6 @@ public:
 
 		Graphics::clearDefRTV(DirectX::Colors::DimGray);
 
-		Graphics::setDefRTV();
-
-		Shader::displayVShader->use();
-		tonemapShader->use();
-
-		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
-		envTexture->setSRV(0);
-
-		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Graphics::context->Draw(3, 0);
-
 		Graphics::setDefRTV(depthStencilView->get());
 
 		Graphics::setBlendState(StateCommon::defBlendState.Get());
@@ -163,10 +275,26 @@ public:
 
 		Graphics::context->IASetInputLayout(inputLayout.Get());
 
-		for (unsigned i = 0; i < numModels; i++)
-		{
-			models[i].draw();
-		}
+		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+
+		/*envTexture->setSRV(0);
+
+		cubeVShader->use();
+		cubePShader->use();*/
+
+		Graphics::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
+
+		bgVShader->use();
+		bgPShader->use();
+
+		Graphics::context->Draw(36, 0);
+
+		//for (unsigned i = 0; i < numModels; i++)
+		//{
+		//	models[i].draw();
+		//}
 
 	}
 };

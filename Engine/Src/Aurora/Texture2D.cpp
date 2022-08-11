@@ -24,6 +24,11 @@ const unsigned int& Texture2D::getHeight() const
 	return height;
 }
 
+const DXGI_FORMAT& Texture2D::getFormat() const
+{
+	return format;
+}
+
 void Texture2D::setSRV(const UINT& slot) const
 {
 	Graphics::context->PSSetShaderResources(slot, 1, resourceView.GetAddressOf());
