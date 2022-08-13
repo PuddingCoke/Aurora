@@ -6,7 +6,7 @@ static const float2 invAtan = float2(0.1591, 0.3183);
 
 float2 SampleSphjericalMap(float3 v)
 {
-    float2 uv = float2(atan2(v.z, v.x), asin(v.y));
+    float2 uv = float2(atan2(v.y, v.x), asin(-v.z));
     uv *= invAtan;
     uv += 0.5;
     return uv;

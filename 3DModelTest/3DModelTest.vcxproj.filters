@@ -31,5 +31,12 @@
     <FxCompile Include="cubePShader.hlsl" />
     <FxCompile Include="BackgroundVShader.hlsl" />
     <FxCompile Include="BackgroundPShader.hlsl" />
+    <FxCompile Include="IrradiancePShader.hlsl" />
+    <FxCompile Include="PrefilterPShader0.hlsl" />
+    <FxCompile Include="BRDFPShader.hlsl" />
+    <FxCompile Include="PrefilterPShader1.hlsl" />
+    <FxCompile Include="PrefilterPShader2.hlsl" />
+    <FxCompile Include="PrefilterPShader3.hlsl" />
+    <FxCompile Include="PrefilterPShader4.hlsl" />
   </ItemGroup>
 </Project>

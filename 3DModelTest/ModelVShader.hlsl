@@ -26,9 +26,13 @@ cbuffer ViewMatrix : register(b1)
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
-    output.position = input.position;
+    
+    float3 tPosition = input.position;
+    tPosition.z -= 0.6;
+    
+    output.position = tPosition;
     output.texCoord = input.texCoord;
     output.normal = input.normal;
-    output.svPosition = mul(mul(float4(input.position, 1.0), view), proj);
+    output.svPosition = mul(mul(float4(tPosition, 1.0), view), proj);
     return output;
 }

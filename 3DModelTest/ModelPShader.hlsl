@@ -34,6 +34,12 @@ cbuffer LightInfo : register(b2)
 
 static const float PI = 3.14159265359;
 
+SamplerState linearSampler : register(s0);
+
+TextureCube irradianceMap : register(t0);
+TextureCube prefilterMap : register(t1);
+Texture2D brdfLUT : register(t2);
+
 float DistributionGGX(float3 N, float3 H, float roughness)
 {
     float a = roughness * roughness;
@@ -77,11 +83,12 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
 float4 main(PixelInput input) : SV_TARGET
 {
     const float3 albedo = pow(diffuseColor, 2.2);
-    const float matallic = 0.0;
-    const float roughness = 0.2;
+    const float metallic = 0.5;
+    const float roughness = 0.1;
     
     float3 N = input.normal;
     float3 V = normalize(viewPos - input.position);
+    float3 R = reflect(-V, N);
     
     float specularF0 = 0.3;
     
@@ -114,13 +121,33 @@ float4 main(PixelInput input) : SV_TARGET
     
     float3 kD = float3(1.0, 1.0, 1.0) - kS;
     
-    kD *= 1.0 - matallic;
+    kD *= 1.0 - metallic;
     
     float NdotL = max(dot(N, L), 0.0);
     
     Lo += (kD * albedo / PI + specular) * radiance * NdotL;
     
-    float3 color = Lo + albedo * 0.02;
+    kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
+    
+    kD = 1.0 - kS;
+    
+    kD *= 1.0 - metallic;
+    
+    float3 irradiance = irradianceMap.Sample(linearSampler, N).rgb;
+    
+    float3 diffuse = irradiance * albedo;
+    
+    const float MAX_LOD = 4.0;
+    
+    float3 prefilteredColor = prefilterMap.SampleLevel(linearSampler, R, roughness * MAX_LOD).rgb;
+    
+    float2 brdf = brdfLUT.Sample(linearSampler, float2(max(dot(N, V), 0.0), roughness)).rg;
+    
+    specular = prefilteredColor * (F * brdf.x + brdf.y);
+    
+    float3 ambient = (kD * diffuse + specular);
+    
+    float3 color = Lo + ambient;
     
     color = color / (color + float3(1.0, 1.0, 1.0));
     
