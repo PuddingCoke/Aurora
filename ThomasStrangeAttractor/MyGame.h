@@ -58,7 +58,7 @@ public:
 
 		const DirectX::XMVECTOR rotPoint = DirectX::XMVector4Transform(point, DirectX::XMMatrixRotationAxis(up, theta));
 
-		Graphics::setView(DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(rotPoint, focusPoint, up)));
+		Graphics::setView(DirectX::XMMatrixLookAtLH(rotPoint, focusPoint, up));
 
 		attractor.update(dt);
 	}

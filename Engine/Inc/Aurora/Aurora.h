@@ -6,7 +6,6 @@
 //windows.h中也定义了min函数导致无法使用assimp https://github.com/assimp/assimp/issues/2271
 #define NOMINMAX
 
-#include<Windows.h>
 #include<d3d11_4.h>
 #include<chrono>
 #include<iostream>
@@ -23,6 +22,7 @@
 #include"Math.h"
 
 #include"VideoEncoder/NvidiaEncoder.h"
+#include"Wallpaper/WallpaperHelper.h"
 
 class Aurora
 {
@@ -73,6 +73,9 @@ private:
 	void runGame();
 
 	void runEncode();
+
+	//呼出控制台
+	void allocateConsole();
 
 	Aurora();
 

@@ -231,12 +231,12 @@ public:
 
 				Graphics::setViewport(boxSize, boxSize);
 
-				Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 1000.f)));
+				Graphics::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 1000.f));
 
 				for (int i = 0; i < 6; i++)
 				{
 					renderTexture->clearRTV(DirectX::Colors::Black);
-					Graphics::setView(DirectX::XMMatrixTranspose(viewMatrices[i]));
+					Graphics::setView(viewMatrices[i]);
 					Graphics::context->Draw(36, 0);
 					Graphics::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -276,7 +276,7 @@ public:
 				for (int i = 0; i < 6; i++)
 				{
 					renderTexture->clearRTV(DirectX::Colors::Black);
-					Graphics::setView(DirectX::XMMatrixTranspose(viewMatrices[i]));
+					Graphics::setView(viewMatrices[i]);
 					Graphics::context->Draw(36, 0);
 					Graphics::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -334,7 +334,7 @@ public:
 				prefilterPShader[mip]->use();
 				for (unsigned i = 0; i < 6; i++)
 				{
-					Graphics::setView(DirectX::XMMatrixTranspose(viewMatrices[i]));
+					Graphics::setView(viewMatrices[i]);
 					Graphics::context->Draw(36, 0);
 					Graphics::context->CopyResource(textures[mip].Get(), renderTextures[mip]->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -361,7 +361,7 @@ public:
 			Graphics::device->CreateShaderResourceView(prefilterCube.Get(), &srvDesc, prefilterSRV.GetAddressOf());
 
 			Graphics::setViewport(Graphics::getWidth(), Graphics::getHeight());
-			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 1000.f)));
+			Graphics::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 1000.f));
 		}
 
 		{
@@ -427,7 +427,7 @@ public:
 
 		DirectX::XMFLOAT4 eyeRotated = DirectX::XMFLOAT4(curRadius * cosf(theta2) * cosf(theta) + eyeOrigin.x, curRadius * cosf(theta2) * sinf(theta) + eyeOrigin.y, curRadius * sinf(theta2) + eyeOrigin.z, 1.f);
 
-		Graphics::setView(DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eyeRotated), focusPoint, up)));
+		Graphics::setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eyeRotated), focusPoint, up));
 
 		const float lightRadius = 1.15f;
 

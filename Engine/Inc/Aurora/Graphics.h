@@ -30,8 +30,10 @@ public:
 
 	static const float& getAspectRatio();
 
+	//此方法会自动转置proj矩阵
 	static void setProj(const DirectX::XMMATRIX& proj);
-
+	
+	//此方法会自动转置view矩阵
 	static void setView(const DirectX::XMMATRIX& view);
 
 	static const int& getWidth();
@@ -74,6 +76,12 @@ private:
 		float v2 = 0;
 		float v3 = 0;
 	} gpuDeltaTimes;
+
+	static struct GPUViews
+	{
+		DirectX::XMMATRIX view;
+		DirectX::XMMATRIX viewInverse;//由于需要在视图空间计算光照，hlsl没有像glsl提供inverse函数，所以得在CPU中提前计算逆矩阵。
+	} gpuViews;
 
 	static ComPtr<ID3D11RenderTargetView> defaultTargetView;
 

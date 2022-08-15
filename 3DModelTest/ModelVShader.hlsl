@@ -21,6 +21,7 @@ cbuffer ProjMatrix : register(b0)
 cbuffer ViewMatrix : register(b1)
 {
     matrix view;
+    matrix viewInverse;
 }
 
 VertexOutput main(VertexInput input)

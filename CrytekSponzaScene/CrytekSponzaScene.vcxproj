@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{3d64dc47-6aff-4483-98ec-13da323a0a66}</ProjectGuid>
-    <RootNamespace>Engine</RootNamespace>
+    <ProjectGuid>{aca25e25-3f79-4eb9-9e32-a210bb67bcc9}</ProjectGuid>
+    <RootNamespace>CrytekSponzaScene</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -46,7 +46,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -70,12 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)Inc;$(IncludePath)</IncludePath>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)Inc;$(SolutionDir)ImageLoader\Inc;$(SolutionDir)Tools;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Engine\Inc;$(SolutionDir)Tools;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)x64\Release;$(SolutionDir)Libs;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -125,75 +122,20 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ImageLoader.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Inc\Aurora\A3D\Model.h" />
-    <ClInclude Include="Inc\Aurora\Aurora.h" />
-    <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
-    <ClInclude Include="Inc\Aurora\Color.h" />
-    <ClInclude Include="Inc\Aurora\Configuration.h" />
-    <ClInclude Include="Inc\Aurora\DepthStencilView.h" />
-    <ClInclude Include="Inc\Aurora\DoubleRTV.h" />
-    <ClInclude Include="Inc\Aurora\Event.h" />
-    <ClInclude Include="Inc\Aurora\Game.h" />
-    <ClInclude Include="Inc\Aurora\Graphics.h" />
-    <ClInclude Include="Inc\Aurora\Keyboard.h" />
-    <ClInclude Include="Inc\Aurora\Math.h" />
-    <ClInclude Include="Inc\Aurora\Mouse.h" />
-    <ClInclude Include="Inc\Aurora\TextureCube.h" />
-    <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h" />
-    <ClInclude Include="Inc\Aurora\ParticleSystem.h" />
-    <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h" />
-    <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h" />
-    <ClInclude Include="Inc\Aurora\PostProcessing\FadeEffect.h" />
-    <ClInclude Include="Inc\Aurora\A2D\PrimitiveBatch.h" />
-    <ClInclude Include="Inc\Aurora\Random.h" />
-    <ClInclude Include="Inc\Aurora\RenderTexture.h" />
-    <ClInclude Include="Inc\Aurora\Shader.h" />
-    <ClInclude Include="Inc\Aurora\A2D\SpriteBatch.h" />
-    <ClInclude Include="Inc\Aurora\StateCommon.h" />
-    <ClInclude Include="Inc\Aurora\Texture2D.h" />
-    <ClInclude Include="Inc\Aurora\Timer.h" />
-    <ClInclude Include="Inc\Aurora\Utils.h" />
-    <ClInclude Include="Inc\Aurora\Wallpaper\WallpaperHelper.h" />
+    <ClInclude Include="MyGame.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\Aurora\A3D\Model.cpp" />
-    <ClCompile Include="Src\Aurora\Color.cpp" />
-    <ClCompile Include="Src\Aurora\Aurora.cpp" />
-    <ClCompile Include="Src\Aurora\A2D\BitmapFont.cpp" />
-    <ClCompile Include="Src\Aurora\Configuration.cpp" />
-    <ClCompile Include="Src\Aurora\DepthStencilView.cpp" />
-    <ClCompile Include="Src\Aurora\DoubleRTV.cpp" />
-    <ClCompile Include="Src\Aurora\Event.cpp" />
-    <ClCompile Include="Src\Aurora\Graphics.cpp" />
-    <ClCompile Include="Src\Aurora\Keyboard.cpp" />
-    <ClCompile Include="Src\Aurora\Mouse.cpp" />
-    <ClCompile Include="Src\Aurora\stb_image.cpp" />
-    <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp" />
-    <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp" />
-    <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp" />
-    <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp" />
-    <ClCompile Include="Src\Aurora\A2D\PrimitiveBatch.cpp" />
-    <ClCompile Include="Src\Aurora\Random.cpp" />
-    <ClCompile Include="Src\Aurora\RenderTexture.cpp" />
-    <ClCompile Include="Src\Aurora\Shader.cpp" />
-    <ClCompile Include="Src\Aurora\A2D\SpriteBatch.cpp" />
-    <ClCompile Include="Src\Aurora\StateCommon.cpp" />
-    <ClCompile Include="Src\Aurora\Texture2D.cpp" />
-    <ClCompile Include="Src\Aurora\Timer.cpp" />
-    <ClCompile Include="Src\Aurora\Utils.cpp" />
-    <ClCompile Include="Src\Aurora\Math.cpp" />
-    <ClCompile Include="Src\Aurora\Wallpaper\WallpaperHelper.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,71 +7,9 @@ Aurora& Aurora::get()
 	return instance;
 }
 
-static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
-{
-	HWND p = FindWindowEx(hwnd, nullptr, L"SHELLDLL_DefView", nullptr);
-	HWND* ret = (HWND*)lParam;
-
-	if (p)
-	{
-		// Gets the WorkerW Window after the current one.
-		*ret = FindWindowEx(nullptr, hwnd, L"WorkerW", nullptr);
-	}
-	return true;
-}
-
-static HWND get_wallpaper_window()
-{
-	// Fetch the Progman window
-	HWND progman = FindWindow(L"ProgMan", nullptr);
-	// Send 0x052C to Progman. This message directs Progman to spawn a 
-	// WorkerW behind the desktop icons. If it is already there, nothing 
-	// happens.
-	SendMessageTimeout(progman, 0x052C, 0, 0, SMTO_NORMAL, 1000, nullptr);
-	// We enumerate all Windows, until we find one, that has the SHELLDLL_DefView 
-	// as a child. 
-	// If we found that window, we take its next sibling and assign it to workerw.
-	HWND wallpaper_hwnd = nullptr;
-	EnumWindows(EnumWindowsProc, (LPARAM)&wallpaper_hwnd);
-	// Return the handle you're looking for.
-	return wallpaper_hwnd;
-}
-
-static void getSysResolution(int& width, int& height)
-{
-	HMONITOR monitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTONEAREST);
-	MONITORINFO info;
-	info.cbSize = sizeof(MONITORINFO);
-	GetMonitorInfo(monitor, &info);
-	width = info.rcMonitor.right - info.rcMonitor.left;
-	height = info.rcMonitor.bottom - info.rcMonitor.top;
-	//以上代码获取的width和height实际上是 windowWidth/dpi windowHeight/dpi所以还得获取屏幕缩放比例
-
-	UINT dpi = GetDpiForWindow(GetDesktopWindow());
-
-	std::cout << "[class Aurora] system dpi " << dpi << "\n";
-
-	width = width * dpi / 96;
-	height = height * dpi / 96;
-}
-
-#pragma managed(push, off)
-void InitConsole()
-{
-	if (AllocConsole())
-	{
-		FILE* fpstdin = stdin, * fpstdout = stdout, * fpstderr = stderr;
-
-		freopen_s(&fpstdin, "CONIN$", "r", stdin);
-		freopen_s(&fpstdout, "CONOUT$", "w", stdout);
-		freopen_s(&fpstderr, "CONOUT$", "w", stderr);
-	}
-}
-#pragma managed(pop)
-
 int Aurora::iniEngine(const Configuration& config)
 {
-	InitConsole();
+	allocateConsole();
 
 	Keyboard::ini();
 
@@ -83,7 +21,7 @@ int Aurora::iniEngine(const Configuration& config)
 	{
 		int width;
 		int height;
-		getSysResolution(width, height);
+		WallpaperHelper::getSystemResolution(width, height);
 		Graphics::width = width;
 		Graphics::height = height;
 	}
@@ -411,7 +349,7 @@ HRESULT Aurora::iniWindow()
 		mouseHook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, NULL, 0);
 
 		HWND window = FindWindowW(nullptr, config->title.c_str());
-		HWND bg = get_wallpaper_window();
+		HWND bg = WallpaperHelper::getWallpaperWindow();
 		SetParent(window, bg);
 		MoveWindow(window, 0, 0, Graphics::width, Graphics::height, 0);
 	}
@@ -572,26 +510,32 @@ HRESULT Aurora::iniDevice()
 HRESULT Aurora::iniGameConstant()
 {
 	{
-		D3D11_BUFFER_DESC cbd = {};
-		cbd.Usage = D3D11_USAGE_DYNAMIC;
-		cbd.ByteWidth = sizeof(DirectX::XMMATRIX);
-		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		D3D11_BUFFER_DESC projCBD = {};
+		projCBD.Usage = D3D11_USAGE_DYNAMIC;
+		projCBD.ByteWidth = sizeof(DirectX::XMMATRIX);
+		projCBD.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		projCBD.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-		Graphics::device->CreateBuffer(&cbd, nullptr, Graphics::cBufferProj.ReleaseAndGetAddressOf());
-		Graphics::device->CreateBuffer(&cbd, nullptr, Graphics::cBufferView.ReleaseAndGetAddressOf());
+		D3D11_BUFFER_DESC viewCBD = {};
+		viewCBD.Usage = D3D11_USAGE_DYNAMIC;
+		viewCBD.ByteWidth = 2u * sizeof(DirectX::XMMATRIX);
+		viewCBD.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		viewCBD.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+		Graphics::device->CreateBuffer(&projCBD, nullptr, Graphics::cBufferProj.ReleaseAndGetAddressOf());
+		Graphics::device->CreateBuffer(&viewCBD, nullptr, Graphics::cBufferView.ReleaseAndGetAddressOf());
 
 		switch (config->cameraType)
 		{
 		default:
 		case Configuration::CameraType::Orthogonal:
 			std::cout << "[class Aurora] orthogonal camera\n";
-			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::width, 0, (float)Graphics::height, 0.f, 1.f)));
+			Graphics::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::width, 0, (float)Graphics::height, 0.f, 1.f));
 			Graphics::setView(DirectX::XMMatrixIdentity());
 			break;
 		case Configuration::CameraType::Perspective:
 			std::cout << "[class Aurora] perspective camera\n";
-			Graphics::setProj(DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f)));
+			Graphics::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f));
 			break;
 		}
 
@@ -671,6 +615,18 @@ void Aurora::runEncode()
 	std::cout << "[class Aurora] encode complete!\n";
 
 	std::cin.get();
+}
+
+void Aurora::allocateConsole()
+{
+	if (AllocConsole())
+	{
+		FILE* fpstdin = stdin, * fpstdout = stdout, * fpstderr = stderr;
+
+		freopen_s(&fpstdin, "CONIN$", "r", stdin);
+		freopen_s(&fpstdout, "CONOUT$", "w", stdout);
+		freopen_s(&fpstderr, "CONOUT$", "w", stderr);
+	}
 }
 
 Aurora::Aurora() :
