@@ -35,7 +35,7 @@ VertexOutput main(VertexInput input)
     VertexOutput output;
     output.svPosition = mul(mul(input.pos, view), proj);
     output.uv = input.uv;
-    output.worldPos = mul(input.pos, view);
+    output.worldPos = mul(input.pos, view).xyz;
     output.normal = mul(input.normal, (float3x3) normalMatrix);
     output.tangent = normalize(input.tangent);
     output.color = input.color;

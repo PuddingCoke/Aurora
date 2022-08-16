@@ -26,5 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="DeferredVShader.hlsl" />
+    <FxCompile Include="DeferedPShader.hlsl" />
   </ItemGroup>
 </Project>
