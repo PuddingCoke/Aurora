@@ -24,4 +24,7 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="DeferredVShader.hlsl" />
+  </ItemGroup>
 </Project>

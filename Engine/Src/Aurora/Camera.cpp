@@ -30,11 +30,10 @@ void Camera::setView(const DirectX::XMMATRIX& view)
 
 DirectX::XMFLOAT3 Camera::toViewSpace(const DirectX::XMFLOAT3& pos)
 {
-	const DirectX::XMFLOAT4 position = DirectX::XMFLOAT4(pos.x, pos.y, pos.z, 1.f);
-	const DirectX::XMVECTOR transformed = DirectX::XMVector4Transform(DirectX::XMLoadFloat4(&position), viewMatrix);
-	DirectX::XMFLOAT4 outPosition;
-	DirectX::XMStoreFloat4(&outPosition, transformed);
-	return DirectX::XMFLOAT3(outPosition.x, outPosition.y, outPosition.z);
+	const DirectX::XMVECTOR transformed = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&pos), viewMatrix);
+	DirectX::XMFLOAT3 outPosition;
+	DirectX::XMStoreFloat3(&outPosition, transformed);
+	return outPosition;
 }
 
 void Camera::initialize()
@@ -47,7 +46,7 @@ void Camera::initialize()
 
 	D3D11_BUFFER_DESC viewDesc = {};
 	viewDesc.Usage = D3D11_USAGE_DYNAMIC;
-	viewDesc.ByteWidth = 2u * sizeof(DirectX::XMMATRIX);
+	viewDesc.ByteWidth = sizeof(ViewMatrices);
 	viewDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	viewDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 

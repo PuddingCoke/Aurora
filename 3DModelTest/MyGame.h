@@ -377,7 +377,6 @@ public:
 			{
 				if (Mouse::getLeftDown())
 				{
-					std::cout << theta << " " << theta2 << "\n";
 					theta += Mouse::getDX() * 0.02f;
 					theta2 -= Mouse::getDY() * 0.02f;
 					theta2 = Math::clamp(theta2, -Math::half_pi + 0.1f, Math::half_pi - 0.1f);

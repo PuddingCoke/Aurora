@@ -1,11 +1,22 @@
 struct VertexInput
 {
-    float4 inPos : POSITION;
-    float2 inUV : TEXCOORD;
-    float3 inColor : COLOR;
-    float3 inNormal : NORMAL;
-    float3 inTangent : TANGENT0;
-    float3 inBitangent : TANGENT1;
+    float4 pos : POSITION;
+    float2 uv : TEXCOORD;
+    float3 color : COLOR;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT0;
+    float3 bitangent : TANGENT1;
+};
+
+struct VertexOutput
+{
+    float3 normal : NORMAL;
+    float2 uv : TEXCOORD;
+    float3 color : COLOR;
+    float3 worldPos : POSITION;
+    float3 tangent : TANGENT0;
+    float3 bitangent : TANGENT1;
+    float4 svPosition : SV_Position;
 };
 
 cbuffer ProjMatrix : register(b0)
@@ -16,30 +27,18 @@ cbuffer ProjMatrix : register(b0)
 cbuffer ViewMatrix : register(b1)
 {
     matrix view;
+    matrix normalMatrix;
 }
-
-struct VertexOutput
-{
-    float3 outNormal : NORMAL;
-    float2 outUV : TEXCOORD;
-    float3 outColor : COLOR;
-    float3 outWorldPos : POSITION;
-    float3 outTangent : TANGENT0;
-    float3 outBitangent : TANGENT1;
-    float4 position : SV_Position;
-};
 
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
-    
-    output.position = mul(proj, mul(view, input.inPos));
-    output.outUV = input.inUV;
-    output.outUV.t = 0;
-    
-    //pos,normal in view space
-    output.outWorldPos = mul(view, input.inPos).xyz;
-    float3x3 normalMatrix = transpose(inverse((float3x3) view));
-    inverse();
+    output.svPosition = mul(mul(input.pos, view), proj);
+    output.uv = input.uv;
+    output.worldPos = mul(input.pos, view);
+    output.normal = mul(input.normal, (float3x3) normalMatrix);
+    output.tangent = normalize(input.tangent);
+    output.color = input.color;
+    output.bitangent = input.bitangent;
     return output;
 }
