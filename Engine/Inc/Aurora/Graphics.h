@@ -46,11 +46,15 @@ private:
 
 	friend class Aurora;
 
+	friend class WallpaperHelper;
+
 	friend class NvidiaEncoder;
 
-	static void updateGPUDeltaTimes();
+	static void createDeltaTimeBuffer();
 
-	static ComPtr<ID3D11Buffer> cBufferDeltaTimes;
+	static void updateDeltaTimeBuffer();
+
+	static ComPtr<ID3D11Buffer> deltaTimeBuffer;
 
 	static ComPtr<ID3D11Debug> d3dDebug;
 
@@ -59,19 +63,15 @@ private:
 
 	static ID3D11Texture2D* backBuffer;
 
-	static struct GPUDeltaTimes
+	static struct DeltaTime
 	{
 		float deltaTime = 0;
 		float sTime = 0;
 		float v2 = 0;
 		float v3 = 0;
-	} gpuDeltaTimes;
+	} deltaTime;
 
 	static ComPtr<ID3D11RenderTargetView> defaultTargetView;
-
-	static float deltaTime;
-
-	static float sTime;
 
 	static float frameDuration;
 

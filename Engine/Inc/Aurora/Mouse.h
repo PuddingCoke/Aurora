@@ -55,6 +55,8 @@ private:
 
 	friend class Aurora;
 
+	friend class WallpaperHelper;
+
 	static float x;
 	
 	static float y;

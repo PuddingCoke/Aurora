@@ -16,7 +16,6 @@
 #include"Configuration.h"
 #include"Game.h"
 #include"Random.h"
-#include"Mouse.h"
 #include"Keyboard.h"
 #include"StateCommon.h"
 #include"Shader.h"
@@ -38,8 +37,6 @@ public:
 	int iniEngine(const Configuration& config);
 
 	void iniGame(Game* const game);
-
-	LRESULT WINAPI WallpaperMouseProc(int nCode, WPARAM wParam, LPARAM lParam);
 
 	LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -69,7 +66,7 @@ private:
 
 	HRESULT iniDevice();
 
-	HRESULT iniGameConstant();
+	HRESULT iniCamera();
 
 	void runGame();
 
@@ -79,9 +76,6 @@ private:
 	void allocateConsole();
 
 	Aurora();
-
-	//这个钩子是用于动态壁纸的
-	HHOOK mouseHook;
 
 	static constexpr DWORD normalWndStyle = WS_CAPTION | WS_SYSMENU;
 

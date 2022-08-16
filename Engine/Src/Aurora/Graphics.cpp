@@ -8,17 +8,13 @@ ComPtr<ID3D11Device4> Graphics::device;
 
 ComPtr<ID3D11DeviceContext4> Graphics::context;
 
-ComPtr<ID3D11Buffer> Graphics::cBufferDeltaTimes;
+ComPtr<ID3D11Buffer> Graphics::deltaTimeBuffer;
 
 ComPtr<ID3D11Debug> Graphics::d3dDebug;
 
-Graphics::GPUDeltaTimes Graphics::gpuDeltaTimes;
+Graphics::DeltaTime Graphics::deltaTime = { 0,0,0,0 };
 
 ComPtr<ID3D11RenderTargetView> Graphics::defaultTargetView;
-
-float Graphics::deltaTime = 0;
-
-float Graphics::sTime = 0;
 
 float Graphics::frameDuration = 0;
 
@@ -48,17 +44,17 @@ void Graphics::clearDefRTV(const float color[4])
 
 const float& Graphics::getDeltaTime()
 {
-	return deltaTime;
+	return deltaTime.deltaTime;
 }
 
 const float& Graphics::getSTime()
 {
-	return sTime;
+	return deltaTime.sTime;
 }
 
 const float& Graphics::getFPS()
 {
-	frameDuration += deltaTime;
+	frameDuration += deltaTime.deltaTime;
 	frameCount++;
 	if (frameDuration > .1f)
 	{
@@ -106,16 +102,24 @@ void Graphics::setBlendState(ID3D11BlendState* const blendState)
 	Graphics::context->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
 }
 
-void Graphics::updateGPUDeltaTimes()
+void Graphics::createDeltaTimeBuffer()
 {
-	gpuDeltaTimes.deltaTime = Graphics::deltaTime;
-	gpuDeltaTimes.sTime = Graphics::sTime;
-	//v2=
-	//v3=
+	D3D11_BUFFER_DESC cbd = {};
+	cbd.Usage = D3D11_USAGE_DYNAMIC;
+	cbd.ByteWidth = 16u;
+	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
+	Graphics::device->CreateBuffer(&cbd, nullptr, Graphics::deltaTimeBuffer.ReleaseAndGetAddressOf());
+	Graphics::updateDeltaTimeBuffer();
+	Graphics::context->PSSetConstantBuffers(0, 1, Graphics::deltaTimeBuffer.GetAddressOf());
+	Graphics::context->CSSetConstantBuffers(0, 1, Graphics::deltaTimeBuffer.GetAddressOf());
+}
 
+void Graphics::updateDeltaTimeBuffer()
+{
 	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Graphics::context->Map(cBufferDeltaTimes.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &gpuDeltaTimes, sizeof(GPUDeltaTimes));
-	Graphics::context->Unmap(cBufferDeltaTimes.Get(), 0);
+	Graphics::context->Map(deltaTimeBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, &deltaTime, sizeof(DeltaTime));
+	Graphics::context->Unmap(deltaTimeBuffer.Get(), 0);
 }

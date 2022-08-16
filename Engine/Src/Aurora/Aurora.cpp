@@ -32,13 +32,11 @@ int Aurora::iniEngine(const Configuration& config)
 	}
 
 	Graphics::aspectRatio = (float)Graphics::width / (float)Graphics::height;
-
-
 	Graphics::msaaLevel = config.msaaLevel;
 
 	std::cout << "[class Aurora] resolution:" << Graphics::width << " " << Graphics::height << "\n";
 	std::cout << "[class Aurora] aspectRatio:" << Graphics::aspectRatio << "\n";
-	std::cout << "[class Aurora] multisample level " << config.msaaLevel << "\n";
+	std::cout << "[class Aurora] multisample level:" << config.msaaLevel << "\n";
 
 	if (SUCCEEDED(iniWindow()))
 	{
@@ -59,13 +57,13 @@ int Aurora::iniEngine(const Configuration& config)
 		std::cout << "[class Aurora] create device failed!\n";
 	}
 
-	if (SUCCEEDED(iniGameConstant()))
+	if (SUCCEEDED(iniCamera()))
 	{
-		std::cout << "[class Aurora] create game constants successfully!\n";
+		std::cout << "[class Aurora] initialize camera successfully!\n";
 	}
 	else
 	{
-		std::cout << "[class Aurora] create game constants failed!\n";
+		std::cout << "[class Aurora] initialize camera failed!\n";
 	}
 
 	if (SUCCEEDED(StateCommon::ini()))
@@ -78,6 +76,8 @@ int Aurora::iniEngine(const Configuration& config)
 	}
 
 	Shader::ini();
+
+	Graphics::createDeltaTimeBuffer();
 
 	return 0;
 }
@@ -110,61 +110,8 @@ void Aurora::iniGame(Game* const game)
 
 	if (config->usage == Configuration::EngineUsage::Wallpaper)
 	{
-		UnhookWindowsHookEx(mouseHook);
+		WallpaperHelper::unregisterHOOK();
 	}
-}
-
-LRESULT __stdcall Aurora::WallpaperMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
-{
-	if (nCode == HC_ACTION)
-	{
-		MSLLHOOKSTRUCT* pMouseStruct = (MSLLHOOKSTRUCT*)lParam;
-
-		switch (wParam)
-		{
-		case WM_MOUSEMOVE:
-		{
-			const float curX = (float)pMouseStruct->pt.x;
-			const float curY = (float)Graphics::height - (float)pMouseStruct->pt.y;
-
-			Mouse::dx = curX - Mouse::x;
-			Mouse::dy = curY - Mouse::y;
-			Mouse::x = curX;
-			Mouse::y = curY;
-
-			Mouse::moveEvent();
-
-		}
-		break;
-
-		case WM_LBUTTONDOWN:
-			Mouse::leftDown = true;
-			Mouse::leftDownEvent();
-			break;
-
-		case WM_RBUTTONDOWN:
-			Mouse::rightDown = true;
-			Mouse::rightDownEvent();
-			break;
-
-		case WM_LBUTTONUP:
-			Mouse::leftDown = false;
-			Mouse::leftUpEvent();
-			break;
-
-		case WM_RBUTTONUP:
-			Mouse::rightDown = false;
-			Mouse::rightUpEvent();
-			break;
-
-		case WM_MOUSEWHEEL:
-			Mouse::wheelDelta = (float)GET_WHEEL_DELTA_WPARAM(wParam) / 120.f;
-			Mouse::scrollEvent();
-			break;
-		}
-
-	}
-	return CallNextHookEx(mouseHook, nCode, wParam, lParam);
 }
 
 LRESULT Aurora::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -290,7 +237,7 @@ HRESULT Aurora::iniWindow()
 	case Configuration::EngineUsage::Normal:
 		std::cout << "[class Aurora] usage normal\n";
 		wndStyle = normalWndStyle;
-		wndProc= [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
+		wndProc = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
 		{
 			return Aurora::get().WindowProc(hwnd, msg, wParam, lParam);
 		};
@@ -299,7 +246,7 @@ HRESULT Aurora::iniWindow()
 	case Configuration::EngineUsage::Wallpaper:
 		std::cout << "[class Aurora] usage wallpaper\n";
 		wndStyle = wallpaperWndStyle;
-		wndProc= [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
+		wndProc = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
 		{
 			return Aurora::get().WallpaperProc(hwnd, msg, wParam, lParam);
 		};
@@ -336,18 +283,12 @@ HRESULT Aurora::iniWindow()
 	{
 		return S_FALSE;
 	}
-	
+
 	ShowWindow(hwnd, SW_SHOW);
 
 	if (config->usage == Configuration::EngineUsage::Wallpaper)
 	{
-		auto mouseProc = [](int nCode, WPARAM wParam, LPARAM lParam)
-		{
-			return Aurora::get().WallpaperMouseProc(nCode, wParam, lParam);
-		};
-
-		mouseHook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, NULL, 0);
-
+		WallpaperHelper::registerHOOK();
 		HWND window = FindWindowW(nullptr, config->title.c_str());
 		HWND bg = WallpaperHelper::getWallpaperWindow();
 		SetParent(window, bg);
@@ -507,45 +448,29 @@ HRESULT Aurora::iniDevice()
 	return S_OK;
 }
 
-HRESULT Aurora::iniGameConstant()
+HRESULT Aurora::iniCamera()
 {
+	Camera::initialize();
+
+	switch (config->cameraType)
 	{
-		Camera::initialize();
-
-		switch (config->cameraType)
-		{
-		default:
-		case Configuration::CameraType::Orthogonal:
-			std::cout << "[class Aurora] orthogonal camera\n";
-			Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::width, 0, (float)Graphics::height, 0.f, 1.f));
-			Camera::setView(DirectX::XMMatrixIdentity());
-			break;
-		case Configuration::CameraType::Perspective:
-			std::cout << "[class Aurora] perspective camera\n";
-			Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f));
-			break;
-		}
-
-		ID3D11Buffer* buffers[2] = { Camera::projBuffer.Get(),Camera::viewBuffer.Get() };
-
-		Graphics::context->VSSetConstantBuffers(0, 2, buffers);
-		Graphics::context->GSSetConstantBuffers(0, 2, buffers);
-		Graphics::context->PSSetConstantBuffers(1, 1, Camera::viewBuffer.GetAddressOf());
-
+	default:
+	case Configuration::CameraType::Orthogonal:
+		std::cout << "[class Aurora] orthogonal camera\n";
+		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::width, 0, (float)Graphics::height, 0.f, 1.f));
+		Camera::setView(DirectX::XMMatrixIdentity());
+		break;
+	case Configuration::CameraType::Perspective:
+		std::cout << "[class Aurora] perspective camera\n";
+		Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f));
+		break;
 	}
 
-	{
-		D3D11_BUFFER_DESC cbd = {};
-		cbd.Usage = D3D11_USAGE_DYNAMIC;
-		cbd.ByteWidth = 16u;
-		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	ID3D11Buffer* buffers[2] = { Camera::projBuffer.Get(),Camera::viewBuffer.Get() };
 
-		Graphics::device->CreateBuffer(&cbd, nullptr, Graphics::cBufferDeltaTimes.ReleaseAndGetAddressOf());
-		Graphics::updateGPUDeltaTimes();
-		Graphics::context->PSSetConstantBuffers(0, 1, Graphics::cBufferDeltaTimes.GetAddressOf());
-		Graphics::context->CSSetConstantBuffers(0, 1, Graphics::cBufferDeltaTimes.GetAddressOf());
-	}
+	Graphics::context->VSSetConstantBuffers(0, 2, buffers);
+	Graphics::context->GSSetConstantBuffers(0, 2, buffers);
+	Graphics::context->PSSetConstantBuffers(1, 1, Camera::viewBuffer.GetAddressOf());
 
 	return S_OK;
 }
@@ -563,14 +488,14 @@ void Aurora::runGame()
 			DispatchMessage(&msg);
 		}
 		timeStart = timer.now();
-		game->update(Graphics::deltaTime);
+		game->update(Graphics::deltaTime.deltaTime);
 		game->render();
 		Graphics::context->ResolveSubresource(Graphics::backBuffer, 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
 		swapChain->Present(1, 0);
 		timeEnd = timer.now();
-		Graphics::deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
-		Graphics::sTime += Graphics::deltaTime;
-		Graphics::updateGPUDeltaTimes();
+		Graphics::deltaTime.deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
+		Graphics::deltaTime.sTime += Graphics::deltaTime.deltaTime;
+		Graphics::updateDeltaTimeBuffer();
 	}
 }
 
@@ -590,14 +515,14 @@ void Aurora::runEncode()
 		return;
 	}
 
-	Graphics::deltaTime = 1.f / 60.f;
+	Graphics::deltaTime.deltaTime = 1.f / 60.f;
 	do
 	{
-		game->update(Graphics::deltaTime);
+		game->update(Graphics::deltaTime.deltaTime);
 		game->render();
 		Graphics::context->ResolveSubresource(Graphics::encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
-		Graphics::sTime += Graphics::deltaTime;
-		Graphics::updateGPUDeltaTimes();
+		Graphics::deltaTime.sTime += Graphics::deltaTime.deltaTime;
+		Graphics::updateDeltaTimeBuffer();
 	} while (nvidiaEncoder.encode());
 
 	std::cout << "[class Aurora] encode complete!\n";
@@ -618,7 +543,7 @@ void Aurora::allocateConsole()
 }
 
 Aurora::Aurora() :
-	hwnd(0), config(nullptr), game(nullptr),mouseHook(nullptr)
+	hwnd(0), config(nullptr), game(nullptr)
 {
 
 }

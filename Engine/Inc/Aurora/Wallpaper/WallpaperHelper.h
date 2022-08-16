@@ -6,6 +6,9 @@
 #include<Windows.h>
 #include<iostream>
 
+#include<Aurora/Graphics.h>
+#include<Aurora/Mouse.h>
+
 class WallpaperHelper
 {
 public:
@@ -14,11 +17,20 @@ public:
 
 	static HWND getWallpaperWindow();
 
+	static void registerHOOK();
+
+	static void unregisterHOOK();
+
 	WallpaperHelper() = delete;
 
 	WallpaperHelper(const WallpaperHelper&) = delete;
 
 	void operator=(const WallpaperHelper&) = delete;
+
+	static LRESULT WINAPI MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);
+
+	//鼠标全局钩子
+	static HHOOK mouseHook;
 
 };
 
