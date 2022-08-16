@@ -25,21 +25,17 @@ public:
 
 	DepthStencilView* depthStencilView;
 
-	static constexpr float focusY = 0.60f;
-
 	static constexpr DirectX::XMVECTORF32 up = { 0.f, 0.f, 1.f , 0.f };
 
 	static constexpr DirectX::XMVECTORF32 focusPoint = { 0.f,0.f,0.f,1.f };
-
-	static constexpr DirectX::XMFLOAT3 eyeOrigin = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 
 	float theta = 0.f;
 
 	float theta2 = 0.f;
 
-	float curRadius = 1.5f;
+	float curRadius = 1.15f;
 
-	float targetRadius = 1.5f;
+	float targetRadius = 1.15f;
 
 	struct LightInfo
 	{
@@ -231,12 +227,12 @@ public:
 
 				Graphics::setViewport(boxSize, boxSize);
 
-				Graphics::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 1000.f));
+				Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 1000.f));
 
 				for (int i = 0; i < 6; i++)
 				{
 					renderTexture->clearRTV(DirectX::Colors::Black);
-					Graphics::setView(viewMatrices[i]);
+					Camera::setView(viewMatrices[i]);
 					Graphics::context->Draw(36, 0);
 					Graphics::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -276,7 +272,7 @@ public:
 				for (int i = 0; i < 6; i++)
 				{
 					renderTexture->clearRTV(DirectX::Colors::Black);
-					Graphics::setView(viewMatrices[i]);
+					Camera::setView(viewMatrices[i]);
 					Graphics::context->Draw(36, 0);
 					Graphics::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -334,7 +330,7 @@ public:
 				prefilterPShader[mip]->use();
 				for (unsigned i = 0; i < 6; i++)
 				{
-					Graphics::setView(viewMatrices[i]);
+					Camera::setView(viewMatrices[i]);
 					Graphics::context->Draw(36, 0);
 					Graphics::context->CopyResource(textures[mip].Get(), renderTextures[mip]->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -361,7 +357,7 @@ public:
 			Graphics::device->CreateShaderResourceView(prefilterCube.Get(), &srvDesc, prefilterSRV.GetAddressOf());
 
 			Graphics::setViewport(Graphics::getWidth(), Graphics::getHeight());
-			Graphics::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 1000.f));
+			Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 1000.f));
 		}
 
 		{
@@ -425,13 +421,16 @@ public:
 			curRadius = Math::lerp(curRadius, targetRadius, 10.f * Graphics::getDeltaTime());
 		}
 
-		DirectX::XMFLOAT4 eyeRotated = DirectX::XMFLOAT4(curRadius * cosf(theta2) * cosf(theta) + eyeOrigin.x, curRadius * cosf(theta2) * sinf(theta) + eyeOrigin.y, curRadius * sinf(theta2) + eyeOrigin.z, 1.f);
+		DirectX::XMFLOAT4 eyeRotated = DirectX::XMFLOAT4(curRadius * cosf(theta2) * cosf(theta), curRadius * cosf(theta2) * sinf(theta), curRadius * sinf(theta2), 1.f);
 
-		Graphics::setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eyeRotated), focusPoint, up));
+		Camera::setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eyeRotated), focusPoint, up));
 
 		const float lightRadius = 1.15f;
 
-		lightInfo.lightPos = DirectX::XMFLOAT3(lightRadius * cosf(theta2) * cosf(theta) + eyeOrigin.x, lightRadius * cosf(theta2) * sinf(theta) + eyeOrigin.y, lightRadius * sinf(theta2) + eyeOrigin.z);
+		lightInfo.lightPos = DirectX::XMFLOAT3(lightRadius * cosf(theta2) * cosf(theta), lightRadius * cosf(theta2) * sinf(theta), lightRadius * sinf(theta2));
+
+		lightInfo.lightPos = Camera::toViewSpace(lightInfo.lightPos);
+
 		lightInfo.viewPos = DirectX::XMFLOAT3(eyeRotated.x, eyeRotated.y, eyeRotated.z);
 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -439,7 +438,7 @@ public:
 		memcpy(mappedData.pData, &lightInfo, sizeof(LightInfo));
 		Graphics::context->Unmap(lightBuffer.Get(), 0);
 
-		Graphics::context->PSSetConstantBuffers(2, 1, lightBuffer.GetAddressOf());
+		Graphics::context->PSSetConstantBuffers(3, 1, lightBuffer.GetAddressOf());
 	}
 
 	void render() override

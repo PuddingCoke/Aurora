@@ -11,6 +11,7 @@
 #include<iostream>
 #include<windowsx.h>
 
+#include"Camera.h"
 #include"Graphics.h"
 #include"Configuration.h"
 #include"Game.h"

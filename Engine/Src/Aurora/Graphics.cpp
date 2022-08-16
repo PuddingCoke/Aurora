@@ -8,17 +8,11 @@ ComPtr<ID3D11Device4> Graphics::device;
 
 ComPtr<ID3D11DeviceContext4> Graphics::context;
 
-ComPtr<ID3D11Buffer> Graphics::cBufferProj;
-
-ComPtr<ID3D11Buffer> Graphics::cBufferView;
-
 ComPtr<ID3D11Buffer> Graphics::cBufferDeltaTimes;
 
 ComPtr<ID3D11Debug> Graphics::d3dDebug;
 
 Graphics::GPUDeltaTimes Graphics::gpuDeltaTimes;
-
-Graphics::GPUViews Graphics::gpuViews;
 
 ComPtr<ID3D11RenderTargetView> Graphics::defaultTargetView;
 
@@ -80,16 +74,6 @@ const float& Graphics::getAspectRatio()
 	return aspectRatio;
 }
 
-void Graphics::setView(const DirectX::XMMATRIX& view)
-{
-	gpuViews.view = DirectX::XMMatrixTranspose(view);
-	gpuViews.viewInverse = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, view));
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Graphics::context->Map(cBufferView.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &gpuViews, sizeof(GPUViews));
-	Graphics::context->Unmap(cBufferView.Get(), 0);
-}
-
 const int& Graphics::getWidth()
 {
 	return width;
@@ -120,15 +104,6 @@ void Graphics::setPrimitiveTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology)
 void Graphics::setBlendState(ID3D11BlendState* const blendState)
 {
 	Graphics::context->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
-}
-
-void Graphics::setProj(const DirectX::XMMATRIX& proj)
-{
-	const DirectX::XMMATRIX projTrans = DirectX::XMMatrixTranspose(proj);
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Graphics::context->Map(cBufferProj.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &projTrans, sizeof(DirectX::XMMATRIX));
-	Graphics::context->Unmap(cBufferProj.Get(), 0);
 }
 
 void Graphics::updateGPUDeltaTimes()

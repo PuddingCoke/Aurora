@@ -510,39 +510,27 @@ HRESULT Aurora::iniDevice()
 HRESULT Aurora::iniGameConstant()
 {
 	{
-		D3D11_BUFFER_DESC projCBD = {};
-		projCBD.Usage = D3D11_USAGE_DYNAMIC;
-		projCBD.ByteWidth = sizeof(DirectX::XMMATRIX);
-		projCBD.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		projCBD.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-		D3D11_BUFFER_DESC viewCBD = {};
-		viewCBD.Usage = D3D11_USAGE_DYNAMIC;
-		viewCBD.ByteWidth = 2u * sizeof(DirectX::XMMATRIX);
-		viewCBD.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		viewCBD.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-		Graphics::device->CreateBuffer(&projCBD, nullptr, Graphics::cBufferProj.ReleaseAndGetAddressOf());
-		Graphics::device->CreateBuffer(&viewCBD, nullptr, Graphics::cBufferView.ReleaseAndGetAddressOf());
+		Camera::initialize();
 
 		switch (config->cameraType)
 		{
 		default:
 		case Configuration::CameraType::Orthogonal:
 			std::cout << "[class Aurora] orthogonal camera\n";
-			Graphics::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::width, 0, (float)Graphics::height, 0.f, 1.f));
-			Graphics::setView(DirectX::XMMatrixIdentity());
+			Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::width, 0, (float)Graphics::height, 0.f, 1.f));
+			Camera::setView(DirectX::XMMatrixIdentity());
 			break;
 		case Configuration::CameraType::Perspective:
 			std::cout << "[class Aurora] perspective camera\n";
-			Graphics::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f));
+			Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f));
 			break;
 		}
 
-		ID3D11Buffer* buffers[2] = { Graphics::cBufferProj.Get(),Graphics::cBufferView.Get() };
+		ID3D11Buffer* buffers[2] = { Camera::projBuffer.Get(),Camera::viewBuffer.Get() };
 
 		Graphics::context->VSSetConstantBuffers(0, 2, buffers);
 		Graphics::context->GSSetConstantBuffers(0, 2, buffers);
+		Graphics::context->PSSetConstantBuffers(1, 1, Camera::viewBuffer.GetAddressOf());
 
 	}
 

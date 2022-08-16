@@ -21,7 +21,7 @@ cbuffer ProjMatrix : register(b0)
 cbuffer ViewMatrix : register(b1)
 {
     matrix view;
-    matrix viewInverse;
+    matrix normalMatrix;
 }
 
 VertexOutput main(VertexInput input)
@@ -31,9 +31,9 @@ VertexOutput main(VertexInput input)
     float3 tPosition = input.position;
     tPosition.z -= 0.6;
     
-    output.position = tPosition;
+    output.position = mul(float4(tPosition, 1.0), view).xyz;
     output.texCoord = input.texCoord;
-    output.normal = input.normal;
+    output.normal = mul(input.normal, (float3x3)normalMatrix);
     output.svPosition = mul(mul(float4(tPosition, 1.0), view), proj);
     return output;
 }

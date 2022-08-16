@@ -12,7 +12,13 @@ cbuffer DeltaTimes : register(b0)
     float2 v0;
 }
 
-cbuffer MaterialProperty : register(b1)
+cbuffer ViewMatrix : register(b1)
+{
+    matrix view;
+    matrix normalMatrix;
+}
+
+cbuffer MaterialProperty : register(b2)
 {
     float3 ambientColor;
     float shininess;
@@ -24,7 +30,7 @@ cbuffer MaterialProperty : register(b1)
     float v3;
 }
 
-cbuffer LightInfo : register(b2)
+cbuffer LightInfo : register(b3)
 {
     float3 lightPos;
     float v4;
@@ -87,8 +93,8 @@ float4 main(PixelInput input) : SV_TARGET
     const float roughness = 0.1;
     
     float3 N = input.normal;
-    float3 V = normalize(viewPos - input.position);
-    float3 R = reflect(-V, N);
+    float3 V = normalize(- input.position);
+    float3 R = mul(reflect(-V, N), transpose((float3x3) normalMatrix));
     
     float specularF0 = 0.3;
     

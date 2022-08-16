@@ -139,6 +139,7 @@
     <ClInclude Include="Inc\Aurora\A3D\Model.h" />
     <ClInclude Include="Inc\Aurora\Aurora.h" />
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
+    <ClInclude Include="Inc\Aurora\Camera.h" />
     <ClInclude Include="Inc\Aurora\Color.h" />
     <ClInclude Include="Inc\Aurora\Configuration.h" />
     <ClInclude Include="Inc\Aurora\DepthStencilView.h" />
@@ -168,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\A3D\Model.cpp" />
+    <ClCompile Include="Src\Aurora\Camera.cpp" />
     <ClCompile Include="Src\Aurora\Color.cpp" />
     <ClCompile Include="Src\Aurora\Aurora.cpp" />
     <ClCompile Include="Src\Aurora\A2D\BitmapFont.cpp" />

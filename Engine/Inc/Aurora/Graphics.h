@@ -30,12 +30,6 @@ public:
 
 	static const float& getAspectRatio();
 
-	//此方法会自动转置proj矩阵
-	static void setProj(const DirectX::XMMATRIX& proj);
-	
-	//此方法会自动转置view矩阵
-	static void setView(const DirectX::XMMATRIX& view);
-
 	static const int& getWidth();
 
 	static const int& getHeight();
@@ -56,10 +50,6 @@ private:
 
 	static void updateGPUDeltaTimes();
 
-	static ComPtr<ID3D11Buffer> cBufferProj;//投影矩阵通常在窗口大小变化时更改
-
-	static ComPtr<ID3D11Buffer> cBufferView;//视图矩阵可由用户随意修改
-
 	static ComPtr<ID3D11Buffer> cBufferDeltaTimes;
 
 	static ComPtr<ID3D11Debug> d3dDebug;
@@ -76,12 +66,6 @@ private:
 		float v2 = 0;
 		float v3 = 0;
 	} gpuDeltaTimes;
-
-	static struct GPUViews
-	{
-		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX viewInverse;//由于需要在视图空间计算光照，hlsl没有像glsl提供inverse函数，所以得在CPU中提前计算逆矩阵。
-	} gpuViews;
 
 	static ComPtr<ID3D11RenderTargetView> defaultTargetView;
 
