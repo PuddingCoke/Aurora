@@ -19,7 +19,7 @@ public:
 
 	NvidiaEncoder(const NvidiaEncoder&) = delete;
 
-	bool encode();
+	bool encode(ID3D11Texture2D* const encodeTexture);
 
 	NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate,bool& initializeStatus);
 

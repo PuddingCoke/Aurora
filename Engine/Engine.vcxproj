@@ -174,6 +174,7 @@
     <ClCompile Include="Src\Aurora\Aurora.cpp" />
     <ClCompile Include="Src\Aurora\A2D\BitmapFont.cpp" />
     <ClCompile Include="Src\Aurora\Configuration.cpp" />
+    <ClCompile Include="Src\Aurora\DDSTextureLoader11.cpp" />
     <ClCompile Include="Src\Aurora\DepthStencilView.cpp" />
     <ClCompile Include="Src\Aurora\DoubleRTV.cpp" />
     <ClCompile Include="Src\Aurora\Event.cpp" />

@@ -2,8 +2,6 @@
 
 ID3D11Texture2D* Graphics::backBuffer = nullptr;
 
-ComPtr<ID3D11Texture2D> Graphics::encodeTexture;
-
 ComPtr<ID3D11Device4> Graphics::device;
 
 ComPtr<ID3D11DeviceContext4> Graphics::context;
@@ -106,7 +104,7 @@ void Graphics::createDeltaTimeBuffer()
 {
 	D3D11_BUFFER_DESC cbd = {};
 	cbd.Usage = D3D11_USAGE_DYNAMIC;
-	cbd.ByteWidth = 16u;
+	cbd.ByteWidth = sizeof(DeltaTime);
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 

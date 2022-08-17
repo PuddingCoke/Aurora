@@ -51,8 +51,6 @@ Texture2D::Texture2D(const std::string& path) :
 
 	D3D11_SUBRESOURCE_DATA subresource = {};
 
-	int textureWidth, textureHeight, channels;
-
 	std::string fileExtension = Utils::File::getExtension(path);
 
 	for (char& c : fileExtension)
@@ -62,6 +60,8 @@ Texture2D::Texture2D(const std::string& path) :
 
 	if (fileExtension == "jpg" || fileExtension == "jpeg" || fileExtension == "png")
 	{
+		int textureWidth, textureHeight, channels;
+
 		unsigned char* pixels = stbi_load(path.c_str(), &textureWidth, &textureHeight, &channels, 4);
 
 		width = textureWidth;
@@ -92,6 +92,8 @@ Texture2D::Texture2D(const std::string& path) :
 	}
 	else if (fileExtension == "hdr")
 	{
+		int textureWidth, textureHeight, channels;
+
 		float* pixels = stbi_loadf(path.c_str(), &textureWidth, &textureHeight, &channels, 4);
 
 		width = textureWidth;
@@ -119,6 +121,24 @@ Texture2D::Texture2D(const std::string& path) :
 
 			createShaderResource();
 		}
+	}
+	else if (fileExtension == "dds")
+	{
+		std::wstring wFilePath = std::wstring(path.begin(), path.end());
+
+		DirectX::CreateDDSTextureFromFile(Graphics::device.Get(), wFilePath.c_str(), nullptr, resourceView.GetAddressOf());
+
+		ID3D11Resource* resource;
+
+		resourceView->GetResource(&resource);
+
+		resource->QueryInterface(IID_ID3D11Texture2D, (void**)texture2D.ReleaseAndGetAddressOf());
+
+		texture2D->GetDesc(&tDesc);
+
+		width = tDesc.Width;
+		height = tDesc.Height;
+		format = tDesc.Format;
 	}
 	else
 	{

@@ -1,6 +1,6 @@
 ﻿#include<Aurora/VideoEncoder/NvidiaEncoder.h>
 
-bool NvidiaEncoder::encode()
+bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
 {
 	timeStart = timer.now();
 
@@ -12,7 +12,7 @@ bool NvidiaEncoder::encode()
 
 	registerResource.resourceType = NV_ENC_INPUT_RESOURCE_TYPE::NV_ENC_INPUT_RESOURCE_TYPE_DIRECTX;
 
-	registerResource.resourceToRegister = Graphics::encodeTexture.Get();
+	registerResource.resourceToRegister = encodeTexture;
 
 	registerResource.width = (UINT)Graphics::width;
 

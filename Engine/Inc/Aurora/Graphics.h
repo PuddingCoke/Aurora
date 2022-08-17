@@ -7,7 +7,6 @@
 #include<wrl/client.h>
 #include<DirectXMath.h>
 
-
 using Microsoft::WRL::ComPtr;
 
 class Graphics
@@ -57,9 +56,6 @@ private:
 	static ComPtr<ID3D11Buffer> deltaTimeBuffer;
 
 	static ComPtr<ID3D11Debug> d3dDebug;
-
-	//R8G8B8A8_UNORM
-	static ComPtr<ID3D11Texture2D> encodeTexture;
 
 	static ID3D11Texture2D* backBuffer;
 

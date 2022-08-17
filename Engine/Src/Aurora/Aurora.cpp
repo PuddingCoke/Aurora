@@ -106,6 +106,8 @@ void Aurora::iniGame(Game* const game)
 	if (config->enableDebug)
 	{
 		Graphics::d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		std::cout << "[class Aurora] debug mode press any key to exit\n";
+		std::cin.get();
 	}
 
 	if (config->usage == Configuration::EngineUsage::Wallpaper)
@@ -440,7 +442,7 @@ HRESULT Aurora::iniDevice()
 		tDesc.CPUAccessFlags = 0;
 		tDesc.MiscFlags = 0;
 
-		Graphics::device->CreateTexture2D(&tDesc, nullptr, Graphics::encodeTexture.ReleaseAndGetAddressOf());
+		Graphics::device->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
 
 		std::cout << "[class Aurora] initialize encode texture complete\n";
 	}
@@ -520,10 +522,10 @@ void Aurora::runEncode()
 	{
 		game->update(Graphics::deltaTime.deltaTime);
 		game->render();
-		Graphics::context->ResolveSubresource(Graphics::encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+		Graphics::context->ResolveSubresource(encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
 		Graphics::deltaTime.sTime += Graphics::deltaTime.deltaTime;
 		Graphics::updateDeltaTimeBuffer();
-	} while (nvidiaEncoder.encode());
+	} while (nvidiaEncoder.encode(encodeTexture.Get()));
 
 	std::cout << "[class Aurora] encode complete!\n";
 
