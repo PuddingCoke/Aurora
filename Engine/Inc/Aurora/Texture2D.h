@@ -13,6 +13,7 @@
 
 #include"Graphics.h"
 #include"Utils.h"
+#include"Random.h"
 
 class Texture2D
 {
@@ -27,6 +28,10 @@ public:
 	static Texture2D* create(const std::string& path);
 	
 	static Texture2D* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
+
+	//生成一个噪音贴图
+	//如果allowNegative为true 每个通道为[-1,1]，否则将为[0,1]
+	static Texture2D* createNoise(const unsigned int& width, const unsigned int& height, const bool& allowNegative);
 
 	~Texture2D();
 
@@ -49,6 +54,8 @@ private:
 	Texture2D(const std::string& path);
 
 	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
+
+	Texture2D(const unsigned int& width, const unsigned int& height, const bool& allowNegative);
 
 	void createShaderResource();
 

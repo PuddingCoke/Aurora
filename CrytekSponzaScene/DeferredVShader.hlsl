@@ -1,8 +1,7 @@
 struct VertexInput
 {
-    float4 pos : POSITION;
+    float3 pos : POSITION;
     float2 uv : TEXCOORD;
-    float3 color : COLOR;
     float3 normal : NORMAL;
     float3 tangent : TANGENT0;
     float3 bitangent : TANGENT1;
@@ -10,10 +9,9 @@ struct VertexInput
 
 struct VertexOutput
 {
-    float3 normal : NORMAL;
+    float3 pos : POSITION;
     float2 uv : TEXCOORD;
-    float3 color : COLOR;
-    float3 worldPos : POSITION;
+    float3 normal : NORMAL;
     float3 tangent : TANGENT0;
     float3 bitangent : TANGENT1;
     float4 svPosition : SV_Position;
@@ -33,12 +31,11 @@ cbuffer ViewMatrix : register(b1)
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
-    output.svPosition = mul(mul(input.pos, view), proj);
+    output.pos = mul(float4(input.pos, 1.0), view).xyz;
     output.uv = input.uv;
-    output.worldPos = mul(input.pos, view).xyz;
     output.normal = mul(input.normal, (float3x3) normalMatrix);
-    output.tangent = normalize(input.tangent);
-    output.color = input.color;
+    output.tangent = input.tangent;
     output.bitangent = input.bitangent;
+    output.svPosition = mul(mul(float4(input.pos, 1.0), view), proj);
     return output;
 }
