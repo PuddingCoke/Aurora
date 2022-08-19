@@ -29,8 +29,7 @@ public:
 	
 	static Texture2D* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
 
-	//生成一个噪音贴图
-	//如果allowNegative为true 每个通道为[-1,1]，否则将为[0,1]
+	//生成一个噪音贴图 每个通道属于[0,1]
 	static Texture2D* createNoise(const unsigned int& width, const unsigned int& height, const bool& allowNegative);
 
 	~Texture2D();

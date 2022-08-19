@@ -84,10 +84,10 @@ Texture2D::Texture2D(const std::string& path) :
 			tDesc.SampleDesc.Count = 1;
 			tDesc.SampleDesc.Quality = 0;
 			tDesc.Usage = D3D11_USAGE_IMMUTABLE;
-			
+
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 4u;
-			
+
 			Graphics::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
 
 			stbi_image_free(pixels);
@@ -177,10 +177,12 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 	}
 }
 
-Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const bool& allowNegative):
-	poolIndex(-1),width(width),height(height),format(DXGI_FORMAT_R32G32B32A32_FLOAT)
+Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const bool& allowNegative) :
+	poolIndex(-1), width(width), height(height), format(DXGI_FORMAT_R32G32B32A32_FLOAT)
 {
 	std::vector<DirectX::XMFLOAT4> colors(width * height);
+
+	std::cout << "[class Texture2D] generate " << width << "x" << height << " noise texture\n";
 
 	if (allowNegative)
 	{

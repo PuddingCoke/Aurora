@@ -31,7 +31,7 @@ Model::~Model()
 
 void Model::draw() const
 {
-	Graphics::context->PSSetConstantBuffers(2, 1, materialBuffer.GetAddressOf());
+	Graphics::context->PSSetConstantBuffers(3, 1, materialBuffer.GetAddressOf());
 
 	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Graphics::context->IASetVertexBuffers(0, 1, meshBuffer.GetAddressOf(), &stride, &offset);

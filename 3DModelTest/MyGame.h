@@ -437,7 +437,7 @@ public:
 		memcpy(mappedData.pData, &lightInfo, sizeof(LightInfo));
 		Graphics::context->Unmap(lightBuffer.Get(), 0);
 
-		Graphics::context->PSSetConstantBuffers(3, 1, lightBuffer.GetAddressOf());
+		Graphics::context->PSSetConstantBuffers(4, 1, lightBuffer.GetAddressOf());
 	}
 
 	void render() override

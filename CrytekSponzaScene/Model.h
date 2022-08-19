@@ -46,14 +46,12 @@ public:
 		hasUV = mesh->HasTextureCoords(0);
 		hasTangent = mesh->HasTangentsAndBitangents();
 
-		std::cout << vertexCount << "\n";
-
 		for (unsigned int i = 0; i < vertexCount; i++)
 		{
 			vertices[i].pos = DirectX::XMFLOAT3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 			if (hasUV)
 			{
-				vertices[i].uv = DirectX::XMFLOAT2(mesh->mTextureCoords[0][i].x, 1.f - mesh->mTextureCoords[0][i].y);
+				vertices[i].uv = DirectX::XMFLOAT2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 			}
 			else
 			{

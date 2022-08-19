@@ -43,7 +43,7 @@ PixelOutput main(PixelInput input)
     
     PixelOutput output;
     output.positionDepth = float4(input.pos, input.svPosition.z);
-    output.normalSpecular = float4(nm * 0.5 + 0.5, specular);
+    output.normalSpecular = float4(nm, specular);
     output.albedo = albedo;
     
     return output;

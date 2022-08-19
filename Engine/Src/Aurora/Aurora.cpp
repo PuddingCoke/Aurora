@@ -472,7 +472,7 @@ HRESULT Aurora::iniCamera()
 
 	Graphics::context->VSSetConstantBuffers(0, 2, buffers);
 	Graphics::context->GSSetConstantBuffers(0, 2, buffers);
-	Graphics::context->PSSetConstantBuffers(1, 1, Camera::viewBuffer.GetAddressOf());
+	Graphics::context->PSSetConstantBuffers(1, 2, buffers);
 
 	return S_OK;
 }

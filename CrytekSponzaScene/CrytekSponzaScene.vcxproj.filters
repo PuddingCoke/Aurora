@@ -37,5 +37,7 @@
     <FxCompile Include="DeferredVShader.hlsl" />
     <FxCompile Include="DeferredPShader.hlsl" />
     <FxCompile Include="DeferredFinal.hlsl" />
+    <FxCompile Include="SSAOShader.hlsl" />
+    <FxCompile Include="SSAOBlur.hlsl" />
   </ItemGroup>
 </Project>

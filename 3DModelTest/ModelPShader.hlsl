@@ -12,13 +12,18 @@ cbuffer DeltaTimes : register(b0)
     float2 v0;
 }
 
-cbuffer ViewMatrix : register(b1)
+cbuffer ProjMatrix : register(b1)
+{
+    matrix proj;
+}
+
+cbuffer ViewMatrix : register(b2)
 {
     matrix view;
     matrix normalMatrix;
 }
 
-cbuffer MaterialProperty : register(b2)
+cbuffer MaterialProperty : register(b3)
 {
     float3 ambientColor;
     float shininess;
@@ -30,7 +35,7 @@ cbuffer MaterialProperty : register(b2)
     float v3;
 }
 
-cbuffer LightInfo : register(b3)
+cbuffer LightInfo : register(b4)
 {
     float3 lightPos;
     float v4;

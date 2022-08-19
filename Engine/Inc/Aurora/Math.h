@@ -11,6 +11,8 @@ namespace Math
 	constexpr float half_pi = DirectX::XM_PIDIV2;
 	constexpr float pi = DirectX::XM_PI;
 	constexpr float two_pi = DirectX::XM_2PI;
+	constexpr float radToDeg = 180.f / Math::pi;
+	constexpr float degToRad = 1.f / radToDeg;
 
 	float lerp(const float& x, const float& y, const float& s);
 
