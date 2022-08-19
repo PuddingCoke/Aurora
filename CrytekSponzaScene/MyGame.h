@@ -49,6 +49,8 @@ public:
 
 	float theta2 = 0.f;
 
+	static constexpr float moveSpeed = 40.f;
+
 	static constexpr DirectX::XMVECTORF32 up = { 0.f, 1.f, 0.f , 0.f };
 
 	struct LightInfo
@@ -197,6 +199,18 @@ public:
 			eye.x -= speedFactor * focusVector.x * dt;
 			eye.y -= speedFactor * focusVector.y * dt;
 			eye.z -= speedFactor * focusVector.z * dt;
+		}
+		else if (Keyboard::getKeyDown(Keyboard::A))
+		{
+			const DirectX::XMFLOAT2 leftVector = DirectX::XMFLOAT2(cosf(theta + Math::half_pi), sinf(theta + Math::half_pi));
+			eye.x += leftVector.x * dt * moveSpeed;
+			eye.z += leftVector.y * dt * moveSpeed;
+		}
+		else if (Keyboard::getKeyDown(Keyboard::D))
+		{
+			const DirectX::XMFLOAT2 rightVector = DirectX::XMFLOAT2(cosf(theta - Math::half_pi), sinf(theta - Math::half_pi));
+			eye.x += rightVector.x * dt * moveSpeed;
+			eye.z += rightVector.y * dt * moveSpeed;
 		}
 
 		lightInfo.viewPos = DirectX::XMFLOAT4(eye.x, eye.y, eye.z, 1.f);
