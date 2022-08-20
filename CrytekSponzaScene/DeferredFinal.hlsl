@@ -40,7 +40,7 @@ cbuffer LightInfo : register(b3)
     Light lights[17];
 };
 
-static const float AMBIENT_FACTOR = 0.1;
+static const float AMBIENT_FACTOR = 0.2;
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {

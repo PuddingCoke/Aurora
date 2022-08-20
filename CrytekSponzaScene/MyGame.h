@@ -125,7 +125,7 @@ public:
 
 			for (int i = 0; i < 5; i++)
 			{
-				setLight(&lightInfo.lights[i], { (float)(i - 2.5f) * 50.0f, 20.0f, 0.0f }, lightColors[i], 120.0f);
+				setLight(&lightInfo.lights[i], { (float)(i - 2.5f) * 50.0f, 10.0f, 0.0f }, lightColors[i], 120.0f);
 			}
 
 			setLight(&lightInfo.lights[5], { -48.75f, 16.0f, -17.8f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
@@ -214,9 +214,9 @@ public:
 		}
 
 		lightInfo.viewPos = DirectX::XMFLOAT4(eye.x, eye.y, eye.z, 1.f);
-		lightInfo.lights[0].position = DirectX::XMFLOAT4(-sinf(360.0f * Graphics::getSTime()/2.f * Math::degToRad) * 120.0f, 20.5f, cosf(360.0f * Graphics::getSTime() * 8.0f * Math::degToRad/2.f) * 10.0f, 1.f);
+		lightInfo.lights[0].position = DirectX::XMFLOAT4(-sinf(360.0f * Graphics::getSTime() / 2.f * Math::degToRad) * 120.0f, 3.5f, cosf(360.0f * Graphics::getSTime() * 8.0f * Math::degToRad / 2.f) * 10.0f, 1.f);
 		lightInfo.lights[0].color = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-		
+
 		D3D11_MAPPED_SUBRESOURCE mappedData;
 		Graphics::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 		memcpy(mappedData.pData, &lightInfo, sizeof(LightInfo));

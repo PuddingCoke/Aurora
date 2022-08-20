@@ -7,8 +7,8 @@ SamplerState linearSampler : register(s1);
 
 static const float random_size = 64.0;
 static const float2 g_screen_size = { 1920.0, 1080.0 };
-static const float g_sample_rad = 1.5;
-static const float g_intensity = 2.5;
+static const float g_sample_rad = 1.0;
+static const float g_intensity = 6.0;
 static const float g_scale = 1.0;
 static const float g_bias = 0.025;
 
