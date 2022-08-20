@@ -4,6 +4,7 @@
 #include<Aurora/Texture2D.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/DepthStencilView.h>
+#include<Aurora/TextureCube.h>
 
 #include"Scene.h"
 
@@ -21,11 +22,17 @@ public:
 
 	RenderTexture* albedo;
 
+	TextureCube* skybox;
+
 	Texture2D* randomNormal;
 
 	DepthStencilView* depthStencilView;
 
 	ComPtr<ID3D11InputLayout> inputLayout;
+
+	Shader* skyboxVShader;
+
+	Shader* skyboxPShader;
 
 	Shader* ssaoShader;
 
@@ -72,6 +79,8 @@ public:
 		deferredPShader(Shader::fromFile("DeferredPShader.hlsl", ShaderType::Pixel)),
 		deferredFinal(Shader::fromFile("DeferredFinal.hlsl", ShaderType::Pixel)),
 		ssaoBlur(Shader::fromFile("SSAOBlur.hlsl", ShaderType::Pixel)),
+		skyboxVShader(Shader::fromFile("SkyboxVShader.hlsl", ShaderType::Vertex)),
+		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
 		positionDepth(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
 		normalSpecular(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
 		albedo(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
@@ -80,7 +89,8 @@ public:
 		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT, false)),
 		randomNormal(Texture2D::create("RandomNormal.png")),
 		ssaoShader(Shader::fromFile("SSAOShader.hlsl", ShaderType::Pixel)),
-		scene(Scene::create("scene/sponza.dae"))
+		scene(Scene::create("scene/sponza.dae")),
+		skybox(TextureCube::create({ "scene/sky/SkyEarlyDusk_Right.png","scene/sky/SkyEarlyDusk_Left.png","scene/sky/SkyEarlyDusk_Top.png","scene/sky/SkyEarlyDusk_Bottom.png","scene/sky/SkyEarlyDusk_Front.png","scene/sky/SkyEarlyDusk_Back.png" }))
 	{
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[5] =
@@ -180,6 +190,9 @@ public:
 		delete ssaoTexture;
 		delete ssaoBlured;
 		delete ssaoBlur;
+		delete skybox;
+		delete skyboxVShader;
+		delete skyboxPShader;
 	}
 
 	void update(const float& dt) override
@@ -232,9 +245,22 @@ public:
 
 	void render()
 	{
+		albedo->clearRTV(DirectX::Colors::Black);
+		albedo->setRTV();
+
+		Graphics::context->PSSetSamplers(0, 1, wrapSampler.GetAddressOf());
+		Graphics::context->PSSetSamplers(1, 1, StateCommon::defSamplerState.GetAddressOf());
+
+		skybox->setSRV(0);
+
+		skyboxVShader->use();
+		skyboxPShader->use();
+
+		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Graphics::context->Draw(36, 0);
+
 		positionDepth->clearRTV(DirectX::Colors::Black);
 		normalSpecular->clearRTV(DirectX::Colors::Black);
-		albedo->clearRTV(DirectX::Colors::Black);
 
 		Graphics::setBlendState(StateCommon::blendReplace.Get());
 
@@ -246,11 +272,7 @@ public:
 		deferredVShader->use();
 		deferredPShader->use();
 
-		Graphics::context->PSSetSamplers(0, 1, wrapSampler.GetAddressOf());
-
 		scene->draw();
-
-		Graphics::context->PSSetSamplers(1, 1, StateCommon::defSamplerState.GetAddressOf());
 
 		ssaoTexture->clearRTV(DirectX::Colors::Black);
 		ssaoTexture->setRTV();
@@ -276,7 +298,7 @@ public:
 
 		Graphics::context->Draw(3, 0);
 
-		Graphics::clearDefRTV(DirectX::Colors::Black);
+		//Graphics::clearDefRTV(DirectX::Colors::Black);
 		Graphics::setDefRTV();
 
 		positionDepth->getTexture()->setSRV(0);

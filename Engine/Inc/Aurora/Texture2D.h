@@ -26,6 +26,8 @@ public:
 	void operator=(const Texture2D&) = delete;
 
 	static Texture2D* create(const std::string& path);
+
+	static Texture2D* create(const std::string& path, const D3D11_USAGE& usage, const D3D11_BIND_FLAG& bindFlag, const D3D11_CPU_ACCESS_FLAG& cpuAccessFlag);
 	
 	static Texture2D* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
 
@@ -50,7 +52,7 @@ private:
 
 	friend class SpriteBatch;
 
-	Texture2D(const std::string& path);
+	Texture2D(const std::string& path, const D3D11_USAGE& usage, const D3D11_BIND_FLAG& bindFlag, const D3D11_CPU_ACCESS_FLAG& cpuAccessFlag);
 
 	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
 

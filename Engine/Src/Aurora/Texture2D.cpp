@@ -2,7 +2,12 @@
 
 Texture2D* Texture2D::create(const std::string& path)
 {
-	return new Texture2D(path);
+	return new Texture2D(path, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, (D3D11_CPU_ACCESS_FLAG)0);
+}
+
+Texture2D* Texture2D::create(const std::string& path, const D3D11_USAGE& usage, const D3D11_BIND_FLAG& bindFlag, const D3D11_CPU_ACCESS_FLAG& cpuAccessFlag)
+{
+	return new Texture2D(path, usage, bindFlag, cpuAccessFlag);
 }
 
 Texture2D* Texture2D::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags)
@@ -49,7 +54,7 @@ ID3D11Texture2D* Texture2D::getTexture2D() const
 	return texture2D.Get();
 }
 
-Texture2D::Texture2D(const std::string& path) :
+Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const D3D11_BIND_FLAG& bindFlag, const D3D11_CPU_ACCESS_FLAG& cpuAccessFlag) :
 	poolIndex(-1)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
@@ -78,12 +83,13 @@ Texture2D::Texture2D(const std::string& path) :
 			tDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 			tDesc.ArraySize = 1;
 			tDesc.MipLevels = 1;
-			tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			tDesc.BindFlags = bindFlag;
 			tDesc.Width = (UINT)textureWidth;
 			tDesc.Height = (UINT)textureHeight;
 			tDesc.SampleDesc.Count = 1;
 			tDesc.SampleDesc.Quality = 0;
-			tDesc.Usage = D3D11_USAGE_IMMUTABLE;
+			tDesc.Usage = usage;
+			tDesc.CPUAccessFlags = cpuAccessFlag;
 
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 4u;
@@ -92,7 +98,10 @@ Texture2D::Texture2D(const std::string& path) :
 
 			stbi_image_free(pixels);
 
-			createShaderResource();
+			if (bindFlag & D3D11_BIND_SHADER_RESOURCE)
+			{
+				createShaderResource();
+			}
 		}
 	}
 	else if (fileExtension == "hdr")
@@ -110,12 +119,13 @@ Texture2D::Texture2D(const std::string& path) :
 			tDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			tDesc.ArraySize = 1;
 			tDesc.MipLevels = 1;
-			tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			tDesc.BindFlags = bindFlag;
 			tDesc.Width = (UINT)textureWidth;
 			tDesc.Height = (UINT)textureHeight;
 			tDesc.SampleDesc.Count = 1;
 			tDesc.SampleDesc.Quality = 0;
-			tDesc.Usage = D3D11_USAGE_IMMUTABLE;
+			tDesc.Usage = usage;
+			tDesc.CPUAccessFlags = cpuAccessFlag;
 
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 16u;
@@ -124,7 +134,10 @@ Texture2D::Texture2D(const std::string& path) :
 
 			stbi_image_free(pixels);
 
-			createShaderResource();
+			if (bindFlag & D3D11_BIND_SHADER_RESOURCE)
+			{
+				createShaderResource();
+			}
 		}
 	}
 	else if (fileExtension == "dds")
