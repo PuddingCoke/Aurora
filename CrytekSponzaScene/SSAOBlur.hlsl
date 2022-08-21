@@ -9,8 +9,11 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     int n = 0;
     float2 texelSize = float2(1.0, 1.0) / float2(1920.0 , 1080.0);
     float result = 0.0;
+    
+    [unroll]
     for (int x = -blurRange; x < blurRange; x++)
     {
+        [unroll]
         for (int y = -blurRange; y < blurRange; y++)
         {
             float2 offset = float2(float(x), float(y)) * texelSize;

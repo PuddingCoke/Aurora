@@ -13,7 +13,7 @@ public:
 	SpriteBatch* batch;
 
 	MyGame() :
-		texture(Texture2D::createNoise(512, 512, false)),
+		texture(Texture2D::createRandNormal(64, 64)),
 		batch(SpriteBatch::create())
 	{
 

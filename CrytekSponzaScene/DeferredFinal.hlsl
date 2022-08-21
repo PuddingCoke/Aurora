@@ -23,24 +23,12 @@ cbuffer DeltaTimes : register(b0)
     float2 v0;
 }
 
-cbuffer ProjMatrix : register(b1)
-{
-    matrix proj;
-}
-
-cbuffer ViewMatrix : register(b2)
-{
-    matrix view;
-    matrix normalMatrix;
-}
-
 cbuffer LightInfo : register(b3)
 {
-    float4 viewPos;
     Light lights[17];
 };
 
-static const float AMBIENT_FACTOR = 0.2;
+static const float AMBIENT_FACTOR = 0.15;
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
@@ -61,14 +49,12 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         [unroll]
         for (int i = 0; i < 17; i++)
         {
-            float3 lightPos = mul(float4(lights[i].position.xyz, 1.0), view).xyz;
+            float3 lightPos = lights[i].position.xyz;
             float3 L = lightPos - position;
             float dist = length(L);
             L = normalize(L);
             
-            float3 eyeViewSpace = mul(float4(viewPos.xyz, 1.0), view).xyz;
-            float3 V = eyeViewSpace - position;
-            V = normalize(V);
+            float3 V = normalize(-position);
             
             float atten = lights[i].radius / (pow(dist, 2.0) + 1.0);
             

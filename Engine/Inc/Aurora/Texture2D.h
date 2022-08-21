@@ -34,6 +34,9 @@ public:
 	//生成一个噪音贴图 每个通道属于[0,1]
 	static Texture2D* createNoise(const unsigned int& width, const unsigned int& height, const bool& allowNegative);
 
+	//生成随机的法线贴图
+	static Texture2D* createRandNormal(const unsigned int& width, const unsigned& height);
+
 	~Texture2D();
 
 	const unsigned int& getWidth() const;
@@ -57,6 +60,8 @@ private:
 	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
 
 	Texture2D(const unsigned int& width, const unsigned int& height, const bool& allowNegative);
+
+	Texture2D(const unsigned int& width, const unsigned int& height);
 
 	void createShaderResource();
 

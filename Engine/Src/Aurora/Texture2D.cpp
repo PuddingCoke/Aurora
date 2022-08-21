@@ -20,6 +20,11 @@ Texture2D* Texture2D::createNoise(const unsigned int& width, const unsigned int&
 	return new Texture2D(width, height, allowNegative);
 }
 
+Texture2D* Texture2D::createRandNormal(const unsigned int& width, const unsigned& height)
+{
+	return new Texture2D(width, height);
+}
+
 Texture2D::~Texture2D()
 {
 }
@@ -210,6 +215,37 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 		{
 			colors[i] = DirectX::XMFLOAT4(Random::Float(), Random::Float(), Random::Float(), Random::Float());
 		}
+	}
+
+	D3D11_TEXTURE2D_DESC tDesc = {};
+	tDesc.Width = width;
+	tDesc.Height = height;
+	tDesc.MipLevels = 1;
+	tDesc.ArraySize = 1;
+	tDesc.Format = format;
+	tDesc.SampleDesc.Count = 1;
+	tDesc.SampleDesc.Quality = 0;
+	tDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	tDesc.CPUAccessFlags = 0;
+	tDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA subresource = {};
+	subresource.pSysMem = colors.data();
+	subresource.SysMemPitch = width * 16u;
+
+	Graphics::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
+
+	createShaderResource();
+}
+
+Texture2D::Texture2D(const unsigned int& width, const unsigned int& height) :
+	poolIndex(-1), width(width), height(height), format(DXGI_FORMAT_R32G32B32A32_FLOAT)
+{
+	std::vector<DirectX::XMFLOAT4> colors(width * height);
+	for (unsigned int i = 0; i < width * height; i++)
+	{
+		colors[i] = DirectX::XMFLOAT4(Random::Float(), Random::Float(), 1.f, 1.f);
 	}
 
 	D3D11_TEXTURE2D_DESC tDesc = {};

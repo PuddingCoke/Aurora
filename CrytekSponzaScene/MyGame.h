@@ -50,6 +50,8 @@ public:
 
 	ComPtr<ID3D11Buffer> lightBuffer;
 
+	ComPtr<ID3D11Buffer> ssaoBuffer;
+
 	DirectX::XMFLOAT4 eye = { 0.0f,20.f,0.f,1.f };
 
 	float theta = 0.f;
@@ -62,7 +64,6 @@ public:
 
 	struct LightInfo
 	{
-		DirectX::XMFLOAT4 viewPos;
 		struct Light
 		{
 			DirectX::XMFLOAT4 position;
@@ -72,7 +73,15 @@ public:
 			float linearFalloff;
 			float v0;
 		}lights[17]{};
-	}lightInfo{};
+	}lightInfo{}, viewSpaceLight{};
+
+	struct SSAOParams
+	{
+		float g_sample_rad = 1.00f;
+		float g_intensity = 4.0f;
+		float g_scale = 0.53f;
+		float g_bias = 0.025f;
+	} ssaoParams;
 
 	MyGame() :
 		deferredVShader(Shader::fromFile("DeferredVShader.hlsl", ShaderType::Vertex)),
@@ -127,7 +136,7 @@ public:
 			};
 
 			DirectX::XMFLOAT3 lightColors[5];
-			lightColors[0] = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+			lightColors[0] = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 			lightColors[1] = DirectX::XMFLOAT3(1.0f, 0.7f, 0.7f);
 			lightColors[2] = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
 			lightColors[3] = DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);
@@ -153,6 +162,40 @@ public:
 		}
 
 		{
+			auto setLight = [](LightInfo::Light* light, const DirectX::XMFLOAT3& pos, const DirectX::XMFLOAT3& color, const float& radius)
+			{
+				light->position = DirectX::XMFLOAT4(pos.x, pos.y, pos.z, 1.f);
+				light->color = DirectX::XMFLOAT4(color.x, color.y, color.z, 1.f);
+				light->radius = radius;
+			};
+
+			DirectX::XMFLOAT3 lightColors[5];
+			lightColors[0] = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+			lightColors[1] = DirectX::XMFLOAT3(1.0f, 0.7f, 0.7f);
+			lightColors[2] = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+			lightColors[3] = DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);
+			lightColors[4] = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+
+			for (int i = 0; i < 5; i++)
+			{
+				setLight(&viewSpaceLight.lights[i], { (float)(i - 2.5f) * 50.0f, 10.0f, 0.0f }, lightColors[i], 120.0f);
+			}
+
+			setLight(&viewSpaceLight.lights[5], { -48.75f, 16.0f, -17.8f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
+			setLight(&viewSpaceLight.lights[6], { -48.75f, 16.0f,  18.4f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
+			setLight(&viewSpaceLight.lights[7], { 62.0f, 16.0f, -17.8f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
+			setLight(&viewSpaceLight.lights[8], { 62.0f, 16.0f,  18.4f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
+			setLight(&viewSpaceLight.lights[9], { 120.0f, 20.0f, -43.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
+			setLight(&viewSpaceLight.lights[10], { 120.0f, 20.0f, 41.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
+			setLight(&viewSpaceLight.lights[11], { -110.0f, 20.0f, -43.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
+			setLight(&viewSpaceLight.lights[12], { -110.0f, 20.0f, 41.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
+			setLight(&viewSpaceLight.lights[13], { -122.0f, 18.0f, -3.2f }, { 1.0f, 0.3f, 0.3f }, 25.0f);
+			setLight(&viewSpaceLight.lights[14], { -122.0f, 18.0f,  3.2f }, { 0.3f, 1.0f, 0.3f }, 25.0f);
+			setLight(&viewSpaceLight.lights[15], { 135.0f, 18.0f, -3.2f }, { 0.3f, 0.3f, 1.0f }, 25.0f);
+			setLight(&viewSpaceLight.lights[16], { 135.0f, 18.0f,  3.2f }, { 1.0f, 1.0f, 0.3f }, 25.0f);
+		}
+
+		{
 			D3D11_BUFFER_DESC bd = {};
 			bd.ByteWidth = sizeof(LightInfo);
 			bd.Usage = D3D11_USAGE_DYNAMIC;
@@ -160,6 +203,19 @@ public:
 			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 			Graphics::device->CreateBuffer(&bd, nullptr, lightBuffer.ReleaseAndGetAddressOf());
+		}
+
+		{
+			D3D11_BUFFER_DESC bd = {};
+			bd.ByteWidth = sizeof(SSAOParams);
+			bd.Usage = D3D11_USAGE_DYNAMIC;
+			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+			D3D11_SUBRESOURCE_DATA subresource = {};
+			subresource.pSysMem = &ssaoParams;
+
+			Graphics::device->CreateBuffer(&bd, &subresource, ssaoBuffer.ReleaseAndGetAddressOf());
 		}
 
 		Mouse::addMoveEvent([this]()
@@ -213,32 +269,67 @@ public:
 			eye.y -= speedFactor * focusVector.y * dt;
 			eye.z -= speedFactor * focusVector.z * dt;
 		}
-		else if (Keyboard::getKeyDown(Keyboard::A))
+
+		if (Keyboard::getKeyDown(Keyboard::A))
 		{
 			const DirectX::XMFLOAT2 leftVector = DirectX::XMFLOAT2(cosf(theta + Math::half_pi), sinf(theta + Math::half_pi));
 			eye.x += leftVector.x * dt * moveSpeed;
 			eye.z += leftVector.y * dt * moveSpeed;
 		}
-		else if (Keyboard::getKeyDown(Keyboard::D))
+		if (Keyboard::getKeyDown(Keyboard::D))
 		{
 			const DirectX::XMFLOAT2 rightVector = DirectX::XMFLOAT2(cosf(theta - Math::half_pi), sinf(theta - Math::half_pi));
 			eye.x += rightVector.x * dt * moveSpeed;
 			eye.z += rightVector.y * dt * moveSpeed;
 		}
 
-		lightInfo.viewPos = DirectX::XMFLOAT4(eye.x, eye.y, eye.z, 1.f);
+		if (Keyboard::getKeyDown(Keyboard::U))
+		{
+			ssaoParams.g_sample_rad += 0.01f;;
+		}
+		else if (Keyboard::getKeyDown(Keyboard::I))
+		{
+			ssaoParams.g_sample_rad -= 0.01f;;
+		}
+
+		if (Keyboard::getKeyDown(Keyboard::H))
+		{
+			ssaoParams.g_intensity += 0.01f;;
+		}
+		else if (Keyboard::getKeyDown(Keyboard::J))
+		{
+			ssaoParams.g_intensity -= 0.01f;;
+		}
+
+		if (Keyboard::getKeyDown(Keyboard::B))
+		{
+			ssaoParams.g_scale += 0.01f;
+		}
+		else if (Keyboard::getKeyDown(Keyboard::N))
+		{
+			ssaoParams.g_scale -= 0.01f;
+		}
+
 		lightInfo.lights[0].position = DirectX::XMFLOAT4(-sinf(360.0f * Graphics::getSTime() / 2.f * Math::degToRad) * 120.0f, 3.5f, cosf(360.0f * Graphics::getSTime() * 8.0f * Math::degToRad / 2.f) * 10.0f, 1.f);
-		lightInfo.lights[0].color = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
-		Graphics::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-		memcpy(mappedData.pData, &lightInfo, sizeof(LightInfo));
-		Graphics::context->Unmap(lightBuffer.Get(), 0);
-
+		Graphics::context->Map(ssaoBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		memcpy(mappedData.pData, &ssaoParams, sizeof(SSAOParams));
+		Graphics::context->Unmap(ssaoBuffer.Get(), 0);
 
 		DirectX::XMFLOAT4 focus = DirectX::XMFLOAT4(eye.x + focusVector.x, eye.y + focusVector.y, eye.z + focusVector.z, 1.f);
 
 		Camera::setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eye), DirectX::XMLoadFloat4(&focus), up));
+
+		for (unsigned int i = 0; i < 17; i++)
+		{
+			DirectX::XMFLOAT3 lightInViewSpace = Camera::toViewSpace(DirectX::XMFLOAT3(lightInfo.lights[i].position.x, lightInfo.lights[i].position.y, lightInfo.lights[i].position.z));
+			viewSpaceLight.lights[i].position = DirectX::XMFLOAT4(lightInViewSpace.x, lightInViewSpace.y, lightInViewSpace.z, 1.f);
+		}
+
+		Graphics::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		memcpy(mappedData.pData, &viewSpaceLight, sizeof(LightInfo));
+		Graphics::context->Unmap(lightBuffer.Get(), 0);
 
 		Graphics::context->PSSetConstantBuffers(3, 1, lightBuffer.GetAddressOf());
 	}
@@ -282,6 +373,8 @@ public:
 		randomNormal->setSRV(2);
 
 		Graphics::setBlendState(StateCommon::defBlendState.Get());
+
+		Graphics::context->PSSetConstantBuffers(0, 1, ssaoBuffer.GetAddressOf());
 
 		Shader::displayVShader->use();
 		ssaoShader->use();

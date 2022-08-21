@@ -7,10 +7,14 @@ SamplerState linearSampler : register(s1);
 
 static const float random_size = 64.0;
 static const float2 g_screen_size = { 1920.0, 1080.0 };
-static const float g_sample_rad = 1.0;
-static const float g_intensity = 6.0;
-static const float g_scale = 1.0;
-static const float g_bias = 0.025;
+
+cbuffer SSAOParams : register(b0)
+{
+    float g_sample_rad;
+    float g_intensity;
+    float g_scale;
+    float g_bias;
+};
 
 float3 getPosition(in float2 uv)
 {
@@ -44,7 +48,9 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     float ao = 0.0f;
     float rad = g_sample_rad / p.z;
   
-    int iterations = lerp(6.0, 2.0, p.z / 1000.0);
+    const int iterations = 4;
+    
+    [unroll]
     for (int j = 0; j < iterations; ++j)
     {
         float2 coord1 = reflect(vec[j], rand) * rad;
