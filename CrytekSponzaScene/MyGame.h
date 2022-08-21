@@ -30,8 +30,6 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	Shader* skyboxVShader;
-
 	Shader* skyboxPShader;
 
 	Shader* ssaoShader;
@@ -52,15 +50,18 @@ public:
 
 	ComPtr<ID3D11Buffer> ssaoBuffer;
 
-	DirectX::XMFLOAT4 eye = { 0.0f,20.f,0.f,1.f };
+	DirectX::XMFLOAT3 eye = { 0.0f,20.f,0.f };
 
-	float theta = 0.f;
+	DirectX::XMFLOAT3 up = { 0.f,1.f,0.f };
 
-	float theta2 = 0.f;
+	//focusPoint=eye+lookDir
+	DirectX::XMFLOAT3 lookDir = { 1.0f,0.0f,0.0f };
+
+	float roll = 0.f;
 
 	static constexpr float moveSpeed = 40.f;
 
-	static constexpr DirectX::XMVECTORF32 up = { 0.f, 1.f, 0.f , 0.f };
+	static constexpr float rotationSpeed = 10.f;
 
 	struct LightInfo
 	{
@@ -88,7 +89,6 @@ public:
 		deferredPShader(Shader::fromFile("DeferredPShader.hlsl", ShaderType::Pixel)),
 		deferredFinal(Shader::fromFile("DeferredFinal.hlsl", ShaderType::Pixel)),
 		ssaoBlur(Shader::fromFile("SSAOBlur.hlsl", ShaderType::Pixel)),
-		skyboxVShader(Shader::fromFile("SkyboxVShader.hlsl", ShaderType::Vertex)),
 		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
 		positionDepth(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
 		normalSpecular(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
@@ -222,9 +222,18 @@ public:
 			{
 				if (Mouse::getLeftDown())
 				{
-					theta -= Mouse::getDX() * 0.01f;
-					theta2 += Mouse::getDY() * 0.01f;
-					theta2 = Math::clamp(theta2, -Math::half_pi + 0.1f, Math::half_pi - 0.1f);
+					const DirectX::XMFLOAT3 upVector = { 0.f,1.f,0.f };
+
+					const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&upVector), Mouse::getDX() / 120.f);
+
+					DirectX::XMStoreFloat3(&lookDir, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&lookDir), rotMat));
+
+					const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&up), DirectX::XMLoadFloat3(&lookDir));
+
+					const DirectX::XMMATRIX upRotMat = DirectX::XMMatrixRotationAxis(upCrossLookDir, -Mouse::getDY() / 120.f);
+
+					DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), upRotMat));
+					DirectX::XMStoreFloat3(&lookDir, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&lookDir), upRotMat));
 				}
 			});
 
@@ -247,67 +256,63 @@ public:
 		delete ssaoBlured;
 		delete ssaoBlur;
 		delete skybox;
-		delete skyboxVShader;
 		delete skyboxPShader;
 	}
 
 	void update(const float& dt) override
 	{
-		DirectX::XMFLOAT4 focusVector = DirectX::XMFLOAT4(cosf(theta2) * cosf(theta), sinf(theta2), cosf(theta2) * sinf(theta), 1.f);
-
 		const float speedFactor = 100.f;
 
 		if (Keyboard::getKeyDown(Keyboard::W))
 		{
-			eye.x += speedFactor * focusVector.x * dt;
-			eye.y += speedFactor * focusVector.y * dt;
-			eye.z += speedFactor * focusVector.z * dt;
+			eye.x += speedFactor * lookDir.x * dt;
+			eye.y += speedFactor * lookDir.y * dt;
+			eye.z += speedFactor * lookDir.z * dt;
 		}
 		else if (Keyboard::getKeyDown(Keyboard::S))
 		{
-			eye.x -= speedFactor * focusVector.x * dt;
-			eye.y -= speedFactor * focusVector.y * dt;
-			eye.z -= speedFactor * focusVector.z * dt;
+			eye.x -= speedFactor * lookDir.x * dt;
+			eye.y -= speedFactor * lookDir.y * dt;
+			eye.z -= speedFactor * lookDir.z * dt;
 		}
 
 		if (Keyboard::getKeyDown(Keyboard::A))
 		{
-			const DirectX::XMFLOAT2 leftVector = DirectX::XMFLOAT2(cosf(theta + Math::half_pi), sinf(theta + Math::half_pi));
-			eye.x += leftVector.x * dt * moveSpeed;
-			eye.z += leftVector.y * dt * moveSpeed;
+			DirectX::XMFLOAT3 upCrossLookDir;
+			DirectX::XMStoreFloat3(&upCrossLookDir, DirectX::XMVector3Normalize(DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&up), DirectX::XMLoadFloat3(&lookDir))));
+
+			eye.x -= upCrossLookDir.x * moveSpeed * dt;
+			eye.y -= upCrossLookDir.y * moveSpeed * dt;
+			eye.z -= upCrossLookDir.z * moveSpeed * dt;
+
 		}
 		if (Keyboard::getKeyDown(Keyboard::D))
 		{
-			const DirectX::XMFLOAT2 rightVector = DirectX::XMFLOAT2(cosf(theta - Math::half_pi), sinf(theta - Math::half_pi));
-			eye.x += rightVector.x * dt * moveSpeed;
-			eye.z += rightVector.y * dt * moveSpeed;
+			DirectX::XMFLOAT3 upCrossLookDir;
+			DirectX::XMStoreFloat3(&upCrossLookDir, DirectX::XMVector3Normalize(DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&up), DirectX::XMLoadFloat3(&lookDir))));
+
+			eye.x += upCrossLookDir.x * moveSpeed * dt;
+			eye.y += upCrossLookDir.y * moveSpeed * dt;
+			eye.z += upCrossLookDir.z * moveSpeed * dt;
 		}
 
-		if (Keyboard::getKeyDown(Keyboard::U))
+		if (Keyboard::getKeyDown(Keyboard::Q))
 		{
-			ssaoParams.g_sample_rad += 0.01f;;
-		}
-		else if (Keyboard::getKeyDown(Keyboard::I))
-		{
-			ssaoParams.g_sample_rad -= 0.01f;;
+			roll += dt * rotationSpeed;
+
+			const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&lookDir), dt * rotationSpeed);
+
+			DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), rotMat));
+
 		}
 
-		if (Keyboard::getKeyDown(Keyboard::H))
+		if (Keyboard::getKeyDown(Keyboard::E))
 		{
-			ssaoParams.g_intensity += 0.01f;;
-		}
-		else if (Keyboard::getKeyDown(Keyboard::J))
-		{
-			ssaoParams.g_intensity -= 0.01f;;
-		}
+			roll -= dt * rotationSpeed;
 
-		if (Keyboard::getKeyDown(Keyboard::B))
-		{
-			ssaoParams.g_scale += 0.01f;
-		}
-		else if (Keyboard::getKeyDown(Keyboard::N))
-		{
-			ssaoParams.g_scale -= 0.01f;
+			const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&lookDir), -dt * rotationSpeed);
+
+			DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), rotMat));
 		}
 
 		lightInfo.lights[0].position = DirectX::XMFLOAT4(-sinf(360.0f * Graphics::getSTime() / 2.f * Math::degToRad) * 120.0f, 3.5f, cosf(360.0f * Graphics::getSTime() * 8.0f * Math::degToRad / 2.f) * 10.0f, 1.f);
@@ -317,9 +322,9 @@ public:
 		memcpy(mappedData.pData, &ssaoParams, sizeof(SSAOParams));
 		Graphics::context->Unmap(ssaoBuffer.Get(), 0);
 
-		DirectX::XMFLOAT4 focus = DirectX::XMFLOAT4(eye.x + focusVector.x, eye.y + focusVector.y, eye.z + focusVector.z, 1.f);
+		const DirectX::XMFLOAT3 focusPoint = DirectX::XMFLOAT3(eye.x + lookDir.x, eye.y + lookDir.y, eye.z + lookDir.z);
 
-		Camera::setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eye), DirectX::XMLoadFloat4(&focus), up));
+		Camera::setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&eye), DirectX::XMLoadFloat3(&focusPoint), DirectX::XMLoadFloat3(&up)));
 
 		for (unsigned int i = 0; i < 17; i++)
 		{
@@ -336,6 +341,8 @@ public:
 
 	void render()
 	{
+		Graphics::setBlendState(nullptr);
+
 		albedo->clearRTV(DirectX::Colors::Black);
 		albedo->setRTV();
 
@@ -344,7 +351,7 @@ public:
 
 		skybox->setSRV(0);
 
-		skyboxVShader->use();
+		TextureCube::shader->use();
 		skyboxPShader->use();
 
 		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -352,8 +359,6 @@ public:
 
 		positionDepth->clearRTV(DirectX::Colors::Black);
 		normalSpecular->clearRTV(DirectX::Colors::Black);
-
-		Graphics::setBlendState(StateCommon::blendReplace.Get());
 
 		depthStencilView->clear(D3D11_CLEAR_DEPTH);
 		RenderTexture::setRTVs({ positionDepth,normalSpecular,albedo }, depthStencilView->get());
@@ -372,8 +377,6 @@ public:
 		normalSpecular->getTexture()->setSRV(1);
 		randomNormal->setSRV(2);
 
-		Graphics::setBlendState(StateCommon::defBlendState.Get());
-
 		Graphics::context->PSSetConstantBuffers(0, 1, ssaoBuffer.GetAddressOf());
 
 		Shader::displayVShader->use();
@@ -391,7 +394,6 @@ public:
 
 		Graphics::context->Draw(3, 0);
 
-		//Graphics::clearDefRTV(DirectX::Colors::Black);
 		Graphics::setDefRTV();
 
 		positionDepth->getTexture()->setSRV(0);

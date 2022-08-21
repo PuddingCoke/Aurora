@@ -20,6 +20,7 @@
 #include"StateCommon.h"
 #include"Shader.h"
 #include"Math.h"
+#include"TextureCube.h"
 
 #include"VideoEncoder/NvidiaEncoder.h"
 #include"Wallpaper/WallpaperHelper.h"

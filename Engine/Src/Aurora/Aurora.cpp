@@ -77,6 +77,8 @@ int Aurora::iniEngine(const Configuration& config)
 
 	Shader::ini();
 
+	TextureCube::iniShader();
+
 	Graphics::createDeltaTimeBuffer();
 
 	return 0;
@@ -100,6 +102,8 @@ void Aurora::iniGame(Game* const game)
 	delete game;
 
 	Shader::release();
+
+	TextureCube::releaseShader();
 
 	Graphics::context->ClearState();
 

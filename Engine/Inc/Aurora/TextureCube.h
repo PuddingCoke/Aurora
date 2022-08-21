@@ -4,6 +4,7 @@
 #define _TEXTURECUBE_H_
 
 #include"Texture2D.h"
+#include"Shader.h"
 
 class TextureCube
 {
@@ -22,7 +23,15 @@ public:
 
 	~TextureCube();
 
+	static Shader* shader;
+
 private:
+
+	friend class Aurora;
+
+	static void iniShader();
+
+	static void releaseShader();
 
 	TextureCube(std::initializer_list<std::string> texturesPath);
 
