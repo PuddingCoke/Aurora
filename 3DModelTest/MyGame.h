@@ -55,8 +55,6 @@ public:
 
 	Texture2D* envTexture;
 
-	Shader* cubeVShader;
-
 	Shader* cubePShader;
 
 	ComPtr<ID3D11Texture2D> envCube;
@@ -89,7 +87,6 @@ public:
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
 		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT)),
 		envTexture(Texture2D::create("Tufts-Parking-Lot_Ref.hdr")),
-		cubeVShader(Shader::fromFile("cubeVShader.hlsl", ShaderType::Vertex)),
 		cubePShader(Shader::fromFile("cubePShader.hlsl", ShaderType::Pixel)),
 		bgVShader(Shader::fromFile("BackgroundVShader.hlsl", ShaderType::Vertex)),
 		bgPShader(Shader::fromFile("BackgroundPShader.hlsl", ShaderType::Pixel)),
@@ -218,7 +215,7 @@ public:
 				Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 				envTexture->setSRV(0);
 
-				cubeVShader->use();
+				TextureCube::shader->use();
 				cubePShader->use();
 
 				Graphics::setBlendState(StateCommon::defBlendState.Get());
@@ -401,7 +398,6 @@ public:
 		delete depthStencilView;
 		delete envTexture;
 		delete cubePShader;
-		delete cubeVShader;
 		delete bgPShader;
 		delete bgVShader;
 		delete irradiancePShader;

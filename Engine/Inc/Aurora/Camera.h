@@ -6,6 +6,8 @@
 #include<DirectXMath.h>
 
 #include"Graphics.h"
+#include"Keyboard.h"
+#include"Mouse.h"
 
 class Camera
 {
@@ -17,11 +19,18 @@ public:
 
 	static DirectX::XMFLOAT3 toViewSpace(const DirectX::XMFLOAT3& pos);
 
+
 private:
 
 	friend class Aurora;
 
 	static void initialize();
+
+	static DirectX::XMFLOAT3 eye;
+
+	static DirectX::XMFLOAT3 lookDir;
+
+	static DirectX::XMFLOAT3 up;
 
 	static ComPtr<ID3D11Buffer> projBuffer;
 
