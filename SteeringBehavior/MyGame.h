@@ -6,6 +6,7 @@
 #include<Aurora/Math.h>
 #include<Aurora/A2D/PrimitiveBatch.h>
 #include<Aurora/PostProcessing/FadeEffect.h>
+#include<Aurora/PostProcessing/BloomEffect.h>
 
 #include<thread>
 
@@ -23,11 +24,25 @@ public:
 
 	FadeEffect fadeEffect;
 
+	BloomEffect bloomEffect;
+
+	float exposure;
+
+	float gamma;
+
 	MyGame() :
 		batch(PrimitiveBatch::create()),
 		texture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM)),
-		fadeEffect(texture)
+		fadeEffect(texture),
+		bloomEffect(Graphics::getWidth(), Graphics::getHeight(), false)
 	{
+		bloomEffect.setExposure(3.55f);
+		bloomEffect.setGamma(0.39f);
+		bloomEffect.applyChange();
+
+		exposure = bloomEffect.getExposure();
+		gamma = bloomEffect.getGamma();
+
 		for (size_t i = 0; i < 1800; i++)
 		{
 			float angle = Random::Float() * Math::two_pi;
@@ -35,6 +50,12 @@ public:
 			float ySpeed = 3.f * sinf(angle);
 			vehicles.push_back(Vehicle(Vector(Random::Float() * Graphics::getWidth(), Random::Float() * Graphics::getHeight()), Vector(xSpeed, ySpeed), 2.f, 0.05f, Random::Float(), Random::Float(), Random::Float()));
 		}
+
+		Keyboard::addKeyDownEvent(Keyboard::B, [this]()
+			{
+				std::cout << exposure << "\n";
+				std::cout << gamma << "\n";
+			});
 	}
 
 	~MyGame()
@@ -45,6 +66,31 @@ public:
 
 	void update(const float& dt) override
 	{
+		if (Keyboard::getKeyDown(Keyboard::A))
+		{
+			exposure += 0.01f;
+			bloomEffect.setExposure(exposure);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::S))
+		{
+			exposure -= 0.01f;
+			bloomEffect.setExposure(exposure);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::H))
+		{
+			gamma += 0.01f;
+			bloomEffect.setGamma(gamma);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::J))
+		{
+			gamma -= 0.01f;
+			bloomEffect.setGamma(gamma);
+			bloomEffect.applyChange();
+		}
+
 		for (unsigned int i = 0; i < vehicles.size(); i++)
 		{
 			vehicles[i].flock(vehicles);
@@ -67,6 +113,8 @@ public:
 
 		texture->resolve();
 
+		Texture2D* bloomTexture = bloomEffect.process(texture->getTexture());
+
 		Graphics::clearDefRTV(DirectX::Colors::Black);
 		Graphics::setDefRTV();
 
@@ -74,7 +122,7 @@ public:
 
 		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 
-		texture->getTexture()->setSRV(0);
+		bloomTexture->setSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
