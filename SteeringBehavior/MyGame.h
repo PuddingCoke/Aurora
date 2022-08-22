@@ -36,8 +36,8 @@ public:
 		fadeEffect(texture),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight(), false)
 	{
-		bloomEffect.setExposure(3.55f);
-		bloomEffect.setGamma(0.39f);
+		bloomEffect.setExposure(3.f);
+		bloomEffect.setGamma(0.4f);
 		bloomEffect.applyChange();
 
 		exposure = bloomEffect.getExposure();
