@@ -1,4 +1,4 @@
-#define ITERATIONS 200
+#define ITERATIONS 70
 
 SamplerState linearSampler : register(s0);
 
