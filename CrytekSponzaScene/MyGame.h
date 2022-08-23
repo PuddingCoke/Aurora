@@ -98,8 +98,8 @@ public:
 		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT, false)),
 		randomNormal(Texture2D::create("RandomNormal.png")),
 		ssaoShader(Shader::fromFile("SSAOShader.hlsl", ShaderType::Pixel)),
-		scene(Scene::create("scene/sponza.dae")),
-		skybox(TextureCube::create({ "scene/sky/SkyEarlyDusk_Right.png","scene/sky/SkyEarlyDusk_Left.png","scene/sky/SkyEarlyDusk_Top.png","scene/sky/SkyEarlyDusk_Bottom.png","scene/sky/SkyEarlyDusk_Front.png","scene/sky/SkyEarlyDusk_Back.png" }))
+		scene(Scene::create(assetPath + "/sponza.dae")),
+		skybox(TextureCube::create({ assetPath + "/sky/SkyEarlyDusk_Right.png",assetPath + "/sky/SkyEarlyDusk_Left.png",assetPath + "/sky/SkyEarlyDusk_Top.png",assetPath + "/sky/SkyEarlyDusk_Bottom.png",assetPath + "/sky/SkyEarlyDusk_Front.png",assetPath + "/sky/SkyEarlyDusk_Back.png" }))
 	{
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[5] =

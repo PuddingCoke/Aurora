@@ -6,6 +6,8 @@
 #include"Material.h"
 #include"Model.h"
 
+const std::string assetPath = "D:/Assets/Sponza";
+
 class Scene
 {
 public:
@@ -20,8 +22,6 @@ public:
 		Assimp::Importer importer;
 
 		const aiScene* scene = importer.ReadFile(filePath, aiProcess_FlipUVs | aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
-
-		const std::string assetPath = "scene";
 
 		//œ»‘ÿ»Îmaterial
 		for (unsigned int i = 0; i < scene->mNumMaterials; i++)
