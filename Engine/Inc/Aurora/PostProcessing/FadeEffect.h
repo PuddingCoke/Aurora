@@ -9,19 +9,25 @@ class FadeEffect :public EffectBase
 {
 public:
 
-	FadeEffect(RenderTexture* defRenderTexture);
+	FadeEffect(const unsigned int& width, const unsigned int& height);
 
-	void process() const override;
+	Texture2D* process(Texture2D* const texture2D) const override;
+
+	const float& getFadeFactor() const;
+
+	void setFadeFactor(const float& factor);
 
 	~FadeEffect();
 
 protected:
 
+	float fadeFactor;
+
 	void compileShaders() override;
 
-	ComPtr<ID3D11BlendState> fadeBlendState;
-
 	Shader* fadePShader;
+
+	ComPtr<ID3D11Buffer> fadeBuffer;
 
 };
 

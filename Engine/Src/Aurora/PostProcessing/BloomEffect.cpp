@@ -209,15 +209,15 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	Graphics::context->PSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
 
 	bloomFinal->use();
-	defRenderTexture->clearRTV(DirectX::Colors::Transparent);
-	defRenderTexture->setRTV();
+	outputRTV->clearRTV(DirectX::Colors::Transparent);
+	outputRTV->setRTV();
 	originTexture->getTexture()->setSRV(0);
 	Graphics::context->Draw(3, 0);
 
 	Graphics::context->OMSetRenderTargets(2, nullRTV, nullptr);
 	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
 
-	return outputTexture;
+	return outputRTV->getTexture();
 }
 
 void BloomEffect::setExposure(const float& exposure)

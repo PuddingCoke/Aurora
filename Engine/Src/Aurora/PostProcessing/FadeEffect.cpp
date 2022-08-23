@@ -1,41 +1,55 @@
 ﻿#include<Aurora/PostProcessing/FadeEffect.h>
 
-FadeEffect::FadeEffect(RenderTexture* defRenderTexture):
-	EffectBase(defRenderTexture)
+FadeEffect::FadeEffect(const unsigned int& width, const unsigned int& height) :
+	EffectBase(width, height), fadeFactor(3.f)
 {
 	compileShaders();
 
-	D3D11_BLEND_DESC blendStateDesc = {};
+	D3D11_BUFFER_DESC bd = {};
+	bd.ByteWidth = 16u;
+	bd.Usage = D3D11_USAGE_DYNAMIC;
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	blendStateDesc.IndependentBlendEnable = false;
+	Graphics::device->CreateBuffer(&bd, nullptr, fadeBuffer.GetAddressOf());
 
-	blendStateDesc.RenderTarget[0].BlendEnable = true;
-	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-
-	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-
-	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_REV_SUBTRACT;
-	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-
-	Graphics::device->CreateBlendState(&blendStateDesc, fadeBlendState.ReleaseAndGetAddressOf());
-
+	setFadeFactor(fadeFactor);
 }
 
-void FadeEffect::process() const
+Texture2D* FadeEffect::process(Texture2D* const texture2D) const
 {
-	Graphics::setBlendState(fadeBlendState.Get());
+	Graphics::setBlendState(StateCommon::blendReplace.Get());
 
-	defRenderTexture->setMSAARTV();
+	outputRTV->clearRTV(DirectX::Colors::Black);
+	outputRTV->setRTV();
+
+	Graphics::context->PSSetConstantBuffers(3, 1, fadeBuffer.GetAddressOf());
+
+	Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+	texture2D->setSRV(0);
 
 	Shader::displayVShader->use();
 	fadePShader->use();
 
 	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Graphics::context->Draw(3, 0);
+
+	return outputRTV->getTexture();
+}
+
+const float& FadeEffect::getFadeFactor() const
+{
+	return fadeFactor;
+}
+
+void FadeEffect::setFadeFactor(const float& factor)
+{
+	fadeFactor = factor;
+
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	Graphics::context->Map(fadeBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, &fadeFactor, sizeof(float));
+	Graphics::context->Unmap(fadeBuffer.Get(), 0);
 }
 
 FadeEffect::~FadeEffect()
@@ -50,14 +64,26 @@ void FadeEffect::compileShaders()
 cbuffer DeltaTimes : register(b0)
 {
     float deltaTime;
-	float v1;
-	float v2;
-	float v3;
+    float v1;
+    float v2;
+    float v3;
 };
 
-float4 main() : SV_TARGET
+cbuffer FadeFactor : register(b3)
 {
-    return float4(5.0*deltaTime, 5.0*deltaTime, 5.0*deltaTime, 1.0);
+	float factor;
+}
+
+SamplerState linearSampler : register(s0);
+
+Texture2D tTexture : register(t0);
+
+float4 main(float2 texCoord:TEXCOORD) : SV_TARGET
+{
+    float3 color = tTexture.Sample(linearSampler, texCoord).rgb;
+    float3 normColor = normalize(color);
+	float3 fadeColor = saturate(color - factor * deltaTime);
+    return float4(fadeColor, 1.0f);
 }
 			)";
 		fadePShader = Shader::fromStr(source, ShaderType::Pixel);

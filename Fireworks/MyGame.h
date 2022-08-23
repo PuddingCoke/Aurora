@@ -7,7 +7,7 @@
 #include<Aurora/A2D/PrimitiveBatch.h>
 #include<Aurora/Event.h>
 #include<Aurora/StateCommon.h>
-#include<Aurora/RenderTexture.h>
+#include<Aurora/DoubleRTV.h>
 #include<Aurora/Color.h>
 #include<Aurora/Timer.h>
 #include<Aurora/PostProcessing/FadeEffect.h>
@@ -20,11 +20,16 @@ public:
 
 	PrimitiveBatch* pBatch;
 
+	RenderTexture* texture;
+
+	DoubleRTV* doubleRTV;
+
 	MyGame() :
 		pBatch(PrimitiveBatch::create()),
 		currentSkyColor{ 0.0f,0.0f,0.0f,1.0f },
-		texture(RenderTexture::create(1920, 1080,DXGI_FORMAT_R8G8B8A8_UNORM)),
-		effect(new FadeEffect(texture))
+		texture(RenderTexture::create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM)),
+		doubleRTV(DoubleRTV::create(1920,1080, DXGI_FORMAT_R8G8B8A8_UNORM)),
+		effect(1920, 1080)
 	{
 		Star::active = &starActive;
 		Star::pool = &starPool;
@@ -61,7 +66,7 @@ public:
 		}
 		delete pBatch;
 		delete texture;
-		delete effect;
+		delete doubleRTV;
 	}
 
 	void update(const float& dt) override
@@ -183,6 +188,7 @@ public:
 	{
 		Graphics::setBlendState(StateCommon::defBlendState.Get());
 
+		texture->clearMSAARTV(DirectX::Colors::Black);
 		texture->setMSAARTV();
 
 		pBatch->begin();
@@ -205,19 +211,38 @@ public:
 
 		texture->resolve();
 
-		colorSky();
-		Graphics::setDefRTV();
+		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		Graphics::setBlendState(StateCommon::addtiveBlend.Get());
+		doubleRTV->write()->setRTV();
+
+		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		texture->getTexture()->setSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
-		Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
-		texture->getTexture()->setSRV();
+
+		Graphics::context->Draw(3, 0);
+		doubleRTV->swap();
+
+		colorSky();
+		Graphics::setDefRTV();
+		doubleRTV->read()->getTexture()->setSRV(0);
+
+		Shader::displayVShader->use();
+		Shader::displayPShader->use();
 
 		Graphics::context->Draw(3, 0);
 
-		effect->process();
+		Texture2D* const fadedTexture = effect.process(doubleRTV->read()->getTexture());
 
+		doubleRTV->write()->setRTV();
+		fadedTexture->setSRV(0);
+
+		Shader::displayVShader->use();
+		Shader::displayPShader->use();
+
+		Graphics::context->Draw(3, 0);
 	}
 
 	void colorSky()
@@ -289,8 +314,6 @@ public:
 
 	std::list<Spark*> sparkPool;
 
-	RenderTexture* texture;
-
-	FadeEffect* effect;
+	FadeEffect effect;
 
 };

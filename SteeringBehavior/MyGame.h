@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/RenderTexture.h>
+#include<Aurora/DoubleRTV.h>
 #include<Aurora/Random.h>
 #include<Aurora/Math.h>
 #include<Aurora/A2D/PrimitiveBatch.h>
@@ -18,7 +18,9 @@ public:
 
 	std::vector<Vehicle> vehicles;
 
-	RenderTexture* texture;
+	RenderTexture* renderTexture;
+
+	DoubleRTV* doubleRTV;
 
 	PrimitiveBatch* batch;
 
@@ -32,18 +34,19 @@ public:
 
 	MyGame() :
 		batch(PrimitiveBatch::create()),
-		texture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM)),
-		fadeEffect(texture),
+		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM)),
+		doubleRTV(DoubleRTV::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		fadeEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight(), false)
 	{
-		bloomEffect.setExposure(3.f);
-		bloomEffect.setGamma(0.4f);
+		bloomEffect.setExposure(2.05f);
+		bloomEffect.setGamma(0.29f);
 		bloomEffect.applyChange();
 
 		exposure = bloomEffect.getExposure();
 		gamma = bloomEffect.getGamma();
 
-		for (size_t i = 0; i < 1800; i++)
+		for (size_t i = 0; i < 1500; i++)
 		{
 			float angle = Random::Float() * Math::two_pi;
 			float xSpeed = 3.f * cosf(angle);
@@ -61,7 +64,8 @@ public:
 	~MyGame()
 	{
 		delete batch;
-		delete texture;
+		delete renderTexture;
+		delete doubleRTV;
 	}
 
 	void update(const float& dt) override
@@ -102,26 +106,37 @@ public:
 	{
 		Graphics::setBlendState(StateCommon::defBlendState.Get());
 
-		texture->setMSAARTV();
+		renderTexture->clearMSAARTV(DirectX::Colors::Black);
+		renderTexture->setMSAARTV();
 
 		batch->begin();
 		for (unsigned int i = 0; i < vehicles.size(); i++)
 		{
 			batch->drawRoundCapLine(vehicles[i].prePos.x, vehicles[i].prePos.y, vehicles[i].pos.x, vehicles[i].pos.y, 4.f, vehicles[i].r, vehicles[i].g, vehicles[i].b);
+			batch->drawRoundCapLine(vehicles[i].pos.x, vehicles[i].pos.y, vehicles[i].pos.x, vehicles[i].pos.y, 6.f, 1.f, 1.f, 1.f);
 		}
 		batch->end();
 
-		texture->resolve();
-
-		Texture2D* bloomTexture = bloomEffect.process(texture->getTexture());
-
-		Graphics::clearDefRTV(DirectX::Colors::Black);
-		Graphics::setDefRTV();
+		renderTexture->resolve();
 
 		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		Graphics::setBlendState(StateCommon::addtiveBlend.Get());
+		doubleRTV->write()->setRTV();
 
+		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		renderTexture->getTexture()->setSRV(0);
+
+		Shader::displayVShader->use();
+		Shader::displayPShader->use();
+
+		Graphics::context->Draw(3, 0);
+		doubleRTV->swap();
+
+		Texture2D* bloomTexture = bloomEffect.process(doubleRTV->read()->getTexture());
+
+		Graphics::clearDefRTV(DirectX::Colors::Black);
+		Graphics::setDefRTV();
 		bloomTexture->setSRV(0);
 
 		Shader::displayVShader->use();
@@ -129,7 +144,15 @@ public:
 
 		Graphics::context->Draw(3, 0);
 
-		fadeEffect.process();
+		Texture2D* const fadedTexture = fadeEffect.process(doubleRTV->read()->getTexture());
+
+		doubleRTV->write()->setRTV();
+		fadedTexture->setSRV(0);
+
+		Shader::displayVShader->use();
+		Shader::displayPShader->use();
+
+		Graphics::context->Draw(3, 0);
 	}
 
 

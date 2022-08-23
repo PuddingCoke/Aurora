@@ -7,6 +7,11 @@ DoubleRTV::DoubleRTV(const UINT& width, const UINT& height, const DXGI_FORMAT& f
 {
 }
 
+DoubleRTV* DoubleRTV::create(const UINT& width, const UINT& height, const DXGI_FORMAT& format)
+{
+	return new DoubleRTV(width, height, format);
+}
+
 DoubleRTV::~DoubleRTV()
 {
 	delete renderTexture1;
