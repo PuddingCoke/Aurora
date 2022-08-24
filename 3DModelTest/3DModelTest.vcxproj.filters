@@ -27,7 +27,6 @@
   <ItemGroup>
     <FxCompile Include="ModelVShader.hlsl" />
     <FxCompile Include="ModelPShader.hlsl" />
-    <FxCompile Include="cubeVShader.hlsl" />
     <FxCompile Include="cubePShader.hlsl" />
     <FxCompile Include="BackgroundVShader.hlsl" />
     <FxCompile Include="BackgroundPShader.hlsl" />
