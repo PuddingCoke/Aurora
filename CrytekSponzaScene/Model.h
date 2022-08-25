@@ -78,16 +78,16 @@ public:
 		D3D11_SUBRESOURCE_DATA subresource = {};
 		subresource.pSysMem = vertices.data();
 
-		Graphics::device->CreateBuffer(&bd, &subresource, modelBuffer.ReleaseAndGetAddressOf());
+		Renderer::device->CreateBuffer(&bd, &subresource, modelBuffer.ReleaseAndGetAddressOf());
 	}
 
 	void draw()
 	{
-		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Graphics::context->IASetVertexBuffers(0, 1, modelBuffer.GetAddressOf(), &stride, &offset);
+		Renderer::context->IASetVertexBuffers(0, 1, modelBuffer.GetAddressOf(), &stride, &offset);
 
-		Graphics::context->Draw(vertexCount, 0);
+		Renderer::context->Draw(vertexCount, 0);
 	}
 
 };

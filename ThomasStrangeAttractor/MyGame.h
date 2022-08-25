@@ -41,7 +41,7 @@ public:
 		attractor(1000000),
 		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT, false))
+		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, false))
 	{
 
 	}
@@ -65,7 +65,7 @@ public:
 
 	void render() override
 	{
-		Graphics::context->ClearDepthStencilView(depthStencilView->get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		Renderer::context->ClearDepthStencilView(depthStencilView->get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 		renderTexture->clearRTV(DirectX::Colors::Transparent);
 		renderTexture->setRTV(depthStencilView->get());
@@ -73,28 +73,28 @@ public:
 		attractor.render();
 
 		ID3D11RenderTargetView* view = nullptr;
-		Graphics::context->OMSetRenderTargets(1, &view, nullptr);
+		Renderer::context->OMSetRenderTargets(1, &view, nullptr);
 
 		ID3D11ShaderResourceView* resourceViews[2] = { nullptr,nullptr };
-		Graphics::context->PSSetShaderResources(0, 2, resourceViews);
+		Renderer::context->PSSetShaderResources(0, 2, resourceViews);
 
 		Texture2D* const texture = bloomEffect.process(renderTexture->getTexture());
 
-		Graphics::setDefRTV();
-		Graphics::clearDefRTV(DirectX::Colors::Black);
+		Renderer::setDefRTV();
+		Renderer::clearDefRTV(DirectX::Colors::Black);
 
-		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 		texture->setSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
-		Graphics::context->OMSetRenderTargets(1, &view, nullptr);
-		Graphics::context->PSSetShaderResources(0, 2, resourceViews);
+		Renderer::context->OMSetRenderTargets(1, &view, nullptr);
+		Renderer::context->PSSetShaderResources(0, 2, resourceViews);
 
 	}
 };

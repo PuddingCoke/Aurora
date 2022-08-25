@@ -46,7 +46,7 @@ const DXGI_FORMAT& Texture2D::getFormat() const
 
 void Texture2D::setSRV(const UINT& slot) const
 {
-	Graphics::context->PSSetShaderResources(slot, 1, resourceView.GetAddressOf());
+	Renderer::context->PSSetShaderResources(slot, 1, resourceView.GetAddressOf());
 }
 
 ID3D11ShaderResourceView* Texture2D::getSRV() const
@@ -99,7 +99,7 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const D3
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 4u;
 
-			Graphics::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
 
 			stbi_image_free(pixels);
 
@@ -135,7 +135,7 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const D3
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 16u;
 
-			Graphics::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
 
 			stbi_image_free(pixels);
 
@@ -149,7 +149,7 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const D3
 	{
 		std::wstring wFilePath = std::wstring(path.begin(), path.end());
 
-		DirectX::CreateDDSTextureFromFile(Graphics::device.Get(), wFilePath.c_str(), nullptr, resourceView.GetAddressOf());
+		DirectX::CreateDDSTextureFromFile(Renderer::device.Get(), wFilePath.c_str(), nullptr, resourceView.GetAddressOf());
 
 		ID3D11Resource* resource;
 
@@ -187,7 +187,7 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 	tDesc.CPUAccessFlags = 0;
 	tDesc.MiscFlags = 0;
 
-	Graphics::device->CreateTexture2D(&tDesc, nullptr, texture2D.ReleaseAndGetAddressOf());
+	Renderer::device->CreateTexture2D(&tDesc, nullptr, texture2D.ReleaseAndGetAddressOf());
 
 	if (bindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
@@ -234,7 +234,7 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 	subresource.pSysMem = colors.data();
 	subresource.SysMemPitch = width * 16u;
 
-	Graphics::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
+	Renderer::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
 
 	createShaderResource();
 }
@@ -265,7 +265,7 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height) :
 	subresource.pSysMem = colors.data();
 	subresource.SysMemPitch = width * 16u;
 
-	Graphics::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
+	Renderer::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
 
 	createShaderResource();
 }
@@ -278,5 +278,5 @@ void Texture2D::createShaderResource()
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = -1;
 
-	Graphics::device->CreateShaderResourceView(texture2D.Get(), &srvDesc, resourceView.ReleaseAndGetAddressOf());
+	Renderer::device->CreateShaderResourceView(texture2D.Get(), &srvDesc, resourceView.ReleaseAndGetAddressOf());
 }

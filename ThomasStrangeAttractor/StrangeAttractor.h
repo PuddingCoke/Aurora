@@ -63,7 +63,7 @@ public:
 			D3D11_SUBRESOURCE_DATA subresource = {};
 			subresource.pSysMem = positions;
 
-			Graphics::device->CreateBuffer(&bd, &subresource, particlePosBuffer.ReleaseAndGetAddressOf());
+			Renderer::device->CreateBuffer(&bd, &subresource, particlePosBuffer.ReleaseAndGetAddressOf());
 		}
 
 		//创建UAV Buffer
@@ -75,7 +75,7 @@ public:
 			uavDesc.Buffer.Flags = 0;
 			uavDesc.Buffer.NumElements = particleNum;
 
-			Graphics::device->CreateUnorderedAccessView(particlePosBuffer.Get(), &uavDesc, uavView.GetAddressOf());
+			Renderer::device->CreateUnorderedAccessView(particlePosBuffer.Get(), &uavDesc, uavView.GetAddressOf());
 		}
 
 		//初始化粒子颜色信息
@@ -88,7 +88,7 @@ public:
 			D3D11_SUBRESOURCE_DATA subresource = {};
 			subresource.pSysMem = colors;
 
-			Graphics::device->CreateBuffer(&bd, &subresource, particleColorBuffer.ReleaseAndGetAddressOf());
+			Renderer::device->CreateBuffer(&bd, &subresource, particleColorBuffer.ReleaseAndGetAddressOf());
 		}
 
 		delete[] positions;
@@ -102,7 +102,7 @@ public:
 				{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 			};
 
-			Graphics::device->CreateInputLayout(layout, 2u, 
+			Renderer::device->CreateInputLayout(layout, 2u, 
 				displayVShader->shaderBlob->GetBufferPointer(), 
 				displayVShader->shaderBlob->GetBufferSize(), 
 				inputLayout.ReleaseAndGetAddressOf());
@@ -129,38 +129,38 @@ public:
 	{
 		computeShader->use();
 
-		Graphics::context->CSSetUnorderedAccessViews(1, 1, uavView.GetAddressOf(), nullptr);
+		Renderer::context->CSSetUnorderedAccessViews(1, 1, uavView.GetAddressOf(), nullptr);
 
-		Graphics::context->Dispatch(particleNum / 1000u, 1, 1);
+		Renderer::context->Dispatch(particleNum / 1000u, 1, 1);
 
-		Graphics::context->CSSetShader(nullptr, nullptr, 0);
+		Renderer::context->CSSetShader(nullptr, nullptr, 0);
 
 		ID3D11UnorderedAccessView* nullView[1] = { nullptr };
-		Graphics::context->CSSetUnorderedAccessViews(1, 1, nullView, nullptr);
+		Renderer::context->CSSetUnorderedAccessViews(1, 1, nullView, nullptr);
 	}
 
 	void render() override
 	{
-		Graphics::setBlendState(StateCommon::addtiveBlend.Get());
-		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
+		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 		
 		ID3D11Buffer* buffers[2] = { particlePosBuffer.Get(),particleColorBuffer.Get() };
 
 		const UINT stride[2] = { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) };
 		const UINT offset[2] = { 0,0 };
 
-		Graphics::context->IASetInputLayout(inputLayout.Get());
+		Renderer::context->IASetInputLayout(inputLayout.Get());
 
-		Graphics::context->IASetVertexBuffers(0, 2, buffers, stride, offset);
+		Renderer::context->IASetVertexBuffers(0, 2, buffers, stride, offset);
 
 		displayVShader->use();
 		displayPShader->use();
 
-		Graphics::context->Draw(particleNum, 0);
+		Renderer::context->Draw(particleNum, 0);
 
 		ID3D11Buffer* nullBuffers[2] = { nullptr,nullptr };
 
-		Graphics::context->IASetVertexBuffers(0, 2, nullBuffers, stride, offset);
+		Renderer::context->IASetVertexBuffers(0, 2, nullBuffers, stride, offset);
 	}
 
 

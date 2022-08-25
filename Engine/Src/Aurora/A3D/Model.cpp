@@ -31,12 +31,12 @@ Model::~Model()
 
 void Model::draw() const
 {
-	Graphics::context->PSSetConstantBuffers(3, 1, materialBuffer.GetAddressOf());
+	Renderer::context->PSSetConstantBuffers(3, 1, materialBuffer.GetAddressOf());
 
-	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Graphics::context->IASetVertexBuffers(0, 1, meshBuffer.GetAddressOf(), &stride, &offset);
+	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Renderer::context->IASetVertexBuffers(0, 1, meshBuffer.GetAddressOf(), &stride, &offset);
 
-	Graphics::context->Draw(vertexNum, 0);
+	Renderer::context->Draw(vertexNum, 0);
 }
 
 void Model::ini()
@@ -101,7 +101,7 @@ Model::Model(const aiScene* const scene, const aiMesh* const mesh)
 		D3D11_SUBRESOURCE_DATA subResource = {};
 		subResource.pSysMem = vertices.data();
 
-		Graphics::device->CreateBuffer(&bd, &subResource, meshBuffer.ReleaseAndGetAddressOf());
+		Renderer::device->CreateBuffer(&bd, &subResource, meshBuffer.ReleaseAndGetAddressOf());
 	}
 
 	{
@@ -147,7 +147,7 @@ Model::Model(const aiScene* const scene, const aiMesh* const mesh)
 		D3D11_SUBRESOURCE_DATA subresource = {};
 		subresource.pSysMem = &properties;
 
-		Graphics::device->CreateBuffer(&bd, &subresource, materialBuffer.ReleaseAndGetAddressOf());
+		Renderer::device->CreateBuffer(&bd, &subresource, materialBuffer.ReleaseAndGetAddressOf());
 	}
 
 }

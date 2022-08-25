@@ -186,7 +186,7 @@ public:
 
 	void render() override
 	{
-		Graphics::setBlendState(StateCommon::defBlendState.Get());
+		Renderer::setBlendState(StateCommon::defBlendState.Get());
 
 		texture->clearMSAARTV(DirectX::Colors::Black);
 		texture->setMSAARTV();
@@ -211,28 +211,28 @@ public:
 
 		texture->resolve();
 
-		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Graphics::setBlendState(StateCommon::addtiveBlend.Get());
+		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
 		doubleRTV->write()->setRTV();
 
-		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 		texture->getTexture()->setSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 		doubleRTV->swap();
 
 		colorSky();
-		Graphics::setDefRTV();
+		Renderer::setDefRTV();
 		doubleRTV->read()->getTexture()->setSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
 		Texture2D* const fadedTexture = effect.process(doubleRTV->read()->getTexture());
 
@@ -242,7 +242,7 @@ public:
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 	}
 
 	void colorSky()
@@ -293,7 +293,7 @@ public:
 		currentSkyColor.g += (targetSkyColor.g - currentSkyColor.g) / colorChange * speed;
 		currentSkyColor.b += (targetSkyColor.b - currentSkyColor.b) / colorChange * speed;
 
-		Graphics::clearDefRTV(currentSkyColor);
+		Renderer::clearDefRTV(currentSkyColor);
 	}
 
 	const float GRAVITY = 0.9f;

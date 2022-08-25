@@ -54,7 +54,7 @@ public:
 
 	RenderTexture* renderTexture;
 
-	const Color color{ 1.f,0.f,0.f };
+	const Color color{ 0.f,0.f,0.f };
 
 	bool connected;
 
@@ -65,7 +65,7 @@ public:
 		curFrame(0),
 		connected(false)
 	{
-		const std::string filePath = "dft_data2.json";
+		const std::string filePath = "dft_data.json";
 		std::ifstream ifs(filePath);
 		json dftData = json::parse(ifs);
 		ifs.close();
@@ -143,8 +143,8 @@ public:
 
 	void render() override
 	{
-		Graphics::setDefRTV();
-		Graphics::clearDefRTV(DirectX::Colors::White);
+		Renderer::setDefRTV();
+		Renderer::clearDefRTV(DirectX::Colors::White);
 
 		x = startX;
 		y = startY;
@@ -217,7 +217,7 @@ public:
 
 		renderTexture->resolve();
 
-		Graphics::setDefRTV();
+		Renderer::setDefRTV();
 		sBatch->begin();
 		sBatch->draw(renderTexture, 0, 0);
 		sBatch->end();

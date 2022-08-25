@@ -103,11 +103,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 	{
 		hr = D3DCompile(source.c_str(), source.length(), nullptr, nullptr, nullptr, "main", "cs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		ID3D11ComputeShader* cs = nullptr;
-		Graphics::device->CreateComputeShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &cs);
+		Renderer::device->CreateComputeShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &cs);
 		shaderPtr = cs;
 		useFunc = [this]()
 		{
-			Graphics::context->CSSetShader((ID3D11ComputeShader*)shaderPtr, nullptr, 0);
+			Renderer::context->CSSetShader((ID3D11ComputeShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
@@ -119,11 +119,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 	{
 		hr = D3DCompile(source.c_str(), source.length(), nullptr, nullptr, nullptr, "main", "ds_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		ID3D11DomainShader* ds = nullptr;
-		Graphics::device->CreateDomainShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &ds);
+		Renderer::device->CreateDomainShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &ds);
 		shaderPtr = ds;
 		useFunc = [this]()
 		{
-			Graphics::context->DSSetShader((ID3D11DomainShader*)shaderPtr, nullptr, 0);
+			Renderer::context->DSSetShader((ID3D11DomainShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
@@ -135,11 +135,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 	{
 		hr = D3DCompile(source.c_str(), source.length(), nullptr, nullptr, nullptr, "main", "gs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		ID3D11GeometryShader* gs = nullptr;
-		Graphics::device->CreateGeometryShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &gs);
+		Renderer::device->CreateGeometryShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &gs);
 		shaderPtr = gs;
 		useFunc = [this]()
 		{
-			Graphics::context->GSSetShader((ID3D11GeometryShader*)shaderPtr, nullptr, 0);
+			Renderer::context->GSSetShader((ID3D11GeometryShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
@@ -151,11 +151,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 	{
 		hr = D3DCompile(source.c_str(), source.length(), nullptr, nullptr, nullptr, "main", "hs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		ID3D11HullShader* hs = nullptr;
-		Graphics::device->CreateHullShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &hs);
+		Renderer::device->CreateHullShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &hs);
 		shaderPtr = hs;
 		useFunc = [this]()
 		{
-			Graphics::context->HSSetShader((ID3D11HullShader*)shaderPtr, nullptr, 0);
+			Renderer::context->HSSetShader((ID3D11HullShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
@@ -167,11 +167,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 	{
 		hr = D3DCompile(source.c_str(), source.length(), nullptr, nullptr, nullptr, "main", "ps_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		ID3D11PixelShader* ps = nullptr;
-		Graphics::device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &ps);
+		Renderer::device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &ps);
 		shaderPtr = ps;
 		useFunc = [this]()
 		{
-			Graphics::context->PSSetShader((ID3D11PixelShader*)shaderPtr, nullptr, 0);
+			Renderer::context->PSSetShader((ID3D11PixelShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{
@@ -183,11 +183,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 	{
 		hr = D3DCompile(source.c_str(), source.length(), nullptr, nullptr, nullptr, "main", "vs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		ID3D11VertexShader* vs = nullptr;
-		Graphics::device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &vs);
+		Renderer::device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &vs);
 		shaderPtr = vs;
 		useFunc = [this]()
 		{
-			Graphics::context->VSSetShader((ID3D11VertexShader*)shaderPtr, nullptr, 0);
+			Renderer::context->VSSetShader((ID3D11VertexShader*)shaderPtr, nullptr, 0);
 		};
 		releaseFunc = [this]()
 		{

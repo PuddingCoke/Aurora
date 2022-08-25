@@ -39,7 +39,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height,c
 		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-		Graphics::device->CreateBuffer(&cbd, nullptr, bloomParamBuffer.ReleaseAndGetAddressOf());
+		Renderer::device->CreateBuffer(&cbd, nullptr, bloomParamBuffer.ReleaseAndGetAddressOf());
 
 		applyChange();
 	}
@@ -49,19 +49,19 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height,c
 		firstPass = [this](Texture2D* const texture2D)
 		{
 			bloomExtract->use();
-			Graphics::setViewport((float)bloomWidth, (float)bloomHeight);
+			Renderer::setViewport((float)bloomWidth, (float)bloomHeight);
 			RenderTexture::setRTVs({ originTexture,bloomTexture });
 			originTexture->clearRTV(DirectX::Colors::Transparent);
 			bloomTexture->clearRTV(DirectX::Colors::Transparent);
 			texture2D->setSRV(0);
-			Graphics::context->Draw(3, 0);
+			Renderer::context->Draw(3, 0);
 
 			Shader::displayPShader->use();
-			Graphics::setViewport((float)resolutionX[0], (float)resolutionY[0]);
+			Renderer::setViewport((float)resolutionX[0], (float)resolutionY[0]);
 			renderTextures[0]->clearRTV(DirectX::Colors::Transparent);
 			renderTextures[0]->setRTV();
 			bloomTexture->getTexture()->setSRV(0);
-			Graphics::context->Draw(3, 0);
+			Renderer::context->Draw(3, 0);
 		};
 	}
 	else
@@ -69,17 +69,17 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height,c
 		firstPass = [this](Texture2D* const texture2D)
 		{
 			Shader::displayPShader->use();
-			Graphics::setViewport((float)bloomWidth, (float)bloomHeight);
+			Renderer::setViewport((float)bloomWidth, (float)bloomHeight);
 			originTexture->setRTV();
 			originTexture->clearRTV(DirectX::Colors::Transparent);
 			texture2D->setSRV(0);
-			Graphics::context->Draw(3, 0);
+			Renderer::context->Draw(3, 0);
 
-			Graphics::setViewport((float)resolutionX[0], (float)resolutionY[0]);
+			Renderer::setViewport((float)resolutionX[0], (float)resolutionY[0]);
 			renderTextures[0]->clearRTV(DirectX::Colors::Transparent);
 			renderTextures[0]->setRTV();
 			originTexture->getTexture()->setSRV(0);
-			Graphics::context->Draw(3, 0);
+			Renderer::context->Draw(3, 0);
 		};
 	}
 
@@ -108,9 +108,9 @@ BloomEffect::~BloomEffect()
 
 Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 {
-	Graphics::setBlendState(StateCommon::addtiveBlend.Get());
-	Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+	Renderer::setBlendState(StateCommon::addtiveBlend.Get());
+	Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 	Shader::displayVShader->use();
 
 	ID3D11ShaderResourceView* const nullSRV = nullptr;
@@ -124,98 +124,98 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 		renderTextures[i * 2 + 1]->clearRTV(DirectX::Colors::Transparent);
 		renderTextures[i * 2 + 1]->setRTV();
 		renderTextures[i * 2]->getTexture()->setSRV(0);
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
-		Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
+		Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
 
 		blurShaders[i * 2 + 1]->use();
 		renderTextures[i * 2]->clearRTV(DirectX::Colors::Transparent);
 		renderTextures[i * 2]->setRTV();
 		renderTextures[i * 2 + 1]->getTexture()->setSRV(0);
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
-		Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
+		Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
 
-		Graphics::setViewport((float)resolutionX[i + 1], (float)resolutionY[i + 1]);
+		Renderer::setViewport((float)resolutionX[i + 1], (float)resolutionY[i + 1]);
 
 		Shader::displayPShader->use();
 		renderTextures[i * 2 + 2]->clearRTV(DirectX::Colors::Transparent);
 		renderTextures[i * 2 + 2]->setRTV();
 		renderTextures[i * 2]->getTexture()->setSRV(0);
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 	}
 
 	blurShaders[(blurSteps - 1) * 2]->use();
 	renderTextures[(blurSteps - 1) * 2 + 1]->clearRTV(DirectX::Colors::Transparent);
 	renderTextures[(blurSteps - 1) * 2 + 1]->setRTV();
 	renderTextures[(blurSteps - 1) * 2]->getTexture()->setSRV(0);
-	Graphics::context->Draw(3, 0);
+	Renderer::context->Draw(3, 0);
 
-	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
+	Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
 
 	blurShaders[(blurSteps - 1) * 2 + 1]->use();
 	renderTextures[(blurSteps - 1) * 2]->clearRTV(DirectX::Colors::Transparent);
 	renderTextures[(blurSteps - 1) * 2]->setRTV();
 	renderTextures[(blurSteps - 1) * 2 + 1]->getTexture()->setSRV(0);
-	Graphics::context->Draw(3, 0);
+	Renderer::context->Draw(3, 0);
 
-	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
+	Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
 
 	blurShaders[(blurSteps - 1) * 2]->use();
 	renderTextures[(blurSteps - 1) * 2 + 1]->clearRTV(DirectX::Colors::Transparent);
 	renderTextures[(blurSteps - 1) * 2 + 1]->setRTV();
 	renderTextures[(blurSteps - 1) * 2]->getTexture()->setSRV(0);
-	Graphics::context->Draw(3, 0);
+	Renderer::context->Draw(3, 0);
 
-	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
+	Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
 
 	blurShaders[(blurSteps - 1) * 2 + 1]->use();
 	renderTextures[(blurSteps - 1) * 2]->clearRTV(DirectX::Colors::Transparent);
 	renderTextures[(blurSteps - 1) * 2]->setRTV();
 	renderTextures[(blurSteps - 1) * 2 + 1]->getTexture()->setSRV(0);
-	Graphics::context->Draw(3, 0);
+	Renderer::context->Draw(3, 0);
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		Graphics::setViewport((float)resolutionX[blurSteps - 2 - i], (float)resolutionY[blurSteps - 2 - i]);
+		Renderer::setViewport((float)resolutionX[blurSteps - 2 - i], (float)resolutionY[blurSteps - 2 - i]);
 
 		blurShaders[(blurSteps - 2 - i) * 2]->use();
 		renderTextures[(blurSteps - 2 - i) * 2 + 1]->clearRTV(DirectX::Colors::Transparent);
 		renderTextures[(blurSteps - 2 - i) * 2 + 1]->setRTV();
 		renderTextures[(blurSteps - 2 - i) * 2]->getTexture()->setSRV(0);
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
-		Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
+		Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
 
 		blurShaders[(blurSteps - 2 - i) * 2 + 1]->use();
 		renderTextures[(blurSteps - 2 - i) * 2]->clearRTV(DirectX::Colors::Transparent);
 		renderTextures[(blurSteps - 2 - i) * 2]->setRTV();
 		renderTextures[(blurSteps - 2 - i) * 2 + 1]->getTexture()->setSRV(0);
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
-		Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
+		Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
 
 		Shader::displayPShader->use();
 		renderTextures[(blurSteps - 2 - i) * 2]->setRTV();
 		renderTextures[(blurSteps - 1 - i) * 2]->getTexture()->setSRV();
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 	}
 
-	Graphics::setViewport((float)bloomWidth, (float)bloomHeight);
+	Renderer::setViewport((float)bloomWidth, (float)bloomHeight);
 	originTexture->setRTV();
 	renderTextures[0]->getTexture()->setSRV(0);
-	Graphics::context->Draw(3, 0);
+	Renderer::context->Draw(3, 0);
 
-	Graphics::context->PSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
+	Renderer::context->PSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
 
 	bloomFinal->use();
 	outputRTV->clearRTV(DirectX::Colors::Transparent);
 	outputRTV->setRTV();
 	originTexture->getTexture()->setSRV(0);
-	Graphics::context->Draw(3, 0);
+	Renderer::context->Draw(3, 0);
 
-	Graphics::context->OMSetRenderTargets(2, nullRTV, nullptr);
-	Graphics::context->PSSetShaderResources(0, 1, &nullSRV);
+	Renderer::context->OMSetRenderTargets(2, nullRTV, nullptr);
+	Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
 
 	return outputRTV->getTexture();
 }
@@ -243,9 +243,9 @@ const float& BloomEffect::getGamma() const
 void BloomEffect::applyChange() const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Graphics::context->Map(bloomParamBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	Renderer::context->Map(bloomParamBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	memcpy(mappedData.pData, &bloomParam, 16u);
-	Graphics::context->Unmap(bloomParamBuffer.Get(), 0);
+	Renderer::context->Unmap(bloomParamBuffer.Get(), 0);
 }
 
 void BloomEffect::compileShaders()

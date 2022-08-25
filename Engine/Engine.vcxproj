@@ -166,8 +166,10 @@
     <ClInclude Include="Inc\Aurora\Timer.h" />
     <ClInclude Include="Inc\Aurora\Utils.h" />
     <ClInclude Include="Inc\Aurora\Wallpaper\WallpaperHelper.h" />
+    <ClInclude Include="Inc\Aurora\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Aurora\Renderer.cpp" />
     <ClCompile Include="Src\Aurora\TextureCube.cpp" />
     <ClCompile Include="Src\Aurora\A3D\Model.cpp" />
     <ClCompile Include="Src\Aurora\Camera.cpp" />

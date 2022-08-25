@@ -7,6 +7,7 @@
 #include<iterator>
 
 #include"Texture2D.h"
+#include"Graphics.h"
 
 class RenderTexture
 {

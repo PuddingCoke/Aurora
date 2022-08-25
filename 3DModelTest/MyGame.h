@@ -85,7 +85,7 @@ public:
 		models(Model::create("DNA.obj", numModels)),
 		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
-		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT)),
+		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
 		envTexture(Texture2D::create("Tufts-Parking-Lot_Ref.hdr")),
 		cubePShader(Shader::fromFile("cubePShader.hlsl", ShaderType::Pixel)),
 		bgVShader(Shader::fromFile("BackgroundVShader.hlsl", ShaderType::Vertex)),
@@ -108,7 +108,7 @@ public:
 				{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0}
 			};
 
-			Graphics::device->CreateInputLayout(layout, 3u, modelVShader->shaderBlob->GetBufferPointer(), modelVShader->shaderBlob->GetBufferSize(), inputLayout.ReleaseAndGetAddressOf());
+			Renderer::device->CreateInputLayout(layout, 3u, modelVShader->shaderBlob->GetBufferPointer(), modelVShader->shaderBlob->GetBufferSize(), inputLayout.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -118,7 +118,7 @@ public:
 			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-			Graphics::device->CreateBuffer(&bd, nullptr, lightBuffer.ReleaseAndGetAddressOf());
+			Renderer::device->CreateBuffer(&bd, nullptr, lightBuffer.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -132,7 +132,7 @@ public:
 			tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 			tDesc.ArraySize = 6;
 			tDesc.MipLevels = 5;
-			Graphics::device->CreateTexture2D(&tDesc, nullptr, envCube.ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, nullptr, envCube.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -146,7 +146,7 @@ public:
 			tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 			tDesc.ArraySize = 6;
 			tDesc.MipLevels = 5;
-			Graphics::device->CreateTexture2D(&tDesc, nullptr, prefilterCube.ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, nullptr, prefilterCube.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -160,7 +160,7 @@ public:
 			tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 			tDesc.ArraySize = 6;
 			tDesc.MipLevels = 1;
-			Graphics::device->CreateTexture2D(&tDesc, nullptr, irradianceCube.ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, nullptr, irradianceCube.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -206,23 +206,23 @@ public:
 
 				ComPtr<ID3D11Texture2D> texture;
 
-				Graphics::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+				Renderer::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 
 				RenderTexture* renderTexture = RenderTexture::create(boxSize, boxSize, tDesc.Format, DirectX::Colors::Black, false);
 
-				Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+				Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 				envTexture->setSRV(0);
 
 				TextureCube::shader->use();
 				cubePShader->use();
 
-				Graphics::setBlendState(StateCommon::defBlendState.Get());
+				Renderer::setBlendState(StateCommon::defBlendState.Get());
 
 				renderTexture->setRTV();
 
-				Graphics::setViewport(boxSize, boxSize);
+				Renderer::setViewport(boxSize, boxSize);
 
 				Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 1000.f));
 
@@ -230,13 +230,13 @@ public:
 				{
 					renderTexture->clearRTV(DirectX::Colors::Black);
 					Camera::setView(viewMatrices[i]);
-					Graphics::context->Draw(36, 0);
-					Graphics::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
+					Renderer::context->Draw(36, 0);
+					Renderer::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
-					Graphics::context->Map(texture.Get(), 0, D3D11_MAP_READ, 0, &mappedData);
-					Graphics::context->UpdateSubresource(envCube.Get(), D3D11CalcSubresource(0, i, 5), 0,
+					Renderer::context->Map(texture.Get(), 0, D3D11_MAP_READ, 0, &mappedData);
+					Renderer::context->UpdateSubresource(envCube.Get(), D3D11CalcSubresource(0, i, 5), 0,
 						mappedData.pData, mappedData.RowPitch, mappedData.DepthPitch);
-					Graphics::context->Unmap(texture.Get(), 0);
+					Renderer::context->Unmap(texture.Get(), 0);
 				}
 
 				delete renderTexture;
@@ -247,9 +247,9 @@ public:
 				srvDesc.TextureCube.MipLevels = 5;
 				srvDesc.TextureCube.MostDetailedMip = 0;
 
-				Graphics::device->CreateShaderResourceView(envCube.Get(), &srvDesc, cubeSRV.GetAddressOf());
+				Renderer::device->CreateShaderResourceView(envCube.Get(), &srvDesc, cubeSRV.GetAddressOf());
 
-				Graphics::context->GenerateMips(cubeSRV.Get());
+				Renderer::context->GenerateMips(cubeSRV.Get());
 
 				renderTexture = RenderTexture::create(irradianceSize, irradianceSize, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false);
 
@@ -258,32 +258,32 @@ public:
 				tDesc.Width = irradianceSize;
 				tDesc.Height = irradianceSize;
 
-				Graphics::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+				Renderer::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 
-				Graphics::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
+				Renderer::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
 
 				irradiancePShader->use();
 
-				Graphics::setViewport(irradianceSize, irradianceSize);
+				Renderer::setViewport(irradianceSize, irradianceSize);
 
 				for (int i = 0; i < 6; i++)
 				{
 					renderTexture->clearRTV(DirectX::Colors::Black);
 					Camera::setView(viewMatrices[i]);
-					Graphics::context->Draw(36, 0);
-					Graphics::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
+					Renderer::context->Draw(36, 0);
+					Renderer::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
-					Graphics::context->Map(texture.Get(), 0, D3D11_MAP_READ, 0, &mappedData);
-					Graphics::context->UpdateSubresource(irradianceCube.Get(), i, 0,
+					Renderer::context->Map(texture.Get(), 0, D3D11_MAP_READ, 0, &mappedData);
+					Renderer::context->UpdateSubresource(irradianceCube.Get(), i, 0,
 						mappedData.pData, mappedData.RowPitch, mappedData.DepthPitch);
-					Graphics::context->Unmap(texture.Get(), 0);
+					Renderer::context->Unmap(texture.Get(), 0);
 				}
 
 				delete renderTexture;
 
 				srvDesc.Texture2D.MipLevels = 1;
 
-				Graphics::device->CreateShaderResourceView(irradianceCube.Get(), &srvDesc, irradianceSRV.GetAddressOf());
+				Renderer::device->CreateShaderResourceView(irradianceCube.Get(), &srvDesc, irradianceSRV.GetAddressOf());
 
 			}
 
@@ -298,43 +298,43 @@ public:
 
 			tDesc.Width = 128;
 			tDesc.Height = 128;
-			Graphics::device->CreateTexture2D(&tDesc, nullptr, textures[0].ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, nullptr, textures[0].ReleaseAndGetAddressOf());
 
 			tDesc.Width = 64;
 			tDesc.Height = 64;
-			Graphics::device->CreateTexture2D(&tDesc, nullptr, textures[1].ReleaseAndGetAddressOf());
-			
+			Renderer::device->CreateTexture2D(&tDesc, nullptr, textures[1].ReleaseAndGetAddressOf());
+
 			tDesc.Width = 32;
 			tDesc.Height = 32;
-			Graphics::device->CreateTexture2D(&tDesc, nullptr, textures[2].ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, nullptr, textures[2].ReleaseAndGetAddressOf());
 
 			tDesc.Width = 16;
 			tDesc.Height = 16;
-			Graphics::device->CreateTexture2D(&tDesc, nullptr, textures[3].ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, nullptr, textures[3].ReleaseAndGetAddressOf());
 
 			tDesc.Width = 8;
 			tDesc.Height = 8;
-			Graphics::device->CreateTexture2D(&tDesc, nullptr, textures[4].ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, nullptr, textures[4].ReleaseAndGetAddressOf());
 
-			Graphics::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
+			Renderer::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
 
 			int resolution = prefilterSize;
 			for (unsigned mip = 0; mip < 5; mip++)
 			{
-				Graphics::setViewport(prefilterSize, prefilterSize);
+				Renderer::setViewport(prefilterSize, prefilterSize);
 				renderTextures[mip]->setRTV();
 				renderTextures[mip]->clearRTV(DirectX::Colors::Black);
 				prefilterPShader[mip]->use();
 				for (unsigned i = 0; i < 6; i++)
 				{
 					Camera::setView(viewMatrices[i]);
-					Graphics::context->Draw(36, 0);
-					Graphics::context->CopyResource(textures[mip].Get(), renderTextures[mip]->getTexture()->getTexture2D());
+					Renderer::context->Draw(36, 0);
+					Renderer::context->CopyResource(textures[mip].Get(), renderTextures[mip]->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
-					Graphics::context->Map(textures[mip].Get(), 0, D3D11_MAP_READ, 0, &mappedData);
-					Graphics::context->UpdateSubresource(prefilterCube.Get(), D3D11CalcSubresource(mip, i, 5), 0,
+					Renderer::context->Map(textures[mip].Get(), 0, D3D11_MAP_READ, 0, &mappedData);
+					Renderer::context->UpdateSubresource(prefilterCube.Get(), D3D11CalcSubresource(mip, i, 5), 0,
 						mappedData.pData, mappedData.RowPitch, mappedData.DepthPitch);
-					Graphics::context->Unmap(textures[mip].Get(), 0);
+					Renderer::context->Unmap(textures[mip].Get(), 0);
 				}
 
 				resolution /= 2;
@@ -351,23 +351,23 @@ public:
 			srvDesc.TextureCube.MipLevels = 5;
 			srvDesc.TextureCube.MostDetailedMip = 0;
 
-			Graphics::device->CreateShaderResourceView(prefilterCube.Get(), &srvDesc, prefilterSRV.GetAddressOf());
+			Renderer::device->CreateShaderResourceView(prefilterCube.Get(), &srvDesc, prefilterSRV.GetAddressOf());
 
-			Graphics::setViewport(Graphics::getWidth(), Graphics::getHeight());
+			Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
 			Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 1000.f));
 		}
 
 		{
-			Graphics::setViewport(boxSize, boxSize);
+			Renderer::setViewport(boxSize, boxSize);
 
 			Shader::displayVShader->use();
 			brdfPShader->use();
 
 			brdfTexture->setRTV();
 
-			Graphics::context->Draw(3, 0);
+			Renderer::context->Draw(3, 0);
 
-			Graphics::setViewport(Graphics::getWidth(), Graphics::getHeight());
+			Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
 		}
 
 		Mouse::addMoveEvent([this]()
@@ -429,44 +429,44 @@ public:
 		lightInfo.viewPos = DirectX::XMFLOAT3(eyeRotated.x, eyeRotated.y, eyeRotated.z);
 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
-		Graphics::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		Renderer::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 		memcpy(mappedData.pData, &lightInfo, sizeof(LightInfo));
-		Graphics::context->Unmap(lightBuffer.Get(), 0);
+		Renderer::context->Unmap(lightBuffer.Get(), 0);
 
-		Graphics::context->PSSetConstantBuffers(4, 1, lightBuffer.GetAddressOf());
+		Renderer::context->PSSetConstantBuffers(4, 1, lightBuffer.GetAddressOf());
 	}
 
 	void render() override
 	{
 		depthStencilView->clear(D3D11_CLEAR_DEPTH);
 
-		Graphics::clearDefRTV(DirectX::Colors::DimGray);
+		Renderer::clearDefRTV(DirectX::Colors::DimGray);
 
-		Graphics::setDefRTV(depthStencilView->get());
+		Renderer::setDefRTV(depthStencilView->get());
 
-		Graphics::setBlendState(StateCommon::defBlendState.Get());
+		Renderer::setBlendState(StateCommon::defBlendState.Get());
 
-		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 
-		Graphics::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
+		Renderer::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
 
 		bgVShader->use();
 		bgPShader->use();
 
-		Graphics::context->Draw(36, 0);
+		Renderer::context->Draw(36, 0);
 
-		Graphics::context->PSSetShaderResources(0, 1, irradianceSRV.GetAddressOf());
-		Graphics::context->PSSetShaderResources(1, 1, prefilterSRV.GetAddressOf());
+		Renderer::context->PSSetShaderResources(0, 1, irradianceSRV.GetAddressOf());
+		Renderer::context->PSSetShaderResources(1, 1, prefilterSRV.GetAddressOf());
 		brdfTexture->getTexture()->setSRV(2);
 
 		modelVShader->use();
 		modelPShader->use();
 
-		Graphics::context->IASetInputLayout(inputLayout.Get());
+		Renderer::context->IASetInputLayout(inputLayout.Get());
 
-		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 
 		for (unsigned i = 0; i < numModels; i++)
 		{

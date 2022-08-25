@@ -100,7 +100,7 @@ public:
 	{
 		renderTexture->setRTV();
 		renderTexture->clearRTV(DirectX::Colors::Black);
-		Graphics::setBlendState(StateCommon::defBlendState.Get());
+		Renderer::setBlendState(StateCommon::defBlendState.Get());
 
 		batch->begin();
 		for (int i = 0; i < rains.size(); i++)
@@ -115,10 +115,10 @@ public:
 
 		Texture2D* texture2D = effect.process(renderTexture->getTexture());
 
-		Graphics::setDefRTV();
-		Graphics::clearDefRTV(DirectX::Colors::Black);
+		Renderer::setDefRTV();
+		Renderer::clearDefRTV(DirectX::Colors::Black);
 
-		Graphics::setBlendState(StateCommon::defBlendState.Get());
+		Renderer::setBlendState(StateCommon::defBlendState.Get());
 
 		batch->begin();
 		batch->draw(texture2D, 0, 0);

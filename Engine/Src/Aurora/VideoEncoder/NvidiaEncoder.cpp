@@ -117,7 +117,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate, b
 	std::cout << "[class NvidiaEncoder] api instance create status " << apiCreateInstance(&nvencAPI) << "\n";
 
 	NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS sessionParams = { NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER };
-	sessionParams.device = Graphics::device.Get();
+	sessionParams.device = Renderer::device.Get();
 	sessionParams.deviceType = NV_ENC_DEVICE_TYPE_DIRECTX;
 	sessionParams.apiVersion = NVENCAPI_VERSION;
 

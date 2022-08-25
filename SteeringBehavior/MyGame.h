@@ -104,7 +104,7 @@ public:
 
 	void render()
 	{
-		Graphics::setBlendState(StateCommon::defBlendState.Get());
+		Renderer::setBlendState(StateCommon::defBlendState.Get());
 
 		renderTexture->clearMSAARTV(DirectX::Colors::Black);
 		renderTexture->setMSAARTV();
@@ -119,30 +119,30 @@ public:
 
 		renderTexture->resolve();
 
-		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Graphics::setBlendState(StateCommon::addtiveBlend.Get());
+		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
 		doubleRTV->write()->setRTV();
 
-		Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 		renderTexture->getTexture()->setSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 		doubleRTV->swap();
 
 		Texture2D* bloomTexture = bloomEffect.process(doubleRTV->read()->getTexture());
 
-		Graphics::clearDefRTV(DirectX::Colors::Black);
-		Graphics::setDefRTV();
+		Renderer::clearDefRTV(DirectX::Colors::Black);
+		Renderer::setDefRTV();
 		bloomTexture->setSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
 		Texture2D* const fadedTexture = fadeEffect.process(doubleRTV->read()->getTexture());
 
@@ -152,7 +152,7 @@ public:
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 	}
 
 

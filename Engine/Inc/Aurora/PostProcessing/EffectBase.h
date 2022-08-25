@@ -6,6 +6,7 @@
 #include<Aurora/RenderTexture.h>
 #include<Aurora/StateCommon.h>
 #include<Aurora/Shader.h>
+#include<Aurora/Graphics.h>
 
 class EffectBase
 {

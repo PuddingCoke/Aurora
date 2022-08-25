@@ -57,7 +57,7 @@ public:
 			sd.MinLOD = 0;
 			sd.MaxLOD = D3D11_FLOAT32_MAX;
 
-			Graphics::device->CreateSamplerState(&sd, samplerState.ReleaseAndGetAddressOf());
+			Renderer::device->CreateSamplerState(&sd, samplerState.ReleaseAndGetAddressOf());
 		}
 
 		accTexture->read()->clearRTV(DirectX::Colors::Black);
@@ -115,9 +115,9 @@ public:
 		accTexture->write()->setRTV();
 		accTexture->write()->clearRTV(DirectX::Colors::Black);
 
-		Graphics::setBlendState(StateCommon::addtiveBlend.Get());
-		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Graphics::context->PSSetSamplers(0, 1, samplerState.GetAddressOf());
+		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
+		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::context->PSSetSamplers(0, 1, samplerState.GetAddressOf());
 
 		Shader::displayVShader->use();
 		pixelShader->use();
@@ -126,18 +126,18 @@ public:
 		dustTexture->setSRV(1);
 		accTexture->read()->getTexture()->setSRV(2);
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 		accTexture->swap();
 
-		Graphics::context->PSSetShaderResources(0, 3, nullView);
+		Renderer::context->PSSetShaderResources(0, 3, nullView);
 
-		Graphics::clearDefRTV(DirectX::Colors::Black);
+		Renderer::clearDefRTV(DirectX::Colors::Black);
 
 		if (bloom)
 		{
 			Texture2D* texture = effect.process(accTexture->read()->getTexture());
 
-			Graphics::setDefRTV();
+			Renderer::setDefRTV();
 
 			Shader::displayPShader->use();
 
@@ -146,16 +146,16 @@ public:
 		}
 		else
 		{
-			Graphics::setDefRTV();
+			Renderer::setDefRTV();
 
 			Shader::displayPShader->use();
 
 			accTexture->read()->getTexture()->setSRV(0);
 		}
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
 
-		Graphics::context->PSSetShaderResources(0, 3, nullView);
+		Renderer::context->PSSetShaderResources(0, 3, nullView);
 	}
 };

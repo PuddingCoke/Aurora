@@ -14,27 +14,27 @@ RenderTexture* RenderTexture::create(const unsigned int& width, const unsigned i
 
 void RenderTexture::setMSAARTV(ID3D11DepthStencilView* const view) const
 {
-	Graphics::context->OMSetRenderTargets(1, msaaTarget.GetAddressOf(), view);
+	Renderer::context->OMSetRenderTargets(1, msaaTarget.GetAddressOf(), view);
 }
 
 void RenderTexture::setRTV(ID3D11DepthStencilView* const view) const
 {
-	Graphics::context->OMSetRenderTargets(1, normalTarget.GetAddressOf(), view);
+	Renderer::context->OMSetRenderTargets(1, normalTarget.GetAddressOf(), view);
 }
 
 void RenderTexture::clearMSAARTV(const float color[4]) const
 {
-	Graphics::context->ClearRenderTargetView(msaaTarget.Get(), color);
+	Renderer::context->ClearRenderTargetView(msaaTarget.Get(), color);
 }
 
 void RenderTexture::clearRTV(const float color[4]) const
 {
-	Graphics::context->ClearRenderTargetView(normalTarget.Get(), color);
+	Renderer::context->ClearRenderTargetView(normalTarget.Get(), color);
 }
 
 void RenderTexture::resolve() const
 {
-	Graphics::context->ResolveSubresource(texture->getTexture2D(), 0, msaaTexture.Get(), 0, format);
+	Renderer::context->ResolveSubresource(texture->getTexture2D(), 0, msaaTexture.Get(), 0, format);
 }
 
 Texture2D* RenderTexture::getTexture() const
@@ -50,7 +50,7 @@ void RenderTexture::setRTVs(std::initializer_list<RenderTexture*> renderTextures
 		renderTargetViews[i] = it[0]->normalTarget.Get();
 		++it;
 	}
-	Graphics::context->OMSetRenderTargets((UINT)renderTextures.size(), renderTargetViews, view);
+	Renderer::context->OMSetRenderTargets((UINT)renderTextures.size(), renderTargetViews, view);
 }
 
 void RenderTexture::setMSAARTVs(std::initializer_list<RenderTexture*> renderTextures, ID3D11DepthStencilView* msaaView)
@@ -61,7 +61,7 @@ void RenderTexture::setMSAARTVs(std::initializer_list<RenderTexture*> renderText
 		renderTargetViews[i] = it[0]->msaaTarget.Get();
 		++it;
 	}
-	Graphics::context->OMSetRenderTargets((UINT)renderTextures.size(), renderTargetViews, msaaView);
+	Renderer::context->OMSetRenderTargets((UINT)renderTextures.size(), renderTargetViews, msaaView);
 }
 
 void RenderTexture::unbindAll()
@@ -74,7 +74,7 @@ void RenderTexture::unbindAll()
 	renderTargetViews[5] = nullptr;
 	renderTargetViews[6] = nullptr;
 	renderTargetViews[7] = nullptr;
-	Graphics::context->OMSetRenderTargets(8, renderTargetViews, nullptr);
+	Renderer::context->OMSetRenderTargets(8, renderTargetViews, nullptr);
 }
 
 RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4],const bool& enableMSAA) :
@@ -87,7 +87,7 @@ RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& heig
 		viewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
 		viewDesc.Texture2D.MipSlice = 0;
 
-		Graphics::device->CreateRenderTargetView(texture->getTexture2D(), &viewDesc, normalTarget.ReleaseAndGetAddressOf());
+		Renderer::device->CreateRenderTargetView(texture->getTexture2D(), &viewDesc, normalTarget.ReleaseAndGetAddressOf());
 	}
 
 	if(enableMSAA)//创建抗锯齿材质以及RenderTargetView
@@ -105,21 +105,21 @@ RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& heig
 		tDesc.CPUAccessFlags = 0;
 		tDesc.MiscFlags = 0;
 
-		Graphics::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
+		Renderer::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
 
 		D3D11_RENDER_TARGET_VIEW_DESC msaaViewDesc = {};
 		msaaViewDesc.Format = tDesc.Format;
 		msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2DMS;
 		msaaViewDesc.Texture2D.MipSlice = 0;
 
-		Graphics::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, msaaTarget.ReleaseAndGetAddressOf());
+		Renderer::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, msaaTarget.ReleaseAndGetAddressOf());
 
-		Graphics::context->ClearRenderTargetView(msaaTarget.Get(), color);
+		Renderer::context->ClearRenderTargetView(msaaTarget.Get(), color);
 
 		resolve();
 	}
 	else
 	{
-		Graphics::context->ClearRenderTargetView(normalTarget.Get(), color);
+		Renderer::context->ClearRenderTargetView(normalTarget.Get(), color);
 	}
 }

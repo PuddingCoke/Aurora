@@ -43,7 +43,7 @@ void SpriteBatch::end()
 		flush();
 	}
 
-	Graphics::context->IASetInputLayout(bitmapInputLayout.Get());
+	Renderer::context->IASetInputLayout(bitmapInputLayout.Get());
 
 	bitmapPShader->use();
 	bitmapVShader->use();
@@ -51,15 +51,15 @@ void SpriteBatch::end()
 	const unsigned int stride = sizeof(float) * 8;
 	const unsigned int offset = 0;
 
-	Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
-	Graphics::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+	Renderer::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	for (int i = 0; i < fontPool.size(); i++)
 	{
 		fontPool[i]->updateVerticesData();
-		Graphics::context->PSSetShaderResources(0, 1, fontPool[i]->texture2D->resourceView.GetAddressOf());
-		Graphics::context->IASetVertexBuffers(0, 1, fontPool[i]->vertexBuffer.GetAddressOf(), &stride, &offset);
+		Renderer::context->PSSetShaderResources(0, 1, fontPool[i]->texture2D->resourceView.GetAddressOf());
+		Renderer::context->IASetVertexBuffers(0, 1, fontPool[i]->vertexBuffer.GetAddressOf(), &stride, &offset);
 		fontPool[i]->render();
 	}
 }
@@ -365,14 +365,14 @@ void SpriteBatch::texturePoolAdd(Texture2D* const texture)
 
 void SpriteBatch::flush()
 {
-	Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
-	Graphics::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+	Renderer::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	spritePShader->use();
 	spriteVShader->use();
 
-	Graphics::context->IASetInputLayout(spriteInputLayout.Get());
+	Renderer::context->IASetInputLayout(spriteInputLayout.Get());
 
 	const unsigned int stride = sizeof(float) * 2;
 	const unsigned int offset = 0;
@@ -380,8 +380,8 @@ void SpriteBatch::flush()
 	for (int i = 0; i < TextureSlot::curTextureNum; i++)
 	{
 		texturePool[i].updateVertices();
-		Graphics::context->PSSetShaderResources(0, 1, texturePool[i].texture->resourceView.GetAddressOf());
-		Graphics::context->IASetVertexBuffers(0, 1, texturePool[i].vertexBuffer.GetAddressOf(), &stride, &offset);
+		Renderer::context->PSSetShaderResources(0, 1, texturePool[i].texture->resourceView.GetAddressOf());
+		Renderer::context->IASetVertexBuffers(0, 1, texturePool[i].vertexBuffer.GetAddressOf(), &stride, &offset);
 		texturePool[i].drawVertices();
 		texturePool[i].reset();
 	}
@@ -420,7 +420,7 @@ SpriteBatch::SpriteBatch() :
 		indexData.SysMemPitch = 0;
 		indexData.SysMemSlicePitch = 0;
 
-		Graphics::device->CreateBuffer(&indexBufferDesc, &indexData, indexBuffer.ReleaseAndGetAddressOf());
+		Renderer::device->CreateBuffer(&indexBufferDesc, &indexData, indexBuffer.ReleaseAndGetAddressOf());
 
 		delete[] indices;
 	}
@@ -432,7 +432,7 @@ SpriteBatch::SpriteBatch() :
 				"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0
 		};
 
-		Graphics::device->CreateInputLayout(&layout, 1u,
+		Renderer::device->CreateInputLayout(&layout, 1u,
 			spriteVShader->shaderBlob->GetBufferPointer(),
 			spriteVShader->shaderBlob->GetBufferSize(),
 			spriteInputLayout.ReleaseAndGetAddressOf());
@@ -447,7 +447,7 @@ SpriteBatch::SpriteBatch() :
 			{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
-		Graphics::device->CreateInputLayout(layout, 3u,
+		Renderer::device->CreateInputLayout(layout, 3u,
 			bitmapVShader->shaderBlob->GetBufferPointer(),
 			bitmapVShader->shaderBlob->GetBufferSize(),
 			bitmapInputLayout.ReleaseAndGetAddressOf());
@@ -464,7 +464,7 @@ SpriteBatch::TextureSlot::TextureSlot() :
 	vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	vertexBufferDesc.MiscFlags = 0;
 
-	Graphics::device->CreateBuffer(&vertexBufferDesc, nullptr, vertexBuffer.ReleaseAndGetAddressOf());
+	Renderer::device->CreateBuffer(&vertexBufferDesc, nullptr, vertexBuffer.ReleaseAndGetAddressOf());
 }
 
 SpriteBatch::TextureSlot::~TextureSlot()
@@ -481,14 +481,14 @@ void SpriteBatch::TextureSlot::setTexture(Texture2D* const texture)
 void SpriteBatch::TextureSlot::updateVertices() const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Graphics::context->Map(vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	Renderer::context->Map(vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	memcpy(mappedData.pData, vertices, sizeof(float) * idx);
-	Graphics::context->Unmap(vertexBuffer.Get(), 0);
+	Renderer::context->Unmap(vertexBuffer.Get(), 0);
 }
 
 void SpriteBatch::TextureSlot::drawVertices() const
 {
-	Graphics::context->DrawIndexed(idx / 4 * 3, 0, 0);
+	Renderer::context->DrawIndexed(idx / 4 * 3, 0, 0);
 }
 
 void SpriteBatch::TextureSlot::addVertices(const float& x1, const float& y1, const float& x2, const float& y2, const float& x3, const float& y3, const float& x4, const float& y4)

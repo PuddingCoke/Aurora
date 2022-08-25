@@ -105,7 +105,7 @@ void Aurora::iniGame(Game* const game)
 
 	TextureCube::releaseShader();
 
-	Graphics::context->ClearState();
+	Renderer::context->ClearState();
 
 	if (config->enableDebug)
 	{
@@ -342,8 +342,8 @@ HRESULT Aurora::iniDevice()
 		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, 2u,
 			D3D11_SDK_VERSION, device11.GetAddressOf(), &maxSupportedFeatureLevel, context11.GetAddressOf());
 
-		device11.As(&Graphics::device);
-		context11.As(&Graphics::context);
+		device11.As(&Renderer::device);
+		context11.As(&Renderer::context);
 
 		ComPtr<IDXGIDevice> dxgiDevice11;
 		device11.As(&dxgiDevice11);
@@ -371,7 +371,7 @@ HRESULT Aurora::iniDevice()
 		sd.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
 		ComPtr<IDXGISwapChain1> sc;
-		dxgiFactory->CreateSwapChainForHwnd(Graphics::device.Get(), hwnd, &sd, nullptr, nullptr, sc.GetAddressOf());
+		dxgiFactory->CreateSwapChainForHwnd(Renderer::device.Get(), hwnd, &sd, nullptr, nullptr, sc.GetAddressOf());
 		sc.As(&swapChain);
 	}
 
@@ -379,17 +379,12 @@ HRESULT Aurora::iniDevice()
 
 	if (config->enableDebug)
 	{
-		Graphics::device->QueryInterface(IID_ID3D11Debug, (void**)Graphics::d3dDebug.ReleaseAndGetAddressOf());
+		Renderer::device->QueryInterface(IID_ID3D11Debug, (void**)Graphics::d3dDebug.ReleaseAndGetAddressOf());
 	}
 
-	swapChain->GetBuffer(0, IID_ID3D11Texture2D, (void**)&Graphics::backBuffer);
+	swapChain->GetBuffer(0, IID_ID3D11Texture2D, (void**)&Renderer::backBuffer);
 
-	Graphics::vp.MinDepth = 0.0f;
-	Graphics::vp.MaxDepth = 1.0f;
-	Graphics::vp.TopLeftX = 0;
-	Graphics::vp.TopLeftY = 0;
-
-	Graphics::setViewport((float)Graphics::width, (float)Graphics::height);
+	Renderer::setViewport((float)Graphics::width, (float)Graphics::height);
 
 	{
 		ComPtr<ID3D11RasterizerState> rasterizerState;
@@ -398,9 +393,9 @@ HRESULT Aurora::iniDevice()
 		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
 
-		Graphics::device->CreateRasterizerState(&rasterizerDesc, rasterizerState.ReleaseAndGetAddressOf());
+		Renderer::device->CreateRasterizerState(&rasterizerDesc, rasterizerState.ReleaseAndGetAddressOf());
 
-		Graphics::context->RSSetState(rasterizerState.Get());
+		Renderer::context->RSSetState(rasterizerState.Get());
 
 	}
 
@@ -418,16 +413,16 @@ HRESULT Aurora::iniDevice()
 		tDesc.CPUAccessFlags = 0;
 		tDesc.MiscFlags = 0;
 
-		Graphics::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
+		Renderer::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
 
 		D3D11_RENDER_TARGET_VIEW_DESC msaaViewDesc = {};
 		msaaViewDesc.Format = tDesc.Format;
 		msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2DMS;
 		msaaViewDesc.Texture2D.MipSlice = 0;
 
-		Graphics::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, Graphics::defaultTargetView.ReleaseAndGetAddressOf());
+		Renderer::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, Renderer::defaultTargetView.ReleaseAndGetAddressOf());
 
-		Graphics::clearDefRTV(DirectX::Colors::Black);
+		Renderer::clearDefRTV(DirectX::Colors::Black);
 
 	}
 
@@ -446,7 +441,7 @@ HRESULT Aurora::iniDevice()
 		tDesc.CPUAccessFlags = 0;
 		tDesc.MiscFlags = 0;
 
-		Graphics::device->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
+		Renderer::device->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
 
 		std::cout << "[class Aurora] initialize encode texture complete\n";
 	}
@@ -474,9 +469,9 @@ HRESULT Aurora::iniCamera()
 
 	ID3D11Buffer* buffers[2] = { Camera::projBuffer.Get(),Camera::viewBuffer.Get() };
 
-	Graphics::context->VSSetConstantBuffers(0, 2, buffers);
-	Graphics::context->GSSetConstantBuffers(0, 2, buffers);
-	Graphics::context->PSSetConstantBuffers(1, 2, buffers);
+	Renderer::context->VSSetConstantBuffers(0, 2, buffers);
+	Renderer::context->GSSetConstantBuffers(0, 2, buffers);
+	Renderer::context->PSSetConstantBuffers(1, 2, buffers);
 
 	return S_OK;
 }
@@ -496,7 +491,7 @@ void Aurora::runGame()
 		timeStart = timer.now();
 		game->update(Graphics::deltaTime.deltaTime);
 		game->render();
-		Graphics::context->ResolveSubresource(Graphics::backBuffer, 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+		Renderer::context->ResolveSubresource(Renderer::backBuffer, 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
 		swapChain->Present(1, 0);
 		timeEnd = timer.now();
 		Graphics::deltaTime.deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
@@ -526,7 +521,7 @@ void Aurora::runEncode()
 	{
 		game->update(Graphics::deltaTime.deltaTime);
 		game->render();
-		Graphics::context->ResolveSubresource(encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+		Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
 		Graphics::deltaTime.sTime += Graphics::deltaTime.deltaTime;
 		Graphics::updateDeltaTimeBuffer();
 	} while (nvidiaEncoder.encode(encodeTexture.Get()));

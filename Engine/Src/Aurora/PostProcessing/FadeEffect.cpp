@@ -11,28 +11,28 @@ FadeEffect::FadeEffect(const unsigned int& width, const unsigned int& height) :
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	Graphics::device->CreateBuffer(&bd, nullptr, fadeBuffer.GetAddressOf());
+	Renderer::device->CreateBuffer(&bd, nullptr, fadeBuffer.GetAddressOf());
 
 	setFadeFactor(fadeFactor);
 }
 
 Texture2D* FadeEffect::process(Texture2D* const texture2D) const
 {
-	Graphics::setBlendState(StateCommon::blendReplace.Get());
+	Renderer::setBlendState(StateCommon::blendReplace.Get());
 
 	outputRTV->clearRTV(DirectX::Colors::Black);
 	outputRTV->setRTV();
 
-	Graphics::context->PSSetConstantBuffers(3, 1, fadeBuffer.GetAddressOf());
+	Renderer::context->PSSetConstantBuffers(3, 1, fadeBuffer.GetAddressOf());
 
-	Graphics::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+	Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 	texture2D->setSRV(0);
 
 	Shader::displayVShader->use();
 	fadePShader->use();
 
-	Graphics::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Graphics::context->Draw(3, 0);
+	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Renderer::context->Draw(3, 0);
 
 	return outputRTV->getTexture();
 }
@@ -47,9 +47,9 @@ void FadeEffect::setFadeFactor(const float& factor)
 	fadeFactor = factor;
 
 	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Graphics::context->Map(fadeBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	Renderer::context->Map(fadeBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	memcpy(mappedData.pData, &fadeFactor, sizeof(float));
-	Graphics::context->Unmap(fadeBuffer.Get(), 0);
+	Renderer::context->Unmap(fadeBuffer.Get(), 0);
 }
 
 FadeEffect::~FadeEffect()

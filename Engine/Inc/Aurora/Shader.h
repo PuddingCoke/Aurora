@@ -11,7 +11,7 @@
 #include<functional>
 
 #include"Utils.h"
-#include"StateCommon.h"
+#include"Renderer.h"
 
 enum class ShaderType
 {

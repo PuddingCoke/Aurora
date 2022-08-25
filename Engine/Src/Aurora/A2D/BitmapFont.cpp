@@ -166,19 +166,19 @@ BitmapFont::BitmapFont(const std::string& bitmapPath, const std::string& configF
 	vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	vertexBufferDesc.MiscFlags = 0;
 
-	Graphics::device->CreateBuffer(&vertexBufferDesc, nullptr, vertexBuffer.ReleaseAndGetAddressOf());
+	Renderer::device->CreateBuffer(&vertexBufferDesc, nullptr, vertexBuffer.ReleaseAndGetAddressOf());
 }
 
 void BitmapFont::updateVerticesData() const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Graphics::context->Map(vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	Renderer::context->Map(vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	memcpy(mappedData.pData, vertices, sizeof(float) * idx);
-	Graphics::context->Unmap(vertexBuffer.Get(), 0);
+	Renderer::context->Unmap(vertexBuffer.Get(), 0);
 }
 
 void BitmapFont::render()
 {
-	Graphics::context->DrawIndexed(idx / 16 * 3, 0, 0);
+	Renderer::context->DrawIndexed(idx / 16 * 3, 0, 0);
 	idx = 0;
 }

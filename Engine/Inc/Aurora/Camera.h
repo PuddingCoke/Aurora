@@ -5,7 +5,7 @@
 
 #include<DirectXMath.h>
 
-#include"Graphics.h"
+#include"Renderer.h"
 #include"Keyboard.h"
 #include"Mouse.h"
 

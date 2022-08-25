@@ -63,9 +63,9 @@ public:
 	void render() override
 	{
 		color = Color::HSVtoRGB({ (float)hue,.5f,.5f });
-		Graphics::setBlendState(StateCommon::addtiveBlend.Get());
-		Graphics::setDefRTV();
-		Graphics::clearDefRTV(DirectX::Colors::Black);
+		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
+		Renderer::setDefRTV();
+		Renderer::clearDefRTV(DirectX::Colors::Black);
 		pBatch->begin();
 		pBatch->drawCircle(c.center.x, c.center.y, c.radius, 1, 1, 1, 1);
 		for (size_t i = 0; i < c.points.size(); i++)

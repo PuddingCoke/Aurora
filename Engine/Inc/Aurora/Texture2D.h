@@ -11,7 +11,7 @@
 #include<stb_image/stb_image.h>
 #include<DDSTextureLoader/DDSTextureLoader11.h>
 
-#include"Graphics.h"
+#include"Renderer.h"
 #include"Utils.h"
 #include"Random.h"
 

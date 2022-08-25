@@ -23,7 +23,7 @@ HRESULT StateCommon::ini()
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Graphics::device->CreateSamplerState(&sampDesc, defSamplerState.ReleaseAndGetAddressOf());
+		Renderer::device->CreateSamplerState(&sampDesc, defSamplerState.ReleaseAndGetAddressOf());
 	}
 
 	//初始化defBlendState
@@ -44,9 +44,9 @@ HRESULT StateCommon::ini()
 		blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-		Graphics::device->CreateBlendState(&blendStateDesc, defBlendState.ReleaseAndGetAddressOf());
+		Renderer::device->CreateBlendState(&blendStateDesc, defBlendState.ReleaseAndGetAddressOf());
 
-		Graphics::setBlendState(defBlendState.Get());
+		Renderer::setBlendState(defBlendState.Get());
 
 	}
 
@@ -68,7 +68,7 @@ HRESULT StateCommon::ini()
 		blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-		Graphics::device->CreateBlendState(&blendStateDesc, blendReplace.ReleaseAndGetAddressOf());
+		Renderer::device->CreateBlendState(&blendStateDesc, blendReplace.ReleaseAndGetAddressOf());
 	}
 
 	//初始化addtiveBlend
@@ -89,7 +89,7 @@ HRESULT StateCommon::ini()
 		blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-		Graphics::device->CreateBlendState(&blendStateDesc, addtiveBlend.ReleaseAndGetAddressOf());
+		Renderer::device->CreateBlendState(&blendStateDesc, addtiveBlend.ReleaseAndGetAddressOf());
 	}
 
 	//初始化defDepthStencilState
@@ -113,9 +113,9 @@ HRESULT StateCommon::ini()
 		dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 		dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
-		Graphics::device->CreateDepthStencilState(&dsDesc, defDepthStencilState.ReleaseAndGetAddressOf());
+		Renderer::device->CreateDepthStencilState(&dsDesc, defDepthStencilState.ReleaseAndGetAddressOf());
 
-		Graphics::context->OMSetDepthStencilState(defDepthStencilState.Get(), 0);
+		Renderer::context->OMSetDepthStencilState(defDepthStencilState.Get(), 0);
 	}
 
 	return S_OK;

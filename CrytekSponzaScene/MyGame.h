@@ -59,9 +59,9 @@ public:
 
 	float roll = 0.f;
 
-	static constexpr float moveSpeed = 40.f;
+	static constexpr float moveSpeed = 100.f;
 
-	static constexpr float rotationSpeed = 10.f;
+	static constexpr float rotationSpeed = 5.f;
 
 	struct LightInfo
 	{
@@ -95,7 +95,7 @@ public:
 		albedo(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
 		ssaoTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, DirectX::Colors::Black, false)),
 		ssaoBlured(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, DirectX::Colors::Black, false)),
-		depthStencilView(DepthStencilView::create(DXGI_FORMAT_D32_FLOAT, false)),
+		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, false)),
 		randomNormal(Texture2D::create("RandomNormal.png")),
 		ssaoShader(Shader::fromFile("SSAOShader.hlsl", ShaderType::Pixel)),
 		scene(Scene::create(assetPath + "/sponza.dae")),
@@ -111,7 +111,7 @@ public:
 				{"TANGENT", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			};
 
-			Graphics::device->CreateInputLayout(layout, ARRAYSIZE(layout), deferredVShader->shaderBlob->GetBufferPointer(), deferredVShader->shaderBlob->GetBufferSize(), inputLayout.ReleaseAndGetAddressOf());
+			Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), deferredVShader->shaderBlob->GetBufferPointer(), deferredVShader->shaderBlob->GetBufferSize(), inputLayout.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -124,7 +124,7 @@ public:
 			sampDesc.MinLOD = 0;
 			sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-			Graphics::device->CreateSamplerState(&sampDesc, wrapSampler.ReleaseAndGetAddressOf());
+			Renderer::device->CreateSamplerState(&sampDesc, wrapSampler.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -202,7 +202,7 @@ public:
 			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-			Graphics::device->CreateBuffer(&bd, nullptr, lightBuffer.ReleaseAndGetAddressOf());
+			Renderer::device->CreateBuffer(&bd, nullptr, lightBuffer.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -215,7 +215,7 @@ public:
 			D3D11_SUBRESOURCE_DATA subresource = {};
 			subresource.pSysMem = &ssaoParams;
 
-			Graphics::device->CreateBuffer(&bd, &subresource, ssaoBuffer.ReleaseAndGetAddressOf());
+			Renderer::device->CreateBuffer(&bd, &subresource, ssaoBuffer.ReleaseAndGetAddressOf());
 		}
 
 		Mouse::addMoveEvent([this]()
@@ -259,19 +259,17 @@ public:
 
 	void update(const float& dt) override
 	{
-		const float speedFactor = 100.f;
-
 		if (Keyboard::getKeyDown(Keyboard::W))
 		{
-			eye.x += speedFactor * lookDir.x * dt;
-			eye.y += speedFactor * lookDir.y * dt;
-			eye.z += speedFactor * lookDir.z * dt;
+			eye.x += moveSpeed * lookDir.x * dt;
+			eye.y += moveSpeed * lookDir.y * dt;
+			eye.z += moveSpeed * lookDir.z * dt;
 		}
 		else if (Keyboard::getKeyDown(Keyboard::S))
 		{
-			eye.x -= speedFactor * lookDir.x * dt;
-			eye.y -= speedFactor * lookDir.y * dt;
-			eye.z -= speedFactor * lookDir.z * dt;
+			eye.x -= moveSpeed * lookDir.x * dt;
+			eye.y -= moveSpeed * lookDir.y * dt;
+			eye.z -= moveSpeed * lookDir.z * dt;
 		}
 
 		if (Keyboard::getKeyDown(Keyboard::A))
@@ -316,9 +314,9 @@ public:
 		lightInfo.lights[0].position = DirectX::XMFLOAT4(-sinf(360.0f * Graphics::getSTime() / 2.f * Math::degToRad) * 120.0f, 3.5f, cosf(360.0f * Graphics::getSTime() * 8.0f * Math::degToRad / 2.f) * 10.0f, 1.f);
 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
-		Graphics::context->Map(ssaoBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		Renderer::context->Map(ssaoBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 		memcpy(mappedData.pData, &ssaoParams, sizeof(SSAOParams));
-		Graphics::context->Unmap(ssaoBuffer.Get(), 0);
+		Renderer::context->Unmap(ssaoBuffer.Get(), 0);
 
 		const DirectX::XMFLOAT3 focusPoint = DirectX::XMFLOAT3(eye.x + lookDir.x, eye.y + lookDir.y, eye.z + lookDir.z);
 
@@ -330,30 +328,30 @@ public:
 			viewSpaceLight.lights[i].position = DirectX::XMFLOAT4(lightInViewSpace.x, lightInViewSpace.y, lightInViewSpace.z, 1.f);
 		}
 
-		Graphics::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		Renderer::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 		memcpy(mappedData.pData, &viewSpaceLight, sizeof(LightInfo));
-		Graphics::context->Unmap(lightBuffer.Get(), 0);
+		Renderer::context->Unmap(lightBuffer.Get(), 0);
 
-		Graphics::context->PSSetConstantBuffers(3, 1, lightBuffer.GetAddressOf());
+		Renderer::context->PSSetConstantBuffers(3, 1, lightBuffer.GetAddressOf());
 	}
 
 	void render()
 	{
-		Graphics::setBlendState(nullptr);
+		Renderer::setBlendState(nullptr);
 
 		albedo->clearRTV(DirectX::Colors::Black);
 		albedo->setRTV();
 
-		Graphics::context->PSSetSamplers(0, 1, wrapSampler.GetAddressOf());
-		Graphics::context->PSSetSamplers(1, 1, StateCommon::defSamplerState.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, wrapSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(1, 1, StateCommon::defSamplerState.GetAddressOf());
 
 		skybox->setSRV(0);
 
 		TextureCube::shader->use();
 		skyboxPShader->use();
 
-		Graphics::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Graphics::context->Draw(36, 0);
+		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::context->Draw(36, 0);
 
 		positionDepth->clearRTV(DirectX::Colors::Black);
 		normalSpecular->clearRTV(DirectX::Colors::Black);
@@ -361,7 +359,7 @@ public:
 		depthStencilView->clear(D3D11_CLEAR_DEPTH);
 		RenderTexture::setRTVs({ positionDepth,normalSpecular,albedo }, depthStencilView->get());
 
-		Graphics::context->IASetInputLayout(inputLayout.Get());
+		Renderer::context->IASetInputLayout(inputLayout.Get());
 
 		deferredVShader->use();
 		deferredPShader->use();
@@ -375,12 +373,12 @@ public:
 		normalSpecular->getTexture()->setSRV(1);
 		randomNormal->setSRV(2);
 
-		Graphics::context->PSSetConstantBuffers(0, 1, ssaoBuffer.GetAddressOf());
+		Renderer::context->PSSetConstantBuffers(0, 1, ssaoBuffer.GetAddressOf());
 
 		Shader::displayVShader->use();
 		ssaoShader->use();
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
 		ssaoBlured->clearRTV(DirectX::Colors::Black);
 		ssaoBlured->setRTV();
@@ -390,9 +388,9 @@ public:
 		Shader::displayVShader->use();
 		ssaoBlur->use();
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
-		Graphics::setDefRTV();
+		Renderer::setDefRTV();
 
 		positionDepth->getTexture()->setSRV(0);
 		normalSpecular->getTexture()->setSRV(1);
@@ -402,11 +400,11 @@ public:
 		Shader::displayVShader->use();
 		deferredFinal->use();
 
-		Graphics::context->Draw(3, 0);
+		Renderer::context->Draw(3, 0);
 
 		ID3D11ShaderResourceView* nullView[4] = { nullptr,nullptr,nullptr,nullptr };
 
-		Graphics::context->PSSetShaderResources(0, 4, nullView);
+		Renderer::context->PSSetShaderResources(0, 4, nullView);
 	}
 
 

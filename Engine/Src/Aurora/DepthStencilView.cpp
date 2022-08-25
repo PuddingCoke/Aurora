@@ -1,13 +1,13 @@
 ﻿#include<Aurora/DepthStencilView.h>
 
-DepthStencilView* DepthStencilView::create(const DXGI_FORMAT& format, const bool& enableMSAA)
+DepthStencilView* DepthStencilView::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA)
 {
-	return new DepthStencilView(format, enableMSAA);
+	return new DepthStencilView(width, height, format, enableMSAA);
 }
 
 void DepthStencilView::clear(const UINT& clearFlag, const float& depth, const UINT8& stencil) const
 {
-	Graphics::context->ClearDepthStencilView(depthStencilView.Get(), clearFlag, depth, stencil);
+	Renderer::context->ClearDepthStencilView(depthStencilView.Get(), clearFlag, depth, stencil);
 }
 
 ID3D11DepthStencilView* DepthStencilView::get() const
@@ -19,11 +19,11 @@ DepthStencilView::~DepthStencilView()
 {
 }
 
-DepthStencilView::DepthStencilView(const DXGI_FORMAT& format, const bool& enableMSAA)
+DepthStencilView::DepthStencilView(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
-	tDesc.Width = Graphics::getWidth();
-	tDesc.Height = Graphics::getHeight();
+	tDesc.Width = width;
+	tDesc.Height = height;
 	tDesc.MipLevels = 1;
 	tDesc.ArraySize = 1;
 	tDesc.Format = format;
@@ -41,7 +41,7 @@ DepthStencilView::DepthStencilView(const DXGI_FORMAT& format, const bool& enable
 	tDesc.CPUAccessFlags = 0;
 	tDesc.MiscFlags = 0;
 
-	Graphics::device->CreateTexture2D(&tDesc, nullptr, depthStencilTexture.ReleaseAndGetAddressOf());
+	Renderer::device->CreateTexture2D(&tDesc, nullptr, depthStencilTexture.ReleaseAndGetAddressOf());
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Format = tDesc.Format;
@@ -57,5 +57,5 @@ DepthStencilView::DepthStencilView(const DXGI_FORMAT& format, const bool& enable
 
 	dsvDesc.Texture2D.MipSlice = 0;
 
-	Graphics::device->CreateDepthStencilView(depthStencilTexture.Get(), &dsvDesc, depthStencilView.ReleaseAndGetAddressOf());
+	Renderer::device->CreateDepthStencilView(depthStencilTexture.Get(), &dsvDesc, depthStencilView.ReleaseAndGetAddressOf());
 }

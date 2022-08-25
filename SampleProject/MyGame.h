@@ -31,8 +31,8 @@ public:
 
 	void render()
 	{
-		Graphics::clearDefRTV(DirectX::Colors::CadetBlue);
-		Graphics::setDefRTV();
+		Renderer::clearDefRTV(DirectX::Colors::CadetBlue);
+		Renderer::setDefRTV();
 
 		batch->begin();
 		batch->draw(texture, 0, 0);

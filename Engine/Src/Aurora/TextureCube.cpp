@@ -9,7 +9,7 @@ TextureCube* TextureCube::create(std::initializer_list<std::string> texturesPath
 
 void TextureCube::setSRV(const UINT& slot)
 {
-	Graphics::context->PSSetShaderResources(slot, 1, cubeSRV.GetAddressOf());
+	Renderer::context->PSSetShaderResources(slot, 1, cubeSRV.GetAddressOf());
 }
 
 TextureCube::~TextureCube()
@@ -129,16 +129,16 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 		tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 		tDesc.ArraySize = 6;
 		tDesc.MipLevels = 1;
-		Graphics::device->CreateTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
+		Renderer::device->CreateTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
 	}
 
 	for (unsigned int i = 0; i < 6; i++)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedData;
-		Graphics::context->Map(textures[i]->getTexture2D(), 0, D3D11_MAP_READ, 0, &mappedData);
-		Graphics::context->UpdateSubresource(cubeTexture.Get(), D3D11CalcSubresource(0, i, 1), 0,
+		Renderer::context->Map(textures[i]->getTexture2D(), 0, D3D11_MAP_READ, 0, &mappedData);
+		Renderer::context->UpdateSubresource(cubeTexture.Get(), D3D11CalcSubresource(0, i, 1), 0,
 			mappedData.pData, mappedData.RowPitch, mappedData.DepthPitch);
-		Graphics::context->Unmap(textures[i]->getTexture2D(), 0);
+		Renderer::context->Unmap(textures[i]->getTexture2D(), 0);
 	}
 
 	{
@@ -148,7 +148,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 		srvDesc.TextureCube.MipLevels = -1;
 		srvDesc.TextureCube.MostDetailedMip = 0;
 
-		Graphics::device->CreateShaderResourceView(cubeTexture.Get(), &srvDesc, cubeSRV.GetAddressOf());
+		Renderer::device->CreateShaderResourceView(cubeTexture.Get(), &srvDesc, cubeSRV.GetAddressOf());
 	}
 
 	for (unsigned int i = 0; i < 6; i++)
