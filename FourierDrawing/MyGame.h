@@ -11,6 +11,7 @@
 #include<Aurora/Event.h>
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
+#include<Aurora/Color.h>
 
 #include"Epicycle.hpp"
 #include"json.hpp"
@@ -23,7 +24,7 @@ public:
 
 	const double tPi = 6.28318530717958647692;
 
-	const double startX = 100;
+	const double startX = 0;
 
 	const double startY = 0;
 
@@ -53,6 +54,8 @@ public:
 
 	RenderTexture* renderTexture;
 
+	const Color color{ 1.f,0.f,0.f };
+
 	bool connected;
 
 	MyGame():
@@ -62,7 +65,7 @@ public:
 		curFrame(0),
 		connected(false)
 	{
-		const std::string filePath = "maomao.json";
+		const std::string filePath = "dft_data2.json";
 		std::ifstream ifs(filePath);
 		json dftData = json::parse(ifs);
 		ifs.close();
@@ -165,12 +168,12 @@ public:
 		{
 			if (connected)
 			{
-				pBatch->drawRoundCapLine(lastX, lastY, x, y, 4.f, 0, 0, 0);
+				pBatch->drawRoundCapLine(lastX, lastY, x, y, 4.f, color.r, color.g, color.b);
 			}
 		}
 		else
 		{
-			pBatch->drawRoundCapLine(lastX, lastY, x, y, 4.f, 0, 0, 0);
+			pBatch->drawRoundCapLine(lastX, lastY, x, y, 4.f, color.r, color.g, color.b);
 		}
 		
 		lastX = x;
@@ -196,12 +199,12 @@ public:
 			{
 				if (connected)
 				{
-					pBatch->drawRoundCapLine(lastX, lastY, x, y, 4.f, 0, 0, 0);
+					pBatch->drawRoundCapLine(lastX, lastY, x, y, 4.f, color.r, color.g, color.b);
 				}
 			}
 			else
 			{
-				pBatch->drawRoundCapLine(lastX, lastY, x, y, 4.f, 0, 0, 0);
+				pBatch->drawRoundCapLine(lastX, lastY, x, y, 4.f, color.r, color.g, color.b);
 			}
 
 			lastX = x;
