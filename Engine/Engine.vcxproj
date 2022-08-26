@@ -150,6 +150,7 @@
     <ClInclude Include="Inc\Aurora\Keyboard.h" />
     <ClInclude Include="Inc\Aurora\Math.h" />
     <ClInclude Include="Inc\Aurora\Mouse.h" />
+    <ClInclude Include="Inc\Aurora\PBR\RealShading.h" />
     <ClInclude Include="Inc\Aurora\TextureCube.h" />
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h" />
     <ClInclude Include="Inc\Aurora\ParticleSystem.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Inc\Aurora\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Aurora\PBR\RealShading.cpp" />
     <ClCompile Include="Src\Aurora\Renderer.cpp" />
     <ClCompile Include="Src\Aurora\TextureCube.cpp" />
     <ClCompile Include="Src\Aurora\A3D\Model.cpp" />

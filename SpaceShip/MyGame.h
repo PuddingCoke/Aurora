@@ -2,6 +2,7 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/TextureCube.h>
+#include<Aurora/PBR/RealShading.h>
 
 class MyGame :public Game
 {
@@ -14,7 +15,16 @@ public:
 	const float moveSpeed = 100.f;
 	const float rotationSpeed = 5.f;
 
-	MyGame()
+	TextureCube* spaceTexture;
+	
+	Texture2D* brdfTexture;
+
+	Shader* skyboxPShader;
+
+	MyGame() :
+		spaceTexture(TextureCube::createEquirectangularMap("D:/SpaceShipAssets/space.hdr", 2048, up)),
+		brdfTexture(RealShading::getSmithBRDF()),
+		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel))
 	{
 		Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f));
 		Camera::setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&eye), DirectX::XMLoadFloat3(&lookDir), DirectX::XMLoadFloat3(&up)));
@@ -39,6 +49,9 @@ public:
 
 	~MyGame()
 	{
+		delete spaceTexture;
+		delete brdfTexture;
+		delete skyboxPShader;
 	}
 
 	void update(const float& dt) override
@@ -100,6 +113,24 @@ public:
 	{
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 		Renderer::setDefRTV();
+
+		Renderer::setBlendState(StateCommon::defBlendState.Get());
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setSampler(0, StateCommon::defSamplerState.Get());
+
+		Shader::displayVShader->use();
+		Shader::displayPShader->use();
+
+		brdfTexture->setSRV();
+
+		Renderer::context->Draw(3, 0);
+
+		/*TextureCube::shader->use();
+		skyboxPShader->use();
+
+		spaceTexture->setSRV(0);
+
+		Renderer::context->Draw(36, 0);*/
 	}
 
 

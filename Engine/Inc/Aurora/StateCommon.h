@@ -6,7 +6,6 @@
 #include<iostream>
 
 #include"Renderer.h"
-#include"Graphics.h"
 
 class StateCommon
 {
