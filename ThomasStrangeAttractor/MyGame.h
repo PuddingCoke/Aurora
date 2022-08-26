@@ -83,7 +83,7 @@ public:
 		Renderer::setDefRTV();
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 
-		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 		texture->setSRV(0);

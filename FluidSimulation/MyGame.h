@@ -238,7 +238,7 @@ public:
 
 		Renderer::context->PSSetConstantBuffers(1, 2, buffers);
 
-		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Mouse::addLeftDownEvent([this]()
 			{

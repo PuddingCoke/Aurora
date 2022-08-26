@@ -119,7 +119,7 @@ public:
 
 		renderTexture->resolve();
 
-		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
 		doubleRTV->write()->setRTV();

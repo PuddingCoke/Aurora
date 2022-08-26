@@ -8,8 +8,7 @@
 #include<chrono>
 
 #include<NvEnc/nvEncodeAPI.h>
-
-#include<Aurora/Graphics.h>
+#include<Aurora/Renderer.h>
 
 class NvidiaEncoder
 {
@@ -21,11 +20,15 @@ public:
 
 	bool encode(ID3D11Texture2D* const encodeTexture);
 
-	NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate,bool& initializeStatus);
+	NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate, bool& initializeStatus);
 
 	~NvidiaEncoder();
 
 private:
+
+	const UINT width;
+
+	const UINT height;
 
 	UINT frameEncoded;
 

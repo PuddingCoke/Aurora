@@ -69,8 +69,6 @@ public:
 
 	ComPtr<ID3D11ShaderResourceView> prefilterSRV;
 
-	Shader* bgVShader;
-
 	Shader* bgPShader;
 
 	Shader* irradiancePShader;
@@ -88,7 +86,6 @@ public:
 		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
 		envTexture(Texture2D::create("Tufts-Parking-Lot_Ref.hdr")),
 		cubePShader(Shader::fromFile("cubePShader.hlsl", ShaderType::Pixel)),
-		bgVShader(Shader::fromFile("BackgroundVShader.hlsl", ShaderType::Vertex)),
 		bgPShader(Shader::fromFile("BackgroundPShader.hlsl", ShaderType::Pixel)),
 		irradiancePShader(Shader::fromFile("IrradiancePShader.hlsl", ShaderType::Pixel)),
 		brdfPShader(Shader::fromFile("BRDFPShader.hlsl", ShaderType::Pixel)),
@@ -210,7 +207,7 @@ public:
 
 				RenderTexture* renderTexture = RenderTexture::create(boxSize, boxSize, tDesc.Format, DirectX::Colors::Black, false);
 
-				Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 				Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 				envTexture->setSRV(0);
@@ -399,7 +396,6 @@ public:
 		delete envTexture;
 		delete cubePShader;
 		delete bgPShader;
-		delete bgVShader;
 		delete irradiancePShader;
 		for (int i = 0; i < 5; i++)
 		{
@@ -450,7 +446,7 @@ public:
 
 		Renderer::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
 
-		bgVShader->use();
+		TextureCube::shader->use();
 		bgPShader->use();
 
 		Renderer::context->Draw(36, 0);
@@ -464,7 +460,7 @@ public:
 
 		Renderer::context->IASetInputLayout(inputLayout.Get());
 
-		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 

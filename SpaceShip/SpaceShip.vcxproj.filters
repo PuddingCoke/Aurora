@@ -15,26 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="MyGame.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ModelVShader.hlsl" />
-    <FxCompile Include="ModelPShader.hlsl" />
-    <FxCompile Include="cubePShader.hlsl" />
-    <FxCompile Include="BackgroundPShader.hlsl" />
-    <FxCompile Include="IrradiancePShader.hlsl" />
-    <FxCompile Include="PrefilterPShader0.hlsl" />
-    <FxCompile Include="BRDFPShader.hlsl" />
-    <FxCompile Include="PrefilterPShader1.hlsl" />
-    <FxCompile Include="PrefilterPShader2.hlsl" />
-    <FxCompile Include="PrefilterPShader3.hlsl" />
-    <FxCompile Include="PrefilterPShader4.hlsl" />
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="SkyboxPShader.hlsl" />
   </ItemGroup>
 </Project>

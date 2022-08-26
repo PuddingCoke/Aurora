@@ -14,25 +14,30 @@ void Renderer::setViewport(const float& vWidth, const float& vHeight)
 {
 	vp.Width = vWidth;
 	vp.Height = vHeight;
-	Renderer::context->RSSetViewports(1, &vp);
+	context->RSSetViewports(1, &vp);
 }
 
-void Renderer::setPrimitiveTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology)
+void Renderer::setTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology)
 {
-	Renderer::context->IASetPrimitiveTopology(topology);
+	context->IASetPrimitiveTopology(topology);
 }
 
 void Renderer::setBlendState(ID3D11BlendState* const blendState)
 {
-	Renderer::context->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
+	context->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
+}
+
+void Renderer::setSampler(const unsigned int& slot, ID3D11SamplerState* const state)
+{
+	context->PSSetSamplers(slot, 1, &state);
 }
 
 void Renderer::setDefRTV(ID3D11DepthStencilView* const view)
 {
-	Renderer::context->OMSetRenderTargets(1, defaultTargetView.GetAddressOf(), view);
+	context->OMSetRenderTargets(1, defaultTargetView.GetAddressOf(), view);
 }
 
-void Renderer::clearDefRTV(const float color[4])
+void Renderer::clearDefRTV(const float* color)
 {
-	Renderer::context->ClearRenderTargetView(defaultTargetView.Get(), color);
+	context->ClearRenderTargetView(defaultTargetView.Get(), color);
 }

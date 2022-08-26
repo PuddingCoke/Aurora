@@ -14,9 +14,9 @@ bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
 
 	registerResource.resourceToRegister = encodeTexture;
 
-	registerResource.width = (UINT)Graphics::width;
+	registerResource.width = width;
 
-	registerResource.height = (UINT)Graphics::height;
+	registerResource.height = height;
 
 	registerResource.pitch = 0;
 
@@ -56,9 +56,9 @@ bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
 
 		picParams.bufferFmt = pixelFormat;
 
-		picParams.inputWidth = (UINT)Graphics::width;
+		picParams.inputWidth = width;
 
-		picParams.inputHeight = (UINT)Graphics::height;
+		picParams.inputHeight = height;
 
 		picParams.outputBitstream = bitstream.bitstreamBuffer;
 
@@ -92,8 +92,8 @@ bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
 	return encoding;
 }
 
-NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate, bool& initializeStatus) :
-	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0)
+NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate, bool& initializeStatus) :
+	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0), width(width), height(height)
 {
 	nvencAPI = { NV_ENCODE_API_FUNCTION_LIST_VER };
 
@@ -147,12 +147,12 @@ NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate, b
 	encoderParams.encodeGUID = codec;
 	encoderParams.presetGUID = preset;
 	encoderParams.tuningInfo = tuningInfo;
-	encoderParams.encodeWidth = (UINT)Graphics::width;
-	encoderParams.encodeHeight = (UINT)Graphics::height;
-	encoderParams.darWidth = (UINT)Graphics::width;
-	encoderParams.darHeight = (UINT)Graphics::height;
-	encoderParams.maxEncodeWidth = (UINT)Graphics::width;
-	encoderParams.maxEncodeHeight = (UINT)Graphics::height;
+	encoderParams.encodeWidth = width;
+	encoderParams.encodeHeight = height;
+	encoderParams.darWidth = width;
+	encoderParams.darHeight = height;
+	encoderParams.maxEncodeWidth = width;
+	encoderParams.maxEncodeHeight = height;
 	encoderParams.frameRateNum = frameRate;
 	encoderParams.frameRateDen = 1;
 	encoderParams.enablePTD = 1;
@@ -164,7 +164,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& frameToEncode, const UINT& frameRate, b
 
 	std::cout << "[class NvidiaEncoder] create bitstream status " << nvencAPI.nvEncCreateBitstreamBuffer(encoder, &bitstream) << "\n";
 
-	std::cout << "[class NvidiaEncoder] render at " << Graphics::getWidth() << " x " << Graphics::getHeight() << "\n";
+	std::cout << "[class NvidiaEncoder] render at " << width << " x " << height << "\n";
 	std::cout << "[class NvidiaEncoder] frameRate " << frameRate << "\n";
 	std::cout << "[class NvidiaEncoder] frameToEncode " << frameToEncode << "\n";
 	std::cout << "[class NvidiaEncoder] start encoding\n";

@@ -7,7 +7,7 @@ RenderTexture::~RenderTexture()
 	delete texture;
 }
 
-RenderTexture* RenderTexture::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4],const bool& enableMSAA)
+RenderTexture* RenderTexture::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4], const bool& enableMSAA)
 {
 	return new RenderTexture(width, height, format, color, enableMSAA);
 }
@@ -77,8 +77,8 @@ void RenderTexture::unbindAll()
 	Renderer::context->OMSetRenderTargets(8, renderTargetViews, nullptr);
 }
 
-RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4],const bool& enableMSAA) :
-	width(width), height(height), format(format), texture(Texture2D::create(width, height, format, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE))
+RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4], const bool& enableMSAA) :
+	width(width), height(height), format(format), texture(Texture2D::create(width, height, format, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0))
 {
 	//创建普通材质的RenderTargetView
 	{
@@ -90,7 +90,7 @@ RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& heig
 		Renderer::device->CreateRenderTargetView(texture->getTexture2D(), &viewDesc, normalTarget.ReleaseAndGetAddressOf());
 	}
 
-	if(enableMSAA)//创建抗锯齿材质以及RenderTargetView
+	if (enableMSAA)//创建抗锯齿材质以及RenderTargetView
 	{
 		D3D11_TEXTURE2D_DESC tDesc = {};
 		tDesc.Width = width;

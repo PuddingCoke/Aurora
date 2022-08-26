@@ -116,7 +116,7 @@ public:
 		accTexture->write()->clearRTV(DirectX::Colors::Black);
 
 		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
-		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		Renderer::context->PSSetSamplers(0, 1, samplerState.GetAddressOf());
 
 		Shader::displayVShader->use();

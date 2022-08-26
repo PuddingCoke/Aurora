@@ -27,9 +27,9 @@ public:
 
 	static Texture2D* create(const std::string& path);
 
-	static Texture2D* create(const std::string& path, const D3D11_USAGE& usage, const D3D11_BIND_FLAG& bindFlag, const D3D11_CPU_ACCESS_FLAG& cpuAccessFlag);
+	static Texture2D* create(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag);
 	
-	static Texture2D* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
+	static Texture2D* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag);
 
 	//生成一个噪音贴图 每个通道属于[0,1]
 	static Texture2D* createNoise(const unsigned int& width, const unsigned int& height, const bool& allowNegative);
@@ -55,9 +55,9 @@ private:
 
 	friend class SpriteBatch;
 
-	Texture2D(const std::string& path, const D3D11_USAGE& usage, const D3D11_BIND_FLAG& bindFlag, const D3D11_CPU_ACCESS_FLAG& cpuAccessFlag);
+	Texture2D(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag);
 
-	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags);
+	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag);
 
 	Texture2D(const unsigned int& width, const unsigned int& height, const bool& allowNegative);
 

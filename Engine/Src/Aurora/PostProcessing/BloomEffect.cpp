@@ -109,7 +109,7 @@ BloomEffect::~BloomEffect()
 Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 {
 	Renderer::setBlendState(StateCommon::addtiveBlend.Get());
-	Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
 	Shader::displayVShader->use();
 

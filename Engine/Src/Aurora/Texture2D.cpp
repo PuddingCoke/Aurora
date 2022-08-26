@@ -2,17 +2,17 @@
 
 Texture2D* Texture2D::create(const std::string& path)
 {
-	return new Texture2D(path, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, (D3D11_CPU_ACCESS_FLAG)0);
+	return new Texture2D(path, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0);
 }
 
-Texture2D* Texture2D::create(const std::string& path, const D3D11_USAGE& usage, const D3D11_BIND_FLAG& bindFlag, const D3D11_CPU_ACCESS_FLAG& cpuAccessFlag)
+Texture2D* Texture2D::create(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag)
 {
 	return new Texture2D(path, usage, bindFlag, cpuAccessFlag);
 }
 
-Texture2D* Texture2D::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags)
+Texture2D* Texture2D::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag)
 {
-	return new Texture2D(width, height, format, bindFlags);
+	return new Texture2D(width, height, format, usage, bindFlags, cpuAccessFlag);
 }
 
 Texture2D* Texture2D::createNoise(const unsigned int& width, const unsigned int& height, const bool& allowNegative)
@@ -59,7 +59,7 @@ ID3D11Texture2D* Texture2D::getTexture2D() const
 	return texture2D.Get();
 }
 
-Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const D3D11_BIND_FLAG& bindFlag, const D3D11_CPU_ACCESS_FLAG& cpuAccessFlag) :
+Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag) :
 	poolIndex(-1)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
@@ -171,7 +171,7 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const D3
 	std::cout << "[class Texture2D] " << path << " create successfully!\n";
 }
 
-Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const UINT& bindFlags) :
+Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag) :
 	poolIndex(-1), width(width), height(height), format(format)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
@@ -182,9 +182,9 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 	tDesc.Format = format;
 	tDesc.SampleDesc.Count = 1;
 	tDesc.SampleDesc.Quality = 0;
-	tDesc.Usage = D3D11_USAGE_DEFAULT;
+	tDesc.Usage = usage;
 	tDesc.BindFlags = bindFlags;
-	tDesc.CPUAccessFlags = 0;
+	tDesc.CPUAccessFlags = cpuAccessFlag;
 	tDesc.MiscFlags = 0;
 
 	Renderer::device->CreateTexture2D(&tDesc, nullptr, texture2D.ReleaseAndGetAddressOf());

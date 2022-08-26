@@ -83,7 +83,7 @@ public:
 
 	void draw()
 	{
-		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Renderer::context->IASetVertexBuffers(0, 1, modelBuffer.GetAddressOf(), &stride, &offset);
 

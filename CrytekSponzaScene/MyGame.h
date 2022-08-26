@@ -57,8 +57,6 @@ public:
 	//focusPoint=eye+lookDir
 	DirectX::XMFLOAT3 lookDir = { 1.0f,0.0f,0.0f };
 
-	float roll = 0.f;
-
 	static constexpr float moveSpeed = 100.f;
 
 	static constexpr float rotationSpeed = 5.f;
@@ -294,8 +292,6 @@ public:
 
 		if (Keyboard::getKeyDown(Keyboard::Q))
 		{
-			roll += dt * rotationSpeed;
-
 			const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&lookDir), dt * rotationSpeed);
 
 			DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), rotMat));
@@ -304,8 +300,6 @@ public:
 
 		if (Keyboard::getKeyDown(Keyboard::E))
 		{
-			roll -= dt * rotationSpeed;
-
 			const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&lookDir), -dt * rotationSpeed);
 
 			DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), rotMat));
@@ -350,7 +344,7 @@ public:
 		TextureCube::shader->use();
 		skyboxPShader->use();
 
-		Renderer::setPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		Renderer::context->Draw(36, 0);
 
 		positionDepth->clearRTV(DirectX::Colors::Black);
