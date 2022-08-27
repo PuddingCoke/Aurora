@@ -5,7 +5,7 @@ FPSCamera::FPSCamera(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& look
 {
 }
 
-void FPSCamera::allpyInput(const float& dt)
+void FPSCamera::applyInput(const float& dt)
 {
 	if (Keyboard::getKeyDown(Keyboard::W))
 	{

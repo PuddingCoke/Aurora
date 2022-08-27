@@ -19,7 +19,7 @@ public:
 
 	FPSCamera(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& lookDir, const DirectX::XMFLOAT3& up, const float& moveSpeed, const float& rotationSpeed);
 
-	void allpyInput(const float& dt);
+	void applyInput(const float& dt);
 
 	void registerEvent();
 

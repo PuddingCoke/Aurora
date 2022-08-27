@@ -5,6 +5,7 @@
 #include<Aurora/RenderTexture.h>
 #include<Aurora/DepthStencilView.h>
 #include<Aurora/TextureCube.h>
+#include<Aurora/A3D/FPSCamera.h>
 
 #include"Scene.h"
 
@@ -50,16 +51,7 @@ public:
 
 	ComPtr<ID3D11Buffer> ssaoBuffer;
 
-	DirectX::XMFLOAT3 eye = { 0.0f,20.f,0.f };
-
-	DirectX::XMFLOAT3 up = { 0.f,1.f,0.f };
-
-	//focusPoint=eye+lookDir
-	DirectX::XMFLOAT3 lookDir = { 1.0f,0.0f,0.0f };
-
-	static constexpr float moveSpeed = 100.f;
-
-	static constexpr float rotationSpeed = 5.f;
+	FPSCamera camera;
 
 	struct LightInfo
 	{
@@ -83,6 +75,7 @@ public:
 	} ssaoParams;
 
 	MyGame() :
+		camera({ 0.0f,20.f,0.f }, { 1.0f,0.0f,0.0f }, { 0.f,1.f,0.f }, 100.f, 5.f),
 		deferredVShader(Shader::fromFile("DeferredVShader.hlsl", ShaderType::Vertex)),
 		deferredPShader(Shader::fromFile("DeferredPShader.hlsl", ShaderType::Pixel)),
 		deferredFinal(Shader::fromFile("DeferredFinal.hlsl", ShaderType::Pixel)),
@@ -216,22 +209,7 @@ public:
 			Renderer::device->CreateBuffer(&bd, &subresource, ssaoBuffer.ReleaseAndGetAddressOf());
 		}
 
-		Mouse::addMoveEvent([this]()
-			{
-				if (Mouse::getLeftDown())
-				{
-					const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&up), Mouse::getDX() / 120.f);
-
-					DirectX::XMStoreFloat3(&lookDir, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&lookDir), rotMat));
-
-					const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&up), DirectX::XMLoadFloat3(&lookDir));
-
-					const DirectX::XMMATRIX upRotMat = DirectX::XMMatrixRotationAxis(upCrossLookDir, -Mouse::getDY() / 120.f);
-
-					DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), upRotMat));
-					DirectX::XMStoreFloat3(&lookDir, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&lookDir), upRotMat));
-				}
-			});
+		camera.registerEvent();
 
 		Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f));
 	}
@@ -257,64 +235,14 @@ public:
 
 	void update(const float& dt) override
 	{
-		if (Keyboard::getKeyDown(Keyboard::W))
-		{
-			eye.x += moveSpeed * lookDir.x * dt;
-			eye.y += moveSpeed * lookDir.y * dt;
-			eye.z += moveSpeed * lookDir.z * dt;
-		}
-		else if (Keyboard::getKeyDown(Keyboard::S))
-		{
-			eye.x -= moveSpeed * lookDir.x * dt;
-			eye.y -= moveSpeed * lookDir.y * dt;
-			eye.z -= moveSpeed * lookDir.z * dt;
-		}
-
-		if (Keyboard::getKeyDown(Keyboard::A))
-		{
-			DirectX::XMFLOAT3 upCrossLookDir;
-			DirectX::XMStoreFloat3(&upCrossLookDir, DirectX::XMVector3Normalize(DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&up), DirectX::XMLoadFloat3(&lookDir))));
-
-			eye.x -= upCrossLookDir.x * moveSpeed * dt;
-			eye.y -= upCrossLookDir.y * moveSpeed * dt;
-			eye.z -= upCrossLookDir.z * moveSpeed * dt;
-
-		}
-		if (Keyboard::getKeyDown(Keyboard::D))
-		{
-			DirectX::XMFLOAT3 upCrossLookDir;
-			DirectX::XMStoreFloat3(&upCrossLookDir, DirectX::XMVector3Normalize(DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&up), DirectX::XMLoadFloat3(&lookDir))));
-
-			eye.x += upCrossLookDir.x * moveSpeed * dt;
-			eye.y += upCrossLookDir.y * moveSpeed * dt;
-			eye.z += upCrossLookDir.z * moveSpeed * dt;
-		}
-
-		if (Keyboard::getKeyDown(Keyboard::Q))
-		{
-			const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&lookDir), dt * rotationSpeed);
-
-			DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), rotMat));
-
-		}
-
-		if (Keyboard::getKeyDown(Keyboard::E))
-		{
-			const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&lookDir), -dt * rotationSpeed);
-
-			DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), rotMat));
-		}
-
-		lightInfo.lights[0].position = DirectX::XMFLOAT4(-sinf(360.0f * Graphics::getSTime() / 2.f * Math::degToRad) * 120.0f, 3.5f, cosf(360.0f * Graphics::getSTime() * 8.0f * Math::degToRad / 2.f) * 10.0f, 1.f);
+		camera.applyInput(dt);
 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
 		Renderer::context->Map(ssaoBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 		memcpy(mappedData.pData, &ssaoParams, sizeof(SSAOParams));
 		Renderer::context->Unmap(ssaoBuffer.Get(), 0);
 
-		const DirectX::XMFLOAT3 focusPoint = DirectX::XMFLOAT3(eye.x + lookDir.x, eye.y + lookDir.y, eye.z + lookDir.z);
-
-		Camera::setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&eye), DirectX::XMLoadFloat3(&focusPoint), DirectX::XMLoadFloat3(&up)));
+		lightInfo.lights[0].position = DirectX::XMFLOAT4(-sinf(360.0f * Graphics::getSTime() / 2.f * Math::degToRad) * 120.0f, 3.5f, cosf(360.0f * Graphics::getSTime() * 8.0f * Math::degToRad / 2.f) * 10.0f, 1.f);
 
 		for (unsigned int i = 0; i < 17; i++)
 		{

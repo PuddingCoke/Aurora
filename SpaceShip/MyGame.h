@@ -37,7 +37,7 @@ public:
 
 	void update(const float& dt) override
 	{
-		camera.allpyInput(dt);
+		camera.applyInput(dt);
 	}
 
 	void render()
