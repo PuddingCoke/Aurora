@@ -16,7 +16,7 @@ void Shader::use() const
 Shader* Shader::fromFile(const std::string& filePath, const ShaderType& type)
 {
 	std::cout << "[class Shader] " << filePath << " ";
-	std::string source = Utils::File::readAllText(filePath);
+	const std::string source = Utils::File::readAllText(filePath);
 	return new Shader(source, type);
 }
 

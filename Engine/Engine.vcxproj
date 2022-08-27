@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Inc\Aurora\A3D\OrbitCamera.h" />
     <ClInclude Include="Inc\Aurora\Aurora.h" />
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
     <ClInclude Include="Inc\Aurora\Camera.h" />
@@ -144,6 +145,7 @@
     <ClInclude Include="Inc\Aurora\DepthStencilView.h" />
     <ClInclude Include="Inc\Aurora\DoubleRTV.h" />
     <ClInclude Include="Inc\Aurora\Event.h" />
+    <ClInclude Include="Inc\Aurora\A3D\FPSCamera.h" />
     <ClInclude Include="Inc\Aurora\Game.h" />
     <ClInclude Include="Inc\Aurora\Graphics.h" />
     <ClInclude Include="Inc\Aurora\Keyboard.h" />
@@ -169,6 +171,8 @@
     <ClInclude Include="Inc\Aurora\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Aurora\A3D\FPSCamera.cpp" />
+    <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp" />
     <ClCompile Include="Src\Aurora\PBR\RealShading.cpp" />
     <ClCompile Include="Src\Aurora\Renderer.cpp" />
     <ClCompile Include="Src\Aurora\TextureCube.cpp" />

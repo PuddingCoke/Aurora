@@ -1,11 +1,5 @@
 #include<Aurora/Camera.h>
 
-DirectX::XMFLOAT3 Camera::eye = { 0.f,0.f,0.f };
-
-DirectX::XMFLOAT3 Camera::lookDir = { 1.f,0.f,0.f };
-
-DirectX::XMFLOAT3 Camera::up = { 0.f,1.f,0.f };
-
 ComPtr<ID3D11Buffer> Camera::projBuffer;
 
 ComPtr<ID3D11Buffer> Camera::viewBuffer;
@@ -23,6 +17,11 @@ void Camera::setProj(const DirectX::XMMATRIX& proj)
 	Renderer::context->Unmap(projBuffer.Get(), 0);
 }
 
+void Camera::setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar)
+{
+	return setProj(DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, zNear, zFar));
+}
+
 void Camera::setView(const DirectX::XMMATRIX& view)
 {
 	viewMatrix = view;
@@ -32,6 +31,11 @@ void Camera::setView(const DirectX::XMMATRIX& view)
 	Renderer::context->Map(viewBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	memcpy(mappedData.pData, &viewMatrices, sizeof(ViewMatrices));
 	Renderer::context->Unmap(viewBuffer.Get(), 0);
+}
+
+void Camera::setView(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up)
+{
+	return setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&eye), DirectX::XMLoadFloat3(&focus), DirectX::XMLoadFloat3(&up)));
 }
 
 DirectX::XMFLOAT3 Camera::toViewSpace(const DirectX::XMFLOAT3& pos)

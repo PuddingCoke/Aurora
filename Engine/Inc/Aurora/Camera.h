@@ -15,7 +15,11 @@ public:
 
 	static void setProj(const DirectX::XMMATRIX& proj);
 
+	static void setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar);
+
 	static void setView(const DirectX::XMMATRIX& view);
+
+	static void setView(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up);
 
 	static DirectX::XMFLOAT3 toViewSpace(const DirectX::XMFLOAT3& pos);
 
@@ -25,12 +29,6 @@ private:
 	friend class Aurora;
 
 	static void initialize();
-
-	static DirectX::XMFLOAT3 eye;
-
-	static DirectX::XMFLOAT3 lookDir;
-
-	static DirectX::XMFLOAT3 up;
 
 	static ComPtr<ID3D11Buffer> projBuffer;
 

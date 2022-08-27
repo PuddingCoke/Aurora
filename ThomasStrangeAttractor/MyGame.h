@@ -3,13 +3,12 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/Mouse.h>
-#include<Aurora/A2D/SpriteBatch.h>
-#include<Aurora/A2D/PrimitiveBatch.h>
 #include<Aurora/Event.h>
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
 #include<Aurora/DepthStencilView.h>
+#include<Aurora/A3D/OrbitCamera.h>
 
 #include"StrangeAttractor.h"
 
@@ -25,25 +24,22 @@ public:
 
 	const float radius = 15.f;
 
-	static constexpr DirectX::XMVECTORF32 up = { -1.f, -1.f, -1.f , 0.f };
-
-	static constexpr DirectX::XMVECTORF32 focusPoint = { 0.f,0.f,0.f,1.f };
-
-	static constexpr DirectX::XMVECTORF32 point = { 4.f,-4.f,-11.f,1.f };
-
 	DepthStencilView* depthStencilView;
 
 	RenderTexture* renderTexture;
 
 	BloomEffect bloomEffect;
 
+	OrbitCamera camera;
+
 	MyGame() :
 		attractor(1000000),
 		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, false))
+		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, false)),
+		camera({ 4,4,-11 }, {-1,-1,-1})
 	{
-
+		camera.registerEvent();
 	}
 
 	~MyGame()
@@ -54,12 +50,6 @@ public:
 
 	void update(const float& dt) override
 	{
-		theta += dt;
-
-		const DirectX::XMVECTOR rotPoint = DirectX::XMVector4Transform(point, DirectX::XMMatrixRotationAxis(up, theta));
-
-		Camera::setView(DirectX::XMMatrixLookAtLH(rotPoint, focusPoint, up));
-
 		attractor.update(dt);
 	}
 

@@ -8,6 +8,7 @@
 #include<Aurora/RenderTexture.h>
 #include<Aurora/Color.h>
 #include<Aurora/DoubleRTV.h>
+#include<Aurora/Timer.h>
 
 #include"Config.h"
 
@@ -83,9 +84,10 @@ public:
 	Shader* velocityVertex;
 	Shader* displayVertex;
 
-	float colorUpdateTimer = 0.0f;
+	Timer colorUpdateTimer;
 
-	MyGame()
+	MyGame():
+		colorUpdateTimer(1.f)
 	{
 		advVelShader = Shader::fromFile("Shaders\\AdvectionVelDissipation.hlsl", ShaderType::Pixel);
 		advDenShader = Shader::fromFile("Shaders\\AdvectionDenDissipation.hlsl", ShaderType::Pixel);
@@ -101,7 +103,6 @@ public:
 		sunrayMaskShader = Shader::fromFile("Shaders\\SunraysMaskShader.hlsl", ShaderType::Pixel);
 		sunraysShader = Shader::fromFile("Shaders\\SunraysShader.hlsl", ShaderType::Pixel);
 		vorticityShader = Shader::fromFile("Shaders\\VorticityShader.hlsl", ShaderType::Pixel);
-
 		blurHVertex = Shader::fromFile("Shaders\\BlurVertexShaderH.hlsl", ShaderType::Vertex);
 		blurVVertex = Shader::fromFile("Shaders\\BlurVertexShaderV.hlsl", ShaderType::Vertex);
 		velocityVertex = Shader::fromFile("Shaders\\VelocityVertexShader.hlsl", ShaderType::Vertex);
@@ -295,10 +296,8 @@ public:
 
 	void updateColors(const float& dt)
 	{
-		colorUpdateTimer += dt * SimulationConfig::COLOR_UPDATE_SPEED;
-		if (colorUpdateTimer >= 1.f)
+		if (colorUpdateTimer.update(dt * SimulationConfig::COLOR_UPDATE_SPEED))
 		{
-			colorUpdateTimer = 0;
 			pointer.makeColorRandom();
 		}
 	}

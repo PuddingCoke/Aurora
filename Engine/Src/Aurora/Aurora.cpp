@@ -486,12 +486,12 @@ void Aurora::runGame()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		timeStart = timer.now();
+		const std::chrono::steady_clock::time_point timeStart = timer.now();
 		game->update(Graphics::deltaTime.deltaTime);
 		game->render();
 		Renderer::context->ResolveSubresource(Renderer::backBuffer, 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
 		swapChain->Present(1, 0);
-		timeEnd = timer.now();
+		const std::chrono::steady_clock::time_point timeEnd = timer.now();
 		Graphics::deltaTime.deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
 		Graphics::deltaTime.sTime += Graphics::deltaTime.deltaTime;
 		Graphics::updateDeltaTimeBuffer();

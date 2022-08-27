@@ -37,8 +37,6 @@ public:
 
 	ComPtr<ID3DBlob> shaderBlob;
 
-	ID3D11DeviceChild* shaderPtr;
-
 	void use() const;
 
 	static Shader* fromFile(const std::string& filePath, const ShaderType& type);
@@ -60,6 +58,8 @@ private:
 	friend class Aurora;
 
 	Shader(const std::string& source, const ShaderType& type);
+
+	ID3D11DeviceChild* shaderPtr;
 
 	std::function<void(void)> useFunc;
 
