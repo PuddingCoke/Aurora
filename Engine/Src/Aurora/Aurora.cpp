@@ -424,26 +424,6 @@ HRESULT Aurora::iniDevice()
 
 	}
 
-	if (config->usage == Configuration::EngineUsage::AnimationRender)
-	{
-		D3D11_TEXTURE2D_DESC tDesc = {};
-		tDesc.Width = Graphics::width;
-		tDesc.Height = Graphics::height;
-		tDesc.MipLevels = 1;
-		tDesc.ArraySize = 1;
-		tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
-		tDesc.SampleDesc.Count = 1;
-		tDesc.SampleDesc.Quality = 0;
-		tDesc.Usage = D3D11_USAGE_DEFAULT;
-		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-		tDesc.CPUAccessFlags = 0;
-		tDesc.MiscFlags = 0;
-
-		Renderer::device->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
-
-		std::cout << "[class Aurora] initialize encode texture complete\n";
-	}
-
 	return S_OK;
 }
 
@@ -476,6 +456,7 @@ HRESULT Aurora::iniCamera()
 
 void Aurora::runGame()
 {
+	std::chrono::steady_clock timer;
 
 	MSG msg = { 0 };
 
@@ -500,6 +481,26 @@ void Aurora::runGame()
 
 void Aurora::runEncode()
 {
+	ComPtr<ID3D11Texture2D> encodeTexture;
+	{
+		D3D11_TEXTURE2D_DESC tDesc = {};
+		tDesc.Width = Graphics::width;
+		tDesc.Height = Graphics::height;
+		tDesc.MipLevels = 1;
+		tDesc.ArraySize = 1;
+		tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+		tDesc.SampleDesc.Count = 1;
+		tDesc.SampleDesc.Quality = 0;
+		tDesc.Usage = D3D11_USAGE_DEFAULT;
+		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+		tDesc.CPUAccessFlags = 0;
+		tDesc.MiscFlags = 0;
+
+		Renderer::device->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
+
+		std::cout << "[class Aurora] initialize encode texture complete\n";
+	}
+
 	bool initializeStatus;
 
 	NvidiaEncoder nvidiaEncoder(Graphics::getWidth(), Graphics::getHeight(), 900, 60, initializeStatus);

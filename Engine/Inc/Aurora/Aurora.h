@@ -51,15 +51,11 @@ private:
 
 	ComPtr<ID3D11Texture2D> msaaTexture;
 
-	ComPtr<ID3D11Texture2D> encodeTexture;
-
 	ComPtr<IDXGISwapChain4> swapChain;
 
 	const Configuration* config;
 
 	Game* game;
-
-	std::chrono::steady_clock timer;
 
 	HRESULT iniWindow();
 
