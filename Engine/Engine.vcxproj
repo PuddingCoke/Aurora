@@ -136,7 +136,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Inc\Aurora\A3D\Model.h" />
     <ClInclude Include="Inc\Aurora\Aurora.h" />
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
     <ClInclude Include="Inc\Aurora\Camera.h" />
@@ -173,7 +172,6 @@
     <ClCompile Include="Src\Aurora\PBR\RealShading.cpp" />
     <ClCompile Include="Src\Aurora\Renderer.cpp" />
     <ClCompile Include="Src\Aurora\TextureCube.cpp" />
-    <ClCompile Include="Src\Aurora\A3D\Model.cpp" />
     <ClCompile Include="Src\Aurora\Camera.cpp" />
     <ClCompile Include="Src\Aurora\Color.cpp" />
     <ClCompile Include="Src\Aurora\Aurora.cpp" />

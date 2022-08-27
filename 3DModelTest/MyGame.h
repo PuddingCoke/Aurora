@@ -6,8 +6,9 @@
 #include<Aurora/Event.h>
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
-#include<Aurora/A3D/Model.h>
 #include<Aurora/DepthStencilView.h>
+
+#include"Model.h"
 
 class MyGame :public Game
 {

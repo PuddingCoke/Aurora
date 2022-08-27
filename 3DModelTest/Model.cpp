@@ -1,4 +1,4 @@
-﻿#include<Aurora/A3D/Model.h>
+﻿#include"Model.h"
 
 Model* Model::create(const std::string& path, unsigned int& numModels)
 {

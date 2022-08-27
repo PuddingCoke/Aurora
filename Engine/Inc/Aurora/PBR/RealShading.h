@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include<Aurora/RenderTexture.h>
 #include<Aurora/Texture2D.h>
@@ -10,7 +10,7 @@ class RealShading
 {
 public:
 
-	//Ö»µ÷ÓÃÒ»´Î
+	//åªè°ƒç”¨ä¸€æ¬¡
 	static Texture2D* getSmithBRDF(const UINT& textureSize = 512);
 
 };
