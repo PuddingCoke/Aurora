@@ -28,6 +28,12 @@ public:
 
 	static void setSampler(const unsigned int& slot, ID3D11SamplerState* const state);
 
+	static void draw(const UINT& vertexCount,const UINT& startVertexLocation);
+
+	static void drawIndexed(const UINT& indexCount, const UINT& startIndexLocation, const UINT& baseVertexLocation);
+
+	static void drawInstanced(const UINT& vertexCountPerInstance, const UINT& instanceCount, const UINT& startVertexLocation, const UINT& startInstanceLocation);
+
 private:
 
 	friend class Aurora;

@@ -32,6 +32,21 @@ void Renderer::setSampler(const unsigned int& slot, ID3D11SamplerState* const st
 	context->PSSetSamplers(slot, 1, &state);
 }
 
+void Renderer::draw(const UINT& vertexCount, const UINT& startVertexLocation)
+{
+	context->Draw(vertexCount, startVertexLocation);
+}
+
+void Renderer::drawIndexed(const UINT& indexCount, const UINT& startIndexLocation, const UINT& baseVertexLocation)
+{
+	context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
+}
+
+void Renderer::drawInstanced(const UINT& vertexCountPerInstance, const UINT& instanceCount, const UINT& startVertexLocation, const UINT& startInstanceLocation)
+{
+	context->DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
+}
+
 void Renderer::setDefRTV(ID3D11DepthStencilView* const view)
 {
 	context->OMSetRenderTargets(1, defaultTargetView.GetAddressOf(), view);

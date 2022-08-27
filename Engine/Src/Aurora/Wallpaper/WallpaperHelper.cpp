@@ -15,7 +15,7 @@ void WallpaperHelper::getSystemResolution(int& width, int& height)
 
 	UINT dpi = GetDpiForWindow(GetDesktopWindow());
 
-	std::cout << "[class WallpaperHelper] system dpi " << dpi << "\n";
+	std::cout << "[class WallpaperHelper] system dpi " << dpi << "\n"; 
 
 	width = width * dpi / 96;
 	height = height * dpi / 96;
