@@ -1,6 +1,6 @@
 ﻿#include<Aurora/Random.h>
 
-std::mt19937 Random::randomEngine;
+std::mt19937 Random::randomEngine = std::mt19937((unsigned int)time(nullptr));
 
 std::uniform_int_distribution<int> Random::intDistribution;
 
@@ -17,9 +17,4 @@ double Random::Double()
 int Random::Int()
 {
 	return intDistribution(randomEngine);
-}
-
-void Random::ini()
-{
-	randomEngine.seed((unsigned int)time(nullptr));
 }

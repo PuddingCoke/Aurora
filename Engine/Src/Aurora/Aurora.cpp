@@ -13,8 +13,6 @@ int Aurora::iniEngine(const Configuration& config)
 
 	Keyboard::ini();
 
-	Random::ini();
-
 	this->config = &config;
 
 	if (config.usage == Configuration::EngineUsage::Wallpaper)

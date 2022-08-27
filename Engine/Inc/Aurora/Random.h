@@ -25,8 +25,6 @@ private:
 
 	friend class Aurora;
 
-	static void ini();
-
 	static std::mt19937 randomEngine;
 
 	static std::uniform_int_distribution<int> intDistribution;

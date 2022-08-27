@@ -1,6 +1,6 @@
 #include<Aurora/Camera.h>
 
-DirectX::XMFLOAT3 Camera::eye = { 0.f,20.f,0.f };
+DirectX::XMFLOAT3 Camera::eye = { 0.f,0.f,0.f };
 
 DirectX::XMFLOAT3 Camera::lookDir = { 1.f,0.f,0.f };
 

@@ -16,12 +16,15 @@ public:
 		texture(Texture2D::createRandNormal(64, 64)),
 		batch(SpriteBatch::create())
 	{
-
+		std::cout << Random::Float() << "\n";
+		std::cout << Random::Float() << "\n";
+		std::cout << Random::Float() << "\n";
 	}
 
 	~MyGame()
 	{
-
+		delete batch;
+		delete texture;
 	}
 
 	void update(const float& dt) override
