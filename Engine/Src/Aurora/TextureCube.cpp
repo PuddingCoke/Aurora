@@ -268,24 +268,24 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 		Renderer::device->CreateTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
 	}
 
-	const DirectX::XMFLOAT4 eye = { 0,0,0,1 };
-	const DirectX::XMFLOAT4 focusPoints[6] =
+	const DirectX::XMFLOAT3 eye = { 0,0,0 };
+	const DirectX::XMFLOAT3 focusPoints[6] =
 	{
-		DirectX::XMFLOAT4(1.0f,  0.0f,  0.0f,1.0f),
-		DirectX::XMFLOAT4(-1.0f,  0.0f,  0.0f,1.0f),
-		DirectX::XMFLOAT4(0.0f,  1.0f,  0.0f,1.0f),
-		DirectX::XMFLOAT4(0.0f, -1.0f,  0.0f,1.0f),
-		DirectX::XMFLOAT4(0.0f,  0.0f,  1.0f,1.0f),
-		DirectX::XMFLOAT4(0.0f,  0.0f, -1.0f,1.0f)
+		DirectX::XMFLOAT3(1.0f,  0.0f,  0.0f),
+		DirectX::XMFLOAT3(-1.0f,  0.0f,  0.0f),
+		DirectX::XMFLOAT3(0.0f,  1.0f,  0.0f),
+		DirectX::XMFLOAT3(0.0f, -1.0f,  0.0f),
+		DirectX::XMFLOAT3(0.0f,  0.0f,  1.0f),
+		DirectX::XMFLOAT3(0.0f,  0.0f, -1.0f)
 	};
-	const DirectX::XMFLOAT4 upVectors[6] =
+	const DirectX::XMFLOAT3 upVectors[6] =
 	{
-		DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f),
-		DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f),
-		DirectX::XMFLOAT4(0.0f,  0.0f,  -1.0f,1.0f),
-		DirectX::XMFLOAT4(0.0f,  0.0f, 1.0f,1.0f),
-		DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f),
-		DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f)
+		DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f),
+		DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f),
+		DirectX::XMFLOAT3(0.0f,  0.0f,  -1.0f),
+		DirectX::XMFLOAT3(0.0f,  0.0f, 1.0f),
+		DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f),
+		DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f)
 	};
 
 
@@ -308,7 +308,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	for (int i = 0; i < 6; i++)
 	{
 		renderTexture->clearRTV(DirectX::Colors::Black);
-		Camera::setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eye), DirectX::XMLoadFloat4(&focusPoints[i]), DirectX::XMLoadFloat4(&upVectors[i])));
+		Camera::setView(eye, focusPoints[i], upVectors[i]);
 		Renderer::context->Draw(36, 0);
 		Renderer::context->CopyResource(copyTexture->getTexture2D(), renderTexture->getTexture()->getTexture2D());
 		D3D11_MAPPED_SUBRESOURCE mappedData;

@@ -36,7 +36,7 @@ public:
 
 	MyGame() :
 		pixelShader(Shader::fromFile("GargantuaPShader.hlsl", ShaderType::Pixel)),
-		noiseTexture(Texture2D::createNoise(256, 256, false)),
+		noiseTexture(Texture2D::createNoise(256, 256)),
 		dustTexture(Texture2D::create("Dust.jpg")),
 		accTexture(DoubleRTV::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		effect(Graphics::getWidth(), Graphics::getHeight(), false)

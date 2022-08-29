@@ -2,6 +2,7 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/A2D/SpriteBatch.h>
+#include<PerlinNoise/PerlinNoise.hpp>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game
@@ -13,7 +14,7 @@ public:
 	SpriteBatch* batch;
 
 	MyGame() :
-		texture(Texture2D::createRandNormal(64, 64)),
+		texture(Texture2D::createNoise(512, 512)),
 		batch(SpriteBatch::create())
 	{
 		std::cout << Random::Float() << "\n";
