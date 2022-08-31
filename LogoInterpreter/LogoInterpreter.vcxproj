@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{1379fafe-78ef-42a5-a425-02b55759d293}</ProjectGuid>
-    <RootNamespace>SampleProject</RootNamespace>
+    <ProjectGuid>{fc282766-7986-4861-87a5-ef4d002abaed}</ProjectGuid>
+    <RootNamespace>LogoInterpreter</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -133,7 +133,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Command.h" />
+    <ClInclude Include="Logo.h" />
+    <ClInclude Include="LogoDrawer.h" />
     <ClInclude Include="MyGame.h" />
+    <ClInclude Include="Parser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

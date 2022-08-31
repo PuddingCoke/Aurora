@@ -17,9 +17,6 @@ public:
 		texture(Texture2D::createNoise(512, 512)),
 		batch(SpriteBatch::create())
 	{
-		std::cout << Random::Float() << "\n";
-		std::cout << Random::Float() << "\n";
-		std::cout << Random::Float() << "\n";
 	}
 
 	~MyGame()
