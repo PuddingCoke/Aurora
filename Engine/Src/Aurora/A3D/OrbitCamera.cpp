@@ -53,3 +53,12 @@ void OrbitCamera::registerEvent()
 			Camera::setView(DirectX::XMMatrixLookAtLH(rotatedEye, DirectX::XMLoadFloat3(&focus), DirectX::XMLoadFloat3(&up)));
 		});
 }
+
+void OrbitCamera::rotateX(const float& angle)
+{
+	const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&up), angle);
+
+	DirectX::XMStoreFloat3(&eye, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&eye), rotMat));
+
+	Camera::setView(eye, focus, up);
+}

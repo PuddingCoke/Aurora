@@ -21,6 +21,8 @@ public:
 
 	void registerEvent();
 
+	void rotateX(const float& angle);
+
 private:
 
 	float originAngle;
