@@ -19,7 +19,7 @@ void Camera::setProj(const DirectX::XMMATRIX& proj)
 
 void Camera::setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar)
 {
-	return setProj(DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, zNear, zFar));
+	setProj(DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, zNear, zFar));
 }
 
 void Camera::setView(const DirectX::XMMATRIX& view)
@@ -35,7 +35,12 @@ void Camera::setView(const DirectX::XMMATRIX& view)
 
 void Camera::setView(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up)
 {
-	return setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&eye), DirectX::XMLoadFloat3(&focus), DirectX::XMLoadFloat3(&up)));
+	setView(DirectX::XMLoadFloat3(&eye), DirectX::XMLoadFloat3(&focus), DirectX::XMLoadFloat3(&up));
+}
+
+void Camera::setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up)
+{
+	setView(DirectX::XMMatrixLookAtLH(eye, focus, up));
 }
 
 DirectX::XMFLOAT3 Camera::toViewSpace(const DirectX::XMFLOAT3& pos)

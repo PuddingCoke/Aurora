@@ -25,15 +25,11 @@ public:
 
 private:
 
-	float originAngle;
+	DirectX::XMVECTOR eye;
 
-	float deltaAngle;
+	const DirectX::XMVECTOR up;
 
-	DirectX::XMFLOAT3 eye;
-
-	const DirectX::XMFLOAT3 up;
-
-	const DirectX::XMFLOAT3 focus = { 0,0,0 };
+	const DirectX::XMVECTOR focus = { 0,0,0 };
 
 };
 

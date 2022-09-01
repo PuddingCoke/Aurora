@@ -21,6 +21,8 @@ public:
 
 	static void setView(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up);
 
+	static void setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up);
+
 	static DirectX::XMFLOAT3 toViewSpace(const DirectX::XMFLOAT3& pos);
 
 

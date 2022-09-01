@@ -20,10 +20,6 @@ public:
 
 	StrangeAttractor attractor;
 
-	float theta = 0.f;
-
-	const float radius = 15.f;
-
 	DepthStencilView* depthStencilView;
 
 	RenderTexture* renderTexture;
@@ -31,6 +27,8 @@ public:
 	BloomEffect bloomEffect;
 
 	OrbitCamera camera;
+
+	bool rotating = true;
 
 	MyGame() :
 		attractor(1000000),
@@ -40,6 +38,10 @@ public:
 		camera({ 4,4,-11 }, {-1,-1,-1})
 	{
 		camera.registerEvent();
+
+		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
+			rotating = !rotating;
+			});
 	}
 
 	~MyGame()
@@ -50,6 +52,11 @@ public:
 
 	void update(const float& dt) override
 	{
+		if (rotating)
+		{
+			camera.rotateX(dt);
+		}
+
 		attractor.update(dt);
 	}
 

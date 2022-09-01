@@ -11,6 +11,6 @@ class RealShading
 public:
 
 	//只调用一次
-	static Texture2D* getSmithBRDF(const UINT& textureSize = 512);
+	static Texture2D* getBRDF(const UINT& textureSize = 512);
 
 };

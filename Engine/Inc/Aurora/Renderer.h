@@ -14,8 +14,6 @@ public:
 
 	static ComPtr<ID3D11DeviceContext4> context;
 
-	static D3D11_VIEWPORT vp;
-
 	static void setDefRTV(ID3D11DepthStencilView* const view = nullptr);
 
 	static void clearDefRTV(const float* color);
@@ -42,4 +40,5 @@ private:
 
 	static ID3D11Texture2D* backBuffer;
 
+	static D3D11_VIEWPORT vp;
 };

@@ -1,6 +1,6 @@
 #include<Aurora/PBR/RealShading.h>
 
-Texture2D* RealShading::getSmithBRDF(const UINT& textureSize)
+Texture2D* RealShading::getBRDF(const UINT& textureSize)
 {
 	RenderTexture* renderTexture = RenderTexture::create(textureSize, textureSize, DXGI_FORMAT_R16G16_FLOAT, DirectX::Colors::Black, false);
 	Texture2D* brdfTexture = Texture2D::create(textureSize, textureSize, DXGI_FORMAT_R16G16_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0);
