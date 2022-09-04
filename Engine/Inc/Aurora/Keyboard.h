@@ -16,6 +16,8 @@ public:
 
 	Keyboard(const Keyboard&) = delete;
 
+	void operator=(const Keyboard&) = delete;
+
 	enum Key
 	{
 		Space = 32,

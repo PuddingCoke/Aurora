@@ -13,6 +13,8 @@ public:
 
 	Mouse(const Mouse&) = delete;
 
+	void operator=(const Mouse&) = delete;
+
 	static const float& getX();
 
 	static const float& getY();

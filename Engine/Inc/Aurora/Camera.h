@@ -13,6 +13,12 @@ class Camera
 {
 public:
 
+	Camera() = delete;
+
+	Camera(const Camera&) = delete;
+
+	void operator=(const Camera&) = delete;
+
 	static void setProj(const DirectX::XMMATRIX& proj);
 
 	static void setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar);

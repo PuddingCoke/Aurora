@@ -15,6 +15,8 @@ public:
 
 	Random(const Random&) = delete;
 
+	void operator=(const Random&) = delete;
+
 	static float Float();
 
 	static double Double();

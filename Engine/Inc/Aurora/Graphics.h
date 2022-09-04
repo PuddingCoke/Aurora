@@ -9,6 +9,12 @@ class Graphics
 {
 public:
 
+	Graphics() = delete;
+
+	Graphics(const Graphics&) = delete;
+
+	void operator=(const Graphics&) = delete;
+
 	static const float& getDeltaTime();
 
 	static const float& getSTime();

@@ -13,6 +13,12 @@ class WallpaperHelper
 {
 public:
 
+	WallpaperHelper() = delete;
+
+	WallpaperHelper(const WallpaperHelper&) = delete;
+
+	void operator=(const WallpaperHelper&) = delete;
+
 	static void getSystemResolution(int& width, int& height);
 
 	static HWND getWallpaperWindow();
@@ -20,12 +26,6 @@ public:
 	static void registerHOOK();
 
 	static void unregisterHOOK();
-
-	WallpaperHelper() = delete;
-
-	WallpaperHelper(const WallpaperHelper&) = delete;
-
-	void operator=(const WallpaperHelper&) = delete;
 
 	static LRESULT WINAPI MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 

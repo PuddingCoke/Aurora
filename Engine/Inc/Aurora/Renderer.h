@@ -10,6 +10,12 @@ class Renderer
 {
 public:
 
+	Renderer() = delete;
+
+	Renderer(const Renderer&) = delete;
+
+	void operator=(const Renderer&) = delete;
+
 	static ComPtr<ID3D11Device4> device;
 
 	static ComPtr<ID3D11DeviceContext4> context;

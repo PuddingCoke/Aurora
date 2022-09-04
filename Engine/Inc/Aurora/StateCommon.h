@@ -11,6 +11,12 @@ class StateCommon
 {
 public:
 
+	StateCommon() = delete;
+
+	StateCommon(const StateCommon&) = delete;
+
+	void operator=(const StateCommon&) = delete;
+
 	static ComPtr<ID3D11SamplerState> defSamplerState;
 
 	//SRC_ALPHA INV_SRC_ALPHA
