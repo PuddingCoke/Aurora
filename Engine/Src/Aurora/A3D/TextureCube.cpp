@@ -1,4 +1,4 @@
-#include<Aurora/TextureCube.h>
+#include<Aurora/A3D/TextureCube.h>
 
 Shader* TextureCube::shader;
 
@@ -251,7 +251,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 		pixelShader = equirectangularYUP;
 	}
 
-	RenderTexture* renderTexture = RenderTexture::create(skyboxResolution, skyboxResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Transparent, false);
+	RenderTexture* renderTexture = RenderTexture::create(skyboxResolution, skyboxResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Transparent);
 	Texture2D* copyTexture = Texture2D::create(skyboxResolution, skyboxResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_STAGING, 0, D3D11_CPU_ACCESS_READ);
 
 	{

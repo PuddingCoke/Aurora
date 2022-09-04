@@ -90,10 +90,10 @@
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DepthStencilView.h">
+    <ClInclude Include="Inc\Aurora\A3D\DepthStencilView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\TextureCube.h">
+    <ClInclude Include="Inc\Aurora\A3D\TextureCube.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Wallpaper\WallpaperHelper.h">
@@ -114,7 +114,7 @@
     <ClInclude Include="Inc\Aurora\A3D\OrbitCamera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\ShadowMap.h">
+    <ClInclude Include="Inc\Aurora\A3D\ShadowMap.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -185,7 +185,7 @@
     <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DepthStencilView.cpp">
+    <ClCompile Include="Src\Aurora\A3D\DepthStencilView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Math.cpp">
@@ -203,7 +203,7 @@
     <ClCompile Include="Src\Aurora\DDSTextureLoader11.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\TextureCube.cpp">
+    <ClCompile Include="Src\Aurora\A3D\TextureCube.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Renderer.cpp">
@@ -218,7 +218,7 @@
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\ShadowMap.cpp">
+    <ClCompile Include="Src\Aurora\A3D\ShadowMap.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

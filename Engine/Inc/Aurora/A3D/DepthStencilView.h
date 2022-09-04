@@ -3,7 +3,7 @@
 #ifndef _DEPTHSTENCILVIEW_H_
 #define _DEPTHSTENCILVIEW_H_
 
-#include"Graphics.h"
+#include<Aurora/Graphics.h>
 
 class DepthStencilView
 {
@@ -15,7 +15,7 @@ public:
 
 	void operator=(const DepthStencilView&) = delete;
 
-	static DepthStencilView* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA);
+	static DepthStencilView* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA = false);
 
 	void clear(const UINT& clearFlag, const float& depth = 1.0f, const UINT8& stencil = 0) const;
 

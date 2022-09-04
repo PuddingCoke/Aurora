@@ -58,10 +58,10 @@ public:
 
 	bool connected;
 
-	MyGame():
+	MyGame() :
 		sBatch(SpriteBatch::create()),
 		pBatch(PrimitiveBatch::create()),
-		renderTexture(RenderTexture::create(Graphics::getWidth(),Graphics::getHeight(),DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM)),
+		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Transparent, true)),
 		curFrame(0),
 		connected(false)
 	{
@@ -69,7 +69,7 @@ public:
 		std::ifstream ifs(filePath);
 		json dftData = json::parse(ifs);
 		ifs.close();
-		
+
 		length = dftData.size();
 
 		std::cout << "Length is " << length << "\n";
@@ -114,7 +114,7 @@ public:
 
 		for (size_t i = 0; i < length; i++)
 		{
-			epicycles[i].set(length-1);
+			epicycles[i].set(length - 1);
 			preX = x;
 			preY = y;
 			x += epicycles[i].re;
@@ -175,7 +175,7 @@ public:
 		{
 			pBatch->drawRoundCapLine(lastX, lastY, x, y, 4.f, color.r, color.g, color.b);
 		}
-		
+
 		lastX = x;
 		lastY = y;
 

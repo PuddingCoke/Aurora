@@ -21,7 +21,7 @@ public:
 
 	~RenderTexture();
 
-	static RenderTexture* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4] = DirectX::Colors::Transparent, const bool& enableMSAA = true);
+	static RenderTexture* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4] = DirectX::Colors::Transparent, const bool& enableMSAA = false);
 
 	void setMSAARTV(ID3D11DepthStencilView* const view = nullptr) const;
 
@@ -48,10 +48,10 @@ public:
 	static void unbindAll();
 
 private:
-	
+
 	static ID3D11RenderTargetView* renderTargetViews[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
 
-	RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4],const bool& enableMSAA);
+	RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4], const bool& enableMSAA);
 
 	Texture2D* const texture;
 

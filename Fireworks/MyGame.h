@@ -27,8 +27,8 @@ public:
 	MyGame() :
 		pBatch(PrimitiveBatch::create()),
 		currentSkyColor{ 0.0f,0.0f,0.0f,1.0f },
-		texture(RenderTexture::create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM)),
-		doubleRTV(DoubleRTV::create(1920,1080, DXGI_FORMAT_R8G8B8A8_UNORM)),
+		texture(RenderTexture::create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
+		doubleRTV(DoubleRTV::create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM)),
 		effect(1920, 1080)
 	{
 		Star::active = &starActive;

@@ -2,8 +2,8 @@
 
 DoubleRTV::DoubleRTV(const UINT& width, const UINT& height, const DXGI_FORMAT& format) :
 	width(width), height(height),
-	renderTexture1(RenderTexture::create(width, height, format, DirectX::Colors::Transparent, false)),
-	renderTexture2(RenderTexture::create(width, height, format, DirectX::Colors::Transparent, false))
+	renderTexture1(RenderTexture::create(width, height, format, DirectX::Colors::Transparent)),
+	renderTexture2(RenderTexture::create(width, height, format, DirectX::Colors::Transparent))
 {
 }
 

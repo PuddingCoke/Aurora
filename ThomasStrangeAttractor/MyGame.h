@@ -7,7 +7,7 @@
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
-#include<Aurora/DepthStencilView.h>
+#include<Aurora/A3D/DepthStencilView.h>
 #include<Aurora/A3D/OrbitCamera.h>
 
 #include"StrangeAttractor.h"
@@ -32,9 +32,9 @@ public:
 
 	MyGame() :
 		attractor(1000000),
-		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false)),
+		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, false)),
+		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
 		camera({ 4,4,-11 }, {-1,-1,-1})
 	{
 		camera.registerEvent();

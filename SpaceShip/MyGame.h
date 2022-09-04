@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/TextureCube.h>
+#include<Aurora/A3D/TextureCube.h>
 #include<Aurora/PBR/RealShading.h>
 #include<Aurora/A3D/FPSCamera.h>
 
@@ -19,7 +19,7 @@ public:
 
 	MyGame() :
 		spaceTexture(TextureCube::createEquirectangularMap("D:/SpaceShipAssets/space.hdr", 2048, { 0,1,0 })),
-		brdfTexture(RealShading::getSmithBRDF()),
+		brdfTexture(RealShading::getBRDF()),
 		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
 		camera({ 0,0,0 }, { 1,0,0 }, { 0,1,0 }, 100.f, 3.f)
 	{

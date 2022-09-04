@@ -36,7 +36,7 @@ public:
 		batch(SpriteBatch::create()),
 		font(BitmapFont::create("Game_0.png", "Game.fnt", 24)),
 		effect(Graphics::getWidth(), Graphics::getHeight(), false),
-		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black, false))
+		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black))
 	{
 		exposure = 0.64f;
 		gamma = 0.56f;

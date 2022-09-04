@@ -15,8 +15,8 @@ public:
 
 	RenderTexture* renderTexture;
 
-	MyGame():
-		renderTexture(RenderTexture::create(Graphics::getWidth(),Graphics::getHeight(),DXGI_FORMAT_R8G8B8A8_UNORM))
+	MyGame() :
+		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true))
 	{
 		std::ifstream stream("info.txt");
 		std::string text;

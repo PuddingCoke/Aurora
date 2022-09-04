@@ -6,7 +6,7 @@
 #include<Aurora/Event.h>
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
-#include<Aurora/DepthStencilView.h>
+#include<Aurora/A3D/DepthStencilView.h>
 
 #include"Model.h"
 
@@ -84,13 +84,13 @@ public:
 		models(Model::create("DNA.obj", numModels)),
 		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
-		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
+		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
 		envTexture(Texture2D::create("Tufts-Parking-Lot_Ref.hdr")),
 		cubePShader(Shader::fromFile("cubePShader.hlsl", ShaderType::Pixel)),
 		bgPShader(Shader::fromFile("BackgroundPShader.hlsl", ShaderType::Pixel)),
 		irradiancePShader(Shader::fromFile("IrradiancePShader.hlsl", ShaderType::Pixel)),
 		brdfPShader(Shader::fromFile("BRDFPShader.hlsl", ShaderType::Pixel)),
-		brdfTexture(RenderTexture::create(boxSize, boxSize, DXGI_FORMAT_R16G16_FLOAT, DirectX::Colors::Transparent, false))
+		brdfTexture(RenderTexture::create(boxSize, boxSize, DXGI_FORMAT_R16G16_FLOAT, DirectX::Colors::Transparent))
 	{
 		prefilterPShader[0] = Shader::fromFile("PrefilterPShader0.hlsl", ShaderType::Pixel);
 		prefilterPShader[1] = Shader::fromFile("PrefilterPShader1.hlsl", ShaderType::Pixel);
@@ -206,7 +206,7 @@ public:
 
 				Renderer::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 
-				RenderTexture* renderTexture = RenderTexture::create(boxSize, boxSize, tDesc.Format, DirectX::Colors::Black, false);
+				RenderTexture* renderTexture = RenderTexture::create(boxSize, boxSize, tDesc.Format, DirectX::Colors::Black);
 
 				Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -249,7 +249,7 @@ public:
 
 				Renderer::context->GenerateMips(cubeSRV.Get());
 
-				renderTexture = RenderTexture::create(irradianceSize, irradianceSize, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false);
+				renderTexture = RenderTexture::create(irradianceSize, irradianceSize, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
 
 				renderTexture->setRTV();
 
@@ -286,11 +286,11 @@ public:
 			}
 
 			RenderTexture* renderTextures[5];
-			renderTextures[0] = RenderTexture::create(128, 128, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false);
-			renderTextures[1] = RenderTexture::create(64, 64, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false);
-			renderTextures[2] = RenderTexture::create(32, 32, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false);
-			renderTextures[3] = RenderTexture::create(16, 16, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false);
-			renderTextures[4] = RenderTexture::create(8, 8, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false);
+			renderTextures[0] = RenderTexture::create(128, 128, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
+			renderTextures[1] = RenderTexture::create(64, 64, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
+			renderTextures[2] = RenderTexture::create(32, 32, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
+			renderTextures[3] = RenderTexture::create(16, 16, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
+			renderTextures[4] = RenderTexture::create(8, 8, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
 
 			ComPtr<ID3D11Texture2D> textures[5];
 

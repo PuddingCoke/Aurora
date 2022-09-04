@@ -3,7 +3,7 @@
 #ifndef _SHADOWMAP_H_
 #define _SHADOWMAP_H_
 
-#include"Renderer.h"
+#include<Aurora/Renderer.h>
 
 class ShadowMap
 {

@@ -3,8 +3,8 @@
 #include<Aurora/Game.h>
 #include<Aurora/PBR/RealShading.h>
 #include<Aurora/A3D/FPSCamera.h>
-#include<Aurora/DepthStencilView.h>
-#include<Aurora/ShadowMap.h>
+#include<Aurora/A3D/DepthStencilView.h>
+#include<Aurora/A3D/ShadowMap.h>
 #include"Scene.h"
 
 class MyGame :public Game
@@ -81,15 +81,15 @@ public:
 		shadowPShader(Shader::fromFile("ShadowPShader.hlsl", ShaderType::Pixel)),
 		deferredFinal(Shader::fromFile("DeferredFinal.hlsl", ShaderType::Pixel)),
 		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
-		shadowRTV(RenderTexture::create(4096, 4096, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, false)),
+		shadowRTV(RenderTexture::create(4096, 4096, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
 		debugShader(Shader::fromFile("DebugPShader.hlsl", ShaderType::Pixel)),
-		depthStencilView(DepthStencilView::create(1920, 1080, DXGI_FORMAT_D32_FLOAT, false)),
+		depthStencilView(DepthStencilView::create(1920, 1080, DXGI_FORMAT_D32_FLOAT)),
 		shadowMap(ShadowMap::create(4096, 4096)),
-		positionBuffer(RenderTexture::create(1920, 1080, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
-		baseColorBuffer(RenderTexture::create(1920, 1080, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
-		metallicRoughnessBuffer(RenderTexture::create(1920, 1080, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
-		normalBuffer(RenderTexture::create(1920, 1080, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
-		lightSpacePositionBuffer(RenderTexture::create(1920, 1080, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
+		positionBuffer(RenderTexture::create(1920, 1080, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		baseColorBuffer(RenderTexture::create(1920, 1080, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		metallicRoughnessBuffer(RenderTexture::create(1920, 1080, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		normalBuffer(RenderTexture::create(1920, 1080, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		lightSpacePositionBuffer(RenderTexture::create(1920, 1080, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		skybox(TextureCube::createEquirectangularMap("kloppenheim_05_4k.hdr", 2048, DirectX::XMFLOAT3{ 0,1,0 })),
 		camera({ 0,10,0 }, { 1,0,0 }, { 0,1,0 }, 10, 2)
 	{

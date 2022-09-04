@@ -3,8 +3,8 @@
 #include<Aurora/Game.h>
 #include<Aurora/Texture2D.h>
 #include<Aurora/RenderTexture.h>
-#include<Aurora/DepthStencilView.h>
-#include<Aurora/TextureCube.h>
+#include<Aurora/A3D/DepthStencilView.h>
+#include<Aurora/A3D/TextureCube.h>
 #include<Aurora/A3D/FPSCamera.h>
 
 #include"Scene.h"
@@ -81,12 +81,12 @@ public:
 		deferredFinal(Shader::fromFile("DeferredFinal.hlsl", ShaderType::Pixel)),
 		ssaoBlur(Shader::fromFile("SSAOBlur.hlsl", ShaderType::Pixel)),
 		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
-		positionDepth(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
-		normalSpecular(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
-		albedo(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black, false)),
-		ssaoTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, DirectX::Colors::Black, false)),
-		ssaoBlured(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, DirectX::Colors::Black, false)),
-		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, false)),
+		positionDepth(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		normalSpecular(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		albedo(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		ssaoTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, DirectX::Colors::Black)),
+		ssaoBlured(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, DirectX::Colors::Black)),
+		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
 		randomNormal(Texture2D::create("RandomNormal.png")),
 		ssaoShader(Shader::fromFile("SSAOShader.hlsl", ShaderType::Pixel)),
 		scene(Scene::create(assetPath + "/sponza.dae")),
