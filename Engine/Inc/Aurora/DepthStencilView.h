@@ -15,7 +15,7 @@ public:
 
 	void operator=(const DepthStencilView&) = delete;
 
-	static DepthStencilView* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA = true);
+	static DepthStencilView* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA);
 
 	void clear(const UINT& clearFlag, const float& depth = 1.0f, const UINT8& stencil = 0) const;
 
@@ -30,7 +30,6 @@ private:
 	ComPtr<ID3D11Texture2D> depthStencilTexture;
 
 	ComPtr<ID3D11DepthStencilView> depthStencilView;
-
 };
 
 #endif // !_DEPTHSTENCILVIEW_H_

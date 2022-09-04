@@ -153,6 +153,7 @@
     <ClInclude Include="Inc\Aurora\Math.h" />
     <ClInclude Include="Inc\Aurora\Mouse.h" />
     <ClInclude Include="Inc\Aurora\PBR\RealShading.h" />
+    <ClInclude Include="Inc\Aurora\ShadowMap.h" />
     <ClInclude Include="Inc\Aurora\TextureCube.h" />
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h" />
     <ClInclude Include="Inc\Aurora\ParticleSystem.h" />
@@ -176,6 +177,7 @@
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp" />
     <ClCompile Include="Src\Aurora\PBR\RealShading.cpp" />
     <ClCompile Include="Src\Aurora\Renderer.cpp" />
+    <ClCompile Include="Src\Aurora\ShadowMap.cpp" />
     <ClCompile Include="Src\Aurora\TextureCube.cpp" />
     <ClCompile Include="Src\Aurora\Camera.cpp" />
     <ClCompile Include="Src\Aurora\Color.cpp" />

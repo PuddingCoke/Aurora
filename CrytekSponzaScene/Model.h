@@ -3,7 +3,7 @@
 #ifndef _MODEL_H_
 #define _MODEL_H_
 
-#include<Aurora/Graphics.h>
+#include<Aurora/Renderer.h>
 
 #include<assimp/Importer.hpp>
 #include<assimp/scene.h>
@@ -30,6 +30,8 @@ public:
 
 	//pos uv normal tangent bitangent
 	ComPtr<ID3D11Buffer> modelBuffer;
+
+	ComPtr<ID3D11Buffer> indexBuffer;
 
 	const unsigned int materialIndex;
 
@@ -86,6 +88,8 @@ public:
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Renderer::context->IASetVertexBuffers(0, 1, modelBuffer.GetAddressOf(), &stride, &offset);
+
+		Renderer::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
 
 		Renderer::context->Draw(vertexCount, 0);
 	}

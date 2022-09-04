@@ -21,10 +21,26 @@
     <ClInclude Include="Scene.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="DeferredVShader.hlsl" />
+    <FxCompile Include="DeferredPShader.hlsl" />
+    <FxCompile Include="DebugPShader.hlsl" />
+    <FxCompile Include="ShadowPShader.hlsl" />
+    <FxCompile Include="ShadowVShader.hlsl" />
+    <FxCompile Include="DeferredPShaderNoTex.hlsl" />
+    <FxCompile Include="DeferredFinal.hlsl" />
+    <FxCompile Include="SkyboxPShader.hlsl" />
   </ItemGroup>
 </Project>

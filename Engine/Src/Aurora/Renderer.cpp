@@ -32,6 +32,11 @@ void Renderer::setSampler(const unsigned int& slot, ID3D11SamplerState* const st
 	context->PSSetSamplers(slot, 1, &state);
 }
 
+void Renderer::setRasterizerState(ID3D11RasterizerState* const state)
+{
+	context->RSSetState(state);
+}
+
 void Renderer::draw(const UINT& vertexCount, const UINT& startVertexLocation)
 {
 	context->Draw(vertexCount, startVertexLocation);

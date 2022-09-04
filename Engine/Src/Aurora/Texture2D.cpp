@@ -2,6 +2,10 @@
 
 Texture2D* Texture2D::create(const std::string& path)
 {
+	if (path == "")
+	{
+		return nullptr;
+	}
 	return new Texture2D(path, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0);
 }
 
