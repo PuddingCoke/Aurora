@@ -157,10 +157,6 @@ public:
 			Renderer::device->CreateSamplerState(&sampDesc, pointSampler.ReleaseAndGetAddressOf());
 		}
 
-		ID3D11SamplerState* samplers[2] = { linearSampler.Get(),pointSampler.Get() };
-
-		Renderer::context->PSSetSamplers(0, 2, samplers);
-
 		{
 			const DirectX::XMINT2 simRes = getResolution(SimulationConfig::SIM_RESOLUTION);
 			const DirectX::XMINT2 dyeRes = getResolution(SimulationConfig::DYE_RESOLUTION);
@@ -259,7 +255,9 @@ public:
 				pointer.down = false;
 			});
 
+		ID3D11SamplerState* samplers[2] = { linearSampler.Get(),pointSampler.Get() };
 
+		Renderer::context->PSSetSamplers(0, 2, samplers);
 	}
 
 	~MyGame()
@@ -324,15 +322,12 @@ public:
 		memcpy(mappedData.pData, &cBufferB2, sizeof(BufferDynamic));
 		Renderer::context->Unmap(constantb2.Get(), 0);
 
-		ID3D11ShaderResourceView* nullSRV[2] = { nullptr,nullptr };
-
 		Renderer::setViewport(velocity->width, velocity->height);
 		velocity->write()->setRTV();
 		velocityVertex->use();
 		splatColor0->use();
 		velocity->read()->getTexture()->setSRV(0);
 		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		velocity->swap();
 
 		Renderer::setViewport(dye->width, dye->height);
@@ -340,7 +335,6 @@ public:
 		splatColor1->use();
 		dye->read()->getTexture()->setSRV(0);
 		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		dye->swap();
 	}
 
@@ -356,21 +350,18 @@ public:
 		curlShader->use();
 		velocity->read()->getTexture()->setSRV(0);
 		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 
 		velocity->write()->setRTV();
 		vorticityShader->use();
 		velocity->read()->getTexture()->setSRV(0);
 		curl->getTexture()->setSRV(1);
 		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		velocity->swap();
 
 		divergence->setRTV();
 		divergenceShader->use();
 		velocity->read()->getTexture()->setSRV(0);
 		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 
 		pressure->write()->setRTV();
 		clearShader->use();
@@ -403,7 +394,6 @@ public:
 		velocity->read()->getTexture()->setSRV(0);
 		velocity->read()->getTexture()->setSRV(1);
 		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		velocity->swap();
 
 		Renderer::setViewport(dye->width, dye->height);
@@ -415,13 +405,10 @@ public:
 		Renderer::context->Draw(3, 0);
 		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		dye->swap();
-
 	}
 
 	void applySunrays(RenderTexture* const source, RenderTexture* const mask, RenderTexture* const destination)
 	{
-		ID3D11ShaderResourceView* nullSRV[2] = { nullptr,nullptr };
-
 		mask->setRTV();
 		Renderer::setBlendState(StateCommon::blendReplace.Get());
 		velocityVertex->use();
@@ -429,14 +416,12 @@ public:
 		source->getTexture()->setSRV(0);
 		Renderer::setViewport(mask->width, mask->height);
 		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 
 		destination->setRTV();
 		sunraysShader->use();
 		mask->getTexture()->setSRV(0);
 		Renderer::setViewport(destination->width, destination->height);
 		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 	}
 
 	void blur(RenderTexture* const target, RenderTexture* const temp, const int& iterations)
@@ -470,8 +455,6 @@ public:
 
 	void render() override
 	{
-		ID3D11ShaderResourceView* nullSRV[2] = { nullptr,nullptr };
-
 		applySunrays(dye->read(), dye->write(), sunrays);
 		blur(sunrays, sunraysTemp, 1);
 
@@ -486,7 +469,6 @@ public:
 		dye->read()->getTexture()->setSRV(0);
 		sunrays->getTexture()->setSRV(1);
 		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 	}
 
 	void updatePointerDownData(const int& id, const float& posX, const float& posY)
