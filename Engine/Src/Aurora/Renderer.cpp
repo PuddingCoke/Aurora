@@ -37,6 +37,16 @@ void Renderer::setRasterizerState(ID3D11RasterizerState* const state)
 	context->RSSetState(state);
 }
 
+void Renderer::drawQuad()
+{
+	context->Draw(3, 0);
+}
+
+void Renderer::drawCube()
+{
+	context->Draw(36, 0);
+}
+
 void Renderer::draw(const UINT& vertexCount, const UINT& startVertexLocation)
 {
 	context->Draw(vertexCount, startVertexLocation);
