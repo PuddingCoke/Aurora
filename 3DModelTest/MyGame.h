@@ -10,6 +10,8 @@
 
 #include"Model.h"
 
+const std::string assetPath = "D:/Assets/3DModelTest/";
+
 class MyGame :public Game
 {
 public:
@@ -81,11 +83,11 @@ public:
 	RenderTexture* brdfTexture;
 
 	MyGame() :
-		models(Model::create("DNA.obj", numModels)),
+		models(Model::create(assetPath+"DNA.obj", numModels)),
 		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
 		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
-		envTexture(Texture2D::create("Tufts-Parking-Lot_Ref.hdr")),
+		envTexture(Texture2D::create(assetPath+"Tufts-Parking-Lot_Ref.hdr")),
 		cubePShader(Shader::fromFile("cubePShader.hlsl", ShaderType::Pixel)),
 		bgPShader(Shader::fromFile("BackgroundPShader.hlsl", ShaderType::Pixel)),
 		irradiancePShader(Shader::fromFile("IrradiancePShader.hlsl", ShaderType::Pixel)),

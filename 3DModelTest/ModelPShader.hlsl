@@ -91,6 +91,11 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+float3 fresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
+{
+    return F0 + (max(float3(1.0 - roughness, 1.0 - roughness, 1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
 float4 main(PixelInput input) : SV_TARGET
 {
     const float3 albedo = pow(diffuseColor, 2.2);
@@ -128,6 +133,8 @@ float4 main(PixelInput input) : SV_TARGET
     
     float3 specular = numerator / denominator;
     
+    F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+    
     float3 kS = F;
     
     float3 kD = float3(1.0, 1.0, 1.0) - kS;
@@ -138,7 +145,9 @@ float4 main(PixelInput input) : SV_TARGET
     
     Lo += (kD * albedo / PI + specular) * radiance * NdotL;
     
-    kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
+    F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+    
+    kS = F;
     
     kD = 1.0 - kS;
     
