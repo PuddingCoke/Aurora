@@ -1,10 +1,3 @@
-struct PixelInput
-{
-    float2 vUv : TEXCOORD0;
-    float2 vL : TEXCOORD1;
-    float2 vR : TEXCOORD2;
-};
-
 cbuffer DeltaTimes : register(b0)
 {
     float deltaTime;
@@ -15,10 +8,7 @@ cbuffer DeltaTimes : register(b0)
 
 cbuffer SimulationConst : register(b1)
 {
-    float2 velocityTexelSize;
     float2 screenTexelSize;
-    float2 sunraysTexelSizeX;
-    float2 sunraysTexelSizeY;
     float velocity_dissipation;
     float density_dissipation;
     float value;
@@ -26,7 +16,7 @@ cbuffer SimulationConst : register(b1)
     float curl;
     float radius;
     float weight;
-    float v0;
+    float3 v0;
 }
 
 cbuffer SimulationDynamic : register(b2)
@@ -44,10 +34,20 @@ SamplerState pointSampler : register(s1);
 
 Texture2D tTexture : register(t0);
 
-float4 main(PixelInput input) : SV_TARGET
+float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float4 sum = tTexture.Sample(linearSampler, input.vUv) * 0.29411764;
-    sum += tTexture.Sample(linearSampler, input.vL) * 0.35294117;
-    sum += tTexture.Sample(linearSampler, input.vR) * 0.35294117;
+    float4 sum = tTexture.Sample(linearSampler, texCoord) * 0.29411764;
+    
+    float2 texelSize;
+    tTexture.GetDimensions(texelSize.x, texelSize.y);
+    texelSize = 1.0 / texelSize;
+    
+    const float offset = 1.33333333;
+    
+    const float2 vL = texCoord - float2(0.0, texelSize.y) * offset;
+    const float2 vR = texCoord + float2(0.0, texelSize.y) * offset;
+    
+    sum += tTexture.Sample(linearSampler, vL) * 0.35294117;
+    sum += tTexture.Sample(linearSampler, vR) * 0.35294117;
     return sum;
 }

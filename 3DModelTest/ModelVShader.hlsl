@@ -33,7 +33,7 @@ VertexOutput main(VertexInput input)
     
     output.position = mul(float4(tPosition, 1.0), view).xyz;
     output.texCoord = input.texCoord;
-    output.normal = mul(input.normal, (float3x3)normalMatrix);
+    output.normal = mul(input.normal, (float3x3) normalMatrix);
     output.svPosition = mul(mul(float4(tPosition, 1.0), view), proj);
     return output;
 }

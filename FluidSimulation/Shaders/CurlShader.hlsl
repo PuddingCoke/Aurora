@@ -1,12 +1,3 @@
-struct PixelInput
-{
-    float2 vUv : TEXCOORD0;
-    float2 vL : TEXCOORD1;
-    float2 vR : TEXCOORD2;
-    float2 vT : TEXCOORD3;
-    float2 vB : TEXCOORD4;
-};
-
 cbuffer DeltaTimes : register(b0)
 {
     float deltaTime;
@@ -17,10 +8,7 @@ cbuffer DeltaTimes : register(b0)
 
 cbuffer SimulationConst : register(b1)
 {
-    float2 velocityTexelSize;
     float2 screenTexelSize;
-    float2 sunraysTexelSizeX;
-    float2 sunraysTexelSizeY;
     float velocity_dissipation;
     float density_dissipation;
     float value;
@@ -28,7 +16,7 @@ cbuffer SimulationConst : register(b1)
     float curl;
     float radius;
     float weight;
-    float v0;
+    float3 v0;
 }
 
 cbuffer SimulationDynamic : register(b2)
@@ -46,12 +34,22 @@ SamplerState pointSampler : register(s1);
 
 Texture2D tVelocity : register(t0);
 
-float4 main(PixelInput input) : SV_TARGET
+float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float L = tVelocity.Sample(linearSampler, input.vL).y;
-    float R = tVelocity.Sample(linearSampler, input.vR).y;
-    float T = tVelocity.Sample(linearSampler, input.vT).x;
-    float B = tVelocity.Sample(linearSampler, input.vB).x;
+    float2 texelSize;
+    tVelocity.GetDimensions(texelSize.x, texelSize.y);
+    texelSize = 1.0 / texelSize;
+    
+    const float2 vL = texCoord - float2(texelSize.x, 0.0);
+    const float2 vR = texCoord + float2(texelSize.x, 0.0);
+    const float2 vT = texCoord + float2(0.0, texelSize.y);
+    const float2 vB = texCoord - float2(0.0, texelSize.y);
+    
+    float L = tVelocity.Sample(linearSampler, vL).y;
+    float R = tVelocity.Sample(linearSampler, vR).y;
+    float T = tVelocity.Sample(linearSampler, vT).x;
+    float B = tVelocity.Sample(linearSampler, vB).x;
+    
     float vorticity = R - L - T + B;
     return float4(0.5 * vorticity, 0.0, 0.0, 1.0);
 }

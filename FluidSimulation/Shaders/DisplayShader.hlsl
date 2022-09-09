@@ -17,10 +17,7 @@ cbuffer DeltaTimes : register(b0)
 
 cbuffer SimulationConst : register(b1)
 {
-    float2 velocityTexelSize;
     float2 screenTexelSize;
-    float2 sunraysTexelSizeX;
-    float2 sunraysTexelSizeY;
     float velocity_dissipation;
     float density_dissipation;
     float value;
@@ -28,7 +25,7 @@ cbuffer SimulationConst : register(b1)
     float curl;
     float radius;
     float weight;
-    float v0;
+    float3 v0;
 }
 
 cbuffer SimulationDynamic : register(b2)

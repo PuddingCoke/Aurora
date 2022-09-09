@@ -28,12 +28,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\VelocityVertexShader.hlsl" />
-    <FxCompile Include="Shaders\BlurVertexShaderH.hlsl" />
-    <FxCompile Include="Shaders\BlurVertexShaderV.hlsl" />
     <FxCompile Include="Shaders\DisplayVertexShader.hlsl" />
     <FxCompile Include="Shaders\AdvectionVelDissipation.hlsl" />
-    <FxCompile Include="Shaders\BlurShader.hlsl" />
+    <FxCompile Include="Shaders\BlurShaderHBlur.hlsl" />
     <FxCompile Include="Shaders\ClearShader.hlsl" />
     <FxCompile Include="Shaders\CurlShader.hlsl" />
     <FxCompile Include="Shaders\DisplayShader.hlsl" />
@@ -46,5 +43,6 @@
     <FxCompile Include="Shaders\SunraysShader.hlsl" />
     <FxCompile Include="Shaders\VorticityShader.hlsl" />
     <FxCompile Include="Shaders\AdvectionDenDissipation.hlsl" />
+    <FxCompile Include="Shaders\BlurShaderVBlur.hlsl" />
   </ItemGroup>
 </Project>

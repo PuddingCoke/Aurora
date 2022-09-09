@@ -106,7 +106,7 @@ float4 main(PixelInput input) : SV_TARGET
     float3 V = normalize(- input.position);
     float3 R = mul(reflect(-V, N), transpose((float3x3) normalMatrix));
     
-    float specularF0 = 0.3;
+    float specularF0 = 0.04;
     
     float3 F0 = float3(specularF0, specularF0, specularF0);
     F0 = lerp(F0, albedo, 0.0);
@@ -132,8 +132,6 @@ float4 main(PixelInput input) : SV_TARGET
     float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
     
     float3 specular = numerator / denominator;
-    
-    F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
     
     float3 kS = F;
     

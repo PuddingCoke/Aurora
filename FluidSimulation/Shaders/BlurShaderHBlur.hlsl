@@ -32,18 +32,22 @@ cbuffer SimulationDynamic : register(b2)
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
-Texture2D tVelocity : register(t0);
-Texture2D tSource : register(t1);
+Texture2D tTexture : register(t0);
 
-
-float4 main(float2 texCoord : TEXCOORD) : SV_Target
+float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
+    float4 sum = tTexture.Sample(linearSampler, texCoord) * 0.29411764;
+    
     float2 texelSize;
-    tVelocity.GetDimensions(texelSize.x, texelSize.y);
+    tTexture.GetDimensions(texelSize.x, texelSize.y);
     texelSize = 1.0 / texelSize;
     
-    float2 coord = texCoord - deltaTime * tVelocity.Sample(linearSampler, texCoord).xy * texelSize;
-    float4 result = tSource.Sample(linearSampler, coord);
-    float decay = 1.0 + density_dissipation * deltaTime;
-    return result / decay;
+    const float offset = 1.33333333;
+    
+    const float2 vL = texCoord - float2(texelSize.x, 0.0) * offset;
+    const float2 vR = texCoord + float2(texelSize.x, 0.0) * offset;
+    
+    sum += tTexture.Sample(linearSampler, vL) * 0.35294117;
+    sum += tTexture.Sample(linearSampler, vR) * 0.35294117;
+    return sum;
 }

@@ -40,16 +40,12 @@ public:
 
 	} pointer;
 
-	//USAGE IMMUTABLE ConstantBufferB1
-	ComPtr<ID3D11Buffer> constantb1;
+	//USAGE IMMUTABLE
+	ComPtr<ID3D11Buffer> simulationParamBuffer;
 
-	//USAGE DYNAMIC ConstantBufferB2
-	ComPtr<ID3D11Buffer> constantb2;
+	//USAGE DYNAMIC
+	ComPtr<ID3D11Buffer> splatParamBuffer;
 
-	//LINEAR
-	ComPtr<ID3D11SamplerState> linearSampler;
-
-	//POINT
 	ComPtr<ID3D11SamplerState> pointSampler;
 
 	//ONE INV_SRC_ALPHA
@@ -66,7 +62,6 @@ public:
 
 	Shader* advVelShader;
 	Shader* advDenShader;
-	Shader* blurShader;
 	Shader* clearShader;
 	Shader* curlShader;
 	Shader* displayShader;
@@ -79,9 +74,9 @@ public:
 	Shader* sunraysShader;
 	Shader* vorticityShader;
 
-	Shader* blurHVertex;
-	Shader* blurVVertex;
-	Shader* velocityVertex;
+	Shader* blurHShader;
+	Shader* blurVShader;
+
 	Shader* displayVertex;
 
 	Timer colorUpdateTimer;
@@ -91,7 +86,6 @@ public:
 	{
 		advVelShader = Shader::fromFile("Shaders\\AdvectionVelDissipation.hlsl", ShaderType::Pixel);
 		advDenShader = Shader::fromFile("Shaders\\AdvectionDenDissipation.hlsl", ShaderType::Pixel);
-		blurShader = Shader::fromFile("Shaders\\BlurShader.hlsl", ShaderType::Pixel);
 		clearShader = Shader::fromFile("Shaders\\ClearShader.hlsl", ShaderType::Pixel);
 		curlShader = Shader::fromFile("Shaders\\CurlShader.hlsl", ShaderType::Pixel);
 		displayShader = Shader::fromFile("Shaders\\DisplayShader.hlsl", ShaderType::Pixel);
@@ -103,9 +97,10 @@ public:
 		sunrayMaskShader = Shader::fromFile("Shaders\\SunraysMaskShader.hlsl", ShaderType::Pixel);
 		sunraysShader = Shader::fromFile("Shaders\\SunraysShader.hlsl", ShaderType::Pixel);
 		vorticityShader = Shader::fromFile("Shaders\\VorticityShader.hlsl", ShaderType::Pixel);
-		blurHVertex = Shader::fromFile("Shaders\\BlurVertexShaderH.hlsl", ShaderType::Vertex);
-		blurVVertex = Shader::fromFile("Shaders\\BlurVertexShaderV.hlsl", ShaderType::Vertex);
-		velocityVertex = Shader::fromFile("Shaders\\VelocityVertexShader.hlsl", ShaderType::Vertex);
+
+		blurHShader = Shader::fromFile("Shaders\\BlurShaderHBlur.hlsl", ShaderType::Pixel);
+		blurVShader = Shader::fromFile("Shaders\\BlurShaderVBlur.hlsl", ShaderType::Pixel);
+
 		displayVertex = Shader::fromFile("Shaders\\DisplayVertexShader.hlsl", ShaderType::Vertex);
 
 		//创建自定义的blendState
@@ -127,20 +122,6 @@ public:
 			blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
 			Renderer::device->CreateBlendState(&blendStateDesc, blendState.ReleaseAndGetAddressOf());
-		}
-
-		//创建linearSampler
-		{
-			D3D11_SAMPLER_DESC sampDesc = {};
-			sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
-			sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
-			sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
-			sampDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_NEVER;
-			sampDesc.MinLOD = 0;
-			sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-			Renderer::device->CreateSamplerState(&sampDesc, linearSampler.ReleaseAndGetAddressOf());
 		}
 
 		//创建pointSampler
@@ -180,10 +161,7 @@ public:
 			{
 				struct ConstantBuffer
 				{
-					DirectX::XMFLOAT2 velocityTexelSize;
 					DirectX::XMFLOAT2 screenTexelSize;
-					DirectX::XMFLOAT2 sunraysTexelSizeX;
-					DirectX::XMFLOAT2 sunraysTexelSizeY;
 					float velocity_dissipation;
 					float density_dissipation;
 					float value;
@@ -191,13 +169,10 @@ public:
 					float curl;
 					float radius;
 					float weight;
-					float v0;
+					DirectX::XMFLOAT3 v0;
 				} constantBuffer{};
 
-				constantBuffer.velocityTexelSize = DirectX::XMFLOAT2(1.f / velocity->read()->getTexture()->getWidth(), 1.f / velocity->read()->getTexture()->getHeight());
 				constantBuffer.screenTexelSize = DirectX::XMFLOAT2(1.f / Graphics::getWidth(), 1.f / Graphics::getHeight());
-				constantBuffer.sunraysTexelSizeX = DirectX::XMFLOAT2(1.f / sunrays->getTexture()->getWidth(), 0);
-				constantBuffer.sunraysTexelSizeY = DirectX::XMFLOAT2(0, 1.f / sunrays->getTexture()->getHeight());
 				constantBuffer.velocity_dissipation = SimulationConfig::VELOCITY_DISSIPATION;
 				constantBuffer.density_dissipation = SimulationConfig::DENSITY_DISSIPATION;
 				constantBuffer.value = SimulationConfig::PRESSURE;
@@ -214,26 +189,27 @@ public:
 				D3D11_SUBRESOURCE_DATA subResource = {};
 				subResource.pSysMem = &constantBuffer;
 
-				Renderer::device->CreateBuffer(&cbd, &subResource, constantb1.ReleaseAndGetAddressOf());
+				Renderer::device->CreateBuffer(&cbd, &subResource, simulationParamBuffer.ReleaseAndGetAddressOf());
 			}
 		}
 
 		//创建每帧要更新的ConstantBuffer
 		{
 			D3D11_BUFFER_DESC cbd = {};
-			cbd.ByteWidth = sizeof(BufferDynamic);
+			cbd.ByteWidth = sizeof(SplatParam);
 			cbd.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
 			cbd.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
 			cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-			Renderer::device->CreateBuffer(&cbd, nullptr, constantb2.ReleaseAndGetAddressOf());
+			Renderer::device->CreateBuffer(&cbd, nullptr, splatParamBuffer.ReleaseAndGetAddressOf());
 		}
 
-		ID3D11Buffer* buffers[2] = { constantb1.Get(),constantb2.Get() };
+		ID3D11Buffer* pixelConstantBuffers[2] = { simulationParamBuffer.Get(),splatParamBuffer.Get()};
+		ID3D11Buffer* vertexConstantBuffers[1] = { simulationParamBuffer.Get() };
 
-		Renderer::context->VSSetConstantBuffers(1, 2, buffers);
+		Renderer::context->VSSetConstantBuffers(1, 1, vertexConstantBuffers);
 
-		Renderer::context->PSSetConstantBuffers(1, 2, buffers);
+		Renderer::context->PSSetConstantBuffers(1, 2, pixelConstantBuffers);
 
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -255,7 +231,7 @@ public:
 				pointer.down = false;
 			});
 
-		ID3D11SamplerState* samplers[2] = { linearSampler.Get(),pointSampler.Get() };
+		ID3D11SamplerState* samplers[2] = { StateCommon::defSamplerState.Get(),pointSampler.Get()};
 
 		Renderer::context->PSSetSamplers(0, 2, samplers);
 	}
@@ -273,7 +249,6 @@ public:
 
 		delete advVelShader;
 		delete advDenShader;
-		delete blurShader;
 		delete clearShader;
 		delete curlShader;
 		delete displayShader;
@@ -286,9 +261,9 @@ public:
 		delete sunraysShader;
 		delete vorticityShader;
 
-		delete blurHVertex;
-		delete blurVVertex;
-		delete velocityVertex;
+		delete blurHShader;
+		delete blurVShader;
+
 		delete displayVertex;
 	}
 
@@ -313,18 +288,19 @@ public:
 
 	void splat(const float& x, const float& y, const float& dx, const float& dy, const float& r, const float& g, const float& b)
 	{
-		cBufferB2.color0 = DirectX::XMFLOAT3(dx, dy, 0.f);
-		cBufferB2.color1 = DirectX::XMFLOAT3(r, g, b);
-		cBufferB2.point = DirectX::XMFLOAT2(x, y);
+		splatParam.color0 = DirectX::XMFLOAT3(dx, dy, 0.f);
+		splatParam.color1 = DirectX::XMFLOAT3(r, g, b);
+		splatParam.point = DirectX::XMFLOAT2(x, y);
 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
-		Renderer::context->Map(constantb2.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-		memcpy(mappedData.pData, &cBufferB2, sizeof(BufferDynamic));
-		Renderer::context->Unmap(constantb2.Get(), 0);
+		Renderer::context->Map(splatParamBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		memcpy(mappedData.pData, &splatParam, sizeof(SplatParam));
+		Renderer::context->Unmap(splatParamBuffer.Get(), 0);
 
 		Renderer::setViewport(velocity->width, velocity->height);
 		velocity->write()->setRTV();
-		velocityVertex->use();
+		
+		Shader::displayVShader->use();
 		splatColor0->use();
 		velocity->read()->getTexture()->setSRV(0);
 		Renderer::context->Draw(3, 0);
@@ -346,7 +322,7 @@ public:
 		Renderer::setViewport(velocity->width, velocity->height);
 
 		curl->setRTV();
-		velocityVertex->use();
+		Shader::displayVShader->use();
 		curlShader->use();
 		velocity->read()->getTexture()->setSRV(0);
 		Renderer::context->Draw(3, 0);
@@ -411,7 +387,7 @@ public:
 	{
 		mask->setRTV();
 		Renderer::setBlendState(StateCommon::blendReplace.Get());
-		velocityVertex->use();
+		Shader::displayVShader->use();
 		sunrayMaskShader->use();
 		source->getTexture()->setSRV(0);
 		Renderer::setViewport(mask->width, mask->height);
@@ -428,16 +404,16 @@ public:
 	{
 		ID3D11ShaderResourceView* nullSRV[2] = { nullptr,nullptr };
 
-		blurShader->use();
+		Shader::displayVShader->use();
 		for (int i = 0; i < iterations; i++)
 		{
-			blurHVertex->use();
+			blurHShader->use();
 			temp->setRTV();
 			target->getTexture()->setSRV(0);
 			Renderer::context->Draw(3, 0);
 			Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 
-			blurVVertex->use();
+			blurVShader->use();
 
 			target->setRTV();
 			temp->getTexture()->setSRV(0);

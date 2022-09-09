@@ -24,10 +24,7 @@ static const float2 texCoords[] =
 
 cbuffer SimulationConst : register(b1)
 {
-    float2 velocityTexelSize;
     float2 screenTexelSize;
-    float2 sunraysTexelSizeX;
-    float2 sunraysTexelSizeY;
     float velocity_dissipation;
     float density_dissipation;
     float value;
@@ -35,17 +32,7 @@ cbuffer SimulationConst : register(b1)
     float curl;
     float radius;
     float weight;
-    float v0;
-}
-
-cbuffer SimulationDynamic : register(b2)
-{
-    float3 color0;
-    float padding0;
-    float3 color1;
-    float padding1;
-    float2 point0;
-    float2 padding2;
+    float3 v0;
 }
 
 VertexOutput main(in uint vertexID : SV_VertexID)

@@ -29,7 +29,7 @@ DirectX::XMINT2 getResolution(const float& resolution)
 }
 
 //每帧更新一次
-struct BufferDynamic
+struct SplatParam
 {
 	DirectX::XMFLOAT3 color0;
 	float v0;
@@ -37,4 +37,4 @@ struct BufferDynamic
 	float v1;
 	DirectX::XMFLOAT2 point;
 	float v2[2];
-} cBufferB2;
+} splatParam;

@@ -1,12 +1,3 @@
-struct PixelInput
-{
-    float2 vUv : TEXCOORD0;
-    float2 vL : TEXCOORD1;
-    float2 vR : TEXCOORD2;
-    float2 vT : TEXCOORD3;
-    float2 vB : TEXCOORD4;
-};
-
 cbuffer DeltaTimes : register(b0)
 {
     float deltaTime;
@@ -17,10 +8,7 @@ cbuffer DeltaTimes : register(b0)
 
 cbuffer SimulationConst : register(b1)
 {
-    float2 velocityTexelSize;
     float2 screenTexelSize;
-    float2 sunraysTexelSizeX;
-    float2 sunraysTexelSizeY;
     float velocity_dissipation;
     float density_dissipation;
     float value;
@@ -28,7 +16,7 @@ cbuffer SimulationConst : register(b1)
     float curl;
     float radius;
     float weight;
-    float v0;
+    float3 v0;
 }
 
 cbuffer SimulationDynamic : register(b2)
@@ -48,19 +36,19 @@ Texture2D tTexture : register(t0);
 
 #define ITERATIONS 16
 
-float4 main(PixelInput input) : SV_TARGET
+float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
     float Density = 0.3;
     float Decay = 0.95;
     float Exposure = 0.7;
 
-    float2 coord = input.vUv;
-    float2 dir = input.vUv - 0.5;
+    float2 coord = texCoord;
+    float2 dir = texCoord - 0.5;
 
     dir *= 1.0 / float(ITERATIONS) * Density;
     float illuminationDecay = 1.0;
 
-    float color = tTexture.Sample(linearSampler, input.vUv).a;
+    float color = tTexture.Sample(linearSampler, texCoord).a;
 
     for (int i = 0; i < ITERATIONS; i++)
     {

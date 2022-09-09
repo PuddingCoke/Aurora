@@ -1,12 +1,3 @@
-struct PixelInput
-{
-    float2 vUv : TEXCOORD0;
-    float2 vL : TEXCOORD1;
-    float2 vR : TEXCOORD2;
-    float2 vT : TEXCOORD3;
-    float2 vB : TEXCOORD4;
-};
-
 cbuffer DeltaTimes : register(b0)
 {
     float deltaTime;
@@ -17,10 +8,7 @@ cbuffer DeltaTimes : register(b0)
 
 cbuffer SimulationConst : register(b1)
 {
-    float2 velocityTexelSize;
     float2 screenTexelSize;
-    float2 sunraysTexelSizeX;
-    float2 sunraysTexelSizeY;
     float velocity_dissipation;
     float density_dissipation;
     float value;
@@ -28,7 +16,7 @@ cbuffer SimulationConst : register(b1)
     float curl;
     float radius;
     float weight;
-    float v0;
+    float3 v0;
 }
 
 cbuffer SimulationDynamic : register(b2)
@@ -48,9 +36,13 @@ Texture2D tVelocity : register(t0);
 Texture2D tSource : register(t1);
 
 
-float4 main(PixelInput input) : SV_Target
+float4 main(float2 texCoord : TEXCOORD) : SV_Target
 {
-    float2 coord = input.vUv - deltaTime * tVelocity.Sample(linearSampler, input.vUv).xy * velocityTexelSize;
+    float2 texelSize;
+    tVelocity.GetDimensions(texelSize.x, texelSize.y);
+    texelSize = 1.0 / texelSize;
+    
+    float2 coord = texCoord - deltaTime * tVelocity.Sample(linearSampler, texCoord).xy * texelSize;
     float4 result = tSource.Sample(linearSampler, coord);
     float decay = 1.0 + velocity_dissipation * deltaTime;
     return result / decay;

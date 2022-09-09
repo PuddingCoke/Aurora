@@ -1,12 +1,3 @@
-struct PixelInput
-{
-    float2 vUv : TEXCOORD0;
-    float2 vL : TEXCOORD1;
-    float2 vR : TEXCOORD2;
-    float2 vT : TEXCOORD3;
-    float2 vB : TEXCOORD4;
-};
-
 cbuffer DeltaTimes : register(b0)
 {
     float deltaTime;
@@ -17,10 +8,7 @@ cbuffer DeltaTimes : register(b0)
 
 cbuffer SimulationConst : register(b1)
 {
-    float2 velocityTexelSize;
     float2 screenTexelSize;
-    float2 sunraysTexelSizeX;
-    float2 sunraysTexelSizeY;
     float velocity_dissipation;
     float density_dissipation;
     float value;
@@ -28,7 +16,7 @@ cbuffer SimulationConst : register(b1)
     float curl;
     float radius;
     float weight;
-    float v0;
+    float3 v0;
 }
 
 cbuffer SimulationDynamic : register(b2)
@@ -47,15 +35,24 @@ SamplerState pointSampler : register(s1);
 Texture2D tPressure : register(t0);
 Texture2D tDivergence : register(t1);
 
-float4 main(PixelInput input) : SV_TARGET
+float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float L = tPressure.Sample(pointSampler, input.vL).x;
-    float R = tPressure.Sample(pointSampler, input.vR).x;
-    float T = tPressure.Sample(pointSampler, input.vT).x;
-    float B = tPressure.Sample(pointSampler, input.vB).x;
-    float C = tPressure.Sample(pointSampler, input.vUv).x;
+    float2 texelSize;
+    tPressure.GetDimensions(texelSize.x, texelSize.y);
+    texelSize = 1.0 / texelSize;
     
-    float divergence = tDivergence.Sample(pointSampler, input.vUv).x;
+    const float2 vL = texCoord - float2(texelSize.x, 0.0);
+    const float2 vR = texCoord + float2(texelSize.x, 0.0);
+    const float2 vT = texCoord + float2(0.0, texelSize.y);
+    const float2 vB = texCoord - float2(0.0, texelSize.y);
+    
+    float L = tPressure.Sample(pointSampler, vL).x;
+    float R = tPressure.Sample(pointSampler, vR).x;
+    float T = tPressure.Sample(pointSampler, vT).x;
+    float B = tPressure.Sample(pointSampler, vB).x;
+    float C = tPressure.Sample(pointSampler, texCoord).x;
+    
+    float divergence = tDivergence.Sample(pointSampler, texCoord).x;
     
     float pressure = (L + R + B + T - divergence) * 0.25;
     
