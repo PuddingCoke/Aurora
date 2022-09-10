@@ -24,7 +24,7 @@ void OrbitCamera::registerEvent()
 
 				DirectX::XMStoreFloat(&curTheta, DirectX::XMVector3AngleBetweenVectors(eye, up));
 
-				const float epsilon = 0.001f;
+				const float epsilon = 0.01f;
 
 				if (curTheta + Mouse::getDY() / 120.f > Math::pi - epsilon || curTheta + Mouse::getDY() / 120.f < epsilon)
 				{

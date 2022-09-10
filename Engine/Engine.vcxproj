@@ -140,6 +140,7 @@
     <ClInclude Include="Inc\Aurora\A3D\OrbitCamera.h" />
     <ClInclude Include="Inc\Aurora\Aurora.h" />
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
+    <ClInclude Include="Inc\Aurora\Buffer.h" />
     <ClInclude Include="Inc\Aurora\Camera.h" />
     <ClInclude Include="Inc\Aurora\Color.h" />
     <ClInclude Include="Inc\Aurora\Configuration.h" />
@@ -175,6 +176,7 @@
   <ItemGroup>
     <ClCompile Include="Src\Aurora\A3D\FPSCamera.cpp" />
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp" />
+    <ClCompile Include="Src\Aurora\Buffer.cpp" />
     <ClCompile Include="Src\Aurora\PBR\RealShading.cpp" />
     <ClCompile Include="Src\Aurora\Renderer.cpp" />
     <ClCompile Include="Src\Aurora\A3D\ShadowMap.cpp" />

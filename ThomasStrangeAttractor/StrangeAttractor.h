@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<Aurora/ParticleSystem.h>
+#include<Aurora/Buffer.h>
 
 class StrangeAttractor :public ParticleSystem
 {
@@ -13,11 +14,11 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	ComPtr<ID3D11Buffer> particlePosBuffer;
+	std::shared_ptr<Buffer> particlePosBuffer;
+
+	std::shared_ptr<Buffer> particleColorBuffer;
 
 	ComPtr<ID3D11UnorderedAccessView> uavView;
-
-	ComPtr<ID3D11Buffer> particleColorBuffer;
 
 	Shader* displayVShader;
 
@@ -54,17 +55,19 @@ public:
 		}
 
 		//初始化粒子位置信息
-		{
-			D3D11_BUFFER_DESC bd = {};
-			bd.ByteWidth = particleNum * sizeof(DirectX::XMFLOAT4);
-			bd.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
-			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_UNORDERED_ACCESS;
+		particlePosBuffer = std::shared_ptr<Buffer>(Buffer::create(
+			particleNum*sizeof(DirectX::XMFLOAT4),
+			D3D11_BIND_VERTEX_BUFFER|D3D11_BIND_UNORDERED_ACCESS,
+			D3D11_USAGE_DEFAULT,
+			positions));
 
-			D3D11_SUBRESOURCE_DATA subresource = {};
-			subresource.pSysMem = positions;
-
-			Renderer::device->CreateBuffer(&bd, &subresource, particlePosBuffer.ReleaseAndGetAddressOf());
-		}
+		//初始化粒子颜色信息
+		particleColorBuffer = std::shared_ptr<Buffer>(Buffer::create(
+			particleNum * sizeof(DirectX::XMFLOAT4),
+			D3D11_BIND_VERTEX_BUFFER,
+			D3D11_USAGE_IMMUTABLE,
+			colors
+		));
 
 		//创建UAV Buffer
 		{
@@ -75,20 +78,7 @@ public:
 			uavDesc.Buffer.Flags = 0;
 			uavDesc.Buffer.NumElements = particleNum;
 
-			Renderer::device->CreateUnorderedAccessView(particlePosBuffer.Get(), &uavDesc, uavView.GetAddressOf());
-		}
-
-		//初始化粒子颜色信息
-		{
-			D3D11_BUFFER_DESC bd = {};
-			bd.ByteWidth = particleNum * sizeof(DirectX::XMFLOAT4);
-			bd.Usage = D3D11_USAGE::D3D11_USAGE_IMMUTABLE;
-			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-			D3D11_SUBRESOURCE_DATA subresource = {};
-			subresource.pSysMem = colors;
-
-			Renderer::device->CreateBuffer(&bd, &subresource, particleColorBuffer.ReleaseAndGetAddressOf());
+			Renderer::device->CreateUnorderedAccessView(particlePosBuffer->get(), &uavDesc, uavView.GetAddressOf());
 		}
 
 		delete[] positions;
@@ -144,7 +134,7 @@ public:
 		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 		
-		ID3D11Buffer* buffers[2] = { particlePosBuffer.Get(),particleColorBuffer.Get() };
+		ID3D11Buffer* buffers[2] = { particlePosBuffer->get(),particleColorBuffer->get() };
 
 		const UINT stride[2] = { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) };
 		const UINT offset[2] = { 0,0 };
