@@ -1,12 +1,3 @@
-struct PixelInput
-{
-    float2 vUv : TEXCOORD0;
-    float2 vL : TEXCOORD1;
-    float2 vR : TEXCOORD2;
-    float2 vT : TEXCOORD3;
-    float2 vB : TEXCOORD4;
-};
-
 cbuffer DeltaTimes : register(b0)
 {
     float deltaTime;
@@ -18,6 +9,8 @@ cbuffer DeltaTimes : register(b0)
 cbuffer SimulationConst : register(b1)
 {
     float2 screenTexelSize;
+    float2 simTexelSize;
+    float2 sunTexelSize;
     float velocity_dissipation;
     float density_dissipation;
     float value;
@@ -28,30 +21,25 @@ cbuffer SimulationConst : register(b1)
     float3 v0;
 }
 
-cbuffer SimulationDynamic : register(b2)
-{
-    float3 color0;
-    float padding0;
-    float3 color1;
-    float padding1;
-    float2 point0;
-    float2 padding2;
-}
-
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
 Texture2D tTexture : register(t0);
 Texture2D tSunrays : register(t1);
 
-float4 main(PixelInput input) : SV_TARGET
+float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float3 c = tTexture.Sample(linearSampler, input.vUv).rgb;
+    float3 c = tTexture.Sample(linearSampler, texCoord).rgb;
     
-    float3 lc = tTexture.Sample(linearSampler, input.vL).rgb;
-    float3 rc = tTexture.Sample(linearSampler, input.vR).rgb;
-    float3 tc = tTexture.Sample(linearSampler, input.vT).rgb;
-    float3 bc = tTexture.Sample(linearSampler, input.vB).rgb;
+    const float2 vL = texCoord - float2(screenTexelSize.x, 0.0);
+    const float2 vR = texCoord + float2(screenTexelSize.x, 0.0);
+    const float2 vT = texCoord + float2(0.0, screenTexelSize.y);
+    const float2 vB = texCoord - float2(0.0, screenTexelSize.y);
+    
+    float3 lc = tTexture.Sample(linearSampler, vL).rgb;
+    float3 rc = tTexture.Sample(linearSampler, vR).rgb;
+    float3 tc = tTexture.Sample(linearSampler, vT).rgb;
+    float3 bc = tTexture.Sample(linearSampler, vB).rgb;
     
     float dx = length(rc) - length(lc);
     float dy = length(tc) - length(bc);
@@ -62,7 +50,7 @@ float4 main(PixelInput input) : SV_TARGET
     float diffuse = clamp(dot(n, l) + 0.7, 0.7, 1.0);
     c *= diffuse;
     
-    float sunrays = tSunrays.Sample(linearSampler, input.vUv).r;
+    float sunrays = tSunrays.Sample(linearSampler, texCoord).r;
     c *= sunrays;
     
     float a = max(c.r, max(c.g, c.b));

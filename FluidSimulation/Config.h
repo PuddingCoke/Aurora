@@ -31,10 +31,7 @@ DirectX::XMINT2 getResolution(const float& resolution)
 //每帧更新一次
 struct SplatParam
 {
-	DirectX::XMFLOAT3 color0;
-	float v0;
-	DirectX::XMFLOAT3 color1;
-	float v1;
-	DirectX::XMFLOAT2 point;
-	float v2[2];
+	DirectX::XMFLOAT2 mousePos;
+	DirectX::XMFLOAT2 mouseDelta;
+	DirectX::XMFLOAT4 color;
 } splatParam;

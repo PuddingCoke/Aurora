@@ -68,8 +68,8 @@ public:
 	Shader* divergenceShader;
 	Shader* gradientSubtractShader;
 	Shader* pressureShader;
-	Shader* splatColor0;
-	Shader* splatColor1;
+	Shader* splatVelocityShader;
+	Shader* splatColorShader;
 	Shader* sunrayMaskShader;
 	Shader* sunraysShader;
 	Shader* vorticityShader;
@@ -77,32 +77,26 @@ public:
 	Shader* blurHShader;
 	Shader* blurVShader;
 
-	Shader* displayVertex;
-
 	Timer colorUpdateTimer;
 
-	MyGame():
-		colorUpdateTimer(1.f)
+	MyGame() :
+		colorUpdateTimer(1.f),
+		advVelShader(Shader::fromFile("Shaders\\AdvectionVelDissipation.hlsl", ShaderType::Pixel)),
+		advDenShader(Shader::fromFile("Shaders\\AdvectionDenDissipation.hlsl", ShaderType::Pixel)),
+		clearShader(Shader::fromFile("Shaders\\ClearShader.hlsl", ShaderType::Pixel)),
+		curlShader(Shader::fromFile("Shaders\\CurlShader.hlsl", ShaderType::Pixel)),
+		displayShader(Shader::fromFile("Shaders\\DisplayShader.hlsl", ShaderType::Pixel)),
+		divergenceShader(Shader::fromFile("Shaders\\DivergenceShader.hlsl", ShaderType::Pixel)),
+		gradientSubtractShader(Shader::fromFile("Shaders\\GradientSubtractShader.hlsl", ShaderType::Pixel)),
+		pressureShader(Shader::fromFile("Shaders\\PressureShader.hlsl", ShaderType::Pixel)),
+		splatVelocityShader(Shader::fromFile("Shaders\\SplatVelocityShader.hlsl", ShaderType::Pixel)),
+		splatColorShader(Shader::fromFile("Shaders\\SplatColorShader.hlsl", ShaderType::Pixel)),
+		sunrayMaskShader(Shader::fromFile("Shaders\\SunraysMaskShader.hlsl", ShaderType::Pixel)),
+		sunraysShader(Shader::fromFile("Shaders\\SunraysShader.hlsl", ShaderType::Pixel)),
+		vorticityShader(Shader::fromFile("Shaders\\VorticityShader.hlsl", ShaderType::Pixel)),
+		blurHShader(Shader::fromFile("Shaders\\BlurShaderHBlur.hlsl", ShaderType::Pixel)),
+		blurVShader(Shader::fromFile("Shaders\\BlurShaderVBlur.hlsl", ShaderType::Pixel))
 	{
-		advVelShader = Shader::fromFile("Shaders\\AdvectionVelDissipation.hlsl", ShaderType::Pixel);
-		advDenShader = Shader::fromFile("Shaders\\AdvectionDenDissipation.hlsl", ShaderType::Pixel);
-		clearShader = Shader::fromFile("Shaders\\ClearShader.hlsl", ShaderType::Pixel);
-		curlShader = Shader::fromFile("Shaders\\CurlShader.hlsl", ShaderType::Pixel);
-		displayShader = Shader::fromFile("Shaders\\DisplayShader.hlsl", ShaderType::Pixel);
-		divergenceShader = Shader::fromFile("Shaders\\DivergenceShader.hlsl", ShaderType::Pixel);
-		gradientSubtractShader = Shader::fromFile("Shaders\\GradientSubtractShader.hlsl", ShaderType::Pixel);
-		pressureShader = Shader::fromFile("Shaders\\PressureShader.hlsl", ShaderType::Pixel);
-		splatColor0 = Shader::fromFile("Shaders\\SplatShaderColor0.hlsl", ShaderType::Pixel);
-		splatColor1 = Shader::fromFile("Shaders\\SplatShaderColor1.hlsl", ShaderType::Pixel);
-		sunrayMaskShader = Shader::fromFile("Shaders\\SunraysMaskShader.hlsl", ShaderType::Pixel);
-		sunraysShader = Shader::fromFile("Shaders\\SunraysShader.hlsl", ShaderType::Pixel);
-		vorticityShader = Shader::fromFile("Shaders\\VorticityShader.hlsl", ShaderType::Pixel);
-
-		blurHShader = Shader::fromFile("Shaders\\BlurShaderHBlur.hlsl", ShaderType::Pixel);
-		blurVShader = Shader::fromFile("Shaders\\BlurShaderVBlur.hlsl", ShaderType::Pixel);
-
-		displayVertex = Shader::fromFile("Shaders\\DisplayVertexShader.hlsl", ShaderType::Vertex);
-
 		//创建自定义的blendState
 		{
 			D3D11_BLEND_DESC blendStateDesc = {};
@@ -144,17 +138,11 @@ public:
 			const DirectX::XMINT2 sunRes = getResolution(SimulationConfig::SUNRAYS_RESOLUTION);
 
 			dye = DoubleRTV::create(dyeRes.x, dyeRes.y, DXGI_FORMAT::DXGI_FORMAT_R16G16B16A16_FLOAT);
-
 			velocity = DoubleRTV::create(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16G16_FLOAT);
-
 			pressure = DoubleRTV::create(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT);
-
 			divergence = RenderTexture::create(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
-
 			curl = RenderTexture::create(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
-
 			sunrays = RenderTexture::create(sunRes.x, sunRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
-
 			sunraysTemp = RenderTexture::create(sunRes.x, sunRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
 
 			//创建数据不变的ConstantBuffer
@@ -162,6 +150,8 @@ public:
 				struct ConstantBuffer
 				{
 					DirectX::XMFLOAT2 screenTexelSize;
+					DirectX::XMFLOAT2 simTexelSize;
+					DirectX::XMFLOAT2 sunTexelSize;
 					float velocity_dissipation;
 					float density_dissipation;
 					float value;
@@ -173,6 +163,8 @@ public:
 				} constantBuffer{};
 
 				constantBuffer.screenTexelSize = DirectX::XMFLOAT2(1.f / Graphics::getWidth(), 1.f / Graphics::getHeight());
+				constantBuffer.simTexelSize = DirectX::XMFLOAT2(1.f / simRes.x, 1.f / simRes.y);
+				constantBuffer.sunTexelSize = DirectX::XMFLOAT2(1.f / sunRes.x, 1.f / sunRes.y);
 				constantBuffer.velocity_dissipation = SimulationConfig::VELOCITY_DISSIPATION;
 				constantBuffer.density_dissipation = SimulationConfig::DENSITY_DISSIPATION;
 				constantBuffer.value = SimulationConfig::PRESSURE;
@@ -204,7 +196,7 @@ public:
 			Renderer::device->CreateBuffer(&cbd, nullptr, splatParamBuffer.ReleaseAndGetAddressOf());
 		}
 
-		ID3D11Buffer* pixelConstantBuffers[2] = { simulationParamBuffer.Get(),splatParamBuffer.Get()};
+		ID3D11Buffer* pixelConstantBuffers[2] = { simulationParamBuffer.Get(),splatParamBuffer.Get() };
 		ID3D11Buffer* vertexConstantBuffers[1] = { simulationParamBuffer.Get() };
 
 		Renderer::context->VSSetConstantBuffers(1, 1, vertexConstantBuffers);
@@ -231,7 +223,7 @@ public:
 				pointer.down = false;
 			});
 
-		ID3D11SamplerState* samplers[2] = { StateCommon::defSamplerState.Get(),pointSampler.Get()};
+		ID3D11SamplerState* samplers[2] = { StateCommon::defSamplerState.Get(),pointSampler.Get() };
 
 		Renderer::context->PSSetSamplers(0, 2, samplers);
 	}
@@ -255,16 +247,14 @@ public:
 		delete divergenceShader;
 		delete gradientSubtractShader;
 		delete pressureShader;
-		delete splatColor0;
-		delete splatColor1;
+		delete splatVelocityShader;
+		delete splatColorShader;
 		delete sunrayMaskShader;
 		delete sunraysShader;
 		delete vorticityShader;
 
 		delete blurHShader;
 		delete blurVShader;
-
-		delete displayVertex;
 	}
 
 	void updateColors(const float& dt)
@@ -288,9 +278,9 @@ public:
 
 	void splat(const float& x, const float& y, const float& dx, const float& dy, const float& r, const float& g, const float& b)
 	{
-		splatParam.color0 = DirectX::XMFLOAT3(dx, dy, 0.f);
-		splatParam.color1 = DirectX::XMFLOAT3(r, g, b);
-		splatParam.point = DirectX::XMFLOAT2(x, y);
+		splatParam.mousePos = DirectX::XMFLOAT2(x, y);
+		splatParam.mouseDelta = DirectX::XMFLOAT2(dx, dy);
+		splatParam.color = DirectX::XMFLOAT4(r, g, b, 1.0);
 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
 		Renderer::context->Map(splatParamBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
@@ -299,16 +289,16 @@ public:
 
 		Renderer::setViewport(velocity->width, velocity->height);
 		velocity->write()->setRTV();
-		
+
 		Shader::displayVShader->use();
-		splatColor0->use();
+		splatVelocityShader->use();
 		velocity->read()->getTexture()->setSRV(0);
 		Renderer::context->Draw(3, 0);
 		velocity->swap();
 
 		Renderer::setViewport(dye->width, dye->height);
 		dye->write()->setRTV();
-		splatColor1->use();
+		splatColorShader->use();
 		dye->read()->getTexture()->setSRV(0);
 		Renderer::context->Draw(3, 0);
 		dye->swap();
@@ -440,7 +430,7 @@ public:
 
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 		Renderer::setDefRTV();
-		displayVertex->use();
+		Shader::displayVShader->use();
 		displayShader->use();
 		dye->read()->getTexture()->setSRV(0);
 		sunrays->getTexture()->setSRV(1);

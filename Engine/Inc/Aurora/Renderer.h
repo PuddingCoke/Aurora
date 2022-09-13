@@ -24,7 +24,11 @@ public:
 
 	static void clearDefRTV(const float* color);
 
-	static void setViewport(const float& vWidth, const float& vHeight);
+	static void setViewport(const float& width, const float& height);
+
+	static void setViewport(const unsigned int& width, const unsigned int& height);
+
+	static void setViewport(const int& width, const int& height);
 
 	static void setTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology);
 

@@ -9,6 +9,8 @@ cbuffer DeltaTimes : register(b0)
 cbuffer SimulationConst : register(b1)
 {
     float2 screenTexelSize;
+    float2 simTexelSize;
+    float2 sunTexelSize;
     float velocity_dissipation;
     float density_dissipation;
     float value;
@@ -21,25 +23,22 @@ cbuffer SimulationConst : register(b1)
 
 cbuffer SimulationDynamic : register(b2)
 {
-    float3 color0;
-    float padding0;
-    float3 color1;
-    float padding1;
-    float2 point0;
-    float2 padding2;
+    float2 mousePos;
+    float2 mouseDelta;
+    float4 color;
 }
 
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
-Texture2D tTarget : register(t0);
+Texture2D tVelocity : register(t0);
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float2 p = texCoord - point0.xy;
+    float2 p = texCoord - mousePos;
     p.x *= aspectRatio;
-    float3 splat = exp(-dot(p, p) / radius) * color1;
-    float3 base = tTarget.Sample(linearSampler, texCoord).xyz;
+    float2 splat = exp(-dot(p, p) / radius) * mouseDelta;
+    float2 base = tVelocity.Sample(linearSampler, texCoord).xy;
     
-    return float4(base + splat, 1.0);
+    return float4(base + splat, 0.0, 1.0);
 }

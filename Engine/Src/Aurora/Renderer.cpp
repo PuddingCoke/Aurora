@@ -10,11 +10,21 @@ ID3D11Texture2D* Renderer::backBuffer = nullptr;
 
 ComPtr<ID3D11RenderTargetView> Renderer::defaultTargetView;
 
-void Renderer::setViewport(const float& vWidth, const float& vHeight)
+void Renderer::setViewport(const float& width, const float& height)
 {
-	vp.Width = vWidth;
-	vp.Height = vHeight;
+	vp.Width = width;
+	vp.Height = height;
 	context->RSSetViewports(1, &vp);
+}
+
+void Renderer::setViewport(const unsigned int& width, const unsigned int& height)
+{
+	setViewport((float)width, (float)height);
+}
+
+void Renderer::setViewport(const int& width, const int& height)
+{
+	setViewport((float)width, (float)height);
 }
 
 void Renderer::setTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology)

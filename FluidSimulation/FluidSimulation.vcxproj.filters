@@ -28,7 +28,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\DisplayVertexShader.hlsl" />
     <FxCompile Include="Shaders\AdvectionVelDissipation.hlsl" />
     <FxCompile Include="Shaders\BlurShaderHBlur.hlsl" />
     <FxCompile Include="Shaders\ClearShader.hlsl" />
@@ -37,9 +36,9 @@
     <FxCompile Include="Shaders\DivergenceShader.hlsl" />
     <FxCompile Include="Shaders\GradientSubtractShader.hlsl" />
     <FxCompile Include="Shaders\PressureShader.hlsl" />
-    <FxCompile Include="Shaders\SplatShaderColor0.hlsl" />
+    <FxCompile Include="Shaders\SplatVelocityShader.hlsl" />
     <FxCompile Include="Shaders\SunraysMaskShader.hlsl" />
-    <FxCompile Include="Shaders\SplatShaderColor1.hlsl" />
+    <FxCompile Include="Shaders\SplatColorShader.hlsl" />
     <FxCompile Include="Shaders\SunraysShader.hlsl" />
     <FxCompile Include="Shaders\VorticityShader.hlsl" />
     <FxCompile Include="Shaders\AdvectionDenDissipation.hlsl" />
