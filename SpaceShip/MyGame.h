@@ -47,7 +47,7 @@ public:
 
 		Renderer::setBlendState(StateCommon::defBlendState.Get());
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Renderer::setSampler(0, StateCommon::defSamplerState.Get());
+		Renderer::setSampler(0, StateCommon::defLinearSampler.Get());
 
 		TextureCube::shader->use();
 		skyboxPShader->use();

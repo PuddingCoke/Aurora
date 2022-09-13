@@ -265,7 +265,7 @@ public:
 		albedo->setRTV();
 
 		Renderer::context->PSSetSamplers(0, 1, wrapSampler.GetAddressOf());
-		Renderer::context->PSSetSamplers(1, 1, StateCommon::defSamplerState.GetAddressOf());
+		Renderer::context->PSSetSamplers(1, 1, StateCommon::defLinearSampler.GetAddressOf());
 
 		skybox->setSRV(0);
 

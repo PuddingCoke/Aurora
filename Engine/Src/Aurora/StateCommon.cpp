@@ -1,6 +1,8 @@
 ﻿#include<Aurora/StateCommon.h>
 
-ComPtr<ID3D11SamplerState> StateCommon::defSamplerState;
+ComPtr<ID3D11SamplerState> StateCommon::defLinearSampler;
+
+ComPtr<ID3D11SamplerState> StateCommon::defPointSampler;
 
 ComPtr<ID3D11BlendState> StateCommon::defBlendState;
 
@@ -12,7 +14,7 @@ ComPtr<ID3D11DepthStencilState> StateCommon::defDepthStencilState;
 
 HRESULT StateCommon::ini()
 {
-	//初始化defSamplerState
+	//初始化defLinearSampler
 	{
 		D3D11_SAMPLER_DESC sampDesc = {};
 		sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -23,7 +25,21 @@ HRESULT StateCommon::ini()
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::device->CreateSamplerState(&sampDesc, defSamplerState.ReleaseAndGetAddressOf());
+		Renderer::device->CreateSamplerState(&sampDesc, defLinearSampler.ReleaseAndGetAddressOf());
+	}
+
+	//初始化defPointSampler
+	{
+		D3D11_SAMPLER_DESC sampDesc = {};
+		sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_POINT;
+		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
+		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
+		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
+		sampDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_NEVER;
+		sampDesc.MinLOD = 0;
+		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		Renderer::device->CreateSamplerState(&sampDesc, defPointSampler.ReleaseAndGetAddressOf());
 	}
 
 	//初始化defBlendState

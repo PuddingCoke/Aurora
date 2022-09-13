@@ -212,7 +212,7 @@ public:
 
 				Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+				Renderer::context->PSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
 				envTexture->setSRV(0);
 
 				TextureCube::shader->use();
@@ -445,7 +445,7 @@ public:
 
 		Renderer::setBlendState(StateCommon::defBlendState.Get());
 
-		Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
 
 		Renderer::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
 
@@ -465,7 +465,7 @@ public:
 
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Renderer::context->PSSetSamplers(0, 1, StateCommon::defSamplerState.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
 
 		for (unsigned i = 0; i < numModels; i++)
 		{

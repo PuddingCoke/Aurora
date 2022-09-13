@@ -251,7 +251,7 @@ public:
 		depthStencilView->clear(D3D11_CLEAR_DEPTH);
 
 		Renderer::setSampler(0, wrapSampler.Get());
-		Renderer::setSampler(1, StateCommon::defSamplerState.Get());
+		Renderer::setSampler(1, StateCommon::defLinearSampler.Get());
 		Renderer::setSampler(2, borderSampler.Get());
 
 		baseColorBuffer->setRTV(depthStencilView->get());

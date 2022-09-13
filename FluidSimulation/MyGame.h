@@ -46,8 +46,6 @@ public:
 	//USAGE DYNAMIC
 	ComPtr<ID3D11Buffer> splatParamBuffer;
 
-	ComPtr<ID3D11SamplerState> pointSampler;
-
 	//ONE INV_SRC_ALPHA
 	ComPtr<ID3D11BlendState> blendState;
 
@@ -116,20 +114,6 @@ public:
 			blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
 			Renderer::device->CreateBlendState(&blendStateDesc, blendState.ReleaseAndGetAddressOf());
-		}
-
-		//创建pointSampler
-		{
-			D3D11_SAMPLER_DESC sampDesc = {};
-			sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_POINT;
-			sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
-			sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
-			sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
-			sampDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_NEVER;
-			sampDesc.MinLOD = 0;
-			sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-			Renderer::device->CreateSamplerState(&sampDesc, pointSampler.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -223,9 +207,11 @@ public:
 				pointer.down = false;
 			});
 
-		ID3D11SamplerState* samplers[2] = { StateCommon::defSamplerState.Get(),pointSampler.Get() };
+		ID3D11SamplerState* samplers[2] = { StateCommon::defLinearSampler.Get(),StateCommon::defPointSampler.Get() };
 
 		Renderer::context->PSSetSamplers(0, 2, samplers);
+
+		Shader::displayVShader->use();
 	}
 
 	~MyGame()
@@ -290,7 +276,6 @@ public:
 		Renderer::setViewport(velocity->width, velocity->height);
 		velocity->write()->setRTV();
 
-		Shader::displayVShader->use();
 		splatVelocityShader->use();
 		velocity->read()->getTexture()->setSRV(0);
 		Renderer::context->Draw(3, 0);
@@ -312,7 +297,6 @@ public:
 		Renderer::setViewport(velocity->width, velocity->height);
 
 		curl->setRTV();
-		Shader::displayVShader->use();
 		curlShader->use();
 		velocity->read()->getTexture()->setSRV(0);
 		Renderer::context->Draw(3, 0);
@@ -377,7 +361,6 @@ public:
 	{
 		mask->setRTV();
 		Renderer::setBlendState(StateCommon::blendReplace.Get());
-		Shader::displayVShader->use();
 		sunrayMaskShader->use();
 		source->getTexture()->setSRV(0);
 		Renderer::setViewport(mask->width, mask->height);
@@ -394,7 +377,6 @@ public:
 	{
 		ID3D11ShaderResourceView* nullSRV[2] = { nullptr,nullptr };
 
-		Shader::displayVShader->use();
 		for (int i = 0; i < iterations; i++)
 		{
 			blurHShader->use();
@@ -430,7 +412,6 @@ public:
 
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 		Renderer::setDefRTV();
-		Shader::displayVShader->use();
 		displayShader->use();
 		dye->read()->getTexture()->setSRV(0);
 		sunrays->getTexture()->setSRV(1);

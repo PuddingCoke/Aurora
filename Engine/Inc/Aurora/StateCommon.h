@@ -17,7 +17,11 @@ public:
 
 	void operator=(const StateCommon&) = delete;
 
-	static ComPtr<ID3D11SamplerState> defSamplerState;
+	//CLAMP
+	static ComPtr<ID3D11SamplerState> defLinearSampler;
+
+	//CLAMP
+	static ComPtr<ID3D11SamplerState> defPointSampler;
 
 	//SRC_ALPHA INV_SRC_ALPHA
 	static ComPtr<ID3D11BlendState> defBlendState;

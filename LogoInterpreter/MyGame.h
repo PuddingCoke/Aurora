@@ -62,7 +62,7 @@ public:
 
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		Renderer::setBlendState(StateCommon::defBlendState.Get());
-		Renderer::setSampler(0, StateCommon::defSamplerState.Get());
+		Renderer::setSampler(0, StateCommon::defLinearSampler.Get());
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
