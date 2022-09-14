@@ -42,9 +42,7 @@ private:
 
 	void compileShaders() override;
 
-	unsigned int resolutionX[blurSteps];
-
-	unsigned int resolutionY[blurSteps];
+	DirectX::XMUINT2 resolutions[blurSteps];
 
 	RenderTexture* renderTextures[blurSteps * 2];
 

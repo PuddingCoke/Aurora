@@ -1,6 +1,6 @@
 ﻿#include<Aurora/PostProcessing/BloomEffect.h>
 
-BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height,const bool& enableBrightPixelExract) :
+BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height, const bool& enableBrightPixelExract) :
 	EffectBase(width, height), bloomWidth(width), bloomHeight(height), bloomParam{}
 {
 	compileShaders();
@@ -8,28 +8,20 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height,c
 	bloomParam.exposure = 0.36f;
 	bloomParam.gamma = 1.0f;
 
-	originTexture = RenderTexture::create(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false);
+	originTexture = RenderTexture::create(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent);
 
 	if (enableBrightPixelExract)
 	{
-		bloomTexture = RenderTexture::create(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false);
+		bloomTexture = RenderTexture::create(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent);
 	}
 
+	for (unsigned int i = 0; i < blurSteps; i++)
 	{
-		unsigned int currentWidth = width;
-		unsigned int currentHeight = height;
-		for (unsigned int i = 0; i < blurSteps; i++)
-		{
-			currentWidth /= 2;
-			currentHeight /= 2;
+		resolutions[i] = DirectX::XMUINT2(width >> (i + 1), height >> (i + 1));
 
-			resolutionX[i] = currentWidth;
-			resolutionY[i] = currentHeight;
+		renderTextures[i * 2u] = RenderTexture::create(resolutions[i].x, resolutions[i].y, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent);
+		renderTextures[i * 2u + 1u] = RenderTexture::create(resolutions[i].x, resolutions[i].y, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent);
 
-			renderTextures[i * 2u] = RenderTexture::create(currentWidth, currentHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false);
-			renderTextures[i * 2u + 1u] = RenderTexture::create(currentWidth, currentHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent, false);
-
-		}
 	}
 
 	{
@@ -49,7 +41,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height,c
 		firstPass = [this](Texture2D* const texture2D)
 		{
 			bloomExtract->use();
-			Renderer::setViewport((float)bloomWidth, (float)bloomHeight);
+			Renderer::setViewport(bloomWidth, bloomHeight);
 			RenderTexture::setRTVs({ originTexture,bloomTexture });
 			originTexture->clearRTV(DirectX::Colors::Transparent);
 			bloomTexture->clearRTV(DirectX::Colors::Transparent);
@@ -57,7 +49,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height,c
 			Renderer::context->Draw(3, 0);
 
 			Shader::displayPShader->use();
-			Renderer::setViewport((float)resolutionX[0], (float)resolutionY[0]);
+			Renderer::setViewport(resolutions[0].x, resolutions[0].y);
 			renderTextures[0]->clearRTV(DirectX::Colors::Transparent);
 			renderTextures[0]->setRTV();
 			bloomTexture->getTexture()->setSRV(0);
@@ -69,13 +61,13 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height,c
 		firstPass = [this](Texture2D* const texture2D)
 		{
 			Shader::displayPShader->use();
-			Renderer::setViewport((float)bloomWidth, (float)bloomHeight);
+			Renderer::setViewport(bloomWidth, bloomHeight);
 			originTexture->setRTV();
 			originTexture->clearRTV(DirectX::Colors::Transparent);
 			texture2D->setSRV(0);
 			Renderer::context->Draw(3, 0);
 
-			Renderer::setViewport((float)resolutionX[0], (float)resolutionY[0]);
+			Renderer::setViewport(resolutions[0].x, resolutions[0].y);
 			renderTextures[0]->clearRTV(DirectX::Colors::Transparent);
 			renderTextures[0]->setRTV();
 			originTexture->getTexture()->setSRV(0);
@@ -136,7 +128,7 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 
 		Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
 
-		Renderer::setViewport((float)resolutionX[i + 1], (float)resolutionY[i + 1]);
+		Renderer::setViewport(resolutions[i + 1].x, resolutions[i + 1].y);
 
 		Shader::displayPShader->use();
 		renderTextures[i * 2 + 2]->clearRTV(DirectX::Colors::Transparent);
@@ -177,7 +169,7 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		Renderer::setViewport((float)resolutionX[blurSteps - 2 - i], (float)resolutionY[blurSteps - 2 - i]);
+		Renderer::setViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
 
 		blurShaders[(blurSteps - 2 - i) * 2]->use();
 		renderTextures[(blurSteps - 2 - i) * 2 + 1]->clearRTV(DirectX::Colors::Transparent);

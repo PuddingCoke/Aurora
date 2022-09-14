@@ -18,6 +18,9 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DualKawaseBlur.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyGame.h">
@@ -26,10 +29,16 @@
     <ClInclude Include="StrangeAttractor.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="DualKawaseBlur.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ParticleVertexShader.hlsl" />
     <FxCompile Include="ParticlePixelShader.hlsl" />
     <FxCompile Include="ParticleComputeShader.hlsl" />
+    <FxCompile Include="DownSampleShader.hlsl" />
+    <FxCompile Include="UpSampleShader.hlsl" />
+    <FxCompile Include="BloomFinal.hlsl" />
   </ItemGroup>
 </Project>
