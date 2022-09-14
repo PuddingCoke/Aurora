@@ -7,7 +7,7 @@ class DualKawaseBlur :public EffectBase
 {
 public:
 
-	DualKawaseBlur(const unsigned int& width, const unsigned int& height, const float& pixelOffset = 2.f);
+	DualKawaseBlur(const unsigned int& width, const unsigned int& height, const float& pixelOffset = 1.5f);
 
 	~DualKawaseBlur();
 
