@@ -1,4 +1,4 @@
-RWBuffer<float4> positions : register(u1);
+RWBuffer<float4> positions : register(u0);
 
 cbuffer DeltaTimes : register(b0)
 {

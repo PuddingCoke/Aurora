@@ -1,21 +1,25 @@
 ﻿#pragma once
 
-#include"EffectBase.h"
-
 #ifndef _BLOOMEFFECT_H_
 #define _BLOOMEFFECT_H_
+
+#include"EffectBase.h"
 
 // 关于如何实现的
 //https://de45xmedrsdbp.cloudfront.net/Resources/files/The_Technology_Behind_the_Elemental_Demo_16x9-1248544805.pdf p60
 //https://www.intel.com/content/www/us/en/developer/articles/technical/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms.html
 //https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
+
 class BloomEffect :public EffectBase
 {
 public:
 
+	//这个参数是写死的
 	static constexpr unsigned int blurSteps = 5;
 
-	BloomEffect(const unsigned int& width, const unsigned int& height, const bool& enableBrightPixelExract = true);
+	static constexpr DirectX::XMUINT2 workGroupSize = { 60,16 };
+
+	BloomEffect(const unsigned int& width, const unsigned int& height);
 
 	~BloomEffect();
 
@@ -23,17 +27,27 @@ public:
 
 	Shader* bloomExtract;
 
-	Shader* bloomFinal;
+	Shader* bloomHBlurShader;
 
-	Shader* blurShaders[blurSteps * 2];
+	Shader* bloomVBlurShader;
+
+	Shader* bloomFinal;
 
 	void setExposure(const float& exposure);
 
 	void setGamma(const float& gamma);
 
+	void setThreshold(const float& threshold);
+
+	void setIntensity(const float& intensity);
+
 	const float& getExposure() const;
 
 	const float& getGamma() const;
+
+	const float& getThreshold() const;
+
+	const float& getIntensity() const;
 
 	//更新向着色器传入的exposure和gamma
 	void applyChange() const;
@@ -44,7 +58,7 @@ private:
 
 	DirectX::XMUINT2 resolutions[blurSteps];
 
-	RenderTexture* renderTextures[blurSteps * 2];
+	RWTexture* rwTextures[blurSteps * 2];
 
 	RenderTexture* originTexture;
 
@@ -55,7 +69,14 @@ private:
 
 	const unsigned int bloomHeight;
 
-	std::function<void(Texture2D* const)> firstPass;
+	//float weight[4]
+	//float offset[4]
+	//float2 texelSize
+	//int iteration
+	//float v0
+	ComPtr<ID3D11Buffer> blurParamBuffer[blurSteps];
+
+	ComPtr<ID3D11ShaderResourceView> blurParamSRV[blurSteps];
 
 	ComPtr<ID3D11Buffer> bloomParamBuffer;
 
@@ -63,7 +84,8 @@ private:
 	{
 		float exposure;
 		float gamma;
-		float v0[2];
+		float threshold;
+		float intensity;
 	} bloomParam;
 
 };

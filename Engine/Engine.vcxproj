@@ -156,6 +156,7 @@
     <ClInclude Include="Inc\Aurora\PBR\RealShading.h" />
     <ClInclude Include="Inc\Aurora\A3D\ShadowMap.h" />
     <ClInclude Include="Inc\Aurora\A3D\TextureCube.h" />
+    <ClInclude Include="Inc\Aurora\RWTexture.h" />
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h" />
     <ClInclude Include="Inc\Aurora\ParticleSystem.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="Src\Aurora\Graphics.cpp" />
     <ClCompile Include="Src\Aurora\Keyboard.cpp" />
     <ClCompile Include="Src\Aurora\Mouse.cpp" />
+    <ClCompile Include="Src\Aurora\RWTexture.cpp" />
     <ClCompile Include="Src\Aurora\stb_image.cpp" />
     <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp" />

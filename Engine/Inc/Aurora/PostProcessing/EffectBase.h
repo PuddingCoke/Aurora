@@ -4,6 +4,7 @@
 #define _EFFECTBASE_H_
 
 #include<Aurora/RenderTexture.h>
+#include<Aurora/RWTexture.h>
 #include<Aurora/StateCommon.h>
 #include<Aurora/Shader.h>
 #include<Aurora/Graphics.h>

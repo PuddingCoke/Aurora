@@ -6,11 +6,12 @@
 #include<Aurora/Event.h>
 #include<Aurora/StateCommon.h>
 #include<Aurora/RenderTexture.h>
-#include<Aurora/PostProcessing/BloomEffect.h>
 #include<Aurora/A3D/DepthStencilView.h>
 #include<Aurora/A3D/OrbitCamera.h>
 
 #include"StrangeAttractor.h"
+
+#include<Aurora/PostProcessing/BloomEffect.h>
 
 //关于这种吸引子
 //https://gereshes.com/2020/01/13/attracted-to-attractors/
@@ -30,6 +31,10 @@ public:
 
 	bool rotating = true;
 
+	float exposure;
+
+	float gamma;
+
 	MyGame() :
 		attractor(1000000),
 		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent)),
@@ -38,6 +43,9 @@ public:
 		camera({ 4,4,-11 }, { -1,-1,-1 })
 	{
 		camera.registerEvent();
+
+		gamma = bloomEffect.getGamma();
+		exposure = bloomEffect.getExposure();
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
 			rotating = !rotating;
@@ -55,6 +63,31 @@ public:
 		if (rotating)
 		{
 			camera.rotateX(dt);
+		}
+
+		if (Keyboard::getKeyDown(Keyboard::A))
+		{
+			exposure += 0.01f;
+			bloomEffect.setExposure(exposure);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::S))
+		{
+			exposure -= 0.01f;
+			bloomEffect.setExposure(exposure);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::H))
+		{
+			gamma += 0.01f;
+			bloomEffect.setGamma(gamma);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::J))
+		{
+			gamma -= 0.01f;
+			bloomEffect.setGamma(gamma);
+			bloomEffect.applyChange();
 		}
 
 		attractor.update(dt);
@@ -75,8 +108,8 @@ public:
 		ID3D11ShaderResourceView* resourceViews[2] = { nullptr,nullptr };
 		Renderer::context->PSSetShaderResources(0, 2, resourceViews);
 
-		Texture2D* const texture = bloomEffect.process(renderTexture->getTexture());;
-
+		Texture2D* const texture = bloomEffect.process(renderTexture->getTexture());
+		
 		Renderer::setDefRTV();
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 

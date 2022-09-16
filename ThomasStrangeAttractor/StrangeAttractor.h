@@ -119,14 +119,14 @@ public:
 	{
 		computeShader->use();
 
-		Renderer::context->CSSetUnorderedAccessViews(1, 1, uavView.GetAddressOf(), nullptr);
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, uavView.GetAddressOf(), nullptr);
 
 		Renderer::context->Dispatch(particleNum / 1000u, 1, 1);
 
 		Renderer::context->CSSetShader(nullptr, nullptr, 0);
 
 		ID3D11UnorderedAccessView* nullView[1] = { nullptr };
-		Renderer::context->CSSetUnorderedAccessViews(1, 1, nullView, nullptr);
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, nullView, nullptr);
 	}
 
 	void render() override

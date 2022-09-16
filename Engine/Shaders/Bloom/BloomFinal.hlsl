@@ -1,8 +1,13 @@
 Texture2D tTexture : register(t0);
 SamplerState samplerState : register(s0);
 
-static const float exposure = 0.36;
-static const float gamma = 1.0f;
+cbuffer BloomParam : register(b1)
+{
+    float exposure;
+    float gamma;
+    float threshold;
+    float intensity;
+};
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
