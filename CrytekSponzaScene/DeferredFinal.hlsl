@@ -23,9 +23,15 @@ cbuffer DeltaTimes : register(b0)
     float2 v0;
 }
 
-cbuffer LightInfo : register(b3)
+cbuffer ViewMatrix : register(b1)
 {
+    matrix view;
+    matrix normalMatrix;
     float4 viewPos;
+}
+
+cbuffer LightInfo : register(b2)
+{
     Light lights[17];
 };
 

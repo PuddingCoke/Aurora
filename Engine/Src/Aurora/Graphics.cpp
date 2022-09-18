@@ -20,6 +20,11 @@ float Graphics::aspectRatio = 0;
 
 unsigned int Graphics::msaaLevel = 0;
 
+ID3D11Buffer* Graphics::getDeltaTimeBuffer()
+{
+	return deltaTimeBuffer.Get();
+}
+
 const float& Graphics::getDeltaTime()
 {
 	return deltaTime.deltaTime;

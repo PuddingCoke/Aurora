@@ -49,7 +49,6 @@ public:
 
 	struct LightInfo
 	{
-		DirectX::XMFLOAT4 viewPos;
 		struct Light
 		{
 			DirectX::XMFLOAT4 position;
@@ -184,10 +183,6 @@ public:
 	{
 		camera.applyInput(dt);
 
-		const DirectX::XMFLOAT3 viewPos = camera.getEye();
-
-		lightInfo.viewPos = DirectX::XMFLOAT4(viewPos.x, viewPos.y, viewPos.z, 1.0);
-
 		lightInfo.lights[0].position = DirectX::XMFLOAT4(-sinf(360.0f * Graphics::getSTime() / 2.f * Math::degToRad) * 120.0f, 3.5f, cosf(360.0f * Graphics::getSTime() * 8.0f * Math::degToRad / 2.f) * 10.0f, 1.f);
 
 		D3D11_MAPPED_SUBRESOURCE mappedData = {};
@@ -195,8 +190,6 @@ public:
 		Renderer::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 		memcpy(mappedData.pData, &lightInfo, sizeof(LightInfo));
 		Renderer::context->Unmap(lightBuffer.Get(), 0);
-
-		Renderer::context->PSSetConstantBuffers(3, 1, lightBuffer.GetAddressOf());
 	}
 
 	void render()
@@ -238,6 +231,10 @@ public:
 		gNormalSpecular->getTexture()->setSRV(1);
 		gBaseColor->getTexture()->setSRV(2);
 		ssaoTexture->setSRV(3);
+
+		ID3D11Buffer* buffers[2] = { Camera::getViewBuffer(),lightBuffer.Get() };
+
+		Renderer::context->PSSetConstantBuffers(1, 2, buffers);
 
 		Shader::displayVShader->use();
 		deferredFinal->use();

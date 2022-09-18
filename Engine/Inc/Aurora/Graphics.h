@@ -15,6 +15,8 @@ public:
 
 	void operator=(const Graphics&) = delete;
 
+	static ID3D11Buffer* getDeltaTimeBuffer();
+
 	static const float& getDeltaTime();
 
 	static const float& getSTime();

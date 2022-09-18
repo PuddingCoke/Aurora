@@ -83,11 +83,11 @@ public:
 	RenderTexture* brdfTexture;
 
 	MyGame() :
-		models(Model::create(assetPath+"DNA.obj", numModels)),
+		models(Model::create(assetPath + "DNA.obj", numModels)),
 		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
 		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
-		envTexture(Texture2D::create(assetPath+"Tufts-Parking-Lot_Ref.hdr")),
+		envTexture(Texture2D::create(assetPath + "Tufts-Parking-Lot_Ref.hdr")),
 		cubePShader(Shader::fromFile("cubePShader.hlsl", ShaderType::Pixel)),
 		bgPShader(Shader::fromFile("BackgroundPShader.hlsl", ShaderType::Pixel)),
 		irradiancePShader(Shader::fromFile("IrradiancePShader.hlsl", ShaderType::Pixel)),
@@ -164,32 +164,27 @@ public:
 		}
 
 		{
-			DirectX::XMMATRIX viewMatrices[6];
+
+			const DirectX::XMFLOAT3 eye = { 0,0,0 };
+			const DirectX::XMFLOAT3 focusPoints[6] =
 			{
-				const DirectX::XMFLOAT4 eye = { 0,0,0,1 };
-				const DirectX::XMFLOAT4 focusPoints[6] =
-				{
-					DirectX::XMFLOAT4(1.0f,  0.0f,  0.0f,1.0f),
-					DirectX::XMFLOAT4(-1.0f,  0.0f,  0.0f,1.0f),
-					DirectX::XMFLOAT4(0.0f,  1.0f,  0.0f,1.0f),
-					DirectX::XMFLOAT4(0.0f, -1.0f,  0.0f,1.0f),
-					DirectX::XMFLOAT4(0.0f,  0.0f,  1.0f,1.0f),
-					DirectX::XMFLOAT4(0.0f,  0.0f, -1.0f,1.0f)
-				};
-				const DirectX::XMFLOAT4 upVectors[6] =
-				{
-					DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f),
-					DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f),
-					DirectX::XMFLOAT4(0.0f,  0.0f,  -1.0f,1.0f),
-					DirectX::XMFLOAT4(0.0f,  0.0f, 1.0f,1.0f),
-					DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f),
-					DirectX::XMFLOAT4(0.0f, 1.0f,  0.0f,1.0f)
-				};
-				for (int i = 0; i < 6; i++)
-				{
-					viewMatrices[i] = DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eye), DirectX::XMLoadFloat4(&focusPoints[i]), DirectX::XMLoadFloat4(&upVectors[i]));
-				}
-			}
+				DirectX::XMFLOAT3(1.0f,  0.0f,  0.0f),
+				DirectX::XMFLOAT3(-1.0f,  0.0f,  0.0f),
+				DirectX::XMFLOAT3(0.0f,  1.0f,  0.0f),
+				DirectX::XMFLOAT3(0.0f, -1.0f,  0.0f),
+				DirectX::XMFLOAT3(0.0f,  0.0f,  1.0f),
+				DirectX::XMFLOAT3(0.0f,  0.0f, -1.0f)
+			};
+			const DirectX::XMFLOAT3 upVectors[6] =
+			{
+				DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f),
+				DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f),
+				DirectX::XMFLOAT3(0.0f,  0.0f,  -1.0f),
+				DirectX::XMFLOAT3(0.0f,  0.0f, 1.0f),
+				DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f),
+				DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f)
+			};
+
 
 			D3D11_TEXTURE2D_DESC tDesc = {};
 			tDesc.Format = envTexture->getFormat();
@@ -229,7 +224,7 @@ public:
 				for (int i = 0; i < 6; i++)
 				{
 					renderTexture->clearRTV(DirectX::Colors::Black);
-					Camera::setView(viewMatrices[i]);
+					Camera::setView(eye, focusPoints[i], upVectors[i]);
 					Renderer::context->Draw(36, 0);
 					Renderer::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -269,7 +264,7 @@ public:
 				for (int i = 0; i < 6; i++)
 				{
 					renderTexture->clearRTV(DirectX::Colors::Black);
-					Camera::setView(viewMatrices[i]);
+					Camera::setView(eye, focusPoints[i], upVectors[i]);
 					Renderer::context->Draw(36, 0);
 					Renderer::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -327,7 +322,7 @@ public:
 				prefilterPShader[mip]->use();
 				for (unsigned i = 0; i < 6; i++)
 				{
-					Camera::setView(viewMatrices[i]);
+					Camera::setView(eye, focusPoints[i], upVectors[i]);
 					Renderer::context->Draw(36, 0);
 					Renderer::context->CopyResource(textures[mip].Get(), renderTextures[mip]->getTexture()->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -417,7 +412,7 @@ public:
 
 		DirectX::XMFLOAT4 eyeRotated = DirectX::XMFLOAT4(curRadius * cosf(theta2) * cosf(theta), curRadius * cosf(theta2) * sinf(theta), curRadius * sinf(theta2), 1.f);
 
-		Camera::setView(DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat4(&eyeRotated), focusPoint, up));
+		Camera::setView(DirectX::XMLoadFloat4(&eyeRotated), focusPoint, up);
 
 		const float lightRadius = 1.15f;
 

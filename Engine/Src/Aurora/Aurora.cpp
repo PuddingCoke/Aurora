@@ -449,7 +449,6 @@ HRESULT Aurora::iniCamera()
 
 	Renderer::context->VSSetConstantBuffers(0, 2, buffers);
 	Renderer::context->GSSetConstantBuffers(0, 2, buffers);
-	Renderer::context->PSSetConstantBuffers(1, 2, buffers);
 
 	return S_OK;
 }

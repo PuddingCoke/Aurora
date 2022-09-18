@@ -23,11 +23,13 @@ public:
 
 	static DirectX::XMMATRIX getView();
 
+	static ID3D11Buffer* getProjBuffer();
+
+	static ID3D11Buffer* getViewBuffer();
+
 	static void setProj(const DirectX::XMMATRIX& proj);
 
 	static void setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar);
-
-	static void setView(const DirectX::XMMATRIX& view);
 
 	static void setView(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up);
 
@@ -41,6 +43,8 @@ private:
 
 	static void initialize();
 
+	static void setView(const DirectX::XMMATRIX& view);
+
 	static ComPtr<ID3D11Buffer> projBuffer;
 
 	static ComPtr<ID3D11Buffer> viewBuffer;
@@ -50,11 +54,12 @@ private:
 
 	static DirectX::XMMATRIX viewMatrix;
 
-	static struct ViewMatrices
+	static struct ViewInfo
 	{
 		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX normalMatrix;
-	}viewMatrices;
+		DirectX::XMMATRIX normalMatrix;//light in view space
+		DirectX::XMFLOAT4 eyePos;//light in world space
+	}viewInfo;
 
 };
 
