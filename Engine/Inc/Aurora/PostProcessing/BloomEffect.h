@@ -23,15 +23,7 @@ public:
 
 	~BloomEffect();
 
-	Texture2D* process(Texture2D* const texture2D) const override;
-
-	Shader* bloomExtract;
-
-	Shader* bloomHBlurShader;
-
-	Shader* bloomVBlurShader;
-
-	Shader* bloomFinal;
+	Texture2D* process(Texture2D* const texture2D) const;
 
 	void setExposure(const float& exposure);
 
@@ -55,6 +47,14 @@ public:
 private:
 
 	void compileShaders() override;
+
+	Shader* bloomExtract;
+
+	Shader* bloomHBlurShader;
+
+	Shader* bloomVBlurShader;
+
+	Shader* bloomFinal;
 
 	DirectX::XMUINT2 resolutions[blurSteps];
 

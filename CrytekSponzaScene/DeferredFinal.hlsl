@@ -1,6 +1,6 @@
-Texture2D positionDepth : register(t0);
-Texture2D normalSpecular : register(t1);
-Texture2D albedo : register(t2);
+Texture2D gPosition : register(t0);
+Texture2D gNormalSpecular : register(t1);
+Texture2D gBaseColor : register(t2);
 Texture2D ssaoTexture : register(t3);
 
 SamplerState wrapSampler : register(s0);
@@ -25,6 +25,7 @@ cbuffer DeltaTimes : register(b0)
 
 cbuffer LightInfo : register(b3)
 {
+    float4 viewPos;
     Light lights[17];
 };
 
@@ -32,17 +33,15 @@ static const float AMBIENT_FACTOR = 0.15;
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float3 position = positionDepth.Sample(linearSampler, texCoord).xyz;
-    float3 normal = normalSpecular.Sample(linearSampler, texCoord).xyz;
-    float specular = normalSpecular.Sample(linearSampler, texCoord).w;
-    float4 color = albedo.Sample(linearSampler, texCoord);
+    const float3 position = gPosition.Sample(linearSampler, texCoord).xyz;
+    const float4 normalSpecular = gNormalSpecular.Sample(linearSampler, texCoord);
+    const float3 baseColor = gBaseColor.Sample(linearSampler, texCoord).rgb;
     
-    float3 ambient = color.rgb * AMBIENT_FACTOR;
-    float3 outColor = ambient;
+    float3 outColor = baseColor * AMBIENT_FACTOR;
     
     if (length(position) == 0.0)
     {
-        outColor = color.rgb;
+        outColor = baseColor.rgb;
     }
     else
     {
@@ -54,17 +53,17 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
             float dist = length(L);
             L = normalize(L);
             
-            float3 V = normalize(-position);
+            float3 V = normalize(viewPos.xyz - position);
             
             float atten = lights[i].radius / (pow(dist, 2.0) + 1.0);
             
-            float3 N = normalize(normal);
+            float3 N = normalize(normalSpecular.rgb);
             float NdotL = max(0.0, dot(N, L));
-            float3 diff = lights[i].color.rgb * color.rgb * NdotL * atten;
+            float3 diff = lights[i].color.rgb * baseColor.rgb * NdotL * atten;
             
             float3 R = reflect(-L, N);
             float NdotR = max(0.0, dot(R, V));
-            float3 spec = lights[i].color.rgb * specular * pow(NdotR, 16.0) * (atten * 1.5);
+            float3 spec = lights[i].color.rgb * normalSpecular.w * pow(NdotR, 16.0) * (atten * 1.5);
             
             outColor += diff + spec;
         }

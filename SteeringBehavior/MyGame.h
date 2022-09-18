@@ -37,10 +37,11 @@ public:
 		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
 		doubleRTV(DoubleRTV::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		fadeEffect(Graphics::getWidth(), Graphics::getHeight()),
-		bloomEffect(Graphics::getWidth(), Graphics::getHeight(), false)
+		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
 	{
 		bloomEffect.setExposure(2.05f);
 		bloomEffect.setGamma(0.29f);
+		bloomEffect.setThreshold(0);
 		bloomEffect.applyChange();
 
 		exposure = bloomEffect.getExposure();

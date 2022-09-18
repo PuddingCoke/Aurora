@@ -17,6 +17,11 @@ void RenderTexture::setMSAARTV(ID3D11DepthStencilView* const view) const
 	Renderer::context->OMSetRenderTargets(1, msaaTarget.GetAddressOf(), view);
 }
 
+ID3D11RenderTargetView* RenderTexture::getRTV() const
+{
+	return normalTarget.Get();
+}
+
 void RenderTexture::setRTV(ID3D11DepthStencilView* const view) const
 {
 	Renderer::context->OMSetRenderTargets(1, normalTarget.GetAddressOf(), view);

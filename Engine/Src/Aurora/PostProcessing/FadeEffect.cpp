@@ -1,7 +1,7 @@
 ﻿#include<Aurora/PostProcessing/FadeEffect.h>
 
 FadeEffect::FadeEffect(const unsigned int& width, const unsigned int& height) :
-	EffectBase(width, height), fadeFactor(3.f)
+	EffectBase(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT), fadeFactor(3.f)
 {
 	compileShaders();
 

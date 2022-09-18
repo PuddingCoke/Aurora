@@ -5,14 +5,13 @@ struct PixelInput
     float3 normal : NORMAL;
     float3 tangent : TANGENT0;
     float3 bitangent : TANGENT1;
-    float4 svPosition : SV_Position;
 };
 
 struct PixelOutput
 {
-    float4 positionDepth : SV_TARGET0;
+    float4 position : SV_TARGET0;
     float4 normalSpecular : SV_TARGET1;
-    float4 albedo : SV_TARGET2;
+    float4 baseColor : SV_TARGET2;
 };
 
 Texture2D tDiffuse : register(t0);
@@ -23,10 +22,10 @@ SamplerState samplerState : register(s0);
 
 PixelOutput main(PixelInput input)
 {
-    float4 albedo = tDiffuse.Sample(samplerState, input.uv);
+    float4 baseColor = tDiffuse.Sample(samplerState, input.uv);
     
     [branch]
-    if (albedo.a < 0.5)
+    if (baseColor.a < 0.5)
     {
         discard;
     }
@@ -42,9 +41,9 @@ PixelOutput main(PixelInput input)
     float specular = tSpecular.Sample(samplerState, input.uv).r;
     
     PixelOutput output;
-    output.positionDepth = float4(input.pos, input.svPosition.z);
+    output.position = float4(input.pos, 1.0);
     output.normalSpecular = float4(nm, specular);
-    output.albedo = albedo;
+    output.baseColor = baseColor;
     
     return output;
 }

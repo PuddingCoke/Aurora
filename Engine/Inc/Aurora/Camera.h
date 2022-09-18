@@ -19,6 +19,10 @@ public:
 
 	void operator=(const Camera&) = delete;
 
+	static DirectX::XMMATRIX getProj();
+
+	static DirectX::XMMATRIX getView();
+
 	static void setProj(const DirectX::XMMATRIX& proj);
 
 	static void setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar);
@@ -31,7 +35,6 @@ public:
 
 	static DirectX::XMFLOAT3 toViewSpace(const DirectX::XMFLOAT3& pos);
 
-
 private:
 
 	friend class Aurora;
@@ -41,6 +44,9 @@ private:
 	static ComPtr<ID3D11Buffer> projBuffer;
 
 	static ComPtr<ID3D11Buffer> viewBuffer;
+
+	//这两个矩阵都是没有转置的，因为在DirectXMath中，向量都是列优先。
+	static DirectX::XMMATRIX projMatrix;
 
 	static DirectX::XMMATRIX viewMatrix;
 

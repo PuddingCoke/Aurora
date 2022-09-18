@@ -23,6 +23,8 @@ public:
 
 	ID3D11DepthStencilView* get() const;
 
+	ID3D11ShaderResourceView* getSRV() const;
+
 private:
 
 	ShadowMap(const unsigned int& width, const unsigned int& height);

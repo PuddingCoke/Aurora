@@ -1,7 +1,7 @@
 ﻿#include<Aurora/PostProcessing/BloomEffect.h>
 
 BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) :
-	EffectBase(width, height), bloomWidth(width), bloomHeight(height), bloomParam{},
+	EffectBase(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT), bloomWidth(width), bloomHeight(height), bloomParam{},
 	originTexture(RenderTexture::create(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 	bloomTexture(RenderTexture::create(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black))
 {

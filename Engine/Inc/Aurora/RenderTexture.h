@@ -25,6 +25,8 @@ public:
 
 	void setMSAARTV(ID3D11DepthStencilView* const view = nullptr) const;
 
+	ID3D11RenderTargetView* getRTV() const;
+
 	void setRTV(ID3D11DepthStencilView* const view = nullptr) const;
 
 	void clearMSAARTV(const float color[4]) const;

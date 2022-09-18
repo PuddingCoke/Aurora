@@ -39,7 +39,7 @@ public:
 		noiseTexture(Texture2D::createNoise(256, 256)),
 		dustTexture(Texture2D::create("Dust.jpg")),
 		accTexture(DoubleRTV::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		effect(Graphics::getWidth(), Graphics::getHeight(), false)
+		effect(Graphics::getWidth(), Graphics::getHeight())
 	{
 		//exposure = effect.getExposure();
 		//gamma = effect.getGamma();
@@ -69,6 +69,7 @@ public:
 
 		effect.setExposure(exposure);
 		effect.setGamma(gamma);
+		effect.setThreshold(0);
 		effect.applyChange();
 	}
 

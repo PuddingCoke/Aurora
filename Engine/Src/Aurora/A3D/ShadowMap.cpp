@@ -20,6 +20,11 @@ ID3D11DepthStencilView* ShadowMap::get() const
 	return depthStencilView.Get();
 }
 
+ID3D11ShaderResourceView* ShadowMap::getSRV() const
+{
+	return shadowSRV.Get();
+}
+
 ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};

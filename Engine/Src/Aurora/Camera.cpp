@@ -4,12 +4,25 @@ ComPtr<ID3D11Buffer> Camera::projBuffer;
 
 ComPtr<ID3D11Buffer> Camera::viewBuffer;
 
+DirectX::XMMATRIX Camera::projMatrix;
+
 DirectX::XMMATRIX Camera::viewMatrix;
 
 Camera::ViewMatrices Camera::viewMatrices;
 
+DirectX::XMMATRIX Camera::getProj()
+{
+	return projMatrix;
+}
+
+DirectX::XMMATRIX Camera::getView()
+{
+	return viewMatrix;
+}
+
 void Camera::setProj(const DirectX::XMMATRIX& proj)
 {
+	projMatrix = proj;
 	const DirectX::XMMATRIX projTrans = DirectX::XMMatrixTranspose(proj);
 	D3D11_MAPPED_SUBRESOURCE mappedData;
 	Renderer::context->Map(projBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);

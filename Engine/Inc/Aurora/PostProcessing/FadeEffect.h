@@ -11,7 +11,7 @@ public:
 
 	FadeEffect(const unsigned int& width, const unsigned int& height);
 
-	Texture2D* process(Texture2D* const texture2D) const override;
+	Texture2D* process(Texture2D* const texture2D) const;
 
 	const float& getFadeFactor() const;
 

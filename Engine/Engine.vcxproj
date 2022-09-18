@@ -156,6 +156,7 @@
     <ClInclude Include="Inc\Aurora\PBR\RealShading.h" />
     <ClInclude Include="Inc\Aurora\A3D\ShadowMap.h" />
     <ClInclude Include="Inc\Aurora\A3D\TextureCube.h" />
+    <ClInclude Include="Inc\Aurora\PostProcessing\HBAOEffect.h" />
     <ClInclude Include="Inc\Aurora\RWTexture.h" />
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h" />
     <ClInclude Include="Inc\Aurora\ParticleSystem.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp" />
     <ClCompile Include="Src\Aurora\Buffer.cpp" />
     <ClCompile Include="Src\Aurora\PBR\RealShading.cpp" />
+    <ClCompile Include="Src\Aurora\PostProcessing\HBAOEffect.cpp" />
     <ClCompile Include="Src\Aurora\Renderer.cpp" />
     <ClCompile Include="Src\Aurora\A3D\ShadowMap.cpp" />
     <ClCompile Include="Src\Aurora\A3D\TextureCube.cpp" />
