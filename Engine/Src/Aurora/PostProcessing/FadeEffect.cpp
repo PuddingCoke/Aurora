@@ -18,7 +18,7 @@ FadeEffect::FadeEffect(const unsigned int& width, const unsigned int& height) :
 
 Texture2D* FadeEffect::process(Texture2D* const texture2D) const
 {
-	Renderer::setBlendState(StateCommon::blendReplace.Get());
+	Renderer::setBlendState(nullptr);
 
 	outputRTV->clearRTV(DirectX::Colors::Black);
 	outputRTV->setRTV();

@@ -68,18 +68,19 @@ unsigned int& Graphics::getMSAALevel()
 	return msaaLevel;
 }
 
-void Graphics::createDeltaTimeBuffer()
+void Graphics::ini()
 {
-	D3D11_BUFFER_DESC cbd = {};
-	cbd.Usage = D3D11_USAGE_DYNAMIC;
-	cbd.ByteWidth = sizeof(DeltaTime);
-	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	//初始化和时间相关的Constant Buffer
+	{
+		D3D11_BUFFER_DESC cbd = {};
+		cbd.Usage = D3D11_USAGE_DYNAMIC;
+		cbd.ByteWidth = sizeof(DeltaTime);
+		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	Renderer::device->CreateBuffer(&cbd, nullptr, Graphics::deltaTimeBuffer.ReleaseAndGetAddressOf());
-	Graphics::updateDeltaTimeBuffer();
-	Renderer::context->PSSetConstantBuffers(0, 1, Graphics::deltaTimeBuffer.GetAddressOf());
-	Renderer::context->CSSetConstantBuffers(0, 1, Graphics::deltaTimeBuffer.GetAddressOf());
+		Renderer::device->CreateBuffer(&cbd, nullptr, Graphics::deltaTimeBuffer.ReleaseAndGetAddressOf());
+		Graphics::updateDeltaTimeBuffer();
+	}
 }
 
 void Graphics::updateDeltaTimeBuffer()

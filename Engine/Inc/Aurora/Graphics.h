@@ -39,7 +39,7 @@ private:
 
 	friend class NvidiaEncoder;
 
-	static void createDeltaTimeBuffer();
+	static void ini();
 
 	static void updateDeltaTimeBuffer();
 

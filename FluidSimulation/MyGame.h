@@ -293,7 +293,7 @@ public:
 	{
 		ID3D11ShaderResourceView* nullSRV[2] = { nullptr,nullptr };
 
-		Renderer::setBlendState(StateCommon::blendReplace.Get());
+		Renderer::setBlendState(nullptr);
 		Renderer::setViewport(velocity->width, velocity->height);
 
 		curl->setRTV();
@@ -360,7 +360,7 @@ public:
 	void applySunrays(RenderTexture* const source, RenderTexture* const mask, RenderTexture* const destination)
 	{
 		mask->setRTV();
-		Renderer::setBlendState(StateCommon::blendReplace.Get());
+		Renderer::setBlendState(nullptr);
 		sunrayMaskShader->use();
 		source->getTexture()->setSRV(0);
 		Renderer::setViewport(mask->width, mask->height);

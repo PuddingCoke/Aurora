@@ -37,8 +37,6 @@ public:
 
 	Scene* scene;
 
-	float projMatrixArray[16];
-
 	ComPtr<ID3D11SamplerState> wrapSampler;
 
 	ComPtr<ID3D11Buffer> lightBuffer;
@@ -196,24 +194,14 @@ public:
 	{
 		Renderer::setBlendState(nullptr);
 
-		gBaseColor->clearRTV(DirectX::Colors::Black);
-		gPosition->clearRTV(DirectX::Colors::Black);
-		gNormalSpecular->clearRTV(DirectX::Colors::Black);
-
-		gBaseColor->setRTV();
-
 		Renderer::context->PSSetSamplers(0, 1, wrapSampler.GetAddressOf());
 		Renderer::context->PSSetSamplers(1, 1, StateCommon::defLinearSampler.GetAddressOf());
 
-		skybox->setSRV(0);
-
-		TextureCube::shader->use();
-		skyboxPShader->use();
-
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Renderer::context->Draw(36, 0);
-
+		gBaseColor->clearRTV(DirectX::Colors::Black);
+		gPosition->clearRTV(DirectX::Colors::Black);
+		gNormalSpecular->clearRTV(DirectX::Colors::Black);
 		shadowMap->clear(D3D11_CLEAR_DEPTH);
+
 		RenderTexture::setRTVs({ gPosition,gNormalSpecular,gBaseColor }, shadowMap->get());
 
 		Renderer::context->IASetInputLayout(inputLayout.Get());
@@ -240,6 +228,15 @@ public:
 		deferredFinal->use();
 
 		Renderer::context->Draw(3, 0);
+
+		Renderer::setDefRTV(shadowMap->get());
+
+		skybox->setSRV(0);
+
+		TextureCube::shader->use();
+		skyboxPShader->use();
+
+		Renderer::drawCube();
 
 		ID3D11ShaderResourceView* nullView[4] = { nullptr,nullptr,nullptr,nullptr };
 

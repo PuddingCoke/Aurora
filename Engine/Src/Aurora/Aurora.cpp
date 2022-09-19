@@ -77,7 +77,30 @@ int Aurora::iniEngine(const Configuration& config)
 
 	TextureCube::iniShader();
 
-	Graphics::createDeltaTimeBuffer();
+	Graphics::ini();
+
+	//初始化一些默认状态，比如Viewport、BlendState等等 
+	Renderer::setViewport(Graphics::width, Graphics::height);
+
+	Renderer::setBlendState(StateCommon::defBlendState.Get());
+
+	Renderer::context->RSSetState(StateCommon::rasterCullBack.Get());
+
+	Renderer::context->OMSetDepthStencilState(StateCommon::defDepthStencilState.Get(), 0);
+
+	Renderer::clearDefRTV(DirectX::Colors::Black);
+
+	//pixel compute shader占用第一个槽位来获取跟时间相关的变量
+	Renderer::context->PSSetConstantBuffers(0, 1, Graphics::deltaTimeBuffer.GetAddressOf());
+	Renderer::context->CSSetConstantBuffers(0, 1, Graphics::deltaTimeBuffer.GetAddressOf());
+
+	//vertex geometry shader占用前两个槽位来获取矩阵信息或者摄像头的信息
+	{
+		ID3D11Buffer* const buffers[2] = { Camera::projBuffer.Get(),Camera::viewBuffer.Get() };
+
+		Renderer::context->VSSetConstantBuffers(0, 2, buffers);
+		Renderer::context->GSSetConstantBuffers(0, 2, buffers);
+	}
 
 	return 0;
 }
@@ -380,48 +403,42 @@ HRESULT Aurora::iniDevice()
 		Renderer::device->QueryInterface(IID_ID3D11Debug, (void**)Graphics::d3dDebug.ReleaseAndGetAddressOf());
 	}
 
-	swapChain->GetBuffer(0, IID_ID3D11Texture2D, (void**)&Renderer::backBuffer);
-
-	Renderer::setViewport((float)Graphics::width, (float)Graphics::height);
-
 	{
-		ComPtr<ID3D11RasterizerState> rasterizerState;
+		swapChain->GetBuffer(0, IID_ID3D11Texture2D, (void**)&Renderer::backBuffer);
 
-		D3D11_RASTERIZER_DESC rasterizerDesc = {};
-		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+		if (Graphics::msaaLevel == 1)
+		{
+			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+			rtvDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
+			rtvDesc.Texture2D.MipSlice = 0;
 
-		Renderer::device->CreateRasterizerState(&rasterizerDesc, rasterizerState.ReleaseAndGetAddressOf());
+			Renderer::device->CreateRenderTargetView(Renderer::backBuffer, &rtvDesc, Renderer::defaultTargetView.ReleaseAndGetAddressOf());
+		}
+		else
+		{
+			D3D11_TEXTURE2D_DESC tDesc = {};
+			tDesc.Width = Graphics::width;
+			tDesc.Height = Graphics::height;
+			tDesc.MipLevels = 1;
+			tDesc.ArraySize = 1;
+			tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+			tDesc.SampleDesc.Count = Graphics::msaaLevel;
+			tDesc.SampleDesc.Quality = 0;
+			tDesc.Usage = D3D11_USAGE_DEFAULT;
+			tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+			tDesc.CPUAccessFlags = 0;
+			tDesc.MiscFlags = 0;
 
-		Renderer::context->RSSetState(rasterizerState.Get());
+			Renderer::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
 
-	}
+			D3D11_RENDER_TARGET_VIEW_DESC msaaViewDesc = {};
+			msaaViewDesc.Format = tDesc.Format;
+			msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2DMS;
+			msaaViewDesc.Texture2D.MipSlice = 0;
 
-	{
-		D3D11_TEXTURE2D_DESC tDesc = {};
-		tDesc.Width = Graphics::width;
-		tDesc.Height = Graphics::height;
-		tDesc.MipLevels = 1;
-		tDesc.ArraySize = 1;
-		tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
-		tDesc.SampleDesc.Count = Graphics::msaaLevel;
-		tDesc.SampleDesc.Quality = 0;
-		tDesc.Usage = D3D11_USAGE_DEFAULT;
-		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-		tDesc.CPUAccessFlags = 0;
-		tDesc.MiscFlags = 0;
-
-		Renderer::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
-
-		D3D11_RENDER_TARGET_VIEW_DESC msaaViewDesc = {};
-		msaaViewDesc.Format = tDesc.Format;
-		msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2DMS;
-		msaaViewDesc.Texture2D.MipSlice = 0;
-
-		Renderer::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, Renderer::defaultTargetView.ReleaseAndGetAddressOf());
-
-		Renderer::clearDefRTV(DirectX::Colors::Black);
-
+			Renderer::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, Renderer::defaultTargetView.ReleaseAndGetAddressOf());
+		}
 	}
 
 	return S_OK;
@@ -445,11 +462,6 @@ HRESULT Aurora::iniCamera()
 		break;
 	}
 
-	ID3D11Buffer* buffers[2] = { Camera::projBuffer.Get(),Camera::viewBuffer.Get() };
-
-	Renderer::context->VSSetConstantBuffers(0, 2, buffers);
-	Renderer::context->GSSetConstantBuffers(0, 2, buffers);
-
 	return S_OK;
 }
 
@@ -469,7 +481,10 @@ void Aurora::runGame()
 		const std::chrono::steady_clock::time_point timeStart = timer.now();
 		game->update(Graphics::deltaTime.deltaTime);
 		game->render();
-		Renderer::context->ResolveSubresource(Renderer::backBuffer, 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+		if (config->msaaLevel != 1)
+		{
+			Renderer::context->ResolveSubresource(Renderer::backBuffer, 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+		}
 		swapChain->Present(1, 0);
 		const std::chrono::steady_clock::time_point timeEnd = timer.now();
 		Graphics::deltaTime.deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
@@ -519,7 +534,10 @@ void Aurora::runEncode()
 	{
 		game->update(Graphics::deltaTime.deltaTime);
 		game->render();
-		Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+		if (config->msaaLevel != 1)
+		{
+			Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+		}
 		Graphics::deltaTime.sTime += Graphics::deltaTime.deltaTime;
 		Graphics::updateDeltaTimeBuffer();
 	} while (nvidiaEncoder.encode(encodeTexture.Get()));

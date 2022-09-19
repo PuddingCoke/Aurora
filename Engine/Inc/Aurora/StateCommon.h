@@ -26,12 +26,14 @@ public:
 	//SRC_ALPHA INV_SRC_ALPHA
 	static ComPtr<ID3D11BlendState> defBlendState;
 
-	//ONE ZERO
-	static ComPtr<ID3D11BlendState> blendReplace;
-
 	//ONE ONE ALPHA ONE ZERO
 	static ComPtr<ID3D11BlendState> addtiveBlend;
 
+	static ComPtr<ID3D11RasterizerState> rasterCullBack;
+
+	static ComPtr<ID3D11RasterizerState> rasterCullFront;
+
+	//depth less equal stencil disabled
 	static ComPtr<ID3D11DepthStencilState> defDepthStencilState;
 
 private:

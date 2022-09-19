@@ -6,9 +6,11 @@ ComPtr<ID3D11SamplerState> StateCommon::defPointSampler;
 
 ComPtr<ID3D11BlendState> StateCommon::defBlendState;
 
-ComPtr<ID3D11BlendState> StateCommon::blendReplace;
-
 ComPtr<ID3D11BlendState> StateCommon::addtiveBlend;
+
+ComPtr<ID3D11RasterizerState> StateCommon::rasterCullBack;
+
+ComPtr<ID3D11RasterizerState> StateCommon::rasterCullFront;
 
 ComPtr<ID3D11DepthStencilState> StateCommon::defDepthStencilState;
 
@@ -61,30 +63,6 @@ HRESULT StateCommon::ini()
 		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
 		Renderer::device->CreateBlendState(&blendStateDesc, defBlendState.ReleaseAndGetAddressOf());
-
-		Renderer::setBlendState(defBlendState.Get());
-
-	}
-
-	//初始化blendReplace
-	{
-		D3D11_BLEND_DESC blendStateDesc = {};
-
-		blendStateDesc.IndependentBlendEnable = false;
-
-		blendStateDesc.RenderTarget[0].BlendEnable = true;
-		blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-		blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-		blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
-
-		blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-
-		blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-
-		Renderer::device->CreateBlendState(&blendStateDesc, blendReplace.ReleaseAndGetAddressOf());
 	}
 
 	//初始化addtiveBlend
@@ -106,6 +84,24 @@ HRESULT StateCommon::ini()
 		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
 		Renderer::device->CreateBlendState(&blendStateDesc, addtiveBlend.ReleaseAndGetAddressOf());
+	}
+
+	//初始化rasterCullBack
+	{
+		D3D11_RASTERIZER_DESC rasterizerDesc = {};
+		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+
+		Renderer::device->CreateRasterizerState(&rasterizerDesc, rasterCullBack.ReleaseAndGetAddressOf());
+	}
+
+	//初始化rasterCullFront
+	{
+		D3D11_RASTERIZER_DESC rasterizerDesc = {};
+		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_FRONT;
+
+		Renderer::device->CreateRasterizerState(&rasterizerDesc, rasterCullFront.ReleaseAndGetAddressOf());
 	}
 
 	//初始化defDepthStencilState
@@ -130,8 +126,6 @@ HRESULT StateCommon::ini()
 		dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
 		Renderer::device->CreateDepthStencilState(&dsDesc, defDepthStencilState.ReleaseAndGetAddressOf());
-
-		Renderer::context->OMSetDepthStencilState(defDepthStencilState.Get(), 0);
 	}
 
 	return S_OK;

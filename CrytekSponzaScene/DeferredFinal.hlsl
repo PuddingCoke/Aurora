@@ -45,39 +45,31 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float3 outColor = baseColor * AMBIENT_FACTOR;
     
-    if (length(position) == 0.0)
+    [unroll]
+    for (int i = 0; i < 17; i++)
     {
-        outColor = baseColor.rgb;
-    }
-    else
-    {
-        [unroll]
-        for (int i = 0; i < 17; i++)
-        {
-            float3 lightPos = lights[i].position.xyz;
-            float3 L = lightPos - position;
-            float dist = length(L);
-            L = normalize(L);
+        float3 L = lights[i].position.xyz - position;
+        const float dist = length(L);
+        L = normalize(L);
             
-            float3 V = normalize(viewPos.xyz - position);
+        const float3 V = normalize(viewPos.xyz - position);
             
-            float atten = lights[i].radius / (pow(dist, 2.0) + 1.0);
+        const float atten = lights[i].radius / (pow(dist, 2.0) + 1.0);
             
-            float3 N = normalize(normalSpecular.rgb);
-            float NdotL = max(0.0, dot(N, L));
-            float3 diff = lights[i].color.rgb * baseColor.rgb * NdotL * atten;
+        const float3 N = normalize(normalSpecular.rgb);
+        const float NdotL = max(0.0, dot(N, L));
+        const float3 diff = lights[i].color.rgb * baseColor.rgb * NdotL * atten;
             
-            float3 R = reflect(-L, N);
-            float NdotR = max(0.0, dot(R, V));
-            float3 spec = lights[i].color.rgb * normalSpecular.w * pow(NdotR, 16.0) * (atten * 1.5);
-            
-            outColor += diff + spec;
-        }
+        const float3 R = reflect(-L, N);
+        const float NdotR = max(0.0, dot(R, V));
+        const float3 spec = lights[i].color.rgb * normalSpecular.w * pow(NdotR, 16.0) * (atten * 1.5);
         
-        float ao = ssaoTexture.Sample(linearSampler, texCoord).r;
-        
-        outColor *= ao;
+        outColor += diff + spec;
     }
+        
+    const float ao = ssaoTexture.Sample(linearSampler, texCoord).r;
+        
+    outColor *= ao;
     
     return float4(outColor, 1.0);
 }
