@@ -1,5 +1,7 @@
 #include<Aurora/A3D/ShadowMap.h>
 
+Shader* ShadowMap::shadowVShader;
+
 ShadowMap* ShadowMap::create(const unsigned int& width, const unsigned int& height)
 {
 	return new ShadowMap(width, height);
@@ -20,9 +22,61 @@ ID3D11DepthStencilView* ShadowMap::get() const
 	return depthStencilView.Get();
 }
 
+ID3D11DepthStencilView* ShadowMap::getROView() const
+{
+	return depthStencilViewRO.Get();
+}
+
 ID3D11ShaderResourceView* ShadowMap::getSRV() const
 {
 	return shadowSRV.Get();
+}
+
+void ShadowMap::ini()
+{
+	{
+		const std::string source = R"(
+struct VertexInput
+{
+    float3 pos : POSITION;
+    float2 uv : TEXCOORD;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT0;
+    float3 bitangent : TANGENT1;
+};
+
+cbuffer ProjMatrix : register(b0)
+{
+    matrix proj;
+}
+
+cbuffer ViewMatrix : register(b1)
+{
+    matrix view;
+    matrix normalMatrix;
+}
+
+cbuffer Light : register(b2)
+{
+    matrix lightVewProj;
+};
+
+float4 main(VertexInput input) : SV_POSITION
+{
+    return mul(float4(input.pos, 1.0), lightVewProj);
+}
+)";
+
+		std::cout << "shadowVShader ";
+
+		shadowVShader = Shader::fromStr(source, ShaderType::Vertex);
+
+	}
+}
+
+void ShadowMap::release()
+{
+	delete shadowVShader;
 }
 
 ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height)
@@ -44,10 +98,18 @@ ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height)
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION::D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Texture2D.MipSlice = 0;
 
 	Renderer::device->CreateDepthStencilView(shadowTexture.Get(), &dsvDesc, depthStencilView.ReleaseAndGetAddressOf());
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvRODesc = {};
+	dsvRODesc.Flags = D3D11_DSV_READ_ONLY_DEPTH;
+	dsvRODesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvRODesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvRODesc.Texture2D.MipSlice = 0;
+
+	Renderer::device->CreateDepthStencilView(shadowTexture.Get(), &dsvRODesc, depthStencilViewRO.ReleaseAndGetAddressOf());
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;

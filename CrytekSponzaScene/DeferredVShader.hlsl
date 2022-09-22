@@ -36,6 +36,6 @@ VertexOutput main(VertexInput input)
     output.normal = input.normal;
     output.tangent = input.tangent;
     output.bitangent = input.bitangent;
-    output.svPosition = mul(mul(float4(input.pos, 1.0), view), proj);
+   output.svPosition = mul(mul(float4(input.pos, 1.0), view), proj);
     return output;
 }

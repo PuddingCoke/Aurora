@@ -3,6 +3,9 @@
 FPSCamera::FPSCamera(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& lookDir, const DirectX::XMFLOAT3& up, const float& moveSpeed, const float& rotationSpeed) :
 	eye(eye), lookDir(lookDir), up(up), moveSpeed(moveSpeed), rotationSpeed(rotationSpeed)
 {
+	const DirectX::XMFLOAT3 focusPoint = DirectX::XMFLOAT3(eye.x + lookDir.x, eye.y + lookDir.y, eye.z + lookDir.z);
+
+	Camera::setView(eye, focusPoint, up);
 }
 
 void FPSCamera::applyInput(const float& dt)

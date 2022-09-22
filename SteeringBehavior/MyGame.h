@@ -125,7 +125,7 @@ public:
 		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
 		doubleRTV->write()->setRTV();
 
-		Renderer::context->PSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
 		renderTexture->getTexture()->setSRV(0);
 
 		Shader::displayVShader->use();

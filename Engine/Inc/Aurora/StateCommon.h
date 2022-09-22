@@ -17,11 +17,13 @@ public:
 
 	void operator=(const StateCommon&) = delete;
 
-	//CLAMP
-	static ComPtr<ID3D11SamplerState> defLinearSampler;
+	static ComPtr<ID3D11SamplerState> linearClampSampler;
 
-	//CLAMP
-	static ComPtr<ID3D11SamplerState> defPointSampler;
+	static ComPtr<ID3D11SamplerState> linearWrapSampler;
+
+	static ComPtr<ID3D11SamplerState> pointClampSampler;
+
+	static ComPtr<ID3D11SamplerState> pointWrapSampler;
 
 	//SRC_ALPHA INV_SRC_ALPHA
 	static ComPtr<ID3D11BlendState> defBlendState;
@@ -32,6 +34,8 @@ public:
 	static ComPtr<ID3D11RasterizerState> rasterCullBack;
 
 	static ComPtr<ID3D11RasterizerState> rasterCullFront;
+
+	static ComPtr<ID3D11RasterizerState> rasterCullNone;
 
 	//depth less equal stencil disabled
 	static ComPtr<ID3D11DepthStencilState> defDepthStencilState;

@@ -38,5 +38,7 @@
     <FxCompile Include="DeferredPShader.hlsl" />
     <FxCompile Include="DeferredFinal.hlsl" />
     <FxCompile Include="SkyboxPShader.hlsl" />
+    <FxCompile Include="ShadowVShader.hlsl" />
+    <FxCompile Include="DebugPShader.hlsl" />
   </ItemGroup>
 </Project>

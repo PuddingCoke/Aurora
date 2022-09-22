@@ -21,6 +21,7 @@
 #include"Shader.h"
 #include"Math.h"
 #include"A3D/TextureCube.h"
+#include"A3D/ShadowMap.h"
 
 #include"VideoEncoder/NvidiaEncoder.h"
 #include"Wallpaper/WallpaperHelper.h"

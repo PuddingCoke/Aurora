@@ -1,8 +1,12 @@
 ﻿#include<Aurora/StateCommon.h>
 
-ComPtr<ID3D11SamplerState> StateCommon::defLinearSampler;
+ComPtr<ID3D11SamplerState> StateCommon::linearClampSampler;
 
-ComPtr<ID3D11SamplerState> StateCommon::defPointSampler;
+ComPtr<ID3D11SamplerState> StateCommon::linearWrapSampler;
+
+ComPtr<ID3D11SamplerState> StateCommon::pointClampSampler;
+
+ComPtr<ID3D11SamplerState> StateCommon::pointWrapSampler;
 
 ComPtr<ID3D11BlendState> StateCommon::defBlendState;
 
@@ -12,11 +16,13 @@ ComPtr<ID3D11RasterizerState> StateCommon::rasterCullBack;
 
 ComPtr<ID3D11RasterizerState> StateCommon::rasterCullFront;
 
+ComPtr<ID3D11RasterizerState> StateCommon::rasterCullNone;
+
 ComPtr<ID3D11DepthStencilState> StateCommon::defDepthStencilState;
 
 HRESULT StateCommon::ini()
 {
-	//初始化defLinearSampler
+	//初始化linearClampSampler
 	{
 		D3D11_SAMPLER_DESC sampDesc = {};
 		sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -27,10 +33,24 @@ HRESULT StateCommon::ini()
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::device->CreateSamplerState(&sampDesc, defLinearSampler.ReleaseAndGetAddressOf());
+		Renderer::device->CreateSamplerState(&sampDesc, linearClampSampler.ReleaseAndGetAddressOf());
 	}
 
-	//初始化defPointSampler
+	//初始化linearWrapSampler
+	{
+		D3D11_SAMPLER_DESC sampDesc = {};
+		sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_NEVER;
+		sampDesc.MinLOD = 0;
+		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		Renderer::device->CreateSamplerState(&sampDesc, linearWrapSampler.ReleaseAndGetAddressOf());
+	}
+
+	//初始化pointClampSampler
 	{
 		D3D11_SAMPLER_DESC sampDesc = {};
 		sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -41,7 +61,21 @@ HRESULT StateCommon::ini()
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::device->CreateSamplerState(&sampDesc, defPointSampler.ReleaseAndGetAddressOf());
+		Renderer::device->CreateSamplerState(&sampDesc, pointClampSampler.ReleaseAndGetAddressOf());
+	}
+
+	//初始化pointWrapSampler
+	{
+		D3D11_SAMPLER_DESC sampDesc = {};
+		sampDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_POINT;
+		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_NEVER;
+		sampDesc.MinLOD = 0;
+		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		Renderer::device->CreateSamplerState(&sampDesc, pointWrapSampler.ReleaseAndGetAddressOf());
 	}
 
 	//初始化defBlendState
@@ -102,6 +136,15 @@ HRESULT StateCommon::ini()
 		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_FRONT;
 
 		Renderer::device->CreateRasterizerState(&rasterizerDesc, rasterCullFront.ReleaseAndGetAddressOf());
+	}
+
+	//初始化rasterCullFront
+	{
+		D3D11_RASTERIZER_DESC rasterizerDesc = {};
+		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+
+		Renderer::device->CreateRasterizerState(&rasterizerDesc, rasterCullNone.ReleaseAndGetAddressOf());
 	}
 
 	//初始化defDepthStencilState

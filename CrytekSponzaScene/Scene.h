@@ -83,8 +83,13 @@ public:
 		}
 	}
 
-	void draw()
+	void draw(Shader* const vertexShader, Shader* const pixelShader)
 	{
+		if(vertexShader)
+			vertexShader->use();
+		if(pixelShader)
+			pixelShader->use();
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			materials[models[i]->materialIndex]->use();

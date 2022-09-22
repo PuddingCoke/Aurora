@@ -291,7 +291,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 
 	Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	Renderer::setSampler(0, StateCommon::defLinearSampler.Get());
+	Renderer::setSampler(0, StateCommon::linearClampSampler.Get());
 	equirectangularMap->setSRV(0);
 
 	TextureCube::shader->use();
@@ -303,7 +303,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 
 	Renderer::setViewport(skyboxResolution, skyboxResolution);
 
-	Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 1000.f));
+	Camera::setProj(Math::pi / 2.f, 1.f, 0.1f, 1000.f);
 
 	for (int i = 0; i < 6; i++)
 	{

@@ -79,6 +79,8 @@ int Aurora::iniEngine(const Configuration& config)
 
 	Graphics::ini();
 
+	ShadowMap::ini();
+
 	//初始化一些默认状态，比如Viewport、BlendState等等 
 	Renderer::setViewport(Graphics::width, Graphics::height);
 
@@ -125,6 +127,8 @@ void Aurora::iniGame(Game* const game)
 	Shader::release();
 
 	TextureCube::releaseShader();
+
+	ShadowMap::release();
 
 	Renderer::context->ClearState();
 
@@ -458,7 +462,7 @@ HRESULT Aurora::iniCamera()
 		break;
 	case Configuration::CameraType::Perspective:
 		std::cout << "[class Aurora] perspective camera\n";
-		Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f));
+		Camera::setProj(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f);
 		break;
 	}
 

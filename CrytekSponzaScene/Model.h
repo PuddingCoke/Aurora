@@ -85,12 +85,8 @@ public:
 
 	void draw()
 	{
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 		Renderer::context->IASetVertexBuffers(0, 1, modelBuffer.GetAddressOf(), &stride, &offset);
-
 		Renderer::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
-
 		Renderer::context->Draw(vertexCount, 0);
 	}
 

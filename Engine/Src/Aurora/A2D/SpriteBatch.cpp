@@ -51,7 +51,7 @@ void SpriteBatch::end()
 	const unsigned int stride = sizeof(float) * 8;
 	const unsigned int offset = 0;
 
-	Renderer::context->PSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
+	Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
 	Renderer::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -365,7 +365,7 @@ void SpriteBatch::texturePoolAdd(Texture2D* const texture)
 
 void SpriteBatch::flush()
 {
-	Renderer::context->PSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
+	Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
 	Renderer::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

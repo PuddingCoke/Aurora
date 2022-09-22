@@ -207,7 +207,7 @@ public:
 
 				Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				Renderer::context->PSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
+				Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
 				envTexture->setSRV(0);
 
 				TextureCube::shader->use();
@@ -219,7 +219,7 @@ public:
 
 				Renderer::setViewport(boxSize, boxSize);
 
-				Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 1000.f));
+				Camera::setProj(Math::pi / 2.f, 1.f, 0.1f, 1000.f);
 
 				for (int i = 0; i < 6; i++)
 				{
@@ -349,7 +349,7 @@ public:
 			Renderer::device->CreateShaderResourceView(prefilterCube.Get(), &srvDesc, prefilterSRV.GetAddressOf());
 
 			Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
-			Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 1000.f));
+			Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 1000.f);
 		}
 
 		{
@@ -440,7 +440,7 @@ public:
 
 		Renderer::setBlendState(StateCommon::defBlendState.Get());
 
-		Renderer::context->PSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
 
 		Renderer::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
 
@@ -460,7 +460,7 @@ public:
 
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Renderer::context->PSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
 
 		for (unsigned i = 0; i < numModels; i++)
 		{

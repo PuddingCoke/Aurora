@@ -10,12 +10,18 @@ DirectX::XMMATRIX Camera::viewMatrix;
 
 Camera::ViewInfo Camera::viewInfo;
 
-DirectX::XMMATRIX Camera::getProj()
+float Camera::fov = 0.f;
+
+float Camera::nearPlane = 0.f;
+
+float Camera::farPlane = 0.f;
+
+const DirectX::XMMATRIX& Camera::getProj()
 {
 	return projMatrix;
 }
 
-DirectX::XMMATRIX Camera::getView()
+const DirectX::XMMATRIX& Camera::getView()
 {
 	return viewMatrix;
 }
@@ -42,6 +48,9 @@ void Camera::setProj(const DirectX::XMMATRIX& proj)
 
 void Camera::setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar)
 {
+	Camera::fov = fov;
+	Camera::nearPlane = zNear;
+	Camera::farPlane = zFar;
 	setProj(DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, zNear, zFar));
 }
 
@@ -76,6 +85,21 @@ DirectX::XMFLOAT3 Camera::toViewSpace(const DirectX::XMFLOAT3& pos)
 	DirectX::XMFLOAT3 outPosition;
 	DirectX::XMStoreFloat3(&outPosition, transformed);
 	return outPosition;
+}
+
+const float& Camera::getFov()
+{
+	return fov;
+}
+
+const float& Camera::getNearPlane()
+{
+	return nearPlane;
+}
+
+const float& Camera::getFarPlane()
+{
+	return farPlane;
 }
 
 void Camera::initialize()

@@ -4,6 +4,7 @@
 #define _SHADOWMAP_H_
 
 #include<Aurora/Renderer.h>
+#include<Aurora/Shader.h>
 
 class ShadowMap
 {
@@ -23,9 +24,19 @@ public:
 
 	ID3D11DepthStencilView* get() const;
 
+	ID3D11DepthStencilView* getROView() const;
+
 	ID3D11ShaderResourceView* getSRV() const;
 
+	static Shader* shadowVShader;
+
 private:
+
+	friend class Aurora;
+
+	static void ini();
+
+	static void release();
 
 	ShadowMap(const unsigned int& width, const unsigned int& height);
 
@@ -33,8 +44,10 @@ private:
 
 	ComPtr<ID3D11DepthStencilView> depthStencilView;
 
-	ComPtr<ID3D11ShaderResourceView> shadowSRV;
+	//read only view
+	ComPtr<ID3D11DepthStencilView> depthStencilViewRO;
 
+	ComPtr<ID3D11ShaderResourceView> shadowSRV;
 };
 
 #endif // !_SHADOWMAP_H_

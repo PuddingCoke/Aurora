@@ -117,8 +117,8 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 {
 	Renderer::setBlendState(StateCommon::addtiveBlend.Get());
 	Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Renderer::context->PSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
-	Renderer::context->CSSetSamplers(0, 1, StateCommon::defLinearSampler.GetAddressOf());
+	Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
+	Renderer::context->CSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
 	Renderer::context->PSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
 	Renderer::context->CSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
 	Shader::displayVShader->use();

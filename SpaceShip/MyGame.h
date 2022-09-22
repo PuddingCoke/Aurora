@@ -23,7 +23,7 @@ public:
 		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
 		camera({ 0,0,0 }, { 1,0,0 }, { 0,1,0 }, 100.f, 3.f)
 	{
-		Camera::setProj(DirectX::XMMatrixPerspectiveFovLH(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f));
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
 		
 		camera.registerEvent();
 	}
@@ -47,7 +47,7 @@ public:
 
 		Renderer::setBlendState(StateCommon::defBlendState.Get());
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Renderer::setSampler(0, StateCommon::defLinearSampler.Get());
+		Renderer::setSampler(0, StateCommon::linearClampSampler.Get());
 
 		TextureCube::shader->use();
 		skyboxPShader->use();

@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Aurora\A2D\GameSceneManager.h" />
+    <ClInclude Include="Inc\Aurora\A3D\CascadedShadowMap.h" />
     <ClInclude Include="Inc\Aurora\A3D\OrbitCamera.h" />
     <ClInclude Include="Inc\Aurora\Aurora.h" />
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
@@ -178,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\A2D\GameSceneManager.cpp" />
+    <ClCompile Include="Src\Aurora\A3D\CascadedShadowMap.cpp" />
     <ClCompile Include="Src\Aurora\A3D\FPSCamera.cpp" />
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp" />
     <ClCompile Include="Src\Aurora\Buffer.cpp" />

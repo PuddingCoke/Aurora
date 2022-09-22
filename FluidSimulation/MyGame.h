@@ -207,7 +207,7 @@ public:
 				pointer.down = false;
 			});
 
-		ID3D11SamplerState* samplers[2] = { StateCommon::defLinearSampler.Get(),StateCommon::defPointSampler.Get() };
+		ID3D11SamplerState* samplers[2] = { StateCommon::linearClampSampler.Get(),StateCommon::pointClampSampler.Get() };
 
 		Renderer::context->PSSetSamplers(0, 2, samplers);
 

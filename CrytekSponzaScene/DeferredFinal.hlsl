@@ -51,15 +51,15 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         float3 L = lights[i].position.xyz - position;
         const float dist = length(L);
         L = normalize(L);
-            
+        
         const float3 V = normalize(viewPos.xyz - position);
-            
+        
         const float atten = lights[i].radius / (pow(dist, 2.0) + 1.0);
-            
+        
         const float3 N = normalize(normalSpecular.rgb);
         const float NdotL = max(0.0, dot(N, L));
         const float3 diff = lights[i].color.rgb * baseColor.rgb * NdotL * atten;
-            
+        
         const float3 R = reflect(-L, N);
         const float NdotR = max(0.0, dot(R, V));
         const float3 spec = lights[i].color.rgb * normalSpecular.w * pow(NdotR, 16.0) * (atten * 1.5);
