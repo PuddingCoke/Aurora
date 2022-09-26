@@ -7,7 +7,7 @@
 #include<Aurora/A3D/TextureCube.h>
 #include<Aurora/A3D/FPSCamera.h>
 #include<Aurora/A3D/ShadowMap.h>
-#include<Aurora/A3D/CascadedShadowMap.h>
+//#include<Aurora/A3D/CascadedShadowMap.h>
 #include<Aurora/PostProcessing/HBAOEffect.h>
 
 #include"Scene.h"
@@ -25,8 +25,6 @@ public:
 	TextureCube* skybox;
 
 	ShadowMap* shadowMap;
-
-	ShadowMap* shadowMap2;
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
@@ -48,9 +46,7 @@ public:
 
 	HBAOEffect hbaoEffect;
 
-	CascadedShadowMap csm;
-
-	bool depthMode = false;
+	//CascadedShadowMap csm;
 
 	struct LightInfo
 	{
@@ -66,7 +62,7 @@ public:
 	}lightInfo{};
 
 	MyGame() :
-		camera({ 0.0f,20.f,0.f }, { 1.0f,0.0f,0.0f }, { 0.f,1.f,0.f }, 100.f, 3.f),
+		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f, 3.f),
 		deferredVShader(Shader::fromFile("DeferredVShader.hlsl", ShaderType::Vertex)),
 		deferredPShader(Shader::fromFile("DeferredPShader.hlsl", ShaderType::Pixel)),
 		deferredFinal(Shader::fromFile("DeferredFinal.hlsl", ShaderType::Pixel)),
@@ -78,9 +74,8 @@ public:
 		shadowMap(ShadowMap::create(Graphics::getWidth(), Graphics::getHeight())),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		scene(Scene::create(assetPath + "/sponza.dae")),
-		skybox(TextureCube::create({ assetPath + "/sky/SkyEarlyDusk_Right.png",assetPath + "/sky/SkyEarlyDusk_Left.png",assetPath + "/sky/SkyEarlyDusk_Top.png",assetPath + "/sky/SkyEarlyDusk_Bottom.png",assetPath + "/sky/SkyEarlyDusk_Front.png",assetPath + "/sky/SkyEarlyDusk_Back.png" })),
-		csm(Graphics::getWidth(), Graphics::getHeight(), { 0,100,20 }, { 0,0,0 }),
-		shadowMap2(ShadowMap::create(2048, 2048))
+		skybox(TextureCube::create({ assetPath + "/sky/SkyEarlyDusk_Right.png",assetPath + "/sky/SkyEarlyDusk_Left.png",assetPath + "/sky/SkyEarlyDusk_Top.png",assetPath + "/sky/SkyEarlyDusk_Bottom.png",assetPath + "/sky/SkyEarlyDusk_Front.png",assetPath + "/sky/SkyEarlyDusk_Back.png" }))
+		//csm(Graphics::getWidth(), Graphics::getHeight(), { 0,600,100 }, { 0,0,0 })
 	{
 
 		{
@@ -144,10 +139,10 @@ public:
 
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 1000.f);
 
-		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
+		/*Keyboard::addKeyDownEvent(Keyboard::K, [this]()
 			{
 				depthMode = !depthMode;
-			});
+			});*/
 
 	}
 
@@ -162,7 +157,6 @@ public:
 		delete gBaseColor;
 		delete scene;
 		delete shadowMap;
-		delete shadowMap2;
 		delete skybox;
 		delete skyboxPShader;
 	}
@@ -182,23 +176,14 @@ public:
 		memcpy(mappedData.pData, &lightInfo, sizeof(LightInfo));
 		Renderer::context->Unmap(lightBuffer.Get(), 0);
 
-		csm.renderShaodwMap(shadowMap2, []() {});
-
-		Renderer::setViewport(2048, 2048);
-
-		shadowMap2->clear();
-		Renderer::context->PSSetShader(nullptr, nullptr, 0);
-		Renderer::context->OMSetRenderTargets(0, nullptr, shadowMap2->get());
-
-		scene->draw(ShadowMap::shadowVShader, nullptr);
-
-		Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
 	}
 
 	void render()
 	{
 		Renderer::setSampler(0, StateCommon::linearWrapSampler.Get());
 		Renderer::setSampler(1, StateCommon::linearClampSampler.Get());
+
+		Renderer::context->RSSetState(StateCommon::rasterCullBack.Get());
 
 		gBaseColor->clearRTV(DirectX::Colors::Black);
 		gPosition->clearRTV(DirectX::Colors::Black);
@@ -209,44 +194,32 @@ public:
 
 		scene->draw(deferredVShader, deferredPShader);
 
-		Texture2D* const ssaoTexture = hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getTexture()->getSRV());
+		//csm.renderShaodwMap(shadowMap2, []() {});
 
 		Renderer::setDefRTV();
-		
-		if (depthMode)
-		{
-			Shader::displayVShader->use();
-			debugPShader->use();
 
-			shadowMap2->setSRV(0);
+		gPosition->getTexture()->setSRV(0);
+		gNormalSpecular->getTexture()->setSRV(1);
+		gBaseColor->getTexture()->setSRV(2);
+		hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getTexture()->getSRV())->setSRV(3);
 
-			Renderer::drawQuad();
-		}
-		else
-		{
-			gPosition->getTexture()->setSRV(0);
-			gNormalSpecular->getTexture()->setSRV(1);
-			gBaseColor->getTexture()->setSRV(2);
-			ssaoTexture->setSRV(3);
+		ID3D11Buffer* buffers[2] = { Camera::getViewBuffer(),lightBuffer.Get() };
 
-			ID3D11Buffer* buffers[2] = { Camera::getViewBuffer(),lightBuffer.Get() };
+		Renderer::context->PSSetConstantBuffers(1, 2, buffers);
 
-			Renderer::context->PSSetConstantBuffers(1, 2, buffers);
+		Shader::displayVShader->use();
+		deferredFinal->use();
 
-			Shader::displayVShader->use();
-			deferredFinal->use();
+		Renderer::context->Draw(3, 0);
 
-			Renderer::context->Draw(3, 0);
+		Renderer::setDefRTV(shadowMap->get());
 
-			Renderer::setDefRTV(shadowMap->get());
+		skybox->setSRV(0);
 
-			skybox->setSRV(0);
+		TextureCube::shader->use();
+		skyboxPShader->use();
 
-			TextureCube::shader->use();
-			skyboxPShader->use();
-
-			Renderer::drawCube();
-		}
+		Renderer::drawCube();
 
 		ID3D11ShaderResourceView* nullView[4] = { nullptr,nullptr,nullptr,nullptr };
 

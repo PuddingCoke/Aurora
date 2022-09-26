@@ -9,9 +9,6 @@ public:
 
 	const unsigned int particleNum;
 
-	//这个参数决定了粒子的明亮度
-	static constexpr float colorFactor = 1.f;
-
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	std::shared_ptr<Buffer> particlePosBuffer;
@@ -46,18 +43,18 @@ public:
 
 			if (radius < 0.4f)
 			{
-				colors[i] = DirectX::XMFLOAT4(colorFactor, colorFactor, colorFactor, 1.f);
+				colors[i] = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 			}
 			else
 			{
-				colors[i] = DirectX::XMFLOAT4(colorFactor, colorFactor, colorFactor * (radius * 0.4f + 0.1f), 1.f);
+				colors[i] = DirectX::XMFLOAT4(radius * 0.4f + 0.1f, 1.f, 1.f, 1.f);
 			}
 		}
 
 		//初始化粒子位置信息
 		particlePosBuffer = std::shared_ptr<Buffer>(Buffer::create(
-			particleNum*sizeof(DirectX::XMFLOAT4),
-			D3D11_BIND_VERTEX_BUFFER|D3D11_BIND_UNORDERED_ACCESS,
+			particleNum * sizeof(DirectX::XMFLOAT4),
+			D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_UNORDERED_ACCESS,
 			D3D11_USAGE_DEFAULT,
 			positions));
 
@@ -92,9 +89,9 @@ public:
 				{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 			};
 
-			Renderer::device->CreateInputLayout(layout, 2u, 
-				displayVShader->shaderBlob->GetBufferPointer(), 
-				displayVShader->shaderBlob->GetBufferSize(), 
+			Renderer::device->CreateInputLayout(layout, 2u,
+				displayVShader->shaderBlob->GetBufferPointer(),
+				displayVShader->shaderBlob->GetBufferSize(),
 				inputLayout.ReleaseAndGetAddressOf());
 		}
 
@@ -133,7 +130,7 @@ public:
 	{
 		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		
+
 		ID3D11Buffer* buffers[2] = { particlePosBuffer->get(),particleColorBuffer->get() };
 
 		const UINT stride[2] = { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) };

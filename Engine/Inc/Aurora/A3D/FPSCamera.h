@@ -6,6 +6,7 @@
 #include<Aurora/Mouse.h>
 #include<Aurora/Keyboard.h>
 #include<Aurora/Camera.h>
+#include<Aurora/Math.h>
 
 class FPSCamera
 {

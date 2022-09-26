@@ -20,20 +20,26 @@ void OrbitCamera::registerEvent()
 
 				eye = DirectX::XMVector3Transform(eye, rotMat);
 
-				float curTheta;
+				float eyeUpAngle;
 
-				DirectX::XMStoreFloat(&curTheta, DirectX::XMVector3AngleBetweenVectors(eye, up));
+				DirectX::XMStoreFloat(&eyeUpAngle, DirectX::XMVector3AngleBetweenVectors(eye, up));
 
-				const float epsilon = 0.01f;
+				const float destAngle = eyeUpAngle + Mouse::getDY() / 120.f;
 
-				if (curTheta + Mouse::getDY() / 120.f > Math::pi - epsilon || curTheta + Mouse::getDY() / 120.f < epsilon)
+				float rotAngle = Mouse::getDY() / 120.f;
+
+				if (destAngle > Math::pi - Camera::epsilon)
 				{
-					return;
+					rotAngle = Math::pi - Camera::epsilon - eyeUpAngle;
+				}
+				else if (destAngle < Camera::epsilon)
+				{
+					rotAngle = Camera::epsilon - eyeUpAngle;
 				}
 
 				const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Cross(up, eye);
 
-				const DirectX::XMMATRIX upRotMat = DirectX::XMMatrixRotationAxis(upCrossLookDir, Mouse::getDY() / 120.f);
+				const DirectX::XMMATRIX upRotMat = DirectX::XMMatrixRotationAxis(upCrossLookDir, rotAngle);
 
 				eye = DirectX::XMVector3Transform(eye, upRotMat);
 

@@ -3,7 +3,11 @@
 FPSCamera::FPSCamera(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& lookDir, const DirectX::XMFLOAT3& up, const float& moveSpeed, const float& rotationSpeed) :
 	eye(eye), lookDir(lookDir), up(up), moveSpeed(moveSpeed), rotationSpeed(rotationSpeed)
 {
-	const DirectX::XMFLOAT3 focusPoint = DirectX::XMFLOAT3(eye.x + lookDir.x, eye.y + lookDir.y, eye.z + lookDir.z);
+	DirectX::XMFLOAT3 lookDirNorm;
+
+	DirectX::XMStoreFloat3(&lookDirNorm, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&lookDir)));
+
+	const DirectX::XMFLOAT3 focusPoint = DirectX::XMFLOAT3(eye.x + lookDirNorm.x, eye.y + lookDirNorm.y, eye.z + lookDirNorm.z);
 
 	Camera::setView(eye, focusPoint, up);
 }
@@ -43,21 +47,6 @@ void FPSCamera::applyInput(const float& dt)
 		eye.z += upCrossLookDir.z * moveSpeed * dt;
 	}
 
-	if (Keyboard::getKeyDown(Keyboard::Q))
-	{
-		const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&lookDir), dt * rotationSpeed);
-
-		DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), rotMat));
-
-	}
-
-	if (Keyboard::getKeyDown(Keyboard::E))
-	{
-		const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&lookDir), -dt * rotationSpeed);
-
-		DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), rotMat));
-	}
-
 	const DirectX::XMFLOAT3 focusPoint = DirectX::XMFLOAT3(eye.x + lookDir.x, eye.y + lookDir.y, eye.z + lookDir.z);
 
 	Camera::setView(eye, focusPoint, up);
@@ -75,10 +64,27 @@ void FPSCamera::registerEvent()
 
 				const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Cross(DirectX::XMLoadFloat3(&up), DirectX::XMLoadFloat3(&lookDir));
 
-				const DirectX::XMMATRIX upRotMat = DirectX::XMMatrixRotationAxis(upCrossLookDir, -Mouse::getDY() / 120.f);
+				float lookUpAngle;
 
-				DirectX::XMStoreFloat3(&up, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&up), upRotMat));
-				DirectX::XMStoreFloat3(&lookDir, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&lookDir), upRotMat));
+				DirectX::XMStoreFloat(&lookUpAngle, DirectX::XMVector3AngleBetweenNormals(DirectX::XMLoadFloat3(&lookDir), DirectX::XMLoadFloat3(&up)));
+
+				const float destAngle = lookUpAngle - Mouse::getDY() / 120.f;
+
+				float rotAngle = -Mouse::getDY() / 120.f;
+
+				//做一下俯仰角限制
+				if (destAngle > Math::pi - Camera::epsilon)
+				{
+					rotAngle = Math::pi - Camera::epsilon - lookUpAngle;
+				}
+				else if (destAngle < Camera::epsilon)
+				{
+					rotAngle = Camera::epsilon - lookUpAngle;
+				}
+
+				const DirectX::XMMATRIX lookDirRotMat = DirectX::XMMatrixRotationAxis(upCrossLookDir, rotAngle);
+
+				DirectX::XMStoreFloat3(&lookDir, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&lookDir), lookDirRotMat));
 			}
 		});
 }

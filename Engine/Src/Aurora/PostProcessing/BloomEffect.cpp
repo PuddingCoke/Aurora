@@ -115,7 +115,7 @@ BloomEffect::~BloomEffect()
 
 Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 {
-	Renderer::setBlendState(StateCommon::addtiveBlend.Get());
+	Renderer::setBlendState(nullptr);
 	Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
 	Renderer::context->CSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
@@ -130,14 +130,11 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	bloomExtract->use();
 	Renderer::setViewport(bloomWidth, bloomHeight);
 	RenderTexture::setRTVs({ originTexture,bloomTexture });
-	originTexture->clearRTV(DirectX::Colors::Black);
-	bloomTexture->clearRTV(DirectX::Colors::Black);
 	texture2D->setSRV();
 	Renderer::drawQuad();
 
 	Shader::displayPShader->use();
 	Renderer::setViewport(resolutions[0].x, resolutions[0].y);
-	rwTextures[0]->clearRTV(DirectX::Colors::Black);
 	rwTextures[0]->setRTV();
 	bloomTexture->getTexture()->setSRV();
 	Renderer::drawQuad();
@@ -166,7 +163,6 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 		Renderer::setViewport(resolutions[i + 1].x, resolutions[i + 1].y);
 
 		Shader::displayPShader->use();
-		rwTextures[i * 2 + 2]->clearRTV(DirectX::Colors::Black);
 		rwTextures[i * 2 + 2]->setRTV();
 		rwTextures[i * 2]->PSSetSRV();
 		Renderer::drawQuad();
@@ -194,6 +190,8 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 
 		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
 	}
+
+	Renderer::setBlendState(StateCommon::addtiveBlend.Get());
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{

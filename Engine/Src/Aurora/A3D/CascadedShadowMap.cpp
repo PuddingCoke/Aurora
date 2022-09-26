@@ -62,8 +62,8 @@ CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned i
 	setLightPos(lightPos);
 	setLightLookAt(lightLookAt);
 
-	smRenderParams.ZBiasParams.iDepthBias = 100;
-	smRenderParams.ZBiasParams.fSlopeScaledDepthBias = 5;
+	smRenderParams.ZBiasParams.iDepthBias = 0;
+	smRenderParams.ZBiasParams.fSlopeScaledDepthBias = 0;
 	smRenderParams.ZBiasParams.bUseReceiverPlaneBias = false;
 	smRenderParams.ZBiasParams.fDistanceBiasMin = 0.000001f;
 	smRenderParams.ZBiasParams.fDistanceBiasFactor = 0.0002f;
@@ -78,11 +78,12 @@ CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned i
 	smRenderParams.PCSSPenumbraParams.fMinSizePercent[3] = 5.0f;
 	smRenderParams.PCSSPenumbraParams.fMinWeightThresholdPercent = 3.0f;
 	smRenderParams.eCascadedShadowMapType = GFSDK_ShadowLib_CascadedShadowMapType_SampleDistribution;
+
 	smRenderParams.fCascadeMaxDistancePercent = 50.0f;
-	smRenderParams.fCascadeZLinearScale[0] = 0.1f;
-	smRenderParams.fCascadeZLinearScale[1] = 0.2f;
-	smRenderParams.fCascadeZLinearScale[2] = 0.5f;
-	smRenderParams.fCascadeZLinearScale[3] = 1.0f;
+	smRenderParams.fCascadeZLinearScale[0] = 0.2f;
+	smRenderParams.fCascadeZLinearScale[1] = 0.4f;
+	smRenderParams.fCascadeZLinearScale[2] = 0.6f;
+	smRenderParams.fCascadeZLinearScale[3] = 0.8f;
 
 	smRenderParams.v3WorldSpaceBBox[0] = smRenderParams.v3WorldSpaceBBox[1] = GFSDK_Zero_Vector3;
 
@@ -128,8 +129,8 @@ void CascadedShadowMap::setLightLookAt(const DirectX::XMFLOAT3& lightLookAt)
 
 void CascadedShadowMap::updateCSMCamera()
 {
-	const DirectX::XMMATRIX cameraProj = DirectX::XMMatrixTranspose(Camera::getProj());
-	const DirectX::XMMATRIX cameraView = DirectX::XMMatrixTranspose(Camera::getView());
+	const DirectX::XMMATRIX cameraProj = Camera::getProj();
+	const DirectX::XMMATRIX cameraView = Camera::getView();
 	memcpy(&smRenderParams.m4x4EyeProjectionMatrix, &cameraProj, sizeof(gfsdk_float4x4));
 	memcpy(&smRenderParams.m4x4EyeViewMatrix, &cameraView, sizeof(gfsdk_float4x4));
 }
@@ -145,27 +146,20 @@ void CascadedShadowMap::renderShaodwMap(ShadowMap* const shadowMap, std::functio
 
 	shadowCtx->SetMapRenderParams(shadowMapHandle, &smRenderParams);
 
-	shadowCtx->UpdateMapBounds(shadowMapHandle, &lightViewMatrices[0], &lightProjMatrices[0], &renderFrustum[0]);
+	shadowCtx->UpdateMapBounds(shadowMapHandle, lightViewMatrices, lightProjMatrices, renderFrustum);
 
-	/*std::cout << lightProjMatrices[0]._11 << " " << lightProjMatrices[0]._12 << " " << lightProjMatrices[0]._13 << " " << lightProjMatrices[0]._14 << "\n";
-	std::cout << lightProjMatrices[0]._21 << " " << lightProjMatrices[0]._22 << " " << lightProjMatrices[0]._23 << " " << lightProjMatrices[0]._24 << "\n";
-	std::cout << lightProjMatrices[0]._31 << " " << lightProjMatrices[0]._32 << " " << lightProjMatrices[0]._33 << " " << lightProjMatrices[0]._34 << "\n";
-	std::cout << lightProjMatrices[0]._41 << " " << lightProjMatrices[0]._42 << " " << lightProjMatrices[0]._43 << " " << lightProjMatrices[0]._44 << "\n";
-
-	std::cin.get();*/
-
-	Renderer::context->VSSetConstantBuffers(2, 1, lightViewProjBuffer.GetAddressOf());
-
-	int index = 1;
+	int index = 3;
 
 	const DirectX::XMMATRIX viewMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightViewMatrices[index]);
 	const DirectX::XMMATRIX projMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightProjMatrices[index]);
 	const DirectX::XMMATRIX viewProjMatrix = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
 
-	//const DirectX::XMMATRIX viewProjMatrix = DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH({ 0,30 * sinf(Math::half_pi - 0.05f),30 * cosf(Math::half_pi - 0.05f) }, { 0,0,0 }, { 0,1,0 }) * DirectX::XMMatrixOrthographicLH(cameraSize * 2.f, cameraSize * 2.f, nearPlane, farPlane));
+	std::cout << renderFrustum[index].bValid << "\n";
 
 	D3D11_MAPPED_SUBRESOURCE mappedData;
 	Renderer::context->Map(lightViewProjBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	memcpy(mappedData.pData, &viewProjMatrix, sizeof(DirectX::XMMATRIX));
 	Renderer::context->Unmap(lightViewProjBuffer.Get(), 0);
+
+	Renderer::context->VSSetConstantBuffers(2, 1, lightViewProjBuffer.GetAddressOf());
 }
