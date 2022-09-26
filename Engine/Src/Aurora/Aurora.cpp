@@ -521,7 +521,7 @@ void Aurora::runEncode()
 
 	bool initializeStatus;
 
-	NvidiaEncoder nvidiaEncoder(Graphics::getWidth(), Graphics::getHeight(), 900, 60, initializeStatus);
+	NvidiaEncoder nvidiaEncoder(Graphics::getWidth(), Graphics::getHeight(), 3600, 60, initializeStatus);
 
 	if (initializeStatus)
 	{
@@ -541,6 +541,10 @@ void Aurora::runEncode()
 		if (config->msaaLevel != 1)
 		{
 			Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+		}
+		else
+		{
+			Renderer::context->CopyResource(encodeTexture.Get(), Renderer::backBuffer);
 		}
 		Graphics::deltaTime.sTime += Graphics::deltaTime.deltaTime;
 		Graphics::updateDeltaTimeBuffer();
