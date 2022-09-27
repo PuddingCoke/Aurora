@@ -60,7 +60,7 @@
     <ClInclude Include="Inc\Aurora\Utils.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\StateCommon.h">
+    <ClInclude Include="Inc\Aurora\States.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\RenderTexture.h">
@@ -176,7 +176,7 @@
     <ClCompile Include="Src\Aurora\Utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\StateCommon.cpp">
+    <ClCompile Include="Src\Aurora\States.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\RenderTexture.cpp">

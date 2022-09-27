@@ -1,21 +1,22 @@
 ﻿#pragma once
 
-#ifndef _STATE_COMMON_H_
-#define _STATE_COMMON_H_
+#ifndef _STATES_H_
+#define _STATES_H_
 
 #include<iostream>
 
 #include"Renderer.h"
 
-class StateCommon
+//这里定义了一些有用的状态
+class States
 {
 public:
 
-	StateCommon() = delete;
+	States() = delete;
 
-	StateCommon(const StateCommon&) = delete;
+	States(const States&) = delete;
 
-	void operator=(const StateCommon&) = delete;
+	void operator=(const States&) = delete;
 
 	static ComPtr<ID3D11SamplerState> linearClampSampler;
 
@@ -48,4 +49,4 @@ private:
 
 };
 
-#endif // !_STATE_COMMON_H_
+#endif // !_STATES_H_

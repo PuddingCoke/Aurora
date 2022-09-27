@@ -5,7 +5,7 @@
 
 #include<Aurora/RenderTexture.h>
 #include<Aurora/RWTexture.h>
-#include<Aurora/StateCommon.h>
+#include<Aurora/States.h>
 #include<Aurora/Shader.h>
 #include<Aurora/Graphics.h>
 

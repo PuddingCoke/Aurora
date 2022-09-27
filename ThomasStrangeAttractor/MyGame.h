@@ -4,7 +4,7 @@
 #include<Aurora/Game.h>
 #include<Aurora/Mouse.h>
 #include<Aurora/Event.h>
-#include<Aurora/StateCommon.h>
+#include<Aurora/States.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/A3D/DepthStencilView.h>
 #include<Aurora/A3D/OrbitCamera.h>
@@ -46,6 +46,10 @@ public:
 
 		gamma = bloomEffect.getGamma();
 		exposure = bloomEffect.getExposure();
+
+		bloomEffect.setThreshold(0);
+
+		bloomEffect.applyChange();
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
 			rotating = !rotating;
@@ -95,7 +99,7 @@ public:
 
 	void render() override
 	{
-		Renderer::context->ClearDepthStencilView(depthStencilView->get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		depthStencilView->clear(D3D11_CLEAR_DEPTH);
 
 		renderTexture->clearRTV(DirectX::Colors::Transparent);
 		renderTexture->setRTV(depthStencilView->get());
@@ -115,7 +119,7 @@ public:
 
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
 		texture->setSRV(0);
 
 		Shader::displayVShader->use();

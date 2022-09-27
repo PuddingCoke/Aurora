@@ -170,7 +170,7 @@
     <ClInclude Include="Inc\Aurora\RenderTexture.h" />
     <ClInclude Include="Inc\Aurora\Shader.h" />
     <ClInclude Include="Inc\Aurora\A2D\SpriteBatch.h" />
-    <ClInclude Include="Inc\Aurora\StateCommon.h" />
+    <ClInclude Include="Inc\Aurora\States.h" />
     <ClInclude Include="Inc\Aurora\Texture2D.h" />
     <ClInclude Include="Inc\Aurora\Timer.h" />
     <ClInclude Include="Inc\Aurora\Utils.h" />
@@ -211,7 +211,7 @@
     <ClCompile Include="Src\Aurora\RenderTexture.cpp" />
     <ClCompile Include="Src\Aurora\Shader.cpp" />
     <ClCompile Include="Src\Aurora\A2D\SpriteBatch.cpp" />
-    <ClCompile Include="Src\Aurora\StateCommon.cpp" />
+    <ClCompile Include="Src\Aurora\States.cpp" />
     <ClCompile Include="Src\Aurora\Texture2D.cpp" />
     <ClCompile Include="Src\Aurora\Timer.cpp" />
     <ClCompile Include="Src\Aurora\Utils.cpp" />

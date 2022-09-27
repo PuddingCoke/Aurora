@@ -47,7 +47,7 @@ public:
 
 	static const float& getFarPlane();
 
-	static constexpr float epsilon = 0.001f;
+	static constexpr float epsilon = 0.01f;
 
 private:
 

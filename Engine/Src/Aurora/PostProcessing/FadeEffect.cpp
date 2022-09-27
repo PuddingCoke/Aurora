@@ -25,7 +25,7 @@ Texture2D* FadeEffect::process(Texture2D* const texture2D) const
 
 	Renderer::context->PSSetConstantBuffers(3, 1, fadeBuffer.GetAddressOf());
 
-	Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
+	Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
 	texture2D->setSRV(0);
 
 	Shader::displayVShader->use();

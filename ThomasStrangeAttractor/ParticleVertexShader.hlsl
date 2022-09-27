@@ -24,6 +24,6 @@ VertexOuput main(VertexInput input)
 {
     VertexOuput output;
     output.position = mul(mul(input.position, view), proj);
-    output.color = abs(input.position) * input.color * 0.7;
+    output.color = input.color;
     return output;
 }

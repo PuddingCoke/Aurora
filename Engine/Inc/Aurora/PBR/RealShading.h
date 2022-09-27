@@ -3,7 +3,7 @@
 #include<Aurora/RenderTexture.h>
 #include<Aurora/Texture2D.h>
 #include<Aurora/Shader.h>
-#include<Aurora/StateCommon.h>
+#include<Aurora/States.h>
 #include<Aurora/Graphics.h>
 
 class RealShading

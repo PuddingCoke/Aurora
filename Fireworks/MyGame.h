@@ -6,7 +6,7 @@
 #include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/A2D/PrimitiveBatch.h>
 #include<Aurora/Event.h>
-#include<Aurora/StateCommon.h>
+#include<Aurora/States.h>
 #include<Aurora/DoubleRTV.h>
 #include<Aurora/Color.h>
 #include<Aurora/Timer.h>
@@ -186,7 +186,7 @@ public:
 
 	void render() override
 	{
-		Renderer::setBlendState(StateCommon::defBlendState.Get());
+		Renderer::setBlendState(States::defBlendState.Get());
 
 		texture->clearMSAARTV(DirectX::Colors::Black);
 		texture->setMSAARTV();
@@ -213,10 +213,10 @@ public:
 
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
+		Renderer::setBlendState(States::addtiveBlend.Get());
 		doubleRTV->write()->setRTV();
 
-		Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
 		texture->getTexture()->setSRV(0);
 
 		Shader::displayVShader->use();

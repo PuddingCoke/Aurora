@@ -79,11 +79,11 @@ CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned i
 	smRenderParams.PCSSPenumbraParams.fMinWeightThresholdPercent = 3.0f;
 	smRenderParams.eCascadedShadowMapType = GFSDK_ShadowLib_CascadedShadowMapType_SampleDistribution;
 
-	smRenderParams.fCascadeMaxDistancePercent = 50.0f;
+	smRenderParams.fCascadeMaxDistancePercent = 150.0f;
 	smRenderParams.fCascadeZLinearScale[0] = 0.2f;
 	smRenderParams.fCascadeZLinearScale[1] = 0.4f;
 	smRenderParams.fCascadeZLinearScale[2] = 0.6f;
-	smRenderParams.fCascadeZLinearScale[3] = 0.8f;
+	smRenderParams.fCascadeZLinearScale[3] = 1.0f;
 
 	smRenderParams.v3WorldSpaceBBox[0] = smRenderParams.v3WorldSpaceBBox[1] = GFSDK_Zero_Vector3;
 
@@ -148,7 +148,7 @@ void CascadedShadowMap::renderShaodwMap(ShadowMap* const shadowMap, std::functio
 
 	shadowCtx->UpdateMapBounds(shadowMapHandle, lightViewMatrices, lightProjMatrices, renderFrustum);
 
-	int index = 3;
+	int index = 0;
 
 	const DirectX::XMMATRIX viewMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightViewMatrices[index]);
 	const DirectX::XMMATRIX projMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightProjMatrices[index]);

@@ -64,13 +64,13 @@ int Aurora::iniEngine(const Configuration& config)
 		std::cout << "[class Aurora] initialize camera failed!\n";
 	}
 
-	if (SUCCEEDED(StateCommon::ini()))
+	if (SUCCEEDED(States::ini()))
 	{
-		std::cout << "[class Aurora] stateCommon initialize successfully\n";
+		std::cout << "[class Aurora] States initialize successfully\n";
 	}
 	else
 	{
-		std::cout << "[class Aurora] stateCommon initialize failed\n";
+		std::cout << "[class Aurora] States initialize failed\n";
 	}
 
 	Shader::ini();
@@ -84,11 +84,11 @@ int Aurora::iniEngine(const Configuration& config)
 	//初始化一些默认状态，比如Viewport、BlendState等等 
 	Renderer::setViewport(Graphics::width, Graphics::height);
 
-	Renderer::setBlendState(StateCommon::defBlendState.Get());
+	Renderer::setBlendState(States::defBlendState.Get());
 
-	Renderer::context->RSSetState(StateCommon::rasterCullBack.Get());
+	Renderer::context->RSSetState(States::rasterCullBack.Get());
 
-	Renderer::context->OMSetDepthStencilState(StateCommon::defDepthStencilState.Get(), 0);
+	Renderer::context->OMSetDepthStencilState(States::defDepthStencilState.Get(), 0);
 
 	Renderer::clearDefRTV(DirectX::Colors::Black);
 
@@ -122,6 +122,8 @@ void Aurora::iniGame(Game* const game)
 		break;
 	}
 
+	Renderer::context->ClearState();
+
 	delete game;
 
 	Shader::release();
@@ -130,7 +132,7 @@ void Aurora::iniGame(Game* const game)
 
 	ShadowMap::release();
 
-	Renderer::context->ClearState();
+	Renderer::backBuffer->Release();
 
 	if (config->enableDebug)
 	{

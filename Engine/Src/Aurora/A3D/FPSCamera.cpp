@@ -20,7 +20,8 @@ void FPSCamera::applyInput(const float& dt)
 		eye.y += moveSpeed * lookDir.y * dt;
 		eye.z += moveSpeed * lookDir.z * dt;
 	}
-	else if (Keyboard::getKeyDown(Keyboard::S))
+
+	if (Keyboard::getKeyDown(Keyboard::S))
 	{
 		eye.x -= moveSpeed * lookDir.x * dt;
 		eye.y -= moveSpeed * lookDir.y * dt;
@@ -37,6 +38,7 @@ void FPSCamera::applyInput(const float& dt)
 		eye.z -= upCrossLookDir.z * moveSpeed * dt;
 
 	}
+
 	if (Keyboard::getKeyDown(Keyboard::D))
 	{
 		DirectX::XMFLOAT3 upCrossLookDir;

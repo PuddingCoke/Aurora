@@ -117,8 +117,8 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 {
 	Renderer::setBlendState(nullptr);
 	Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
-	Renderer::context->CSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
+	Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
+	Renderer::context->CSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
 	Renderer::context->PSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
 	Renderer::context->CSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
 	Shader::displayVShader->use();
@@ -191,7 +191,7 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
 	}
 
-	Renderer::setBlendState(StateCommon::addtiveBlend.Get());
+	Renderer::setBlendState(States::addtiveBlend.Get());
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{

@@ -4,7 +4,7 @@
 #include<Aurora/Game.h>
 #include<Aurora/Mouse.h>
 #include<Aurora/Event.h>
-#include<Aurora/StateCommon.h>
+#include<Aurora/States.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/Color.h>
 #include<Aurora/DoubleRTV.h>
@@ -207,7 +207,7 @@ public:
 				pointer.down = false;
 			});
 
-		ID3D11SamplerState* samplers[2] = { StateCommon::linearClampSampler.Get(),StateCommon::pointClampSampler.Get() };
+		ID3D11SamplerState* samplers[2] = { States::linearClampSampler.Get(),States::pointClampSampler.Get() };
 
 		Renderer::context->PSSetSamplers(0, 2, samplers);
 

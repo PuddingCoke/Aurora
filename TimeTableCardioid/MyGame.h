@@ -6,7 +6,7 @@
 #include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/A2D/PrimitiveBatch.h>
 #include<Aurora/Event.h>
-#include<Aurora/StateCommon.h>
+#include<Aurora/States.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/Color.h>
 #include<Aurora/Timer.h>
@@ -63,7 +63,7 @@ public:
 	void render() override
 	{
 		color = Color::HSVtoRGB({ (float)hue,.5f,.5f });
-		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
+		Renderer::setBlendState(States::addtiveBlend.Get());
 		Renderer::setDefRTV();
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 		pBatch->begin();

@@ -6,7 +6,7 @@
 #include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/A2D/PrimitiveBatch.h>
 #include<Aurora/Event.h>
-#include<Aurora/StateCommon.h>
+#include<Aurora/States.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
 
@@ -100,7 +100,7 @@ public:
 	{
 		renderTexture->setRTV();
 		renderTexture->clearRTV(DirectX::Colors::Black);
-		Renderer::setBlendState(StateCommon::defBlendState.Get());
+		Renderer::setBlendState(States::defBlendState.Get());
 
 		batch->begin();
 		for (int i = 0; i < rains.size(); i++)
@@ -118,7 +118,7 @@ public:
 		Renderer::setDefRTV();
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 
-		Renderer::setBlendState(StateCommon::defBlendState.Get());
+		Renderer::setBlendState(States::defBlendState.Get());
 
 		batch->begin();
 		batch->draw(texture2D, 0, 0);

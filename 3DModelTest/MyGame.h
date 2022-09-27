@@ -4,7 +4,7 @@
 #include<Aurora/Game.h>
 #include<Aurora/Mouse.h>
 #include<Aurora/Event.h>
-#include<Aurora/StateCommon.h>
+#include<Aurora/States.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/A3D/DepthStencilView.h>
 
@@ -207,13 +207,13 @@ public:
 
 				Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
+				Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
 				envTexture->setSRV(0);
 
 				TextureCube::shader->use();
 				cubePShader->use();
 
-				Renderer::setBlendState(StateCommon::defBlendState.Get());
+				Renderer::setBlendState(States::defBlendState.Get());
 
 				renderTexture->setRTV();
 
@@ -438,9 +438,9 @@ public:
 
 		Renderer::setDefRTV(depthStencilView->get());
 
-		Renderer::setBlendState(StateCommon::defBlendState.Get());
+		Renderer::setBlendState(States::defBlendState.Get());
 
-		Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
 
 		Renderer::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
 
@@ -460,7 +460,7 @@ public:
 
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Renderer::context->PSSetSamplers(0, 1, StateCommon::linearClampSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
 
 		for (unsigned i = 0; i < numModels; i++)
 		{

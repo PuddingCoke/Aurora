@@ -1,26 +1,26 @@
-﻿#include<Aurora/StateCommon.h>
+﻿#include<Aurora/States.h>
 
-ComPtr<ID3D11SamplerState> StateCommon::linearClampSampler;
+ComPtr<ID3D11SamplerState> States::linearClampSampler;
 
-ComPtr<ID3D11SamplerState> StateCommon::linearWrapSampler;
+ComPtr<ID3D11SamplerState> States::linearWrapSampler;
 
-ComPtr<ID3D11SamplerState> StateCommon::pointClampSampler;
+ComPtr<ID3D11SamplerState> States::pointClampSampler;
 
-ComPtr<ID3D11SamplerState> StateCommon::pointWrapSampler;
+ComPtr<ID3D11SamplerState> States::pointWrapSampler;
 
-ComPtr<ID3D11BlendState> StateCommon::defBlendState;
+ComPtr<ID3D11BlendState> States::defBlendState;
 
-ComPtr<ID3D11BlendState> StateCommon::addtiveBlend;
+ComPtr<ID3D11BlendState> States::addtiveBlend;
 
-ComPtr<ID3D11RasterizerState> StateCommon::rasterCullBack;
+ComPtr<ID3D11RasterizerState> States::rasterCullBack;
 
-ComPtr<ID3D11RasterizerState> StateCommon::rasterCullFront;
+ComPtr<ID3D11RasterizerState> States::rasterCullFront;
 
-ComPtr<ID3D11RasterizerState> StateCommon::rasterCullNone;
+ComPtr<ID3D11RasterizerState> States::rasterCullNone;
 
-ComPtr<ID3D11DepthStencilState> StateCommon::defDepthStencilState;
+ComPtr<ID3D11DepthStencilState> States::defDepthStencilState;
 
-HRESULT StateCommon::ini()
+HRESULT States::ini()
 {
 	//初始化linearClampSampler
 	{

@@ -291,13 +291,13 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 
 	Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	Renderer::setSampler(0, StateCommon::linearClampSampler.Get());
+	Renderer::setSampler(0, States::linearClampSampler.Get());
 	equirectangularMap->setSRV(0);
 
 	TextureCube::shader->use();
 	pixelShader->use();
 
-	Renderer::setBlendState(StateCommon::defBlendState.Get());
+	Renderer::setBlendState(States::defBlendState.Get());
 
 	renderTexture->setRTV();
 

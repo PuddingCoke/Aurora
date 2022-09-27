@@ -41,7 +41,7 @@ public:
 
 	const float& getIntensity() const;
 
-	//更新向着色器传入的exposure和gamma
+	//更新向着色器传入的threshold intensity exposure gamma
 	void applyChange() const;
 
 private:

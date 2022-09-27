@@ -6,7 +6,7 @@
 #include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/A2D/PrimitiveBatch.h>
 #include<Aurora/Event.h>
-#include<Aurora/StateCommon.h>
+#include<Aurora/States.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/DoubleRTV.h>
 
@@ -116,7 +116,7 @@ public:
 		accTexture->write()->setRTV();
 		accTexture->write()->clearRTV(DirectX::Colors::Black);
 
-		Renderer::setBlendState(StateCommon::addtiveBlend.Get());
+		Renderer::setBlendState(States::addtiveBlend.Get());
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		Renderer::context->PSSetSamplers(0, 1, samplerState.GetAddressOf());
 

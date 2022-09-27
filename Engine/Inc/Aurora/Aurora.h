@@ -17,7 +17,7 @@
 #include"Game.h"
 #include"Random.h"
 #include"Keyboard.h"
-#include"StateCommon.h"
+#include"States.h"
 #include"Shader.h"
 #include"Math.h"
 #include"A3D/TextureCube.h"
