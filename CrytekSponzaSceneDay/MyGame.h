@@ -9,6 +9,7 @@
 #include<Aurora/A3D/ShadowMap.h>
 #include<Aurora/A3D/CascadedShadowMap.h>
 #include<Aurora/PostProcessing/HBAOEffect.h>
+#include<Aurora/PostProcessing/BloomEffect.h>
 #include"Scene.h"
 
 class MyGame :public Game
@@ -21,11 +22,11 @@ public:
 
 	RenderTexture* gBaseColor;
 
+	RenderTexture* originTexture;
+
 	TextureCube* skybox;
 
 	ShadowMap* depthView;
-
-	ShadowMap* shadowMap;
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
@@ -45,19 +46,35 @@ public:
 
 	HBAOEffect hbaoEffect;
 
+	BloomEffect bloomEffect;
+
 	CascadedShadowMap csm;
 
-	bool depthMode = true;
+	float exposure;
+
+	float gamma;
 
 	struct Light
 	{
-		DirectX::XMFLOAT4 position;
-		DirectX::XMFLOAT4 color;
-		float radius;
-		float quadraticFalloff;
-		float linearFalloff;
-		float v0;
-	}lights[17]{};
+		DirectX::XMFLOAT4 lightDir;
+		DirectX::XMFLOAT4 lightColor = { 1,1,1,1 };
+	}light{};
+
+	void setLight(const DirectX::XMFLOAT3& lightPos)
+	{
+		csm.setLightPos(lightPos);
+
+		DirectX::XMFLOAT3 lightPosNorm;
+
+		DirectX::XMStoreFloat3(&lightPosNorm, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&lightPos)));
+
+		light.lightDir = { lightPosNorm.x,lightPosNorm.y, lightPosNorm.z,1.f };
+
+		D3D11_MAPPED_SUBRESOURCE mappedData = {};
+		Renderer::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		memcpy(mappedData.pData, &light, sizeof(Light));
+		Renderer::context->Unmap(lightBuffer.Get(), 0);
+	}
 
 	MyGame() :
 		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f, 3.f),
@@ -68,14 +85,14 @@ public:
 		gPosition(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gNormalSpecular(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gBaseColor(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		originTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		depthView(ShadowMap::create(Graphics::getWidth(), Graphics::getHeight())),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
+		bloomEffect(Graphics::getWidth(),Graphics::getHeight()),
 		scene(Scene::create(assetPath + "/sponza.dae")),
-		shadowMap(ShadowMap::create(2048, 2048)),
-		csm(Graphics::getWidth(), Graphics::getHeight(), { 0,600,100 }),
+		csm(Graphics::getWidth(), Graphics::getHeight(), { 0,600,100 }, { 0,0,0 }),
 		skybox(TextureCube::create({ assetPath + "/sky/SkyEarlyDusk_Right.png",assetPath + "/sky/SkyEarlyDusk_Left.png",assetPath + "/sky/SkyEarlyDusk_Top.png",assetPath + "/sky/SkyEarlyDusk_Bottom.png",assetPath + "/sky/SkyEarlyDusk_Front.png",assetPath + "/sky/SkyEarlyDusk_Back.png" }))
 	{
-
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[5] =
 			{
@@ -90,35 +107,8 @@ public:
 		}
 
 		{
-			auto setLight = [](Light* light, const DirectX::XMFLOAT3& pos, const DirectX::XMFLOAT3& color, const float& radius)
-			{
-				light->position = DirectX::XMFLOAT4(pos.x, pos.y, pos.z, 1.f);
-				light->color = DirectX::XMFLOAT4(color.x, color.y, color.z, 1.f);
-				light->radius = radius;
-			};
-
-			setLight(&lights[0], { -125.f, 10.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, 120.0f);
-			setLight(&lights[1], { -75.f, 10.0f, 0.0f }, { 1.0f, 0.7f, 0.7f }, 120.0f);
-			setLight(&lights[2], { -25.f, 10.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, 120.0f);
-			setLight(&lights[3], { 25.f, 10.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, 120.0f);
-			setLight(&lights[4], { 75.f, 10.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, 120.0f);
-			setLight(&lights[5], { -48.75f, 16.0f, -17.8f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
-			setLight(&lights[6], { -48.75f, 16.0f,  18.4f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
-			setLight(&lights[7], { 62.0f, 16.0f, -17.8f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
-			setLight(&lights[8], { 62.0f, 16.0f,  18.4f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
-			setLight(&lights[9], { 120.0f, 20.0f, -43.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
-			setLight(&lights[10], { 120.0f, 20.0f, 41.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
-			setLight(&lights[11], { -110.0f, 20.0f, -43.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
-			setLight(&lights[12], { -110.0f, 20.0f, 41.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
-			setLight(&lights[13], { -122.0f, 18.0f, -3.2f }, { 1.0f, 0.3f, 0.3f }, 25.0f);
-			setLight(&lights[14], { -122.0f, 18.0f,  3.2f }, { 0.3f, 1.0f, 0.3f }, 25.0f);
-			setLight(&lights[15], { 135.0f, 18.0f, -3.2f }, { 0.3f, 0.3f, 1.0f }, 25.0f);
-			setLight(&lights[16], { 135.0f, 18.0f,  3.2f }, { 1.0f, 1.0f, 0.3f }, 25.0f);
-		}
-
-		{
 			D3D11_BUFFER_DESC bd = {};
-			bd.ByteWidth = sizeof(lights);
+			bd.ByteWidth = sizeof(light);
 			bd.Usage = D3D11_USAGE_DYNAMIC;
 			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -132,9 +122,19 @@ public:
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
 			{
-				depthMode = !depthMode;
+				std::cout << gamma << " " << exposure << "\n";
 			});
 
+		gamma = 1.13;
+		exposure = 0.89;
+
+		bloomEffect.setGamma(gamma);
+		bloomEffect.setExposure(exposure);
+		bloomEffect.setThreshold(0.8f);
+
+		bloomEffect.applyChange();
+
+		setLight({ 0,600,100 });
 	}
 
 	~MyGame()
@@ -145,38 +145,58 @@ public:
 		delete gPosition;
 		delete gNormalSpecular;
 		delete gBaseColor;
+		delete originTexture;
 		delete scene;
 		delete depthView;
-		delete shadowMap;
 		delete skybox;
 		delete skyboxPShader;
 	}
 
 	void update(const float& dt) override
 	{
-		Renderer::context->IASetInputLayout(inputLayout.Get());
-		Renderer::setBlendState(nullptr);
+		if (Keyboard::getKeyDown(Keyboard::Z))
+		{
+			exposure += 0.01f;
+			bloomEffect.setExposure(exposure);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::X))
+		{
+			exposure -= 0.01f;
+			bloomEffect.setExposure(exposure);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::N))
+		{
+			gamma += 0.01f;
+			bloomEffect.setGamma(gamma);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::M))
+		{
+			gamma -= 0.01f;
+			bloomEffect.setGamma(gamma);
+			bloomEffect.applyChange();
+		}
+
 
 		camera.applyInput(dt);
 
-		lights[0].position = DirectX::XMFLOAT4(-sinf(360.0f * Graphics::getSTime() / 2.f * Math::degToRad) * 120.0f, 3.5f, cosf(360.0f * Graphics::getSTime() * 8.0f * Math::degToRad / 2.f) * 10.0f, 1.f);
-
-		D3D11_MAPPED_SUBRESOURCE mappedData = {};
-
-		Renderer::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-		memcpy(mappedData.pData, &lights, sizeof(lights));
-		Renderer::context->Unmap(lightBuffer.Get(), 0);
+		csm.updateMatrices();
 	}
 
 	void render()
 	{
-		Renderer::setViewport(2048, 2048);
-		Renderer::context->RSSetState(States)
+		Renderer::context->IASetInputLayout(inputLayout.Get());
+
+		Renderer::setBlendState(nullptr);
+
+		Renderer::context->RSSetState(States::rasterCullBack.Get());
 
 		Renderer::setSampler(0, States::linearWrapSampler.Get());
 		Renderer::setSampler(1, States::linearClampSampler.Get());
 
-		Renderer::context->RSSetState(States::rasterCullBack.Get());
+		Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
 
 		gBaseColor->clearRTV(DirectX::Colors::Black);
 		gPosition->clearRTV(DirectX::Colors::Black);
@@ -187,12 +207,34 @@ public:
 
 		scene->draw(deferredVShader, deferredPShader);
 
-		Renderer::setDefRTV();
+		Texture2D* const hbaoTexture = hbaoEffect.process(depthView->getSRV(), gNormalSpecular->getTexture()->getSRV());
+
+		Renderer::context->RSSetState(States::rasterCullNone.Get());
+
+		Renderer::context->OMSetRenderTargets(0, nullptr, nullptr);
+
+		csm.renderShaodwMap(depthView, [this]() {
+			scene->drawGeometry(ShadowMap::shadowVShader);
+			});
+
+		scene->drawRayTrace(ShadowMap::shadowVShader, &csm);
+
+		csm.renderFrustumTrace([this]()
+			{
+				scene->drawGeometry(ShadowMap::shadowVShader);
+			});
+
+		Renderer::context->RSSetState(States::rasterCullBack.Get());
+
+		ID3D11ShaderResourceView* shadowSRV = csm.getShadowBuffer();
+
+		originTexture->setRTV();
 
 		gPosition->getTexture()->setSRV(0);
 		gNormalSpecular->getTexture()->setSRV(1);
 		gBaseColor->getTexture()->setSRV(2);
-		hbaoEffect.process(depthView->getSRV(), gNormalSpecular->getTexture()->getSRV())->setSRV(3);
+		hbaoTexture->setSRV(3);
+		Renderer::context->PSSetShaderResources(4, 1, &shadowSRV);
 
 		ID3D11Buffer* buffers[2] = { Camera::getViewBuffer(),lightBuffer.Get() };
 
@@ -203,18 +245,31 @@ public:
 
 		Renderer::context->Draw(3, 0);
 
-		Renderer::setDefRTV(depthView->get());
+		Texture2D* const bloomTexture = bloomEffect.process(originTexture->getTexture());
 
-		skybox->setSRV(0);
+		Renderer::setBlendState(nullptr);
 
-		TextureCube::shader->use();
+		Renderer::setDefRTV();
+
+		bloomTexture->setSRV(0);
+
+		Shader::displayVShader->use();
+		Shader::displayPShader->use();
+
+		Renderer::drawQuad();
+
+		//Renderer::setDefRTV(depthView->get());
+
+		//skybox->setSRV(0);
+
+		/*TextureCube::shader->use();
 		skyboxPShader->use();
 
-		Renderer::drawCube();
+		Renderer::drawCube();*/
 
-		ID3D11ShaderResourceView* nullView[4] = { nullptr,nullptr,nullptr,nullptr };
+		ID3D11ShaderResourceView* nullView[5] = { nullptr,nullptr,nullptr,nullptr,nullptr };
 
-		Renderer::context->PSSetShaderResources(0, 4, nullView);
+		Renderer::context->PSSetShaderResources(0, 5, nullView);
 	}
 
 

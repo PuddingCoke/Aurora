@@ -3,6 +3,8 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 
+#include<Aurora/A3D/CascadedShadowMap.h>
+
 #include"Material.h"
 #include"Model.h"
 
@@ -86,16 +88,53 @@ public:
 	void draw(Shader* const vertexShader, Shader* const pixelShader)
 	{
 		vertexShader->use();
+
 		if (pixelShader)
+		{
 			pixelShader->use();
+		}
 		else
+		{
 			Renderer::context->PSSetShader(nullptr, nullptr, 0);
+		}
+			
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			materials[models[i]->materialIndex]->use();
 			models[i]->draw();
 		}
+	}
+
+	void drawGeometry(Shader* const vertexShader)
+	{
+		vertexShader->use();
+
+		Renderer::context->PSSetShader(nullptr, nullptr, 0);
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		for (unsigned int i = 0; i < models.size(); i++)
+		{
+			models[i]->draw();
+		}
+	}
+
+	void drawRayTrace(Shader* const vertexShader, CascadedShadowMap* const csm)
+	{
+		csm->beginRayTraceRender();
+
+		vertexShader->use();
+		Renderer::context->PSSetShader(nullptr, nullptr, 0);
+
+		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		for (unsigned int i = 0; i < models.size(); i++)
+		{
+			models[i]->draw();
+			csm->incrementMapPrimitiveCounter(models[i]->vertexCount);
+		}
+
+		csm->endRayTraceRender();
 	}
 
 	std::vector<Material*> materials;

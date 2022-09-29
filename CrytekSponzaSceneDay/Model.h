@@ -31,8 +31,6 @@ public:
 	//pos uv normal tangent bitangent
 	ComPtr<ID3D11Buffer> modelBuffer;
 
-	ComPtr<ID3D11Buffer> indexBuffer;
-
 	const unsigned int materialIndex;
 
 	const unsigned int vertexCount;
@@ -86,7 +84,6 @@ public:
 	void draw()
 	{
 		Renderer::context->IASetVertexBuffers(0, 1, modelBuffer.GetAddressOf(), &stride, &offset);
-		Renderer::context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
 		Renderer::context->Draw(vertexCount, 0);
 	}
 

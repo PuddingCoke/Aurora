@@ -138,7 +138,7 @@ HRESULT States::ini()
 		Renderer::device->CreateRasterizerState(&rasterizerDesc, rasterCullFront.ReleaseAndGetAddressOf());
 	}
 
-	//初始化rasterCullFront
+	//初始化rasterCullNone
 	{
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
 		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;

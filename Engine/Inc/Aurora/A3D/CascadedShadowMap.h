@@ -26,10 +26,6 @@ public:
 
 	~CascadedShadowMap();
 
-	gfsdk_float4x4 lightProjMatrices[GFSDK_ShadowLib_ViewType_Cascades_4];
-	gfsdk_float4x4 lightViewMatrices[GFSDK_ShadowLib_ViewType_Cascades_4];
-	GFSDK_ShadowLib_Frustum renderFrustum[GFSDK_ShadowLib_ViewType_Cascades_4];
-
 	DirectX::XMFLOAT3 getLightPos() const;
 
 	DirectX::XMFLOAT3 getLightLookAt() const;
@@ -38,9 +34,19 @@ public:
 
 	void setLightLookAt(const DirectX::XMFLOAT3& lightLookAt);
 
-	void updateCSMCamera();
+	void updateMatrices();
 
-	void renderShaodwMap(ShadowMap* const shadowMap, std::function<void(void)> renderFunc);
+	void renderShaodwMap(ShadowMap* const shadowMap, std::function<void(void)> renderGeometry);
+
+	void renderFrustumTrace(std::function<void(void)> renderGeometry);
+
+	void beginRayTraceRender();
+
+	void endRayTraceRender();
+
+	void incrementMapPrimitiveCounter(const unsigned int& primitiveCount);
+
+	ID3D11ShaderResourceView* getShadowBuffer();
 
 private:
 
@@ -49,6 +55,12 @@ private:
 	static constexpr unsigned int frustumTraceMapRes = 2048;
 
 	static constexpr unsigned int rayTraceMapRes = 2048;
+
+	gfsdk_float4x4 lightProjMatrices[GFSDK_ShadowLib_ViewType_Cascades_4];
+
+	gfsdk_float4x4 lightViewMatrices[GFSDK_ShadowLib_ViewType_Cascades_4];
+
+	GFSDK_ShadowLib_Frustum renderFrusta[GFSDK_ShadowLib_ViewType_Cascades_4];
 
 	GFSDK_ShadowLib_Context* shadowCtx;
 
