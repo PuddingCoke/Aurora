@@ -54,14 +54,22 @@ public:
 
 	float gamma;
 
+	float angle = Math::half_pi;
+
+	static constexpr float lightRadius = 600.f;
+
+	static constexpr float lightIntensity = 1.0f;
+
 	struct Light
 	{
 		DirectX::XMFLOAT4 lightDir;
-		DirectX::XMFLOAT4 lightColor = { 1,1,1,1 };
+		DirectX::XMFLOAT4 lightColor = { lightIntensity,lightIntensity,lightIntensity,1 };
 	}light{};
 
-	void setLight(const DirectX::XMFLOAT3& lightPos)
+	void setLight()
 	{
+		const DirectX::XMFLOAT3 lightPos = { 0,lightRadius * sinf(angle),lightRadius * cosf(angle) };
+
 		csm.setLightPos(lightPos);
 
 		DirectX::XMFLOAT3 lightPosNorm;
@@ -88,10 +96,10 @@ public:
 		originTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		depthView(ShadowMap::create(Graphics::getWidth(), Graphics::getHeight())),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
-		bloomEffect(Graphics::getWidth(),Graphics::getHeight()),
+		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		csm(Graphics::getWidth(), Graphics::getHeight(), { 0,600,100 }, { 0,0,0 }),
-		skybox(TextureCube::create({ assetPath + "/sky/SkyEarlyDusk_Right.png",assetPath + "/sky/SkyEarlyDusk_Left.png",assetPath + "/sky/SkyEarlyDusk_Top.png",assetPath + "/sky/SkyEarlyDusk_Bottom.png",assetPath + "/sky/SkyEarlyDusk_Front.png",assetPath + "/sky/SkyEarlyDusk_Back.png" }))
+		skybox(TextureCube::createEquirectangularMap(assetPath + "/sky/kloppenheim_05_4k.hdr", 2048, { 0,1,0 }))
 	{
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[5] =
@@ -118,23 +126,23 @@ public:
 
 		camera.registerEvent();
 
-		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 1000.f);
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 600.f);
 
-		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
+		/*Keyboard::addKeyDownEvent(Keyboard::K, [this]()
 			{
 				std::cout << gamma << " " << exposure << "\n";
-			});
+			});*/
 
-		gamma = 1.13;
-		exposure = 0.89;
+		gamma = 1.20f;
+		exposure = 0.90f;
 
 		bloomEffect.setGamma(gamma);
 		bloomEffect.setExposure(exposure);
-		bloomEffect.setThreshold(0.8f);
-
+		bloomEffect.setThreshold(0.7f);
+		bloomEffect.setIntensity(0.8f);
 		bloomEffect.applyChange();
 
-		setLight({ 0,600,100 });
+		setLight();
 	}
 
 	~MyGame()
@@ -154,7 +162,7 @@ public:
 
 	void update(const float& dt) override
 	{
-		if (Keyboard::getKeyDown(Keyboard::Z))
+		/*if (Keyboard::getKeyDown(Keyboard::Z))
 		{
 			exposure += 0.01f;
 			bloomEffect.setExposure(exposure);
@@ -177,8 +185,19 @@ public:
 			gamma -= 0.01f;
 			bloomEffect.setGamma(gamma);
 			bloomEffect.applyChange();
+		}*/
+
+		if (Keyboard::getKeyDown(Keyboard::Q))
+		{
+			angle += 0.01f;
+			setLight();
 		}
 
+		if (Keyboard::getKeyDown(Keyboard::E))
+		{
+			angle -= 0.01f;
+			setLight();
+		}
 
 		camera.applyInput(dt);
 
@@ -258,14 +277,14 @@ public:
 
 		Renderer::drawQuad();
 
-		//Renderer::setDefRTV(depthView->get());
+		Renderer::setDefRTV(depthView->get());
 
-		//skybox->setSRV(0);
+		skybox->setSRV(0);
 
-		/*TextureCube::shader->use();
+		TextureCube::shader->use();
 		skyboxPShader->use();
 
-		Renderer::drawCube();*/
+		Renderer::drawCube();
 
 		ID3D11ShaderResourceView* nullView[5] = { nullptr,nullptr,nullptr,nullptr,nullptr };
 

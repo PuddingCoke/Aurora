@@ -47,7 +47,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         
     const float3 R = reflect(-L, N);
     const float NdotR = max(0.0, dot(R, V));
-    const float3 spec = lightColor.rgb * normalSpecular.w * pow(NdotR, 16.0) * 1.5;
+    const float3 spec = lightColor.rgb * normalSpecular.w * pow(NdotR, 16.0) * 2.0;
     
     const float3 outColor = (baseColor * AMBIENT_FACTOR + (diff + spec) * shadow) * ao;
     

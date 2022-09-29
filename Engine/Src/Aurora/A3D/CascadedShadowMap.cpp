@@ -60,7 +60,7 @@ CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned i
 	setLightLookAt(lightLookAt);
 
 	smRenderParams.LightDesc.eLightType = GFSDK_ShadowLib_LightType_Directional;
-	smRenderParams.LightDesc.fLightSize = 1.0f;
+	smRenderParams.LightDesc.fLightSize = 2.0f;
 
 	smRenderParams.ZBiasParams.iDepthBias = 0;
 	smRenderParams.ZBiasParams.fSlopeScaledDepthBias = 0;
@@ -71,15 +71,15 @@ CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned i
 	smRenderParams.ZBiasParams.fDistanceBiasPower = 3.0f;
 	smRenderParams.eCullModeType = GFSDK_ShadowLib_CullModeType_None;
 	smRenderParams.eTechniqueType = GFSDK_ShadowLib_TechniqueType_HFTS;
-	smRenderParams.PCSSPenumbraParams.fMaxThreshold = 490.0f;
 	smRenderParams.PCSSPenumbraParams.fMinSizePercent[0] = 5.0f;
 	smRenderParams.PCSSPenumbraParams.fMinSizePercent[1] = 5.0f;
 	smRenderParams.PCSSPenumbraParams.fMinSizePercent[2] = 5.0f;
 	smRenderParams.PCSSPenumbraParams.fMinSizePercent[3] = 5.0f;
 	smRenderParams.PCSSPenumbraParams.fMinWeightThresholdPercent = 3.0f;
+	smRenderParams.PCSSPenumbraParams.fMaxThreshold = 1000.0f;
 	smRenderParams.eCascadedShadowMapType = GFSDK_ShadowLib_CascadedShadowMapType_SampleDistribution;
 
-	smRenderParams.fCascadeMaxDistancePercent = 50.0f;
+	smRenderParams.fCascadeMaxDistancePercent = 125.0f;
 	smRenderParams.fCascadeZLinearScale[0] = 0.1f;
 	smRenderParams.fCascadeZLinearScale[1] = 0.2f;
 	smRenderParams.fCascadeZLinearScale[2] = 0.5f;
