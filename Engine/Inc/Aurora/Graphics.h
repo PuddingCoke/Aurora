@@ -31,6 +31,8 @@ public:
 
 	static unsigned int& getMSAALevel();
 
+	static void setRecordConfig(const unsigned int& frameToEncode, const unsigned int& frameRate);
+
 private:
 
 	friend class Aurora;
@@ -46,6 +48,12 @@ private:
 	static ComPtr<ID3D11Buffer> deltaTimeBuffer;
 
 	static ComPtr<ID3D11Debug> d3dDebug;
+
+	static struct RecordConfig
+	{
+		unsigned int frameToEncode;
+		unsigned int frameRate;
+	} recordConfig;
 
 	static struct DeltaTime
 	{

@@ -523,7 +523,7 @@ void Aurora::runEncode()
 
 	bool initializeStatus;
 
-	NvidiaEncoder nvidiaEncoder(Graphics::getWidth(), Graphics::getHeight(), 3600, 60, initializeStatus);
+	NvidiaEncoder nvidiaEncoder(Graphics::getWidth(), Graphics::getHeight(), Graphics::recordConfig.frameToEncode, Graphics::recordConfig.frameRate, initializeStatus);
 
 	if (initializeStatus)
 	{

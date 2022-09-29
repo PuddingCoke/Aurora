@@ -29,6 +29,10 @@ public:
 
 	void drawRoundCapLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& width, const float& r, const float& g, const float& b, const float& a = 1.f);
 
+	void setLineWidth(const float& width);
+
+	void applyChange() const;
+
 private:
 
 	static PrimitiveBatch* instance;
@@ -40,6 +44,16 @@ private:
 	ComPtr<ID3D11InputLayout> primitiveInputLayout;
 	ComPtr<ID3D11InputLayout> circleInputLayout;
 	ComPtr<ID3D11InputLayout> rcLineInputLayout;
+
+	ComPtr<ID3D11Buffer> lineBuffer;
+
+	struct LineParam
+	{
+		float lineWidth;
+		float v0;
+		float v1;
+		float v2;
+	}lineParam;
 
 	Shader* primitive2DVShader;
 	Shader* circleVShader;

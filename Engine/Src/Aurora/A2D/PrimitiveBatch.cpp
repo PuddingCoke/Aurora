@@ -50,6 +50,20 @@ PrimitiveBatch::PrimitiveBatch()
 			rcLineVShader->shaderBlob->GetBufferSize(),
 			rcLineInputLayout.ReleaseAndGetAddressOf());
 	}
+
+	//初始化lineBuffer
+	{
+		D3D11_BUFFER_DESC bd = {};
+		bd.ByteWidth = sizeof(LineParam);
+		bd.Usage = D3D11_USAGE_DYNAMIC;
+		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+		Renderer::device->CreateBuffer(&bd, nullptr, lineBuffer.ReleaseAndGetAddressOf());
+	}
+
+	setLineWidth(1.f);
+	applyChange();
 }
 
 void PrimitiveBatch::compileShaders()
@@ -297,6 +311,14 @@ cbuffer Matrix2D : register(b0)
     matrix proj;
 };
 
+cbuffer LineBuffer : register(b1)
+{
+	float lineWidth;
+	float v1;
+	float v2;
+	float v3;
+};
+
 [maxvertexcount(6)]
 void main(
 	line GeometryInput input[2],
@@ -305,7 +327,7 @@ void main(
 {
     const float2 dir = input[1].pos.xy - input[0].pos.xy;
     const float2 dirN = normalize(dir);
-    const float2 v = 0.75 * float2(-dirN.y, dirN.x);
+    const float2 v = lineWidth / 2.0 * float2(-dirN.y, dirN.x);
     
     GeometryOutput rect[6];
     
@@ -377,6 +399,8 @@ void PrimitiveBatch::begin()
 
 void PrimitiveBatch::end()
 {
+	Renderer::context->GSSetConstantBuffers(1, 1, lineBuffer.GetAddressOf());
+
 	Renderer::context->IASetInputLayout(primitiveInputLayout.Get());
 	primitive2DVShader->use();
 	primitive2DPShader->use();
@@ -412,6 +436,19 @@ void PrimitiveBatch::drawCircle(const float& x, const float& y, const float& len
 void PrimitiveBatch::drawRoundCapLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& width, const float& r, const float& g, const float& b, const float& a)
 {
 	rcLineRenderer.addRoundCapLine(x1, y1, x2, y2, width, r, g, b, a);
+}
+
+void PrimitiveBatch::setLineWidth(const float& width)
+{
+	lineParam.lineWidth = width;
+}
+
+void PrimitiveBatch::applyChange() const
+{
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	Renderer::context->Map(lineBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, &lineParam, sizeof(LineParam));
+	Renderer::context->Unmap(lineBuffer.Get(), 0);
 }
 
 PrimitiveBatch::LineRenderer::LineRenderer() :

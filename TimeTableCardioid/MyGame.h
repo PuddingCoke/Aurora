@@ -37,14 +37,15 @@ public:
 
 	MyGame() :
 		pBatch(PrimitiveBatch::create()),
-		c(500, Math::pi / 2.f, DirectX::XMFLOAT2(Graphics::getWidth() / 2, Graphics::getHeight() / 2), 360),
+		c(400, Math::pi / 2.f, DirectX::XMFLOAT2(Graphics::getWidth() / 2, Graphics::getHeight() / 2), 360),
 		d1(0),
 		hue(0),
 		color{ 1,1,1 },
 		frameCount(0),
 		timer(0.004f)
 	{
-
+		pBatch->setLineWidth(2.f);
+		pBatch->applyChange();
 	}
 
 	~MyGame()
@@ -62,7 +63,7 @@ public:
 
 	void render() override
 	{
-		color = Color::HSVtoRGB({ (float)hue,.5f,.5f });
+		color = Color::HSVtoRGB({ (float)hue,1.f,1.f });
 		Renderer::setBlendState(States::addtiveBlend.Get());
 		Renderer::setDefRTV();
 		Renderer::clearDefRTV(DirectX::Colors::Black);
@@ -70,7 +71,8 @@ public:
 		pBatch->drawCircle(c.center.x, c.center.y, c.radius, 1, 1, 1, 1);
 		for (size_t i = 0; i < c.points.size(); i++)
 		{
-			pBatch->drawLine(c.points[i].x, c.points[i].y, c.points[(size_t)(i * d1 / d2) % c.points.size()].x, c.points[(size_t)(i * d1 / d2) % c.points.size()].y, 0.2, 0.2, 0.2, 1);
+			pBatch->drawLine(c.points[i].x, c.points[i].y, c.points[(size_t)(i * d1 / d2) % c.points.size()].x, c.points[(size_t)(i * d1 / d2) % c.points.size()].y, color.r/2.f, color.g/2.f, color.b/2.f, 1);
+			//pBatch->drawLine(c.points[i].x, c.points[i].y, c.points[(size_t)(i * d1 / d2) % c.points.size()].x, c.points[(size_t)(i * d1 / d2) % c.points.size()].y, 0.4, 0.4, 0.4, 1);
 		}
 		pBatch->end();
 		if (frameCount++ == frameLimit)

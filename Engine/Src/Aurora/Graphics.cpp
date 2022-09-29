@@ -4,6 +4,9 @@ ComPtr<ID3D11Buffer> Graphics::deltaTimeBuffer;
 
 ComPtr<ID3D11Debug> Graphics::d3dDebug;
 
+//默认状态60帧录制30秒
+Graphics::RecordConfig Graphics::recordConfig = { 1800,60 };
+
 Graphics::DeltaTime Graphics::deltaTime = { 0,0,0,0 };
 
 float Graphics::frameDuration = 0;
@@ -66,6 +69,12 @@ const int& Graphics::getHeight()
 unsigned int& Graphics::getMSAALevel()
 {
 	return msaaLevel;
+}
+
+void Graphics::setRecordConfig(const unsigned int& frameToEncode, const unsigned int& frameRate)
+{
+	recordConfig.frameToEncode = frameToEncode;
+	recordConfig.frameRate = frameRate;
 }
 
 void Graphics::ini()
