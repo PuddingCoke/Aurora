@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f935fead-df01-43b1-a3ec-c4e907dec456}</ProjectGuid>
-    <RootNamespace>CrytekSponzaSceneDay</RootNamespace>
+    <ProjectGuid>{338f1b89-7ecd-456b-8ed0-71dc633e9fbe}</ProjectGuid>
+    <RootNamespace>CrytekSponzaDay</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

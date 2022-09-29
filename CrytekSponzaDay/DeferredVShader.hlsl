@@ -31,7 +31,7 @@ cbuffer ViewMatrix : register(b1)
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
-    output.pos = float4(input.pos, 1.0);
+    output.pos = input.pos;
     output.uv = input.uv;
     output.normal = input.normal;
     output.tangent = input.tangent;
