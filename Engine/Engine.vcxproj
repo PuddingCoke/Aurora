@@ -147,11 +147,13 @@
     <ClInclude Include="Inc\Aurora\Color.h" />
     <ClInclude Include="Inc\Aurora\Configuration.h" />
     <ClInclude Include="Inc\Aurora\A3D\DepthStencilView.h" />
+    <ClInclude Include="Inc\Aurora\DBuffer.h" />
     <ClInclude Include="Inc\Aurora\DoubleRTV.h" />
     <ClInclude Include="Inc\Aurora\Event.h" />
     <ClInclude Include="Inc\Aurora\A3D\FPSCamera.h" />
     <ClInclude Include="Inc\Aurora\Game.h" />
     <ClInclude Include="Inc\Aurora\Graphics.h" />
+    <ClInclude Include="Inc\Aurora\IBuffer.h" />
     <ClInclude Include="Inc\Aurora\Keyboard.h" />
     <ClInclude Include="Inc\Aurora\Math.h" />
     <ClInclude Include="Inc\Aurora\Mouse.h" />
@@ -183,6 +185,8 @@
     <ClCompile Include="Src\Aurora\A3D\FPSCamera.cpp" />
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp" />
     <ClCompile Include="Src\Aurora\Buffer.cpp" />
+    <ClCompile Include="Src\Aurora\DBuffer.cpp" />
+    <ClCompile Include="Src\Aurora\IBuffer.cpp" />
     <ClCompile Include="Src\Aurora\PBR\RealShading.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\HBAOEffect.cpp" />
     <ClCompile Include="Src\Aurora\Renderer.cpp" />

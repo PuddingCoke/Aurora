@@ -2,6 +2,7 @@
 
 #include<Aurora/ParticleSystem.h>
 #include<Aurora/Buffer.h>
+#include<Aurora/IBuffer.h>
 
 class StrangeAttractor :public ParticleSystem
 {
@@ -13,7 +14,7 @@ public:
 
 	std::shared_ptr<Buffer> particlePosBuffer;
 
-	std::shared_ptr<Buffer> particleColorBuffer;
+	std::shared_ptr<IBuffer> particleColorBuffer;
 
 	ComPtr<ID3D11UnorderedAccessView> uavView;
 
@@ -59,10 +60,9 @@ public:
 			positions));
 
 		//初始化粒子颜色信息
-		particleColorBuffer = std::shared_ptr<Buffer>(Buffer::create(
+		particleColorBuffer = std::shared_ptr<IBuffer>(IBuffer::create(
 			particleNum * sizeof(DirectX::XMFLOAT4),
 			D3D11_BIND_VERTEX_BUFFER,
-			D3D11_USAGE_IMMUTABLE,
 			colors
 		));
 
@@ -89,7 +89,7 @@ public:
 				{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 			};
 
-			Renderer::device->CreateInputLayout(layout, 2u,
+			Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout),
 				displayVShader->shaderBlob->GetBufferPointer(),
 				displayVShader->shaderBlob->GetBufferSize(),
 				inputLayout.ReleaseAndGetAddressOf());

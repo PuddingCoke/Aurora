@@ -21,7 +21,35 @@ public:
 
 	ID3D11Buffer* get() const;
 
+	void VSSetBuffer(const unsigned int& slot);
+
+	void GSSetBuffer(const unsigned int& slot);
+
+	void PSSetBuffer(const unsigned int& slot);
+
+	void CSSetBuffer(const unsigned int& slot);
+
+	void DSSetBuffer(const unsigned int& slot);
+
+	void HSSetBuffer(const unsigned int& slot);
+
+	static void VSSetBuffers(std::initializer_list<Buffer*> buffers, const unsigned int& slot);
+
+	static void GSSetBuffers(std::initializer_list<Buffer*> buffers, const unsigned int& slot);
+
+	static void PSSetBuffers(std::initializer_list<Buffer*> buffers, const unsigned int& slot);
+
+	static void CSSetBuffers(std::initializer_list<Buffer*> buffers, const unsigned int& slot);
+
+	static void DSSetBuffers(std::initializer_list<Buffer*> buffers, const unsigned int& slot);
+
+	static void HSSetBuffers(std::initializer_list<Buffer*> buffers, const unsigned int& slot);
+
 private:
+
+	static ID3D11Buffer* constantBuffers[D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT];
+
+protected:
 
 	Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage,
 		const void* const data, const UINT& cpuaccessFlags, const UINT& miscFlags, const UINT& structureByteStride);
