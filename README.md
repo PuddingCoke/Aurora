@@ -3,11 +3,16 @@
 
 # 动画渲染模式需要注意的事项
 1.确保使用的是Nvidia显卡。
+
 2.安装并配置好FFMPEG。
+
 3.默认状态是以60帧渲染30秒，你可以通过Graphics::setRecordConfig这个函数来修改。
 
 # 目前实现的东西
 1.延迟渲染
+
 2.泛光特效
+
 3.环境光遮蔽(NVIDIA HBAO+)
+
 4.层级阴影(NVIDIA ShadowLib)
