@@ -12,7 +12,7 @@ D3D11_MAPPED_SUBRESOURCE DBuffer::map(const unsigned int& subresource, const D3D
 	return mappedData;
 }
 
-void DBuffer::ummap(const unsigned int& subresource)
+void DBuffer::unmap(const unsigned int& subresource)
 {
 	Renderer::context->Unmap(buffer.Get(), subresource);
 }

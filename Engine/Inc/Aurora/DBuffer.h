@@ -13,7 +13,7 @@ public:
 
 	D3D11_MAPPED_SUBRESOURCE map(const unsigned int& subresource, const D3D11_MAP& mapType = D3D11_MAP_WRITE_DISCARD, const unsigned int& mapFlags = 0);
 
-	void ummap(const unsigned int& subresource);
+	void unmap(const unsigned int& subresource);
 
 private:
 

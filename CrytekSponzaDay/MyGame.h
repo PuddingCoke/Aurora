@@ -3,6 +3,7 @@
 #include<Aurora/Game.h>
 #include<Aurora/Texture2D.h>
 #include<Aurora/RenderTexture.h>
+#include<Aurora/DBuffer.h>
 #include<Aurora/A3D/DepthStencilView.h>
 #include<Aurora/A3D/TextureCube.h>
 #include<Aurora/A3D/FPSCamera.h>
@@ -40,7 +41,7 @@ public:
 
 	Scene* scene;
 
-	ComPtr<ID3D11Buffer> lightBuffer;
+	std::shared_ptr<DBuffer> lightBuffer;
 
 	FPSCamera camera;
 
@@ -68,7 +69,7 @@ public:
 
 	void setLight()
 	{
-		const DirectX::XMFLOAT3 lightPos = { 0,lightRadius * sinf(angle),lightRadius * cosf(angle) };
+		const DirectX::XMFLOAT3 lightPos = { 50,lightRadius * sinf(angle),lightRadius * cosf(angle) };
 
 		csm.setLightPos(lightPos);
 
@@ -78,10 +79,9 @@ public:
 
 		light.lightDir = { lightPosNorm.x,lightPosNorm.y, lightPosNorm.z,1.f };
 
-		D3D11_MAPPED_SUBRESOURCE mappedData = {};
-		Renderer::context->Map(lightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+		D3D11_MAPPED_SUBRESOURCE mappedData = lightBuffer->map(0);
 		memcpy(mappedData.pData, &light, sizeof(Light));
-		Renderer::context->Unmap(lightBuffer.Get(), 0);
+		lightBuffer->unmap(0);
 	}
 
 	MyGame() :
@@ -99,7 +99,8 @@ public:
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		csm(Graphics::getWidth(), Graphics::getHeight(), { 0,600,100 }, { 0,0,0 }),
-		skybox(TextureCube::createEquirectangularMap(assetPath + "/sky/kloppenheim_05_4k.hdr", 2048, { 0,1,0 }))
+		skybox(TextureCube::createEquirectangularMap(assetPath + "/sky/kloppenheim_05_4k.hdr", 4096, { 0,1,0 })),
+		lightBuffer(DBuffer::create(sizeof(light),D3D11_BIND_CONSTANT_BUFFER))
 	{
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[5] =
@@ -112,16 +113,6 @@ public:
 			};
 
 			Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), deferredVShader->shaderBlob->GetBufferPointer(), deferredVShader->shaderBlob->GetBufferSize(), inputLayout.ReleaseAndGetAddressOf());
-		}
-
-		{
-			D3D11_BUFFER_DESC bd = {};
-			bd.ByteWidth = sizeof(light);
-			bd.Usage = D3D11_USAGE_DYNAMIC;
-			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-			Renderer::device->CreateBuffer(&bd, nullptr, lightBuffer.ReleaseAndGetAddressOf());
 		}
 
 		camera.registerEvent();
@@ -255,7 +246,7 @@ public:
 		hbaoTexture->setSRV(3);
 		Renderer::context->PSSetShaderResources(4, 1, &shadowSRV);
 
-		ID3D11Buffer* buffers[2] = { Camera::getViewBuffer(),lightBuffer.Get() };
+		ID3D11Buffer* buffers[2] = { Camera::getViewBuffer(),lightBuffer->get() };
 
 		Renderer::context->PSSetConstantBuffers(1, 2, buffers);
 

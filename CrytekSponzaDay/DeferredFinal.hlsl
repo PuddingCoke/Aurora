@@ -27,7 +27,7 @@ cbuffer LightInfo : register(b2)
     float4 lightColor;
 };
 
-#define AMBIENT_FACTOR 0.5
+#define AMBIENT_FACTOR 0.4
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
@@ -45,9 +45,13 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     const float NdotL = max(0.0, dot(N, L));
     const float3 diff = lightColor.rgb * baseColor.rgb * NdotL;
         
-    const float3 R = reflect(-L, N);
-    const float NdotR = max(0.0, dot(R, V));
-    const float3 spec = lightColor.rgb * normalSpecular.w * pow(NdotR, 16.0) * 2.0;
+    //const float3 R = reflect(-L, N);
+    //const float NdotR = max(0.0, dot(R, V));
+    //const float3 spec = lightColor.rgb * normalSpecular.w * pow(NdotR, 16.0) * 2.0;
+        
+    const float3 H = normalize(V + L);
+    const float NdotH = max(dot(N, H), 0.0);
+    const float3 spec = lightColor.rgb * normalSpecular.w * pow(NdotH, 16.0) * 1.5;
     
     const float3 outColor = (baseColor * AMBIENT_FACTOR + (diff + spec) * shadow) * ao;
     
