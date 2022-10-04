@@ -24,8 +24,6 @@ public:
 
 	DoubleRTV* accTexture;
 
-	ComPtr<ID3D11SamplerState> samplerState;
-
 	BloomEffect effect;
 
 	bool bloom = true;
@@ -46,19 +44,6 @@ public:
 
 		exposure = 0.629999757f;
 		gamma = 0.930000305f;
-
-		{
-			D3D11_SAMPLER_DESC sd = {};
-			sd.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			sd.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			sd.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			sd.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			sd.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_NEVER;
-			sd.MinLOD = 0;
-			sd.MaxLOD = D3D11_FLOAT32_MAX;
-
-			Renderer::device->CreateSamplerState(&sd, samplerState.ReleaseAndGetAddressOf());
-		}
 
 		accTexture->read()->clearRTV(DirectX::Colors::Black);
 		accTexture->write()->clearRTV(DirectX::Colors::Black);
@@ -118,7 +103,7 @@ public:
 
 		Renderer::setBlendState(States::addtiveBlend.Get());
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Renderer::context->PSSetSamplers(0, 1, samplerState.GetAddressOf());
+		Renderer::setSampler(0, States::linearWrapSampler.Get());
 
 		Shader::displayVShader->use();
 		pixelShader->use();
