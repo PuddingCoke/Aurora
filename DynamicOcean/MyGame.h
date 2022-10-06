@@ -16,12 +16,20 @@ public:
 
 	Shader* debugShader;
 
+	bool use=true;
+
 	MyGame() :
 		camera({ 0,0,0 }, { 1,0,0 }, { 0,1,0 }, 40, 3),
-		ocean(1024, 1024, { 32.f,32.f }, 0.0005f),
+		ocean(1024, 2048, { 32.f,32.f }, 0.0005f),
 		debugShader(Shader::fromFile("DebugShader.hlsl",ShaderType::Pixel))
 	{
 		camera.registerEvent();
+
+		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
+			{
+				std::cout << "C\n";
+				use = !use;
+			});
 	}
 
 	~MyGame()
@@ -44,7 +52,9 @@ public:
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		Renderer::setSampler(0, States::linearClampSampler.Get());
 
-		ocean.phillipTexture->setSRV(0);
+		ocean.calcDisplacement();
+
+		ocean.displacementY->setSRV(0);
 
 		Shader::displayVShader->use();
 		debugShader->use();

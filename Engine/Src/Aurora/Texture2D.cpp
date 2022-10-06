@@ -203,7 +203,7 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height) :
 
 	for (unsigned int i = 0; i < width * height; i++)
 	{
-		colors[i] = DirectX::XMFLOAT4(Random::Float(), Random::Float(), Random::Float(), 1.f);
+		colors[i] = DirectX::XMFLOAT4(Random::Float(), Random::Float(), Random::Float(), Random::Float());
 	}
 
 	D3D11_TEXTURE2D_DESC tDesc = {};

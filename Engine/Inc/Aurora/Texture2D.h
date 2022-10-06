@@ -31,7 +31,7 @@ public:
 	
 	static Texture2D* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag);
 
-	//生成一个噪音贴图 每个通道属于[0,1]
+	//生成一个4通道噪音贴图 每个通道属于[0,1]
 	static Texture2D* createNoise(const unsigned int& width, const unsigned int& height);
 
 	~Texture2D();
