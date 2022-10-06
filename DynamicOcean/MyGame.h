@@ -54,7 +54,7 @@ public:
 
 		ocean.calcDisplacement();
 
-		ocean.displacementY->setSRV(0);
+		ocean.displacementX->setSRV(0);
 
 		Shader::displayVShader->use();
 		debugShader->use();
