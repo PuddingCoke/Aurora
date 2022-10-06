@@ -71,7 +71,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	displacementY(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
 	displacementX(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
 	displacementZ(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
-	gaussTexture(Texture2D::createNoise(mapResolution, mapResolution)),
+	gaussTexture(Texture2D::createGauss(mapResolution, mapResolution)),
 	phillipSpectrumShader(Shader::fromFile("PhillipsSpectrum.hlsl", ShaderType::Compute)),
 	displacementShader(Shader::fromFile("Displacement.hlsl", ShaderType::Compute))
 {
@@ -108,8 +108,6 @@ inline Ocean::~Ocean()
 
 inline void Ocean::calculatePhillipTexture()
 {
-	//std::cout << param.gravity << "\n" << param.mapLength << "\n" << param.mapResolution << "\n" << param.phillipParam << "\n" << param.wind.x << " " << param.wind.y << "\n";
-
 	memcpy(oceanParamBuffer->map(0).pData, &param, sizeof(Param));
 	oceanParamBuffer->unmap(0);
 
