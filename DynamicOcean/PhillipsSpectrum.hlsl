@@ -13,7 +13,7 @@ cbuffer OceanParam : register(b1)
 RWTexture2D<float2> tildeh0k : register(u0);
 RWTexture2D<float2> tildeh0mk : register(u1);
 
-Texture2D noiseTexture : register(t0);
+Texture2D gaussTexture : register(t0);
 
 float getPhillip(float2 k)
 {
@@ -40,18 +40,6 @@ float getPhillip(float2 k)
     return amplitude * exp(-1.0f / (len2 * L2)) / len4 * kDotw2 * exp(-len2 * l2);
 }
 
-float4 gaussRND(uint3 Coor)
-{
-    float4 noise = clamp(noiseTexture[Coor.xy], 0.001, 1);
-    
-    float u0 = 2.0 * M_PI * noise.r;
-    float v0 = sqrt(-2.0 * log(noise.g));
-    float u1 = 2.0 * M_PI * noise.b;
-    float v1 = sqrt(-2.0 * log(noise.a));
-    
-    return float4(v0 * cos(u0), v0 * sin(u0), v1 * cos(u1), v1 * sin(u1));
-}
-
 [numthreads(32, 32, 1)]
 void main(uint3 DTid : SV_DispatchThreadID)
 {
@@ -59,8 +47,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
     float ph1 = getPhillip(k);
     float ph2 = getPhillip(-k);
-    float4 rnd = gaussRND(DTid);
     
-    tildeh0k[DTid.xy] = float2(rnd.xy * sqrt(ph1 / 2.0));
-    tildeh0mk[DTid.xy] = float2(rnd.zw * sqrt(ph2 / 2.0));
+    tildeh0k[DTid.xy] = float2(gaussTexture[DTid.xy].xy * sqrt(ph1 / 2.0));
+    tildeh0mk[DTid.xy] = float2(gaussTexture[DTid.xy].zw * sqrt(ph2 / 2.0));
 }

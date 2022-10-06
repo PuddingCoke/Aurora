@@ -34,6 +34,8 @@ public:
 	//生成一个4通道噪音贴图 每个通道属于[0,1]
 	static Texture2D* createNoise(const unsigned int& width, const unsigned int& height);
 
+	static Texture2D* createGauss(const unsigned int& width, const unsigned int& height);
+
 	~Texture2D();
 
 	const unsigned int& getWidth() const;
@@ -52,11 +54,17 @@ private:
 
 	friend class SpriteBatch;
 
+	enum TextureType
+	{
+		Noise,
+		Gauss
+	};
+
 	Texture2D(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag);
 
 	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag);
 
-	Texture2D(const unsigned int& width, const unsigned int& height);
+	Texture2D(const unsigned int& width, const unsigned int& height, const TextureType& type);
 
 	void createShaderResource();
 

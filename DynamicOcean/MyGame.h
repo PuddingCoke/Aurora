@@ -20,16 +20,16 @@ public:
 
 	MyGame() :
 		camera({ 0,0,0 }, { 1,0,0 }, { 0,1,0 }, 40, 3),
-		ocean(1024, 2048, { 32.f,32.f }, 0.0005f),
+		ocean(1024, 2048, { 32.f,32.f }, 1.5f),
 		debugShader(Shader::fromFile("DebugShader.hlsl",ShaderType::Pixel))
 	{
 		camera.registerEvent();
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
 			{
-				std::cout << "C\n";
 				use = !use;
 			});
+
 	}
 
 	~MyGame()
@@ -50,11 +50,11 @@ public:
 		Renderer::setBlendState(nullptr);
 		Renderer::setViewport(1024, 1024);
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Renderer::setSampler(0, States::linearClampSampler.Get());
+		Renderer::setSampler(0, States::pointClampSampler.Get());
 
 		ocean.calcDisplacement();
 
-		ocean.displacementX->setSRV(0);
+		ocean.displacementY->setSRV(0);
 
 		Shader::displayVShader->use();
 		debugShader->use();
@@ -64,7 +64,6 @@ public:
 		ID3D11ShaderResourceView* nullSRV = nullptr;
 
 		Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
-
 	}
 
 

@@ -19,6 +19,9 @@ public:
 
 	static float Float();
 
+	//mean 0 sd(sigma) 1
+	static float Gauss();
+
 	static double Double();
 
 	static int Int();
@@ -31,6 +34,7 @@ private:
 
 	static std::uniform_int_distribution<int> intDistribution;
 
+	static std::normal_distribution<float> normalDistribution;
 };
 
 #endif // !_RANDOM_H_

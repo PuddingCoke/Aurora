@@ -26,7 +26,7 @@ public:
 
 	Texture2D* tildeh0mk;
 
-	Texture2D* noiseTexture;
+	Texture2D* gaussTexture;
 
 	Texture2D* displacementY;
 
@@ -71,7 +71,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	displacementY(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
 	displacementX(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
 	displacementZ(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
-	noiseTexture(Texture2D::createNoise(mapResolution, mapResolution)),
+	gaussTexture(Texture2D::createNoise(mapResolution, mapResolution)),
 	phillipSpectrumShader(Shader::fromFile("PhillipsSpectrum.hlsl", ShaderType::Compute)),
 	displacementShader(Shader::fromFile("Displacement.hlsl", ShaderType::Compute))
 {
@@ -100,7 +100,7 @@ inline Ocean::~Ocean()
 
 	delete tildeh0k;
 	delete tildeh0mk;
-	delete noiseTexture;
+	delete gaussTexture;
 	delete displacementY;
 	delete displacementX;
 	delete displacementZ;
@@ -113,7 +113,9 @@ inline void Ocean::calculatePhillipTexture()
 	memcpy(oceanParamBuffer->map(0).pData, &param, sizeof(Param));
 	oceanParamBuffer->unmap(0);
 
-	noiseTexture->setSRV(0);
+	ID3D11ShaderResourceView* srv = gaussTexture->getSRV();
+
+	Renderer::context->CSSetShaderResources(0, 1, &srv);
 
 	oceanParamBuffer->CSSetBuffer(1);
 

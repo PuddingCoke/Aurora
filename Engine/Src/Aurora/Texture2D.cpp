@@ -21,7 +21,12 @@ Texture2D* Texture2D::create(const unsigned int& width, const unsigned int& heig
 
 Texture2D* Texture2D::createNoise(const unsigned int& width, const unsigned int& height)
 {
-	return new Texture2D(width, height);
+	return new Texture2D(width, height, TextureType::Noise);
+}
+
+Texture2D* Texture2D::createGauss(const unsigned int& width, const unsigned int& height)
+{
+	return new Texture2D(width, height, TextureType::Gauss);
 }
 
 Texture2D::~Texture2D()
@@ -194,17 +199,33 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 	}
 }
 
-Texture2D::Texture2D(const unsigned int& width, const unsigned int& height) :
+Texture2D::Texture2D(const unsigned int& width, const unsigned int& height,const TextureType& type) :
 	poolIndex(-1), width(width), height(height), format(DXGI_FORMAT_R32G32B32A32_FLOAT)
 {
 	std::vector<DirectX::XMFLOAT4> colors(width * height);
 
-	std::cout << "[class Texture2D] generate " << width << "x" << height << " noise texture\n";
+	std::cout << "[class Texture2D] generate " << width << "x" << height << " ";
 
-	for (unsigned int i = 0; i < width * height; i++)
+	switch (type)
 	{
-		colors[i] = DirectX::XMFLOAT4(Random::Float(), Random::Float(), Random::Float(), Random::Float());
+	default:
+	case Noise:
+		std::cout << "noise";
+		for (unsigned int i = 0; i < width * height; i++)
+		{
+			colors[i] = DirectX::XMFLOAT4(Random::Float(), Random::Float(), Random::Float(), Random::Float());
+		}
+		break;
+	case Gauss:
+		std::cout << "gauss";
+		for (unsigned int i = 0; i < width * height; i++)
+		{
+			colors[i] = DirectX::XMFLOAT4(Random::Gauss(), Random::Gauss(), Random::Gauss(), Random::Gauss());
+		}
+		break;
 	}
+
+	std::cout << " texture\n";
 
 	D3D11_TEXTURE2D_DESC tDesc = {};
 	tDesc.Width = width;
