@@ -4,8 +4,8 @@ RWTexture2D<float2> displacementY : register(u0);
 RWTexture2D<float2> displacementX : register(u1);
 RWTexture2D<float2> displacementZ : register(u2);
 
-Texture2D tildeh0k : register(t0);
-Texture2D tildeh0mk : register(t1);
+Texture2D<float2> tildeh0k : register(t0);
+Texture2D<float2> tildeh0mk : register(t1);
 
 cbuffer DeltaTime : register(b0)
 {
@@ -38,8 +38,8 @@ float2 complexMul(float2 a, float2 b)
 [numthreads(32, 32, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {
-    float2 htilde0 = tildeh0k[DTid.xy].xy;
-    float2 htilde0mkconj = tildeh0mk[DTid.xy].xy;
+    float2 htilde0 = tildeh0k[DTid.xy];
+    float2 htilde0mkconj = tildeh0mk[DTid.xy];
     htilde0mkconj.y = -htilde0mkconj.y;
     
     float2 k = float2(M_PI * (2.0 * float(DTid.x) - float(mapResolution)) / float(mapLength), M_PI * (2.0 * float(DTid.y) - float(mapResolution)) / float(mapLength));
