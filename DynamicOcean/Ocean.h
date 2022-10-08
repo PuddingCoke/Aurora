@@ -28,7 +28,7 @@ public:
 
 	Texture2D* tildeh0k;
 
-	Texture2D* tildeh0mk;
+	Texture2D* tildeh0mkconj;
 
 	Texture2D* tempTexture;
 
@@ -42,7 +42,7 @@ public:
 
 	ComPtr<ID3D11UnorderedAccessView> tildeh0kUAV;
 
-	ComPtr<ID3D11UnorderedAccessView> tildeh0mkUAV;
+	ComPtr<ID3D11UnorderedAccessView> tildeh0mkconjUAV;
 
 	ComPtr<ID3D11UnorderedAccessView> displacementYUAV;
 
@@ -78,7 +78,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	oceanParamBuffer(DBuffer::create(sizeof(Param), D3D11_BIND_CONSTANT_BUFFER)),
 	param{ mapResolution, mapLength, wind, phillipParam, 9.81f,(unsigned int)log2(mapResolution),0.f },
 	tildeh0k(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
-	tildeh0mk(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
+	tildeh0mkconj(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
 	displacementY(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
 	displacementX(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
 	displacementZ(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
@@ -96,7 +96,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 		uavDesc.Texture2D.MipSlice = 0;
 
 		Renderer::device->CreateUnorderedAccessView(tildeh0k->getTexture2D(), &uavDesc, tildeh0kUAV.ReleaseAndGetAddressOf());
-		Renderer::device->CreateUnorderedAccessView(tildeh0mk->getTexture2D(), &uavDesc, tildeh0mkUAV.ReleaseAndGetAddressOf());
+		Renderer::device->CreateUnorderedAccessView(tildeh0mkconj->getTexture2D(), &uavDesc, tildeh0mkconjUAV.ReleaseAndGetAddressOf());
 		Renderer::device->CreateUnorderedAccessView(displacementY->getTexture2D(), &uavDesc, displacementYUAV.ReleaseAndGetAddressOf());
 		Renderer::device->CreateUnorderedAccessView(displacementX->getTexture2D(), &uavDesc, displacementXUAV.ReleaseAndGetAddressOf());
 		Renderer::device->CreateUnorderedAccessView(displacementZ->getTexture2D(), &uavDesc, displacementZUAV.ReleaseAndGetAddressOf());
@@ -118,7 +118,7 @@ inline Ocean::~Ocean()
 	delete signCorrectionShader;
 
 	delete tildeh0k;
-	delete tildeh0mk;
+	delete tildeh0mkconj;
 	delete gaussTexture;
 	delete displacementY;
 	delete displacementX;
@@ -137,7 +137,7 @@ inline void Ocean::calculatePhillipTexture()
 
 	oceanParamBuffer->CSSetBuffer(1);
 
-	ID3D11UnorderedAccessView* uav[2] = { tildeh0kUAV.Get(),tildeh0mkUAV.Get() };
+	ID3D11UnorderedAccessView* uav[2] = { tildeh0kUAV.Get(),tildeh0mkconjUAV.Get() };
 
 	Renderer::context->CSSetUnorderedAccessViews(0, 2, uav, nullptr);
 
@@ -158,42 +158,98 @@ inline void Ocean::calculateIFFT()
 	ID3D11UnorderedAccessView* uav;
 	ID3D11ShaderResourceView* srv;
 
-	uav = tempTextureUAV.Get();
-	srv = displacementY->getSRV();
+	{
+		uav = tempTextureUAV.Get();
+		srv = displacementY->getSRV();
 
-	Renderer::context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
-	Renderer::context->CSSetShaderResources(0, 1, &srv);
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, &srv);
 
-	ifftShader->use();
-	Renderer::context->Dispatch(param.mapResolution, 1u, 1u);
+		ifftShader->use();
+		Renderer::context->Dispatch(param.mapResolution, 1u, 1u);
 
-	Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
-	Renderer::context->CSSetShaderResources(0, 1, nullSRV);
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
 
-	uav = displacementYUAV.Get();
-	srv = tempTexture->getSRV();
+		uav = displacementYUAV.Get();
+		srv = tempTexture->getSRV();
 
-	Renderer::context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
-	Renderer::context->CSSetShaderResources(0, 1, &srv);
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, &srv);
 
-	ifftShader->use();
-	Renderer::context->Dispatch(param.mapResolution, 1u, 1u);
+		ifftShader->use();
+		Renderer::context->Dispatch(param.mapResolution, 1u, 1u);
 
-	Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
-	Renderer::context->CSSetShaderResources(0, 1, nullSRV);
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
+	}
 
-	Renderer::context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+	{
+		uav = tempTextureUAV.Get();
+		srv = displacementX->getSRV();
 
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, &srv);
+
+		ifftShader->use();
+		Renderer::context->Dispatch(param.mapResolution, 1u, 1u);
+
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
+
+		uav = displacementXUAV.Get();
+		srv = tempTexture->getSRV();
+
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, &srv);
+
+		ifftShader->use();
+		Renderer::context->Dispatch(param.mapResolution, 1u, 1u);
+
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
+	}
+
+	{
+		uav = tempTextureUAV.Get();
+		srv = displacementZ->getSRV();
+
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, &srv);
+
+		ifftShader->use();
+		Renderer::context->Dispatch(param.mapResolution, 1u, 1u);
+
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
+
+		uav = displacementZUAV.Get();
+		srv = tempTexture->getSRV();
+
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, &srv);
+
+		ifftShader->use();
+		Renderer::context->Dispatch(param.mapResolution, 1u, 1u);
+
+		Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
+		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
+	}
+
+	ID3D11UnorderedAccessView* uavs[3] = { displacementYUAV.Get(),displacementXUAV.Get(),displacementZUAV.Get() };
+	Renderer::context->CSSetUnorderedAccessViews(0, 3, uavs, nullptr);
 	signCorrectionShader->use();
 	Renderer::context->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
-	Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
+
+	ID3D11UnorderedAccessView* nullUAVS[3] = { nullptr,nullptr,nullptr };
+	Renderer::context->CSSetUnorderedAccessViews(0, 3, nullUAVS, nullptr);
 }
 
 inline void Ocean::calcDisplacement()
 {
 	ID3D11UnorderedAccessView* uav[3] = { displacementYUAV.Get(),displacementXUAV.Get(),displacementZUAV.Get() };
 	Renderer::context->CSSetUnorderedAccessViews(0, 3, uav, nullptr);
-	ID3D11ShaderResourceView* srv[2] = { tildeh0k->getSRV(),tildeh0mk->getSRV() };
+	ID3D11ShaderResourceView* srv[2] = { tildeh0k->getSRV(),tildeh0mkconj->getSRV() };
 	Renderer::context->CSSetShaderResources(0, 2, srv);
 
 	oceanParamBuffer->CSSetBuffer(1);
@@ -206,4 +262,6 @@ inline void Ocean::calcDisplacement()
 	Renderer::context->CSSetUnorderedAccessViews(0, 3, nullUAV, nullptr);
 	ID3D11ShaderResourceView* nullSRV[2] = { nullptr,nullptr };
 	Renderer::context->CSSetShaderResources(0, 2, nullSRV);
+
+	calculateIFFT();
 }

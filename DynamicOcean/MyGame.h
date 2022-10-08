@@ -20,7 +20,7 @@ public:
 
 	MyGame() :
 		camera({ 0,0,0 }, { 1,0,0 }, { 0,1,0 }, 40, 3),
-		ocean(1024, 4096, { 32.f,0.f }, 2.0f),
+		ocean(1024, 2048, { 32.f,0.f }, 1.5f),
 		debugShader(Shader::fromFile("DebugShader.hlsl",ShaderType::Pixel))
 	{
 		camera.registerEvent();
@@ -53,9 +53,6 @@ public:
 		Renderer::setSampler(0, States::pointClampSampler.Get());
 
 		ocean.calcDisplacement();
-
-		if(use)
-		ocean.calculateIFFT();
 
 		ocean.displacementY->setSRV(0);
 

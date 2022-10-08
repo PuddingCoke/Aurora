@@ -33,5 +33,6 @@
     <FxCompile Include="Displacement.hlsl" />
     <FxCompile Include="IFFT.hlsl" />
     <FxCompile Include="SignCorrection.hlsl" />
+    <FxCompile Include="DomainShader.hlsl" />
   </ItemGroup>
 </Project>

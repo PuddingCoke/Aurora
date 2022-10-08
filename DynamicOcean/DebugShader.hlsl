@@ -4,5 +4,6 @@ SamplerState linearSampler : register(s0);
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    return float4(tex.Sample(linearSampler, texCoord).rrr, 1.0);
+    float height = tex.Sample(linearSampler, texCoord).r;
+    return float4(height.rrr, 1.0);
 }
