@@ -30,19 +30,33 @@ public:
 
 	Texture2D* const displacementZ;
 
+	Texture2D* const normalTexture;
+
 	void calcDisplacement() const;
+
+	void render() const;
 
 private:
 
-	DBuffer* oceanParamBuffer;
+	IBuffer* patchVertexBuffer;
 
-	Shader* phillipSpectrumShader;
+	DBuffer* const oceanParamBuffer;
 
-	Shader* displacementShader;
+	Shader* const phillipSpectrumShader;
 
-	Shader* ifftShader;
+	Shader* const displacementShader;
 
-	Shader* signCorrectionShader;
+	Shader* const ifftShader;
+
+	Shader* const signCorrectionShader;
+
+	Shader* const oceanVShader;
+
+	Shader* const oceanHShader;
+
+	Shader* const oceanDShader;
+
+	Shader* const oceanPShader;
 
 	ComPtr<ID3D11UnorderedAccessView> tildeh0kUAV;
 
@@ -56,6 +70,13 @@ private:
 
 	ComPtr<ID3D11UnorderedAccessView> tempTextureUAV;
 
+	ComPtr<ID3D11UnorderedAccessView> normalTextureUAV;
+
+	ComPtr<ID3D11InputLayout> inputLayout;
+
+	//128x128 per grid
+	static constexpr unsigned int patchSize = 16;
+
 	struct Param
 	{
 		unsigned int mapResolution;
@@ -66,6 +87,12 @@ private:
 		unsigned int log2MapResolution;
 		float v0;
 	}param;
+
+	struct Vertex
+	{
+		DirectX::XMFLOAT3 position;
+		DirectX::XMFLOAT2 uv;
+	};
 
 	//风或者引力常量变化都要重新计算phillipTexture
 	void calculatePhillipTexture() const;
@@ -83,11 +110,16 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	displacementX(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
 	displacementZ(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
 	tempTexture(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
+	normalTexture(Texture2D::create(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)),
 	gaussTexture(Texture2D::createGauss(mapResolution, mapResolution)),
 	phillipSpectrumShader(Shader::fromFile("PhillipsSpectrum.hlsl", ShaderType::Compute)),
 	displacementShader(Shader::fromFile("Displacement.hlsl", ShaderType::Compute)),
 	ifftShader(Shader::fromFile("IFFT.hlsl", ShaderType::Compute)),
-	signCorrectionShader(Shader::fromFile("SignCorrection.hlsl", ShaderType::Compute))
+	signCorrectionShader(Shader::fromFile("SignCorrection.hlsl", ShaderType::Compute)),
+	oceanVShader(Shader::fromFile("OceanVShader.hlsl", ShaderType::Vertex)),
+	oceanHShader(Shader::fromFile("OceanHShader.hlsl", ShaderType::Hull)),
+	oceanDShader(Shader::fromFile("OceanDShader.hlsl", ShaderType::Domain)),
+	oceanPShader(Shader::fromFile("OceanPShader.hlsl", ShaderType::Pixel))
 {
 	{
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
@@ -101,9 +133,48 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 		Renderer::device->CreateUnorderedAccessView(displacementX->getTexture2D(), &uavDesc, displacementXUAV.ReleaseAndGetAddressOf());
 		Renderer::device->CreateUnorderedAccessView(displacementZ->getTexture2D(), &uavDesc, displacementZUAV.ReleaseAndGetAddressOf());
 		Renderer::device->CreateUnorderedAccessView(tempTexture->getTexture2D(), &uavDesc, tempTextureUAV.ReleaseAndGetAddressOf());
+
+		uavDesc.Format = normalTexture->getFormat();
+
+		Renderer::device->CreateUnorderedAccessView(normalTexture->getTexture2D(), &uavDesc, normalTextureUAV.ReleaseAndGetAddressOf());
 	}
 
-	std::cout << param.log2MapResolution << "\n";
+	{
+		D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[2] =
+		{
+			{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
+			{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
+		};
+
+		Renderer::device->CreateInputLayout(inputLayoutDesc, ARRAYSIZE(inputLayoutDesc), oceanVShader->shaderBlob->GetBufferPointer(),
+			oceanVShader->shaderBlob->GetBufferSize(), inputLayout.ReleaseAndGetAddressOf());
+	}
+
+	{
+		std::vector<Vertex> vertices;
+
+		auto getVertexAt = [this](const unsigned int& x, const unsigned int& z)
+		{
+			const float xPos = ((float)x - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
+			const float zPos = ((float)z - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
+			const float u = (float)x / (float)patchSize;
+			const float v = (float)z / (float)patchSize;
+			return Vertex{ {xPos,0.f,zPos},{u,v} };
+		};
+
+		for (unsigned int z = 0; z < patchSize - 1u; z++)
+		{
+			for (unsigned int x = 0; x < patchSize - 1u; x++)
+			{
+				vertices.push_back(getVertexAt(x, z));
+				vertices.push_back(getVertexAt(x, z + 1u));
+				vertices.push_back(getVertexAt(x + 1u, z + 1u));
+				vertices.push_back(getVertexAt(x + 1u, z));
+			}
+		}
+
+		patchVertexBuffer = IBuffer::create(sizeof(Vertex) * vertices.size(), D3D11_BIND_VERTEX_BUFFER, vertices.data());
+	}
 
 	calculatePhillipTexture();
 }
@@ -111,11 +182,16 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 inline Ocean::~Ocean()
 {
 	delete oceanParamBuffer;
+	delete patchVertexBuffer;
 
 	delete phillipSpectrumShader;
 	delete displacementShader;
 	delete ifftShader;
 	delete signCorrectionShader;
+	delete oceanVShader;
+	delete oceanHShader;
+	delete oceanDShader;
+	delete oceanPShader;
 
 	delete tildeh0k;
 	delete tildeh0mkconj;
@@ -124,6 +200,7 @@ inline Ocean::~Ocean()
 	delete displacementX;
 	delete displacementZ;
 	delete tempTexture;
+	delete normalTexture;
 }
 
 inline void Ocean::calculatePhillipTexture() const
@@ -254,7 +331,7 @@ inline void Ocean::calcDisplacement() const
 	Renderer::context->CSSetShaderResources(0, 2, nullSRV);
 	ID3D11UnorderedAccessView* const nullUAV[3] = { nullptr,nullptr,nullptr };
 	Renderer::context->CSSetUnorderedAccessViews(0, 3, nullUAV, nullptr);
-	
+
 	calculateIFFT();
 
 	Renderer::context->CSSetUnorderedAccessViews(0, 3, uav, nullptr);
@@ -262,5 +339,33 @@ inline void Ocean::calcDisplacement() const
 	Renderer::context->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
 	Renderer::context->CSSetUnorderedAccessViews(0, 3, nullUAV, nullptr);
+}
+
+inline void Ocean::render() const
+{
+	ID3D11ShaderResourceView* srv = displacementY->getSRV();
+
+	const unsigned int stride = sizeof(Vertex);
+	const unsigned int offset = 0;
+
+	ID3D11Buffer* const vertexBuffer = patchVertexBuffer->get();
+
+	Renderer::context->IASetInputLayout(inputLayout.Get());
+	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+	Renderer::context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+
+	oceanVShader->use();
+	oceanHShader->use();
+	oceanDShader->use();
+	oceanPShader->use();
+
+	Renderer::context->DSSetShaderResources(0, 1, &srv);
+	Renderer::context->DSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
+
+	Renderer::draw(4 * (patchSize - 1u) * (patchSize - 1u), 0u);
+
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+
+	Renderer::context->DSSetShaderResources(0, 1, &nullSRV);
 }
 

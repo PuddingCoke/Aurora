@@ -96,11 +96,13 @@ int Aurora::iniEngine(const Configuration& config)
 	Renderer::context->PSSetConstantBuffers(0, 1, Graphics::deltaTimeBuffer.GetAddressOf());
 	Renderer::context->CSSetConstantBuffers(0, 1, Graphics::deltaTimeBuffer.GetAddressOf());
 
-	//vertex geometry shader占用前两个槽位来获取矩阵信息或者摄像头的信息
+	//vertex geometry hull domain shader占用前两个槽位来获取矩阵信息或者摄像头的信息
 	{
 		ID3D11Buffer* const buffers[2] = { Camera::projBuffer.Get(),Camera::viewBuffer.Get() };
 
 		Renderer::context->VSSetConstantBuffers(0, 2, buffers);
+		Renderer::context->HSSetConstantBuffers(0, 2, buffers);
+		Renderer::context->DSSetConstantBuffers(0, 2, buffers);
 		Renderer::context->GSSetConstantBuffers(0, 2, buffers);
 	}
 

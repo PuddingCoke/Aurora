@@ -33,6 +33,9 @@
     <FxCompile Include="Displacement.hlsl" />
     <FxCompile Include="IFFT.hlsl" />
     <FxCompile Include="SignCorrection.hlsl" />
-    <FxCompile Include="DomainShader.hlsl" />
+    <FxCompile Include="OceanDShader.hlsl" />
+    <FxCompile Include="OceanHShader.hlsl" />
+    <FxCompile Include="OceanVShader.hlsl" />
+    <FxCompile Include="OceanPShader.hlsl" />
   </ItemGroup>
 </Project>

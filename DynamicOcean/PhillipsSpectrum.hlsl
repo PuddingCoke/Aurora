@@ -26,7 +26,7 @@ float getPhillip(float2 k)
     float len4 = len2 * len2;
         
     float kDotw = dot(normalize(k), normalize(wind));
-        
+    
     float kDotw6 = kDotw * kDotw * kDotw * kDotw * kDotw * kDotw;
         
     float L = length(wind) * length(wind) / gravity;
@@ -36,7 +36,7 @@ float getPhillip(float2 k)
     float damping = 0.001;
         
     float l2 = L2 * damping * damping;
-        
+    
     return amplitude * exp(-1.0f / (len2 * L2)) / len4 * kDotw6 * exp(-len2 * l2);
 }
 
