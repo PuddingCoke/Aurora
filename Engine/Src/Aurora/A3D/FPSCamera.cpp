@@ -1,11 +1,13 @@
 #include<Aurora/A3D/FPSCamera.h>
 
 FPSCamera::FPSCamera(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& lookDir, const DirectX::XMFLOAT3& up, const float& moveSpeed, const float& rotationSpeed) :
-	eye(eye), lookDir(lookDir), up(up), moveSpeed(moveSpeed), rotationSpeed(rotationSpeed)
+	eye(eye), up(up), moveSpeed(moveSpeed), rotationSpeed(rotationSpeed)
 {
 	DirectX::XMFLOAT3 lookDirNorm;
 
 	DirectX::XMStoreFloat3(&lookDirNorm, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&lookDir)));
+
+	this->lookDir = lookDirNorm;
 
 	const DirectX::XMFLOAT3 focusPoint = DirectX::XMFLOAT3(eye.x + lookDirNorm.x, eye.y + lookDirNorm.y, eye.z + lookDirNorm.z);
 

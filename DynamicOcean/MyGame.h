@@ -22,7 +22,7 @@ public:
 	bool showWireframe=false;
 
 	MyGame() :
-		camera({ 0,10,0 }, { 1,0,0 }, { 0,1,0 }, 100, 3),
+		camera({ -240,200,0 }, { 1,-1,0 }, { 0,1,0 }, 100, 3),
 		ocean(1024, 256, { 16.f,0.f }, 0.000007f),
 		depthView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true))
 	{
@@ -41,7 +41,7 @@ public:
 
 		camera.registerEvent();
 
-		Camera::setProj(Math::pi / 5.f, Graphics::getAspectRatio(), 0.1f, 10000.f);
+		Camera::setProj(Math::pi / 5.f, Graphics::getAspectRatio(), 0.1f, 1000.f);
 	}
 
 	~MyGame()
