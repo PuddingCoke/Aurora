@@ -29,7 +29,6 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PhillipsSpectrum.hlsl" />
-    <FxCompile Include="DebugShader.hlsl" />
     <FxCompile Include="Displacement.hlsl" />
     <FxCompile Include="IFFT.hlsl" />
     <FxCompile Include="SignCorrection.hlsl" />

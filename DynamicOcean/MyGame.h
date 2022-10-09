@@ -15,17 +15,16 @@ public:
 
 	Ocean ocean;
 
-	Shader* debugShader;
-
 	DepthStencilView* depthView;
 
 	ComPtr<ID3D11RasterizerState> wireframeRS;
 
+	bool showWireframe=false;
+
 	MyGame() :
-		camera({ 0,100,0 }, { 1,0,0 }, { 0,1,0 }, 1000, 3),
-		ocean(1024, 8192, { 5.f,0.f }, 0.0005f),
-		depthView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
-		debugShader(Shader::fromFile("DebugShader.hlsl", ShaderType::Pixel))
+		camera({ 0,10,0 }, { 1,0,0 }, { 0,1,0 }, 100, 3),
+		ocean(1024, 256, { 16.f,0.f }, 0.000007f),
+		depthView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true))
 	{
 		{
 			D3D11_RASTERIZER_DESC rsDesc = {};
@@ -33,17 +32,21 @@ public:
 			rsDesc.FillMode = D3D11_FILL_WIREFRAME;
 
 			Renderer::device->CreateRasterizerState(&rsDesc, wireframeRS.ReleaseAndGetAddressOf());
+
+			Keyboard::addKeyDownEvent(Keyboard::K, [this]()
+				{
+					showWireframe = !showWireframe;
+				});
 		}
 
 		camera.registerEvent();
 
-		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 10000.f);
+		Camera::setProj(Math::pi / 5.f, Graphics::getAspectRatio(), 0.1f, 10000.f);
 	}
 
 	~MyGame()
 	{
 		delete depthView;
-		delete debugShader;
 	}
 
 	void update(const float& dt) override
@@ -59,7 +62,14 @@ public:
 
 		ocean.calcDisplacement();
 
-		//Renderer::context->RSSetState(wireframeRS.Get());
+		if (showWireframe)
+		{
+			Renderer::context->RSSetState(wireframeRS.Get());
+		}
+		else
+		{
+			Renderer::context->RSSetState(States::rasterCullBack.Get());
+		}
 
 		ocean.render();
 	}

@@ -39,7 +39,7 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 		Output.EdgeTessFactor[2] =
 		Output.EdgeTessFactor[3] =
 		Output.InsideTessFactor[0] =
-		Output.InsideTessFactor[1] = 64;
+		Output.InsideTessFactor[1] = 128.0;
 
     return Output;
 }
@@ -49,7 +49,6 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 [outputtopology("triangle_cw")]
 [outputcontrolpoints(4)]
 [patchconstantfunc("CalcHSPatchConstants")]
-[maxtessfactor(64.f)]
 HS_CONTROL_POINT_OUTPUT main(
 	InputPatch<VS_CONTROL_POINT_OUTPUT, 4> ip,
 	uint i : SV_OutputControlPointID)

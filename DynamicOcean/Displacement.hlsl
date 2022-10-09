@@ -3,6 +3,8 @@
 RWTexture2D<float2> displacementY : register(u0);
 RWTexture2D<float2> displacementX : register(u1);
 RWTexture2D<float2> displacementZ : register(u2);
+RWTexture2D<float2> slopeX : register(u3);
+RWTexture2D<float2> slopeZ : register(u4);
 
 Texture2D<float2> tildeh0k : register(t0);
 Texture2D<float2> tildeh0mkconj : register(t1);
@@ -30,7 +32,7 @@ float dispersion(float2 k)
     return floor(sqrt(gravity * length(k)) / w_0) * w_0;
 }
 
-float2 complexMul(float2 a, float2 b)
+float2 ComplexMul(float2 a, float2 b)
 {
     return float2(a.x * b.x - a.y * b.y, a.y * b.x + a.x * b.y);
 }
@@ -51,20 +53,23 @@ void main( uint3 DTid : SV_DispatchThreadID )
     float2 c0 = float2(cos_, sin_);
     float2 c1 = float2(cos_, -sin_);
     
-    float2 result = complexMul(htilde0, c0) + complexMul(htilde0mkconj, c1);
+    float2 result = ComplexMul(htilde0, c0) + ComplexMul(htilde0mkconj, c1);
     
     displacementY[DTid.xy] = result;
     
     float len = length(k);
     
+    slopeX[DTid.xy] = ComplexMul(result, float2(0.0, k.x));
+    slopeZ[DTid.xy] = ComplexMul(result, float2(0.0, k.y));
+    
     if(len<0.000001)
     {
-        displacementX[DTid.xy] = complexMul(result, float2(0.0, 0.0));
-        displacementZ[DTid.xy] = complexMul(result, float2(0.0, 0.0));
+        displacementX[DTid.xy] = ComplexMul(result, float2(0.0, 0.0));
+        displacementZ[DTid.xy] = ComplexMul(result, float2(0.0, 0.0));
     }
     else
     {
-        displacementX[DTid.xy] = complexMul(result, float2(0.0, -k.x / len));
-        displacementZ[DTid.xy] = complexMul(result, float2(0.0, -k.y / len));
+        displacementX[DTid.xy] = ComplexMul(result, float2(0.0, -k.x / len));
+        displacementZ[DTid.xy] = ComplexMul(result, float2(0.0, -k.y / len));
     }
 }

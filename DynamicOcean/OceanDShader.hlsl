@@ -45,7 +45,7 @@ float2 getUV(float2 v0, float2 v1, float2 v2, float2 v3, float2 uv)
     return p;
 }
 
-Texture2D displacementY : register(t0);
+Texture2D displacementXYZ : register(t0);
 
 SamplerState linearSampler : register(s0);
 
@@ -60,7 +60,7 @@ DS_OUTPUT main(
     float2 uv = getUV(patch[0].uv, patch[1].uv, patch[2].uv, patch[3].uv, domain);
     Output.position = position;
     Output.texCoord = uv;
-    position.y = displacementY.SampleLevel(linearSampler, uv, 0.0).r;
+    position += displacementXYZ.SampleLevel(linearSampler, uv, 0.0).xyz;
     Output.vPosition = mul(mul(float4(position, 1.0), view), proj);
 	return Output;
 }
