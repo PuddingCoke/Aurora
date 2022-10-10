@@ -27,25 +27,22 @@ float4 main(PixelInput input) : SV_TARGET
     
     float3 H = normalize(L + V);
     
-    float4 emissive_color = float4(1.0, 1.0, 1.0, 1.0);
-    float4 ambient_color = float4(0.0, 0.65, 0.75, 1.0);
-    float4 diffuse_color = float4(0.5, 0.65, 0.75, 1.0);
-    float4 specular_color = float4(1.0, 1.0, 1.0, 1.0);
+    float3 emissive_color = float3(1.0, 1.0, 1.0);
+    float3 ambient_color = float3(0.0, 0.65, 0.75);
+    float3 diffuse_color = float3(0.5, 0.65, 0.75);
+    float3 specular_color = float3(1.0, 1.0, 1.0);
 
     float emissive_contribution = 0.10;
     float ambient_contribution = 0.30;
     float diffuse_contribution = 0.30;
     float specular_contribution = 0.70;
  
+    float3 c = float3(1.0, 1.0, 1.0);
     
-    float4 c = float4(1.0, 1.0, 1.0, 1.0);
-    
-    float4 color = emissive_color * emissive_contribution +
+    float3 color = emissive_color * emissive_contribution +
 		    ambient_color * ambient_contribution * c +
 		    diffuse_color * diffuse_contribution * c * max(dot(N, L), 0) +
-			specular_color * specular_contribution * c * max(pow(dot(N, H), 120.0), 0.0);
+			specular_color * specular_contribution * c * pow(max(dot(N, H), 0.0), 360.0);
     
-    color.a = 1.0;
-    
-    return color;
+    return float4(color, 1.0);
 }
