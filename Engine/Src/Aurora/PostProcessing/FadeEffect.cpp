@@ -34,7 +34,7 @@ Texture2D* FadeEffect::process(Texture2D* const texture2D) const
 	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Renderer::context->Draw(3, 0);
 
-	return outputRTV->getTexture();
+	return outputRTV;
 }
 
 const float& FadeEffect::getFadeFactor() const

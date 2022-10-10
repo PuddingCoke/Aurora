@@ -60,7 +60,7 @@ public:
 		Renderer::clearDefRTV(DirectX::Colors::AliceBlue);
 		Renderer::setDefRTV(depthView->get());
 
-		ocean.calcDisplacement();
+		ocean.update();
 
 		if (showWireframe)
 		{

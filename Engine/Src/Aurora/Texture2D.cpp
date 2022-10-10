@@ -1,95 +1,6 @@
 ﻿#include<Aurora/Texture2D.h>
 
-Texture2D* Texture2D::create(const std::string& path)
-{
-	if (path == "")
-	{
-		return nullptr;
-	}
-	return new Texture2D(path, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE, 0);
-}
-
-Texture2D* Texture2D::create(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag)
-{
-	return new Texture2D(path, usage, bindFlag, cpuAccessFlag);
-}
-
-Texture2D* Texture2D::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag)
-{
-	return new Texture2D(width, height, format, usage, bindFlags, cpuAccessFlag);
-}
-
-Texture2D* Texture2D::createNoise(const unsigned int& width, const unsigned int& height)
-{
-	return new Texture2D(width, height, TextureType::Noise);
-}
-
-Texture2D* Texture2D::createGauss(const unsigned int& width, const unsigned int& height)
-{
-	return new Texture2D(width, height, TextureType::Gauss);
-}
-
-Texture2D::~Texture2D()
-{
-}
-
-const unsigned int& Texture2D::getWidth() const
-{
-	return width;
-}
-
-const unsigned int& Texture2D::getHeight() const
-{
-	return height;
-}
-
-const DXGI_FORMAT& Texture2D::getFormat() const
-{
-	return format;
-}
-
-void Texture2D::VSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->VSSetShaderResources(slot, 1, resourceView.GetAddressOf());
-}
-
-void Texture2D::GSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->GSSetShaderResources(slot, 1, resourceView.GetAddressOf());
-}
-
-void Texture2D::PSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->PSSetShaderResources(slot, 1, resourceView.GetAddressOf());
-}
-
-void Texture2D::CSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->CSSetShaderResources(slot, 1, resourceView.GetAddressOf());
-}
-
-void Texture2D::DSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->DSSetShaderResources(slot, 1, resourceView.GetAddressOf());
-}
-
-void Texture2D::HSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->HSSetShaderResources(slot, 1, resourceView.GetAddressOf());
-}
-
-ID3D11ShaderResourceView* Texture2D::getSRV() const
-{
-	return resourceView.Get();
-}
-
-ID3D11Texture2D* Texture2D::getTexture2D() const
-{
-	return texture2D.Get();
-}
-
-Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag) :
-	poolIndex(-1)
+Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 
@@ -128,13 +39,19 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 4u;
 
-			Renderer::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 
 			stbi_image_free(pixels);
 
 			if (bindFlag & D3D11_BIND_SHADER_RESOURCE)
 			{
-				createShaderResource();
+				D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+				srvDesc.Format = format;
+				srvDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
+				srvDesc.Texture2D.MostDetailedMip = 0;
+				srvDesc.Texture2D.MipLevels = -1;
+
+				Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResource.ReleaseAndGetAddressOf());
 			}
 		}
 	}
@@ -164,13 +81,19 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 16u;
 
-			Renderer::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
+			Renderer::device->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 
 			stbi_image_free(pixels);
 
 			if (bindFlag & D3D11_BIND_SHADER_RESOURCE)
 			{
-				createShaderResource();
+				D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+				srvDesc.Format = format;
+				srvDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
+				srvDesc.Texture2D.MostDetailedMip = 0;
+				srvDesc.Texture2D.MipLevels = -1;
+
+				Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResource.ReleaseAndGetAddressOf());
 			}
 		}
 	}
@@ -178,15 +101,15 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 	{
 		std::wstring wFilePath = std::wstring(path.begin(), path.end());
 
-		DirectX::CreateDDSTextureFromFile(Renderer::device.Get(), wFilePath.c_str(), nullptr, resourceView.GetAddressOf());
+		DirectX::CreateDDSTextureFromFile(Renderer::device.Get(), wFilePath.c_str(), nullptr, shaderResource.GetAddressOf());
 
 		ID3D11Resource* resource;
 
-		resourceView->GetResource(&resource);
+		shaderResource->GetResource(&resource);
 
-		resource->QueryInterface(IID_ID3D11Texture2D, (void**)texture2D.ReleaseAndGetAddressOf());
+		resource->QueryInterface(IID_ID3D11Texture2D, (void**)texture.ReleaseAndGetAddressOf());
 
-		texture2D->GetDesc(&tDesc);
+		texture->GetDesc(&tDesc);
 
 		width = tDesc.Width;
 		height = tDesc.Height;
@@ -201,7 +124,7 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 }
 
 Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag) :
-	poolIndex(-1), width(width), height(height), format(format)
+	width(width), height(height), format(format)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 	tDesc.Width = width;
@@ -216,16 +139,22 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 	tDesc.CPUAccessFlags = cpuAccessFlag;
 	tDesc.MiscFlags = 0;
 
-	Renderer::device->CreateTexture2D(&tDesc, nullptr, texture2D.ReleaseAndGetAddressOf());
+	Renderer::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 
 	if (bindFlags & D3D11_BIND_SHADER_RESOURCE)
 	{
-		createShaderResource();
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = format;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.MipLevels = -1;
+
+		Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResource.ReleaseAndGetAddressOf());
 	}
 }
 
-Texture2D::Texture2D(const unsigned int& width, const unsigned int& height,const TextureType& type) :
-	poolIndex(-1), width(width), height(height), format(DXGI_FORMAT_R32G32B32A32_FLOAT)
+Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const TextureType& type) :
+	width(width), height(height), format(DXGI_FORMAT_R32G32B32A32_FLOAT)
 {
 	std::vector<DirectX::XMFLOAT4> colors(width * height);
 
@@ -234,14 +163,14 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height,const
 	switch (type)
 	{
 	default:
-	case Noise:
+	case TextureType::Noise:
 		std::cout << "noise";
 		for (unsigned int i = 0; i < width * height; i++)
 		{
 			colors[i] = DirectX::XMFLOAT4(Random::Float(), Random::Float(), Random::Float(), Random::Float());
 		}
 		break;
-	case Gauss:
+	case TextureType::Gauss:
 		std::cout << "gauss";
 		for (unsigned int i = 0; i < width * height; i++)
 		{
@@ -269,18 +198,72 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height,const
 	subresource.pSysMem = colors.data();
 	subresource.SysMemPitch = width * 16u;
 
-	Renderer::device->CreateTexture2D(&tDesc, &subresource, texture2D.ReleaseAndGetAddressOf());
+	Renderer::device->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 
-	createShaderResource();
-}
-
-void Texture2D::createShaderResource()
-{
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = -1;
 
-	Renderer::device->CreateShaderResourceView(texture2D.Get(), &srvDesc, resourceView.ReleaseAndGetAddressOf());
+	Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResource.ReleaseAndGetAddressOf());
+}
+
+Texture2D::~Texture2D()
+{
+}
+
+const unsigned int& Texture2D::getWidth() const
+{
+	return width;
+}
+
+const unsigned int& Texture2D::getHeight() const
+{
+	return height;
+}
+
+const DXGI_FORMAT& Texture2D::getFormat() const
+{
+	return format;
+}
+
+void Texture2D::VSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->VSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
+}
+
+void Texture2D::GSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->GSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
+}
+
+void Texture2D::PSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->PSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
+}
+
+void Texture2D::CSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->CSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
+}
+
+void Texture2D::DSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->DSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
+}
+
+void Texture2D::HSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->HSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
+}
+
+ID3D11ShaderResourceView* Texture2D::getSRV() const
+{
+	return shaderResource.Get();
+}
+
+ID3D11Texture2D* Texture2D::getTexture2D() const
+{
+	return texture.Get();
 }

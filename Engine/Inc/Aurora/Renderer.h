@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef _RENDERER_H_
+#define _RENDERER_H_
+
 #include<d3d11_4.h>
 #include<wrl/client.h>
 #include<DirectXMath.h>
@@ -42,7 +45,7 @@ public:
 
 	static void drawCube();
 
-	static void draw(const UINT& vertexCount,const UINT& startVertexLocation);
+	static void draw(const UINT& vertexCount, const UINT& startVertexLocation);
 
 	static void drawIndexed(const UINT& indexCount, const UINT& startIndexLocation, const UINT& baseVertexLocation);
 
@@ -58,3 +61,5 @@ private:
 
 	static D3D11_VIEWPORT vp;
 };
+
+#endif // !_RENDERER_H_

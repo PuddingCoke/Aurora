@@ -87,12 +87,12 @@ public:
 		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
 		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
-		envTexture(Texture2D::create(assetPath + "Tufts-Parking-Lot_Ref.hdr")),
+		envTexture(new Texture2D(assetPath + "Tufts-Parking-Lot_Ref.hdr")),
 		cubePShader(Shader::fromFile("cubePShader.hlsl", ShaderType::Pixel)),
 		bgPShader(Shader::fromFile("BackgroundPShader.hlsl", ShaderType::Pixel)),
 		irradiancePShader(Shader::fromFile("IrradiancePShader.hlsl", ShaderType::Pixel)),
 		brdfPShader(Shader::fromFile("BRDFPShader.hlsl", ShaderType::Pixel)),
-		brdfTexture(RenderTexture::create(boxSize, boxSize, DXGI_FORMAT_R16G16_FLOAT, DirectX::Colors::Transparent))
+		brdfTexture(new RenderTexture(boxSize, boxSize, DXGI_FORMAT_R16G16_FLOAT, DirectX::Colors::Transparent))
 	{
 		prefilterPShader[0] = Shader::fromFile("PrefilterPShader0.hlsl", ShaderType::Pixel);
 		prefilterPShader[1] = Shader::fromFile("PrefilterPShader1.hlsl", ShaderType::Pixel);
@@ -203,7 +203,7 @@ public:
 
 				Renderer::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 
-				RenderTexture* renderTexture = RenderTexture::create(boxSize, boxSize, tDesc.Format, DirectX::Colors::Black);
+				RenderTexture* renderTexture = new RenderTexture(boxSize, boxSize, tDesc.Format, DirectX::Colors::Black);
 
 				Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -226,7 +226,7 @@ public:
 					renderTexture->clearRTV(DirectX::Colors::Black);
 					Camera::setView(eye, focusPoints[i], upVectors[i]);
 					Renderer::context->Draw(36, 0);
-					Renderer::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
+					Renderer::context->CopyResource(texture.Get(), renderTexture->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
 					Renderer::context->Map(texture.Get(), 0, D3D11_MAP_READ, 0, &mappedData);
 					Renderer::context->UpdateSubresource(envCube.Get(), D3D11CalcSubresource(0, i, 5), 0,
@@ -246,7 +246,7 @@ public:
 
 				Renderer::context->GenerateMips(cubeSRV.Get());
 
-				renderTexture = RenderTexture::create(irradianceSize, irradianceSize, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
+				renderTexture = new RenderTexture(irradianceSize, irradianceSize, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
 
 				renderTexture->setRTV();
 
@@ -266,7 +266,7 @@ public:
 					renderTexture->clearRTV(DirectX::Colors::Black);
 					Camera::setView(eye, focusPoints[i], upVectors[i]);
 					Renderer::context->Draw(36, 0);
-					Renderer::context->CopyResource(texture.Get(), renderTexture->getTexture()->getTexture2D());
+					Renderer::context->CopyResource(texture.Get(), renderTexture->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
 					Renderer::context->Map(texture.Get(), 0, D3D11_MAP_READ, 0, &mappedData);
 					Renderer::context->UpdateSubresource(irradianceCube.Get(), i, 0,
@@ -283,11 +283,11 @@ public:
 			}
 
 			RenderTexture* renderTextures[5];
-			renderTextures[0] = RenderTexture::create(128, 128, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
-			renderTextures[1] = RenderTexture::create(64, 64, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
-			renderTextures[2] = RenderTexture::create(32, 32, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
-			renderTextures[3] = RenderTexture::create(16, 16, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
-			renderTextures[4] = RenderTexture::create(8, 8, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
+			renderTextures[0] = new RenderTexture(128, 128, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
+			renderTextures[1] = new RenderTexture(64, 64, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
+			renderTextures[2] = new RenderTexture(32, 32, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
+			renderTextures[3] = new RenderTexture(16, 16, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
+			renderTextures[4] = new RenderTexture(8, 8, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
 
 			ComPtr<ID3D11Texture2D> textures[5];
 
@@ -324,7 +324,7 @@ public:
 				{
 					Camera::setView(eye, focusPoints[i], upVectors[i]);
 					Renderer::context->Draw(36, 0);
-					Renderer::context->CopyResource(textures[mip].Get(), renderTextures[mip]->getTexture()->getTexture2D());
+					Renderer::context->CopyResource(textures[mip].Get(), renderTextures[mip]->getTexture2D());
 					D3D11_MAPPED_SUBRESOURCE mappedData;
 					Renderer::context->Map(textures[mip].Get(), 0, D3D11_MAP_READ, 0, &mappedData);
 					Renderer::context->UpdateSubresource(prefilterCube.Get(), D3D11CalcSubresource(mip, i, 5), 0,
@@ -451,7 +451,7 @@ public:
 
 		Renderer::context->PSSetShaderResources(0, 1, irradianceSRV.GetAddressOf());
 		Renderer::context->PSSetShaderResources(1, 1, prefilterSRV.GetAddressOf());
-		brdfTexture->getTexture()->PSSetSRV(2);
+		brdfTexture->PSSetSRV(2);
 
 		modelVShader->use();
 		modelPShader->use();

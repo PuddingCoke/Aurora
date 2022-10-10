@@ -27,7 +27,7 @@ public:
 	MyGame() :
 		pBatch(PrimitiveBatch::create()),
 		currentSkyColor{ 0.0f,0.0f,0.0f,1.0f },
-		texture(RenderTexture::create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
+		texture(new RenderTexture(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
 		doubleRTV(DoubleRTV::create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM)),
 		effect(1920, 1080)
 	{
@@ -217,7 +217,7 @@ public:
 		doubleRTV->write()->setRTV();
 
 		Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
-		texture->getTexture()->PSSetSRV(0);
+		texture->PSSetSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
@@ -227,14 +227,14 @@ public:
 
 		colorSky();
 		Renderer::setDefRTV();
-		doubleRTV->read()->getTexture()->PSSetSRV(0);
+		doubleRTV->read()->PSSetSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
 		Renderer::context->Draw(3, 0);
 
-		Texture2D* const fadedTexture = effect.process(doubleRTV->read()->getTexture());
+		Texture2D* const fadedTexture = effect.process(doubleRTV->read());
 
 		doubleRTV->write()->setRTV();
 		fadedTexture->PSSetSRV(0);

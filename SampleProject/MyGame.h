@@ -14,7 +14,7 @@ public:
 	SpriteBatch* batch;
 
 	MyGame() :
-		texture(Texture2D::createNoise(512, 512)),
+		texture(new Texture2D(1024, 1024, Texture2D::TextureType::Noise)),
 		batch(SpriteBatch::create())
 	{
 	}

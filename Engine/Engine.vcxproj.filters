@@ -120,7 +120,7 @@
     <ClInclude Include="Inc\Aurora\Buffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\RWTexture.h">
+    <ClInclude Include="Inc\Aurora\RCTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\PostProcessing\HBAOEffect.h">
@@ -136,6 +136,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\IBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\ComputeTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -245,7 +248,7 @@
     <ClCompile Include="Src\Aurora\Buffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\RWTexture.cpp">
+    <ClCompile Include="Src\Aurora\RCTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\PostProcessing\HBAOEffect.cpp">
@@ -261,6 +264,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\IBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\ComputeTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

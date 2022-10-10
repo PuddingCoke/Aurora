@@ -124,10 +124,10 @@ public:
 			dye = DoubleRTV::create(dyeRes.x, dyeRes.y, DXGI_FORMAT::DXGI_FORMAT_R16G16B16A16_FLOAT);
 			velocity = DoubleRTV::create(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16G16_FLOAT);
 			pressure = DoubleRTV::create(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT);
-			divergence = RenderTexture::create(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
-			curl = RenderTexture::create(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
-			sunrays = RenderTexture::create(sunRes.x, sunRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
-			sunraysTemp = RenderTexture::create(sunRes.x, sunRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
+			divergence = new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
+			curl = new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
+			sunrays = new RenderTexture(sunRes.x, sunRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
+			sunraysTemp = new RenderTexture(sunRes.x, sunRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
 
 			//创建数据不变的ConstantBuffer
 			{
@@ -277,14 +277,14 @@ public:
 		velocity->write()->setRTV();
 
 		splatVelocityShader->use();
-		velocity->read()->getTexture()->PSSetSRV(0);
+		velocity->read()->PSSetSRV(0);
 		Renderer::context->Draw(3, 0);
 		velocity->swap();
 
 		Renderer::setViewport(dye->width, dye->height);
 		dye->write()->setRTV();
 		splatColorShader->use();
-		dye->read()->getTexture()->PSSetSRV(0);
+		dye->read()->PSSetSRV(0);
 		Renderer::context->Draw(3, 0);
 		dye->swap();
 	}
@@ -298,24 +298,24 @@ public:
 
 		curl->setRTV();
 		curlShader->use();
-		velocity->read()->getTexture()->PSSetSRV(0);
+		velocity->read()->PSSetSRV(0);
 		Renderer::context->Draw(3, 0);
 
 		velocity->write()->setRTV();
 		vorticityShader->use();
-		velocity->read()->getTexture()->PSSetSRV(0);
-		curl->getTexture()->PSSetSRV(1);
+		velocity->read()->PSSetSRV(0);
+		curl->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 		velocity->swap();
 
 		divergence->setRTV();
 		divergenceShader->use();
-		velocity->read()->getTexture()->PSSetSRV(0);
+		velocity->read()->PSSetSRV(0);
 		Renderer::context->Draw(3, 0);
 
 		pressure->write()->setRTV();
 		clearShader->use();
-		pressure->read()->getTexture()->PSSetSRV(0);
+		pressure->read()->PSSetSRV(0);
 		Renderer::context->Draw(3, 0);
 		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		pressure->swap();
@@ -324,8 +324,8 @@ public:
 		for (int i = 0; i < SimulationConfig::PRESSURE_ITERATIONS; i++)
 		{
 			pressure->write()->setRTV();
-			pressure->read()->getTexture()->PSSetSRV(0);
-			divergence->getTexture()->PSSetSRV(1);
+			pressure->read()->PSSetSRV(0);
+			divergence->PSSetSRV(1);
 			Renderer::context->Draw(3, 0);
 			Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 			pressure->swap();
@@ -333,16 +333,16 @@ public:
 
 		velocity->write()->setRTV();
 		gradientSubtractShader->use();
-		pressure->read()->getTexture()->PSSetSRV(0);
-		velocity->read()->getTexture()->PSSetSRV(1);
+		pressure->read()->PSSetSRV(0);
+		velocity->read()->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		velocity->swap();
 
 		velocity->write()->setRTV();
 		advVelShader->use();
-		velocity->read()->getTexture()->PSSetSRV(0);
-		velocity->read()->getTexture()->PSSetSRV(1);
+		velocity->read()->PSSetSRV(0);
+		velocity->read()->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 		velocity->swap();
 
@@ -350,8 +350,8 @@ public:
 
 		dye->write()->setRTV();
 		advDenShader->use();
-		velocity->read()->getTexture()->PSSetSRV(0);
-		dye->read()->getTexture()->PSSetSRV(1);
+		velocity->read()->PSSetSRV(0);
+		dye->read()->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		dye->swap();
@@ -362,14 +362,14 @@ public:
 		mask->setRTV();
 		Renderer::setBlendState(nullptr);
 		sunrayMaskShader->use();
-		source->getTexture()->PSSetSRV(0);
-		Renderer::setViewport(mask->width, mask->height);
+		source->PSSetSRV(0);
+		Renderer::setViewport(mask->getWidth(), mask->getHeight());
 		Renderer::context->Draw(3, 0);
 
 		destination->setRTV();
 		sunraysShader->use();
-		mask->getTexture()->PSSetSRV(0);
-		Renderer::setViewport(destination->width, destination->height);
+		mask->PSSetSRV(0);
+		Renderer::setViewport(destination->getWidth(), destination->getHeight());
 		Renderer::context->Draw(3, 0);
 	}
 
@@ -381,14 +381,14 @@ public:
 		{
 			blurHShader->use();
 			temp->setRTV();
-			target->getTexture()->PSSetSRV(0);
+			target->PSSetSRV(0);
 			Renderer::context->Draw(3, 0);
 			Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 
 			blurVShader->use();
 
 			target->setRTV();
-			temp->getTexture()->PSSetSRV(0);
+			temp->PSSetSRV(0);
 			Renderer::context->Draw(3, 0);
 			Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		}
@@ -413,8 +413,8 @@ public:
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 		Renderer::setDefRTV();
 		displayShader->use();
-		dye->read()->getTexture()->PSSetSRV(0);
-		sunrays->getTexture()->PSSetSRV(1);
+		dye->read()->PSSetSRV(0);
+		sunrays->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 	}
 

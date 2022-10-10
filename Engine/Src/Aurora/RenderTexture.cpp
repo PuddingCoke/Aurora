@@ -4,12 +4,6 @@ ID3D11RenderTargetView* RenderTexture::renderTargetViews[D3D11_SIMULTANEOUS_REND
 
 RenderTexture::~RenderTexture()
 {
-	delete texture;
-}
-
-RenderTexture* RenderTexture::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4], const bool& enableMSAA)
-{
-	return new RenderTexture(width, height, format, color, enableMSAA);
 }
 
 void RenderTexture::setMSAARTV(ID3D11DepthStencilView* const view) const
@@ -39,12 +33,7 @@ void RenderTexture::clearRTV(const float color[4]) const
 
 void RenderTexture::resolve() const
 {
-	Renderer::context->ResolveSubresource(texture->getTexture2D(), 0, msaaTexture.Get(), 0, format);
-}
-
-Texture2D* RenderTexture::getTexture() const
-{
-	return texture;
+	Renderer::context->ResolveSubresource(texture.Get(), 0, msaaTexture.Get(), 0, format);
 }
 
 void RenderTexture::setRTVs(std::initializer_list<RenderTexture*> renderTextures, ID3D11DepthStencilView* view)
@@ -83,7 +72,7 @@ void RenderTexture::unbindAll()
 }
 
 RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4], const bool& enableMSAA) :
-	width(width), height(height), format(format), texture(Texture2D::create(width, height, format, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0))
+	Texture2D(width, height, format, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE)
 {
 	//创建普通材质的RenderTargetView
 	{
@@ -92,7 +81,7 @@ RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& heig
 		viewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
 		viewDesc.Texture2D.MipSlice = 0;
 
-		Renderer::device->CreateRenderTargetView(texture->getTexture2D(), &viewDesc, normalTarget.ReleaseAndGetAddressOf());
+		Renderer::device->CreateRenderTargetView(texture.Get(), &viewDesc, normalTarget.ReleaseAndGetAddressOf());
 	}
 
 	if (enableMSAA)//创建抗锯齿材质以及RenderTargetView

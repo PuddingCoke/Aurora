@@ -58,7 +58,7 @@ void SpriteBatch::end()
 	for (int i = 0; i < fontPool.size(); i++)
 	{
 		fontPool[i]->updateVerticesData();
-		Renderer::context->PSSetShaderResources(0, 1, fontPool[i]->texture2D->resourceView.GetAddressOf());
+		fontPool[i]->texture2D->PSSetSRV(0);
 		Renderer::context->IASetVertexBuffers(0, 1, fontPool[i]->vertexBuffer.GetAddressOf(), &stride, &offset);
 		fontPool[i]->render();
 	}
@@ -66,37 +66,37 @@ void SpriteBatch::end()
 
 void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y)
 {
-	texturePoolAdd(texture);
-	texturePool[texture->poolIndex].addVertices(
+	int index = texturePoolAdd(texture);
+	texturePool[index].addVertices(
 		x, y,
-		x, y + texture->height,
-		x + texture->width, y + texture->height,
-		x + texture->width, y
+		x, y + texture->getHeight(),
+		x + texture->getWidth(), y + texture->getHeight(),
+		x + texture->getWidth(), y
 	);
 }
 
 void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y, const float& originX, const float& originY)
 {
-	texturePoolAdd(texture);
-	texturePool[texture->poolIndex].addVertices(
+	int index = texturePoolAdd(texture);
+	texturePool[index].addVertices(
 		x - originX, y - originY,
-		x - originX, y - originY + texture->height,
-		x - originX + texture->width, y - originY + texture->height,
-		x - originX + texture->width, y - originY
+		x - originX, y - originY + texture->getHeight(),
+		x - originX + texture->getWidth(), y - originY + texture->getHeight(),
+		x - originX + texture->getWidth(), y - originY
 	);
 }
 
 void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y, const float& originX, const float& originY, const float& rotation)
 {
-	texturePoolAdd(texture);
+	int index = texturePoolAdd(texture);
 
 	const float cos = cosf(rotation);
 	const float sin = sinf(rotation);
 
 	const float left = -originX;
-	const float right = -originX + texture->width;
+	const float right = -originX + texture->getWidth();
 	const float bottom = -originY;
-	const float top = -originY + texture->height;
+	const float top = -originY + texture->getHeight();
 
 	const float x1 = left * cos - bottom * sin + x;
 	const float y1 = left * sin + bottom * cos + y;
@@ -107,27 +107,12 @@ void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y,
 	const float x4 = x1 + (x3 - x2);
 	const float y4 = y3 - (y2 - y1);;
 
-	texturePool[texture->poolIndex].addVertices(
+	texturePool[index].addVertices(
 		x1, y1,
 		x4, y4,
 		x3, y3,
 		x2, y2
 	);
-}
-
-void SpriteBatch::draw(RenderTexture* const renderTexture, const float& x, const float& y)
-{
-	draw(renderTexture->getTexture(), x, y);
-}
-
-void SpriteBatch::draw(RenderTexture* const renderTexture, const float& x, const float& y, const float& originX, const float& originY)
-{
-	draw(renderTexture->getTexture(), x, y, originX, originY);
-}
-
-void SpriteBatch::draw(RenderTexture* const renderTexture, const float& x, const float& y, const float& originX, const float& originY, const float& rotation)
-{
-	draw(renderTexture->getTexture(), x, y, originX, originY, rotation);
 }
 
 void SpriteBatch::draw(BitmapFont* const font, const std::string& context, const float& x, const float& y, const float& r, const float& g, const float& b, const float& a)
@@ -351,16 +336,24 @@ float4 main(PixelInput input) : SV_TARGET
 	}
 }
 
-void SpriteBatch::texturePoolAdd(Texture2D* const texture)
+int SpriteBatch::texturePoolAdd(Texture2D* const texture)
 {
-	if (texture->poolIndex == -1)
+	for (int i = 0; i < TextureSlot::curTextureNum; i++)
 	{
-		if (TextureSlot::curTextureNum == TextureSlot::maxTextureSlotNum)
+		if (texturePool[i].texture == texture)
 		{
-			flush();
+			return i;
 		}
-		texturePool[TextureSlot::curTextureNum].setTexture(texture);
 	}
+
+	if (TextureSlot::curTextureNum == TextureSlot::maxTextureSlotNum)
+	{
+		flush();
+	}
+
+	texturePool[TextureSlot::curTextureNum].texture = texture;
+
+	return TextureSlot::curTextureNum++;
 }
 
 void SpriteBatch::flush()
@@ -380,10 +373,10 @@ void SpriteBatch::flush()
 	for (int i = 0; i < TextureSlot::curTextureNum; i++)
 	{
 		texturePool[i].updateVertices();
-		Renderer::context->PSSetShaderResources(0, 1, texturePool[i].texture->resourceView.GetAddressOf());
+		texturePool[i].texture->PSSetSRV(0);
 		Renderer::context->IASetVertexBuffers(0, 1, texturePool[i].vertexBuffer.GetAddressOf(), &stride, &offset);
 		texturePool[i].drawVertices();
-		texturePool[i].reset();
+		texturePool[i].idx = 0;
 	}
 
 	TextureSlot::curTextureNum = 0;
@@ -472,12 +465,6 @@ SpriteBatch::TextureSlot::~TextureSlot()
 	delete[] vertices;
 }
 
-void SpriteBatch::TextureSlot::setTexture(Texture2D* const texture)
-{
-	this->texture = texture;
-	texture->poolIndex = curTextureNum++;
-}
-
 void SpriteBatch::TextureSlot::updateVertices() const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData;
@@ -502,10 +489,4 @@ void SpriteBatch::TextureSlot::addVertices(const float& x1, const float& y1, con
 	vertices[idx + 6] = x4;
 	vertices[idx + 7] = y4;
 	idx += 8;
-}
-
-void SpriteBatch::TextureSlot::reset()
-{
-	texture->poolIndex = -1;
-	idx = 0;
 }

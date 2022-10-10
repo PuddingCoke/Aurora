@@ -58,7 +58,7 @@ private:
 
 	DirectX::XMUINT2 resolutions[blurSteps];
 
-	RWTexture* rwTextures[blurSteps * 2];
+	RCTexture* rcTextures[blurSteps * 2];
 
 	RenderTexture* originTexture;
 

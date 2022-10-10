@@ -33,7 +33,7 @@ const float& BitmapFont::getScale() const
 }
 
 BitmapFont::BitmapFont(const std::string& bitmapPath, const std::string& configFilePath, const int& fontSize) :
-	fontSize(fontSize), originFontSize(0), scale(1), idx(0), vertices(new float[maxCharacterCount * 32]), texture2D(Texture2D::create(bitmapPath))
+	fontSize(fontSize), originFontSize(0), scale(1), idx(0), vertices(new float[maxCharacterCount * 32]), texture2D(new Texture2D(bitmapPath))
 {
 	std::ifstream stream(configFilePath);
 

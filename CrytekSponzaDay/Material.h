@@ -13,9 +13,9 @@ public:
 	Material() = delete;
 
 	Material(const std::string& diffusePath, const std::string& specularPath, std::string& normalPath) :
-		diffuse(Texture2D::create(diffusePath)), 
-		specular(Texture2D::create(specularPath)), 
-		normal(Texture2D::create(normalPath))
+		diffuse(new Texture2D(diffusePath)), 
+		specular(new Texture2D(specularPath)), 
+		normal(new Texture2D(normalPath))
 	{
 
 	}

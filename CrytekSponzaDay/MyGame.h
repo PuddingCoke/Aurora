@@ -90,10 +90,10 @@ public:
 		deferredPShader(Shader::fromFile("DeferredPShader.hlsl", ShaderType::Pixel)),
 		deferredFinal(Shader::fromFile("DeferredFinal.hlsl", ShaderType::Pixel)),
 		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
-		gPosition(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
-		gNormalSpecular(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
-		gBaseColor(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
-		originTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
+		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		depthView(ShadowMap::create(Graphics::getWidth(), Graphics::getHeight())),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
@@ -217,7 +217,7 @@ public:
 
 		scene->draw(deferredVShader, deferredPShader);
 
-		Texture2D* const hbaoTexture = hbaoEffect.process(depthView->getSRV(), gNormalSpecular->getTexture()->getSRV());
+		Texture2D* const hbaoTexture = hbaoEffect.process(depthView->getSRV(), gNormalSpecular->getSRV());
 
 		Renderer::context->RSSetState(States::rasterCullNone.Get());
 
@@ -240,9 +240,9 @@ public:
 
 		originTexture->setRTV();
 
-		gPosition->getTexture()->PSSetSRV(0);
-		gNormalSpecular->getTexture()->PSSetSRV(1);
-		gBaseColor->getTexture()->PSSetSRV(2);
+		gPosition->PSSetSRV(0);
+		gNormalSpecular->PSSetSRV(1);
+		gBaseColor->PSSetSRV(2);
 		hbaoTexture->PSSetSRV(3);
 		Renderer::context->PSSetShaderResources(4, 1, &shadowSRV);
 
@@ -255,7 +255,7 @@ public:
 
 		Renderer::context->Draw(3, 0);
 
-		Texture2D* const bloomTexture = bloomEffect.process(originTexture->getTexture());
+		Texture2D* const bloomTexture = bloomEffect.process(originTexture);
 
 		Renderer::setBlendState(nullptr);
 

@@ -28,8 +28,6 @@ public:
 
 private:
 
-	friend class Aurora;
-
 	static std::mt19937 randomEngine;
 
 	static std::uniform_int_distribution<int> intDistribution;

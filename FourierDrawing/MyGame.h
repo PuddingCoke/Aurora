@@ -61,7 +61,7 @@ public:
 	MyGame() :
 		sBatch(SpriteBatch::create()),
 		pBatch(PrimitiveBatch::create()),
-		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Transparent, true)),
+		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Transparent, true)),
 		curFrame(0),
 		connected(false)
 	{

@@ -62,9 +62,9 @@ public:
 		deferredPShader(Shader::fromFile("DeferredPShader.hlsl", ShaderType::Pixel)),
 		deferredFinal(Shader::fromFile("DeferredFinal.hlsl", ShaderType::Pixel)),
 		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
-		gPosition(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
-		gNormalSpecular(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
-		gBaseColor(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		shadowMap(ShadowMap::create(Graphics::getWidth(), Graphics::getHeight())),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		scene(Scene::create(assetPath + "/sponza.dae")),
@@ -181,10 +181,10 @@ public:
 
 		Renderer::setDefRTV();
 
-		gPosition->getTexture()->PSSetSRV(0);
-		gNormalSpecular->getTexture()->PSSetSRV(1);
-		gBaseColor->getTexture()->PSSetSRV(2);
-		hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getTexture()->getSRV())->PSSetSRV(3);
+		gPosition->PSSetSRV(0);
+		gNormalSpecular->PSSetSRV(1);
+		gBaseColor->PSSetSRV(2);
+		hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV())->PSSetSRV(3);
 
 		ID3D11Buffer* buffers[2] = { Camera::getViewBuffer(),lightBuffer.Get() };
 

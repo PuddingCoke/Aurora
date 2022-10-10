@@ -191,7 +191,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 		int idx = 0;
 		for (const std::string& path : texturesPath)
 		{
-			textures[idx] = Texture2D::create(path, D3D11_USAGE_STAGING, 0, D3D11_CPU_ACCESS_READ);
+			textures[idx] = new Texture2D(path, D3D11_USAGE_STAGING, 0, D3D11_CPU_ACCESS_READ);
 			idx++;
 		}
 	}
@@ -244,15 +244,15 @@ TextureCube::TextureCube(const std::string& texturePath)
 
 TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up)
 {
-	Texture2D* equirectangularMap = Texture2D::create(texturePath);
+	Texture2D* equirectangularMap = new Texture2D(texturePath);
 	Shader* pixelShader = equirectangularZUP;
 	if (up.y > up.z)
 	{
 		pixelShader = equirectangularYUP;
 	}
 
-	RenderTexture* renderTexture = RenderTexture::create(skyboxResolution, skyboxResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Transparent);
-	Texture2D* copyTexture = Texture2D::create(skyboxResolution, skyboxResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_STAGING, 0, D3D11_CPU_ACCESS_READ);
+	RenderTexture* renderTexture = new RenderTexture(skyboxResolution, skyboxResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Transparent);
+	Texture2D* copyTexture = new Texture2D(skyboxResolution, skyboxResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_STAGING, 0, D3D11_CPU_ACCESS_READ);
 
 	{
 		D3D11_TEXTURE2D_DESC tDesc = {};
@@ -310,7 +310,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 		renderTexture->clearRTV(DirectX::Colors::Black);
 		Camera::setView(eye, focusPoints[i], upVectors[i]);
 		Renderer::context->Draw(36, 0);
-		Renderer::context->CopyResource(copyTexture->getTexture2D(), renderTexture->getTexture()->getTexture2D());
+		Renderer::context->CopyResource(copyTexture->getTexture2D(), renderTexture->getTexture2D());
 		D3D11_MAPPED_SUBRESOURCE mappedData;
 		Renderer::context->Map(copyTexture->getTexture2D(), 0, D3D11_MAP_READ, 0, &mappedData);
 		Renderer::context->UpdateSubresource(cubeTexture.Get(), D3D11CalcSubresource(0, i, 1), 0,

@@ -35,12 +35,6 @@ public:
 
 	void draw(Texture2D* const texture, const float& x, const float& y, const float& originX, const float& originY, const float& rotation);
 
-	void draw(RenderTexture* const renderTexture, const float& x, const float& y);
-
-	void draw(RenderTexture* const renderTexture, const float& x, const float& y, const float& originX, const float& originY);
-
-	void draw(RenderTexture* const renderTexture, const float& x, const float& y, const float& originX, const float& originY, const float& rotation);
-
 	void draw(BitmapFont* const font, const std::string& context, const float& x, const float& y, const float& r = 1.f, const float& g = 1.f, const float& b = 1.f, const float& a = 1.f);
 
 	void draw(BitmapFont* const font, const char& context, const float& x, const float& y, const float& r = 1.f, const float& g = 1.f, const float& b = 1.f, const float& a = 1.f);
@@ -53,7 +47,7 @@ private:
 
 	void compileShaders();
 
-	void texturePoolAdd(Texture2D* const texture);
+	int texturePoolAdd(Texture2D* const texture);
 
 	void flush();
 
@@ -85,15 +79,11 @@ private:
 
 		~TextureSlot();
 
-		void setTexture(Texture2D* const texture);
-
 		void updateVertices() const;
 
 		void drawVertices() const;
 
 		void addVertices(const float& x1, const float& y1, const float& x2, const float& y2, const float& x3, const float& y3, const float& x4, const float& y4);
-
-		void reset();
 
 		int idx;
 

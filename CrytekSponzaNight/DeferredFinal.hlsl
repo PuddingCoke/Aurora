@@ -45,6 +45,9 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float3 outColor = baseColor * AMBIENT_FACTOR;
     
+    const float3 N = normalize(normalSpecular.rgb);
+    const float3 V = normalize(viewPos.xyz - position);
+    
     [unroll]
     for (int i = 0; i < 17; i++)
     {
@@ -52,23 +55,16 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         const float dist = length(L);
         L = normalize(L);
         
-        const float3 V = normalize(viewPos.xyz - position);
-        const float3 N = normalize(normalSpecular.rgb);
-        
         const float atten = lights[i].radius / (pow(dist, 2.0) + 1.0);
         
         const float NdotL = max(0.0, dot(N, L));
-        const float3 diff = lights[i].color.rgb * baseColor.rgb * NdotL * atten;
-        
-        //const float3 R = reflect(-L, N);
-        //const float NdotR = max(0.0, dot(R, V));
-        //const float3 spec = lights[i].color.rgb * normalSpecular.w * pow(NdotR, 16.0) * (atten * 1.5);
+        const float3 diffuseColor = lights[i].color.rgb * baseColor.rgb * NdotL * atten;
         
         const float3 H = normalize(V + L);
         const float NdotH = max(dot(N, H), 0.0);
-        const float3 spec = lights[i].color.rgb * normalSpecular.w * pow(NdotH, 16.0) * (atten * 1.5);
+        const float3 specularColor = lights[i].color.rgb * normalSpecular.w * pow(NdotH, 16.0) * (atten * 1.5);
         
-        outColor += diff + spec;
+        outColor += diffuseColor + specularColor;
     }
         
     const float ao = ssaoTexture.Sample(linearSampler, texCoord).r;

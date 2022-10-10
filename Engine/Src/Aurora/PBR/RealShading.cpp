@@ -2,8 +2,8 @@
 
 Texture2D* RealShading::getBRDF(const UINT& textureSize)
 {
-	RenderTexture* renderTexture = RenderTexture::create(textureSize, textureSize, DXGI_FORMAT_R16G16_FLOAT, DirectX::Colors::Black, false);
-	Texture2D* brdfTexture = Texture2D::create(textureSize, textureSize, DXGI_FORMAT_R16G16_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0);
+	RenderTexture* renderTexture = new RenderTexture(textureSize, textureSize, DXGI_FORMAT_R16G16_FLOAT, DirectX::Colors::Black, false);
+	Texture2D* brdfTexture = new Texture2D(textureSize, textureSize, DXGI_FORMAT_R16G16_FLOAT, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0);
 	Shader* brdfShader;
 
 	{
@@ -131,8 +131,8 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 
     Renderer::context->Draw(3, 0);
 
-    Renderer::context->CopyResource(brdfTexture->getTexture2D(), renderTexture->getTexture()->getTexture2D());
-
+    Renderer::context->CopyResource(brdfTexture->getTexture2D(), renderTexture->getTexture2D());
+    
     Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
 
     delete renderTexture;

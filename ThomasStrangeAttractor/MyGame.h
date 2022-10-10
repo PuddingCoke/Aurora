@@ -37,7 +37,7 @@ public:
 
 	MyGame() :
 		attractor(1000000),
-		renderTexture(RenderTexture::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent)),
+		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		depthStencilView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
 		camera({ 4,4,-11 }, { -1,-1,-1 })
@@ -112,7 +112,7 @@ public:
 		ID3D11ShaderResourceView* resourceViews[2] = { nullptr,nullptr };
 		Renderer::context->PSSetShaderResources(0, 2, resourceViews);
 
-		Texture2D* const texture = bloomEffect.process(renderTexture->getTexture());
+		Texture2D* const texture = bloomEffect.process(renderTexture);
 		
 		Renderer::setDefRTV();
 		Renderer::clearDefRTV(DirectX::Colors::Black);

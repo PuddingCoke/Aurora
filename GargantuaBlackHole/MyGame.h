@@ -34,8 +34,8 @@ public:
 
 	MyGame() :
 		pixelShader(Shader::fromFile("GargantuaPShader.hlsl", ShaderType::Pixel)),
-		noiseTexture(Texture2D::createNoise(256, 256)),
-		dustTexture(Texture2D::create("Dust.jpg")),
+		noiseTexture(new Texture2D(256, 256, Texture2D::TextureType::Noise)),
+		dustTexture(new Texture2D("Dust.jpg")),
 		accTexture(DoubleRTV::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		effect(Graphics::getWidth(), Graphics::getHeight())
 	{
@@ -110,7 +110,7 @@ public:
 
 		noiseTexture->PSSetSRV(0);
 		dustTexture->PSSetSRV(1);
-		accTexture->read()->getTexture()->PSSetSRV(2);
+		accTexture->read()->PSSetSRV(2);
 
 		Renderer::context->Draw(3, 0);
 		accTexture->swap();
@@ -121,7 +121,7 @@ public:
 
 		if (bloom)
 		{
-			Texture2D* texture = effect.process(accTexture->read()->getTexture());
+			Texture2D* texture = effect.process(accTexture->read());
 
 			Renderer::setDefRTV();
 
@@ -136,7 +136,7 @@ public:
 
 			Shader::displayPShader->use();
 
-			accTexture->read()->getTexture()->PSSetSRV(0);
+			accTexture->read()->PSSetSRV(0);
 		}
 
 		Renderer::context->Draw(3, 0);

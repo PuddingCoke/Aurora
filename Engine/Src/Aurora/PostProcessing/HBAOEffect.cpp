@@ -88,7 +88,7 @@ Texture2D* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV, ID3D11S
 
 	pAOContext->RenderAO(Renderer::context.Get(), input, params, output);
 
-	return outputRTV->getTexture();
+	return outputRTV;
 }
 
 const float& HBAOEffect::getRadius() const

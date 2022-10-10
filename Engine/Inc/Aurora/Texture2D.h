@@ -19,24 +19,28 @@ class Texture2D
 {
 public:
 
+	enum class TextureType
+	{
+		Noise,
+		Gauss
+	};
+
 	Texture2D() = delete;
 
 	Texture2D(const Texture2D&) = delete;
 
 	void operator=(const Texture2D&) = delete;
 
-	static Texture2D* create(const std::string& path);
+	//读取文件
+	Texture2D(const std::string& path, const D3D11_USAGE& usage = D3D11_USAGE_DEFAULT, const UINT& bindFlag = D3D11_BIND_SHADER_RESOURCE, const UINT& cpuAccessFlag = 0);
 
-	static Texture2D* create(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag);
+	//创建自定义材质
+	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag = 0);
 
-	static Texture2D* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag);
+	//生成噪音材质、随机高斯分布材质
+	Texture2D(const unsigned int& width, const unsigned int& height, const TextureType& type);
 
-	//生成一个4通道噪音贴图 每个通道属于[0,1]
-	static Texture2D* createNoise(const unsigned int& width, const unsigned int& height);
-
-	static Texture2D* createGauss(const unsigned int& width, const unsigned int& height);
-
-	~Texture2D();
+	virtual ~Texture2D();
 
 	const unsigned int& getWidth() const;
 
@@ -60,33 +64,15 @@ public:
 
 	ID3D11Texture2D* getTexture2D() const;
 
-private:
+protected:
 
-	friend class SpriteBatch;
+	ComPtr<ID3D11ShaderResourceView> shaderResource;
 
-	enum TextureType
-	{
-		Noise,
-		Gauss
-	};
-
-	Texture2D(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag);
-
-	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag);
-
-	Texture2D(const unsigned int& width, const unsigned int& height, const TextureType& type);
-
-	void createShaderResource();
-
-	ComPtr<ID3D11ShaderResourceView> resourceView;
-
-	ComPtr<ID3D11Texture2D> texture2D;
+	ComPtr<ID3D11Texture2D> texture;
 
 	unsigned int width;
 
 	unsigned int height;
-
-	int poolIndex;
 
 	DXGI_FORMAT format;
 
