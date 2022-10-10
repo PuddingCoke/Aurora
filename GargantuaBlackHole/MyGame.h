@@ -108,9 +108,9 @@ public:
 		Shader::displayVShader->use();
 		pixelShader->use();
 
-		noiseTexture->setSRV(0);
-		dustTexture->setSRV(1);
-		accTexture->read()->getTexture()->setSRV(2);
+		noiseTexture->PSSetSRV(0);
+		dustTexture->PSSetSRV(1);
+		accTexture->read()->getTexture()->PSSetSRV(2);
 
 		Renderer::context->Draw(3, 0);
 		accTexture->swap();
@@ -127,7 +127,7 @@ public:
 
 			Shader::displayPShader->use();
 
-			texture->setSRV(0);
+			texture->PSSetSRV(0);
 
 		}
 		else
@@ -136,7 +136,7 @@ public:
 
 			Shader::displayPShader->use();
 
-			accTexture->read()->getTexture()->setSRV(0);
+			accTexture->read()->getTexture()->PSSetSRV(0);
 		}
 
 		Renderer::context->Draw(3, 0);

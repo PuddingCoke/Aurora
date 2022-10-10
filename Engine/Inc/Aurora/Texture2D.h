@@ -28,7 +28,7 @@ public:
 	static Texture2D* create(const std::string& path);
 
 	static Texture2D* create(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlag, const UINT& cpuAccessFlag);
-	
+
 	static Texture2D* create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag);
 
 	//生成一个4通道噪音贴图 每个通道属于[0,1]
@@ -44,7 +44,17 @@ public:
 
 	const DXGI_FORMAT& getFormat() const;
 
-	void setSRV(const UINT& slot = 0) const;
+	void VSSetSRV(const unsigned int& slot = 0) const;
+
+	void GSSetSRV(const unsigned int& slot = 0) const;
+
+	void PSSetSRV(const unsigned int& slot = 0) const;
+
+	void CSSetSRV(const unsigned int& slot = 0) const;
+
+	void DSSetSRV(const unsigned int& slot = 0) const;
+
+	void HSSetSRV(const unsigned int& slot = 0) const;
 
 	ID3D11ShaderResourceView* getSRV() const;
 

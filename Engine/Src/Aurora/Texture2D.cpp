@@ -48,9 +48,34 @@ const DXGI_FORMAT& Texture2D::getFormat() const
 	return format;
 }
 
-void Texture2D::setSRV(const UINT& slot) const
+void Texture2D::VSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->VSSetShaderResources(slot, 1, resourceView.GetAddressOf());
+}
+
+void Texture2D::GSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->GSSetShaderResources(slot, 1, resourceView.GetAddressOf());
+}
+
+void Texture2D::PSSetSRV(const unsigned int& slot) const
 {
 	Renderer::context->PSSetShaderResources(slot, 1, resourceView.GetAddressOf());
+}
+
+void Texture2D::CSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->CSSetShaderResources(slot, 1, resourceView.GetAddressOf());
+}
+
+void Texture2D::DSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->DSSetShaderResources(slot, 1, resourceView.GetAddressOf());
+}
+
+void Texture2D::HSSetSRV(const unsigned int& slot) const
+{
+	Renderer::context->HSSetShaderResources(slot, 1, resourceView.GetAddressOf());
 }
 
 ID3D11ShaderResourceView* Texture2D::getSRV() const

@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef _CASCADEDSHADOWMAP_H_
+#define _CASCADEDSHADOWMAP_H_
+
 #define __GFSDK_DX11__
 
 #include<functional>
@@ -75,3 +78,5 @@ private:
 	ComPtr<ID3D11Buffer> lightViewProjBuffer;
 
 };
+
+#endif // !_CASCADEDSHADOWMAP_H_

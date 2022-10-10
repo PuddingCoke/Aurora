@@ -22,7 +22,7 @@ void RWTexture::setRTV(ID3D11DepthStencilView* const view) const
 
 void RWTexture::PSSetSRV(const UINT& slot) const
 {
-	texture->setSRV(slot);
+	texture->PSSetSRV(slot);
 }
 
 void RWTexture::CSSetSRV(const UINT& slot) const

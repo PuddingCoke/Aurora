@@ -208,7 +208,7 @@ public:
 				Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 				Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
-				envTexture->setSRV(0);
+				envTexture->PSSetSRV(0);
 
 				TextureCube::shader->use();
 				cubePShader->use();
@@ -451,7 +451,7 @@ public:
 
 		Renderer::context->PSSetShaderResources(0, 1, irradianceSRV.GetAddressOf());
 		Renderer::context->PSSetShaderResources(1, 1, prefilterSRV.GetAddressOf());
-		brdfTexture->getTexture()->setSRV(2);
+		brdfTexture->getTexture()->PSSetSRV(2);
 
 		modelVShader->use();
 		modelPShader->use();

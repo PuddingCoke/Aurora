@@ -277,14 +277,14 @@ public:
 		velocity->write()->setRTV();
 
 		splatVelocityShader->use();
-		velocity->read()->getTexture()->setSRV(0);
+		velocity->read()->getTexture()->PSSetSRV(0);
 		Renderer::context->Draw(3, 0);
 		velocity->swap();
 
 		Renderer::setViewport(dye->width, dye->height);
 		dye->write()->setRTV();
 		splatColorShader->use();
-		dye->read()->getTexture()->setSRV(0);
+		dye->read()->getTexture()->PSSetSRV(0);
 		Renderer::context->Draw(3, 0);
 		dye->swap();
 	}
@@ -298,24 +298,24 @@ public:
 
 		curl->setRTV();
 		curlShader->use();
-		velocity->read()->getTexture()->setSRV(0);
+		velocity->read()->getTexture()->PSSetSRV(0);
 		Renderer::context->Draw(3, 0);
 
 		velocity->write()->setRTV();
 		vorticityShader->use();
-		velocity->read()->getTexture()->setSRV(0);
-		curl->getTexture()->setSRV(1);
+		velocity->read()->getTexture()->PSSetSRV(0);
+		curl->getTexture()->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 		velocity->swap();
 
 		divergence->setRTV();
 		divergenceShader->use();
-		velocity->read()->getTexture()->setSRV(0);
+		velocity->read()->getTexture()->PSSetSRV(0);
 		Renderer::context->Draw(3, 0);
 
 		pressure->write()->setRTV();
 		clearShader->use();
-		pressure->read()->getTexture()->setSRV(0);
+		pressure->read()->getTexture()->PSSetSRV(0);
 		Renderer::context->Draw(3, 0);
 		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		pressure->swap();
@@ -324,8 +324,8 @@ public:
 		for (int i = 0; i < SimulationConfig::PRESSURE_ITERATIONS; i++)
 		{
 			pressure->write()->setRTV();
-			pressure->read()->getTexture()->setSRV(0);
-			divergence->getTexture()->setSRV(1);
+			pressure->read()->getTexture()->PSSetSRV(0);
+			divergence->getTexture()->PSSetSRV(1);
 			Renderer::context->Draw(3, 0);
 			Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 			pressure->swap();
@@ -333,16 +333,16 @@ public:
 
 		velocity->write()->setRTV();
 		gradientSubtractShader->use();
-		pressure->read()->getTexture()->setSRV(0);
-		velocity->read()->getTexture()->setSRV(1);
+		pressure->read()->getTexture()->PSSetSRV(0);
+		velocity->read()->getTexture()->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		velocity->swap();
 
 		velocity->write()->setRTV();
 		advVelShader->use();
-		velocity->read()->getTexture()->setSRV(0);
-		velocity->read()->getTexture()->setSRV(1);
+		velocity->read()->getTexture()->PSSetSRV(0);
+		velocity->read()->getTexture()->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 		velocity->swap();
 
@@ -350,8 +350,8 @@ public:
 
 		dye->write()->setRTV();
 		advDenShader->use();
-		velocity->read()->getTexture()->setSRV(0);
-		dye->read()->getTexture()->setSRV(1);
+		velocity->read()->getTexture()->PSSetSRV(0);
+		dye->read()->getTexture()->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		dye->swap();
@@ -362,13 +362,13 @@ public:
 		mask->setRTV();
 		Renderer::setBlendState(nullptr);
 		sunrayMaskShader->use();
-		source->getTexture()->setSRV(0);
+		source->getTexture()->PSSetSRV(0);
 		Renderer::setViewport(mask->width, mask->height);
 		Renderer::context->Draw(3, 0);
 
 		destination->setRTV();
 		sunraysShader->use();
-		mask->getTexture()->setSRV(0);
+		mask->getTexture()->PSSetSRV(0);
 		Renderer::setViewport(destination->width, destination->height);
 		Renderer::context->Draw(3, 0);
 	}
@@ -381,14 +381,14 @@ public:
 		{
 			blurHShader->use();
 			temp->setRTV();
-			target->getTexture()->setSRV(0);
+			target->getTexture()->PSSetSRV(0);
 			Renderer::context->Draw(3, 0);
 			Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 
 			blurVShader->use();
 
 			target->setRTV();
-			temp->getTexture()->setSRV(0);
+			temp->getTexture()->PSSetSRV(0);
 			Renderer::context->Draw(3, 0);
 			Renderer::context->PSSetShaderResources(0, 2, nullSRV);
 		}
@@ -413,8 +413,8 @@ public:
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 		Renderer::setDefRTV();
 		displayShader->use();
-		dye->read()->getTexture()->setSRV(0);
-		sunrays->getTexture()->setSRV(1);
+		dye->read()->getTexture()->PSSetSRV(0);
+		sunrays->getTexture()->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 	}
 

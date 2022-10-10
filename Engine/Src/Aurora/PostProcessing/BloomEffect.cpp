@@ -130,13 +130,13 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	bloomExtract->use();
 	Renderer::setViewport(bloomWidth, bloomHeight);
 	RenderTexture::setRTVs({ originTexture,bloomTexture });
-	texture2D->setSRV();
+	texture2D->PSSetSRV();
 	Renderer::drawQuad();
 
 	Shader::displayPShader->use();
 	Renderer::setViewport(resolutions[0].x, resolutions[0].y);
 	rwTextures[0]->setRTV();
-	bloomTexture->getTexture()->setSRV();
+	bloomTexture->getTexture()->PSSetSRV();
 	Renderer::drawQuad();
 
 	Renderer::context->OMSetRenderTargets(1, nullRTV, nullptr);
@@ -229,7 +229,7 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	bloomFinal->use();
 	outputRTV->clearRTV(DirectX::Colors::Black);
 	outputRTV->setRTV();
-	originTexture->getTexture()->setSRV(0);
+	originTexture->getTexture()->PSSetSRV(0);
 	Renderer::drawQuad();
 
 	Renderer::context->CSSetShader(nullptr, nullptr, 0);

@@ -29,9 +29,9 @@ public:
 
 	void use()
 	{
-		diffuse->setSRV(0);
-		specular->setSRV(1);
-		normal->setSRV(2);
+		diffuse->PSSetSRV(0);
+		specular->PSSetSRV(1);
+		normal->PSSetSRV(2);
 	}
 
 	Texture2D* const diffuse;

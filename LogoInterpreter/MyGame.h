@@ -67,7 +67,7 @@ public:
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		renderTexture->getTexture()->setSRV();
+		renderTexture->getTexture()->PSSetSRV();
 
 		Renderer::draw(3, 0);
 	}

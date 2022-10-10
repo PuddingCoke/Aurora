@@ -15,13 +15,11 @@ Texture2D normalTexture : register(t0);
 
 SamplerState linearSampler : register(s0);
 
-static const float3 sun = float3(1.0, 1.0, 0.0);
-
 float4 main(PixelInput input) : SV_TARGET
 {
     float3 N = normalize(normalTexture.Sample(linearSampler, input.uv).xyz);
     
-    float3 L = normalize(sun);
+    float3 L = normalize(float3(1.0, 1.0, 0.0));
     
     float3 V = normalize(viewPos.xyz - input.position);
     

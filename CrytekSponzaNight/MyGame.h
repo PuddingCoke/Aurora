@@ -181,10 +181,10 @@ public:
 
 		Renderer::setDefRTV();
 
-		gPosition->getTexture()->setSRV(0);
-		gNormalSpecular->getTexture()->setSRV(1);
-		gBaseColor->getTexture()->setSRV(2);
-		hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getTexture()->getSRV())->setSRV(3);
+		gPosition->getTexture()->PSSetSRV(0);
+		gNormalSpecular->getTexture()->PSSetSRV(1);
+		gBaseColor->getTexture()->PSSetSRV(2);
+		hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getTexture()->getSRV())->PSSetSRV(3);
 
 		ID3D11Buffer* buffers[2] = { Camera::getViewBuffer(),lightBuffer.Get() };
 

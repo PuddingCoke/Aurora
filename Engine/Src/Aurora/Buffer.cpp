@@ -12,32 +12,32 @@ ID3D11Buffer* Buffer::get() const
 	return buffer.Get();
 }
 
-void Buffer::VSSetBuffer(const unsigned int& slot)
+void Buffer::VSSetBuffer(const unsigned int& slot) const
 {
 	Renderer::context->VSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
 }
 
-void Buffer::GSSetBuffer(const unsigned int& slot)
+void Buffer::GSSetBuffer(const unsigned int& slot) const
 {
 	Renderer::context->GSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
 }
 
-void Buffer::PSSetBuffer(const unsigned int& slot)
+void Buffer::PSSetBuffer(const unsigned int& slot) const
 {
 	Renderer::context->PSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
 }
 
-void Buffer::CSSetBuffer(const unsigned int& slot)
+void Buffer::CSSetBuffer(const unsigned int& slot) const
 {
 	Renderer::context->CSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
 }
 
-void Buffer::DSSetBuffer(const unsigned int& slot)
+void Buffer::DSSetBuffer(const unsigned int& slot) const
 {
 	Renderer::context->DSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
 }
 
-void Buffer::HSSetBuffer(const unsigned int& slot)
+void Buffer::HSSetBuffer(const unsigned int& slot) const
 {
 	Renderer::context->HSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
 }

@@ -21,17 +21,17 @@ public:
 
 	ID3D11Buffer* get() const;
 
-	void VSSetBuffer(const unsigned int& slot);
+	void VSSetBuffer(const unsigned int& slot = 0) const;
 
-	void GSSetBuffer(const unsigned int& slot);
+	void GSSetBuffer(const unsigned int& slot = 0) const;
 
-	void PSSetBuffer(const unsigned int& slot);
+	void PSSetBuffer(const unsigned int& slot = 0) const;
 
-	void CSSetBuffer(const unsigned int& slot);
+	void CSSetBuffer(const unsigned int& slot = 0) const;
 
-	void DSSetBuffer(const unsigned int& slot);
+	void DSSetBuffer(const unsigned int& slot = 0) const;
 
-	void HSSetBuffer(const unsigned int& slot);
+	void HSSetBuffer(const unsigned int& slot = 0) const;
 
 	static void VSSetBuffers(std::initializer_list<Buffer*> buffers, const unsigned int& slot);
 

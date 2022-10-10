@@ -120,7 +120,7 @@ public:
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
-		texture->setSRV(0);
+		texture->PSSetSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();

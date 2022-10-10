@@ -217,7 +217,7 @@ public:
 		doubleRTV->write()->setRTV();
 
 		Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
-		texture->getTexture()->setSRV(0);
+		texture->getTexture()->PSSetSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
@@ -227,7 +227,7 @@ public:
 
 		colorSky();
 		Renderer::setDefRTV();
-		doubleRTV->read()->getTexture()->setSRV(0);
+		doubleRTV->read()->getTexture()->PSSetSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
@@ -237,7 +237,7 @@ public:
 		Texture2D* const fadedTexture = effect.process(doubleRTV->read()->getTexture());
 
 		doubleRTV->write()->setRTV();
-		fadedTexture->setSRV(0);
+		fadedTexture->PSSetSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();

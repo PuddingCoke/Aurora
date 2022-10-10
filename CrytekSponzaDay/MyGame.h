@@ -240,10 +240,10 @@ public:
 
 		originTexture->setRTV();
 
-		gPosition->getTexture()->setSRV(0);
-		gNormalSpecular->getTexture()->setSRV(1);
-		gBaseColor->getTexture()->setSRV(2);
-		hbaoTexture->setSRV(3);
+		gPosition->getTexture()->PSSetSRV(0);
+		gNormalSpecular->getTexture()->PSSetSRV(1);
+		gBaseColor->getTexture()->PSSetSRV(2);
+		hbaoTexture->PSSetSRV(3);
 		Renderer::context->PSSetShaderResources(4, 1, &shadowSRV);
 
 		ID3D11Buffer* buffers[2] = { Camera::getViewBuffer(),lightBuffer->get() };
@@ -261,7 +261,7 @@ public:
 
 		Renderer::setDefRTV();
 
-		bloomTexture->setSRV(0);
+		bloomTexture->PSSetSRV(0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
