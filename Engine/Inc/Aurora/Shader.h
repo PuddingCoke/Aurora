@@ -8,7 +8,6 @@
 #include<wrl/client.h>
 #include<string>
 #include<iostream>
-#include<functional>
 
 #include"Utils.h"
 #include"Renderer.h"
@@ -35,9 +34,9 @@ public:
 
 	void operator=(const Shader&) = delete;
 
-	ComPtr<ID3DBlob> shaderBlob;
-
 	void use() const;
+
+	ID3DBlob* getBlob() const;
 
 	static Shader* fromFile(const std::string& filePath, const ShaderType& type);
 
@@ -57,13 +56,17 @@ private:
 
 	friend class Aurora;
 
+	ComPtr<ID3DBlob> shaderBlob;
+
 	Shader(const std::string& source, const ShaderType& type);
 
 	ID3D11DeviceChild* shaderPtr;
 
-	std::function<void(void)> useFunc;
+	void(*useFunc)(ID3D11DeviceChild* const);
 
-	std::function<void(void)> releaseFunc;
+	void(*releaseFunc)(ID3D11DeviceChild* const);
 };
+
+#define SHADERDATA(s) s->getBlob()->GetBufferPointer(),s->getBlob()->GetBufferSize()
 
 #endif // !_SHADER_H_

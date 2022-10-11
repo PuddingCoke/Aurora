@@ -51,7 +51,7 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 				srvDesc.Texture2D.MostDetailedMip = 0;
 				srvDesc.Texture2D.MipLevels = -1;
 
-				Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResource.ReleaseAndGetAddressOf());
+				Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResourceView.ReleaseAndGetAddressOf());
 			}
 		}
 	}
@@ -93,7 +93,7 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 				srvDesc.Texture2D.MostDetailedMip = 0;
 				srvDesc.Texture2D.MipLevels = -1;
 
-				Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResource.ReleaseAndGetAddressOf());
+				Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResourceView.ReleaseAndGetAddressOf());
 			}
 		}
 	}
@@ -101,11 +101,11 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 	{
 		std::wstring wFilePath = std::wstring(path.begin(), path.end());
 
-		DirectX::CreateDDSTextureFromFile(Renderer::device.Get(), wFilePath.c_str(), nullptr, shaderResource.GetAddressOf());
+		DirectX::CreateDDSTextureFromFile(Renderer::device.Get(), wFilePath.c_str(), nullptr, shaderResourceView.ReleaseAndGetAddressOf());
 
 		ID3D11Resource* resource;
 
-		shaderResource->GetResource(&resource);
+		shaderResourceView->GetResource(&resource);
 
 		resource->QueryInterface(IID_ID3D11Texture2D, (void**)texture.ReleaseAndGetAddressOf());
 
@@ -149,7 +149,7 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		srvDesc.Texture2D.MipLevels = -1;
 
-		Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResource.ReleaseAndGetAddressOf());
+		Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResourceView.ReleaseAndGetAddressOf());
 	}
 }
 
@@ -206,7 +206,7 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = -1;
 
-	Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResource.ReleaseAndGetAddressOf());
+	Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResourceView.ReleaseAndGetAddressOf());
 }
 
 Texture2D::~Texture2D()
@@ -226,41 +226,6 @@ const unsigned int& Texture2D::getHeight() const
 const DXGI_FORMAT& Texture2D::getFormat() const
 {
 	return format;
-}
-
-void Texture2D::VSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->VSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
-}
-
-void Texture2D::GSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->GSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
-}
-
-void Texture2D::PSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->PSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
-}
-
-void Texture2D::CSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->CSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
-}
-
-void Texture2D::DSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->DSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
-}
-
-void Texture2D::HSSetSRV(const unsigned int& slot) const
-{
-	Renderer::context->HSSetShaderResources(slot, 1, shaderResource.GetAddressOf());
-}
-
-ID3D11ShaderResourceView* Texture2D::getSRV() const
-{
-	return shaderResource.Get();
 }
 
 ID3D11Texture2D* Texture2D::getTexture2D() const

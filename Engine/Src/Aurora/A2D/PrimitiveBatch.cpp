@@ -14,10 +14,7 @@ PrimitiveBatch::PrimitiveBatch()
 			{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
-		Renderer::device->CreateInputLayout(layout, 2u,
-			primitive2DVShader->shaderBlob->GetBufferPointer(),
-			primitive2DVShader->shaderBlob->GetBufferSize(),
-			primitiveInputLayout.ReleaseAndGetAddressOf());
+		Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(primitive2DVShader), primitiveInputLayout.ReleaseAndGetAddressOf());
 	}
 
 	//初始化circleInputLayout
@@ -30,10 +27,7 @@ PrimitiveBatch::PrimitiveBatch()
 			{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,1,12,D3D11_INPUT_PER_INSTANCE_DATA,1}
 		};
 
-		Renderer::device->CreateInputLayout(layout, 4u,
-			circleVShader->shaderBlob->GetBufferPointer(),
-			circleVShader->shaderBlob->GetBufferSize(),
-			circleInputLayout.ReleaseAndGetAddressOf());
+		Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(circleVShader), circleInputLayout.ReleaseAndGetAddressOf());
 	}
 
 	//初始化rcLineInputLayout
@@ -45,10 +39,7 @@ PrimitiveBatch::PrimitiveBatch()
 			{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
-		Renderer::device->CreateInputLayout(layout, 3u,
-			rcLineVShader->shaderBlob->GetBufferPointer(),
-			rcLineVShader->shaderBlob->GetBufferSize(),
-			rcLineInputLayout.ReleaseAndGetAddressOf());
+		Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(rcLineVShader), rcLineInputLayout.ReleaseAndGetAddressOf());
 	}
 
 	//初始化lineBuffer
@@ -293,7 +284,7 @@ void main(
 	}
 
 	{
-	const std::string source = R"(
+		const std::string source = R"(
 struct GeometryInput
 {
 	float4 pos : SV_Position;
@@ -354,9 +345,9 @@ void main(
 }
 		)";
 
-	const ShaderType type = ShaderType::Geometry;
+		const ShaderType type = ShaderType::Geometry;
 
-	primitive2DGShader = Shader::fromStr(source, type);
+		primitive2DGShader = Shader::fromStr(source, type);
 
 	}
 

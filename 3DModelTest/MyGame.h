@@ -108,7 +108,7 @@ public:
 				{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0}
 			};
 
-			Renderer::device->CreateInputLayout(layout, 3u, modelVShader->shaderBlob->GetBufferPointer(), modelVShader->shaderBlob->GetBufferSize(), inputLayout.ReleaseAndGetAddressOf());
+			Renderer::device->CreateInputLayout(layout, 3u, SHADERDATA(modelVShader), inputLayout.ReleaseAndGetAddressOf());
 		}
 
 		{

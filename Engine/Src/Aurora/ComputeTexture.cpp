@@ -9,12 +9,7 @@ ComputeTexture::ComputeTexture(const unsigned int& width, const unsigned int& he
 	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 	uavDesc.Texture2D.MipSlice = 0;
 
-	Renderer::device->CreateUnorderedAccessView(texture.Get(), &uavDesc, textureUAV.ReleaseAndGetAddressOf());
-}
-
-void ComputeTexture::CSSetUAV(const UINT& slot) const
-{
-	Renderer::context->CSSetUnorderedAccessViews(slot, 1, textureUAV.GetAddressOf(), nullptr);
+	Renderer::device->CreateUnorderedAccessView(texture.Get(), &uavDesc, unorderedAccessView.ReleaseAndGetAddressOf());
 }
 
 ComputeTexture::~ComputeTexture()

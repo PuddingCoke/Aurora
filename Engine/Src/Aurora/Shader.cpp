@@ -5,12 +5,17 @@ Shader* Shader::displayPShader;
 
 Shader::~Shader()
 {
-	releaseFunc();
+	releaseFunc(shaderPtr);
 }
 
 void Shader::use() const
 {
-	useFunc();
+	useFunc(shaderPtr);
+}
+
+ID3DBlob* Shader::getBlob() const
+{
+	return shaderBlob.Get();
 }
 
 Shader* Shader::fromFile(const std::string& filePath, const ShaderType& type)
@@ -105,11 +110,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		ID3D11ComputeShader* cs = nullptr;
 		Renderer::device->CreateComputeShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &cs);
 		shaderPtr = cs;
-		useFunc = [this]()
+		useFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			Renderer::context->CSSetShader((ID3D11ComputeShader*)shaderPtr, nullptr, 0);
 		};
-		releaseFunc = [this]()
+		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			((ID3D11ComputeShader*)shaderPtr)->Release();
 		};
@@ -121,11 +126,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		ID3D11DomainShader* ds = nullptr;
 		Renderer::device->CreateDomainShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &ds);
 		shaderPtr = ds;
-		useFunc = [this]()
+		useFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			Renderer::context->DSSetShader((ID3D11DomainShader*)shaderPtr, nullptr, 0);
 		};
-		releaseFunc = [this]()
+		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			((ID3D11DomainShader*)shaderPtr)->Release();
 		};
@@ -137,11 +142,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		ID3D11GeometryShader* gs = nullptr;
 		Renderer::device->CreateGeometryShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &gs);
 		shaderPtr = gs;
-		useFunc = [this]()
+		useFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			Renderer::context->GSSetShader((ID3D11GeometryShader*)shaderPtr, nullptr, 0);
 		};
-		releaseFunc = [this]()
+		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			((ID3D11GeometryShader*)shaderPtr)->Release();
 		};
@@ -153,11 +158,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		ID3D11HullShader* hs = nullptr;
 		Renderer::device->CreateHullShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &hs);
 		shaderPtr = hs;
-		useFunc = [this]()
+		useFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			Renderer::context->HSSetShader((ID3D11HullShader*)shaderPtr, nullptr, 0);
 		};
-		releaseFunc = [this]()
+		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			((ID3D11HullShader*)shaderPtr)->Release();
 		};
@@ -169,11 +174,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		ID3D11PixelShader* ps = nullptr;
 		Renderer::device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &ps);
 		shaderPtr = ps;
-		useFunc = [this]()
+		useFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			Renderer::context->PSSetShader((ID3D11PixelShader*)shaderPtr, nullptr, 0);
 		};
-		releaseFunc = [this]()
+		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			((ID3D11PixelShader*)shaderPtr)->Release();
 		};
@@ -185,11 +190,11 @@ Shader::Shader(const std::string& source, const ShaderType& type)
 		ID3D11VertexShader* vs = nullptr;
 		Renderer::device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &vs);
 		shaderPtr = vs;
-		useFunc = [this]()
+		useFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			Renderer::context->VSSetShader((ID3D11VertexShader*)shaderPtr, nullptr, 0);
 		};
-		releaseFunc = [this]()
+		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
 		{
 			((ID3D11VertexShader*)shaderPtr)->Release();
 		};

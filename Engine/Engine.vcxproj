@@ -150,6 +150,8 @@
     <ClInclude Include="Inc\Aurora\A3D\DepthStencilView.h" />
     <ClInclude Include="Inc\Aurora\DBuffer.h" />
     <ClInclude Include="Inc\Aurora\DoubleRTV.h" />
+    <ClInclude Include="Inc\Aurora\DX\ShaderResourceView.h" />
+    <ClInclude Include="Inc\Aurora\DX\UnorderedAccessView.h" />
     <ClInclude Include="Inc\Aurora\Event.h" />
     <ClInclude Include="Inc\Aurora\A3D\FPSCamera.h" />
     <ClInclude Include="Inc\Aurora\Game.h" />
@@ -188,6 +190,8 @@
     <ClCompile Include="Src\Aurora\Buffer.cpp" />
     <ClCompile Include="Src\Aurora\ComputeTexture.cpp" />
     <ClCompile Include="Src\Aurora\DBuffer.cpp" />
+    <ClCompile Include="Src\Aurora\DX\ShaderResourceView.cpp" />
+    <ClCompile Include="Src\Aurora\DX\UnorderedAccessView.cpp" />
     <ClCompile Include="Src\Aurora\IBuffer.cpp" />
     <ClCompile Include="Src\Aurora\PBR\RealShading.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\HBAOEffect.cpp" />

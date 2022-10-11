@@ -425,10 +425,7 @@ SpriteBatch::SpriteBatch() :
 				"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0
 		};
 
-		Renderer::device->CreateInputLayout(&layout, 1u,
-			spriteVShader->shaderBlob->GetBufferPointer(),
-			spriteVShader->shaderBlob->GetBufferSize(),
-			spriteInputLayout.ReleaseAndGetAddressOf());
+		Renderer::device->CreateInputLayout(&layout, 1u, SHADERDATA(spriteVShader), spriteInputLayout.ReleaseAndGetAddressOf());
 	}
 
 	//初始化bitmapInputLayout
@@ -440,10 +437,7 @@ SpriteBatch::SpriteBatch() :
 			{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
-		Renderer::device->CreateInputLayout(layout, 3u,
-			bitmapVShader->shaderBlob->GetBufferPointer(),
-			bitmapVShader->shaderBlob->GetBufferSize(),
-			bitmapInputLayout.ReleaseAndGetAddressOf());
+		Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(bitmapVShader), bitmapInputLayout.ReleaseAndGetAddressOf());
 	}
 }
 

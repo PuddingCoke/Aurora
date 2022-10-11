@@ -15,7 +15,9 @@
 #include"Utils.h"
 #include"Random.h"
 
-class Texture2D
+#include"DX/ShaderResourceView.h"
+
+class Texture2D :public ShaderResourceView
 {
 public:
 
@@ -48,25 +50,9 @@ public:
 
 	const DXGI_FORMAT& getFormat() const;
 
-	void VSSetSRV(const unsigned int& slot = 0) const;
-
-	void GSSetSRV(const unsigned int& slot = 0) const;
-
-	void PSSetSRV(const unsigned int& slot = 0) const;
-
-	void CSSetSRV(const unsigned int& slot = 0) const;
-
-	void DSSetSRV(const unsigned int& slot = 0) const;
-
-	void HSSetSRV(const unsigned int& slot = 0) const;
-
-	ID3D11ShaderResourceView* getSRV() const;
-
 	ID3D11Texture2D* getTexture2D() const;
 
 protected:
-
-	ComPtr<ID3D11ShaderResourceView> shaderResource;
 
 	ComPtr<ID3D11Texture2D> texture;
 
