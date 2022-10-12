@@ -25,13 +25,12 @@ SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
 Texture2D tVelocity : register(t0);
-Texture2D tSource : register(t1);
 
 
 float4 main(float2 texCoord : TEXCOORD) : SV_Target
 {
     float2 coord = texCoord - deltaTime * tVelocity.Sample(linearSampler, texCoord).xy * simTexelSize;
-    float4 result = tSource.Sample(linearSampler, coord);
+    float4 result = tVelocity.Sample(linearSampler, coord);
     float decay = 1.0 + velocity_dissipation * deltaTime;
     return result / decay;
 }

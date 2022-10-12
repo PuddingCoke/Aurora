@@ -342,7 +342,6 @@ public:
 		velocity->write()->setRTV();
 		advVelShader->use();
 		velocity->read()->PSSetSRV(0);
-		velocity->read()->PSSetSRV(1);
 		Renderer::context->Draw(3, 0);
 		velocity->swap();
 

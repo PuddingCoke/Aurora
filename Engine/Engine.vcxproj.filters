@@ -105,9 +105,6 @@
     <ClInclude Include="Inc\Aurora\Renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PBR\RealShading.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\A3D\FPSCamera.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -237,9 +234,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Renderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\PBR\RealShading.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\A3D\FPSCamera.cpp">

@@ -26,8 +26,8 @@ public:
 	//最好用这个方法载入天空盒和辐照图
 	static TextureCube* createDDSCubeMap(const std::string& texturePath);
 
-	//从hdr等距柱状投影图创建天空盒
-	static TextureCube* createEquirectangularMap(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up);
+	//从hdr等距柱状投影图创建天空盒 mipLevels主要用于IBL
+	static TextureCube* createEquirectangularMap(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up, const unsigned int& mipLevels = 1);
 
 	void setSRV(const UINT& slot);
 
@@ -51,7 +51,7 @@ private:
 
 	TextureCube(const std::string& texturePath);
 
-	TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up);
+	TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up,const unsigned int& mipLevels);
 
 	ComPtr<ID3D11Texture2D> cubeTexture;
 	

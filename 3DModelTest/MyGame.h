@@ -185,25 +185,8 @@ public:
 				DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f)
 			};
 
-
-			D3D11_TEXTURE2D_DESC tDesc = {};
-			tDesc.Format = envTexture->getFormat();
-			tDesc.Width = boxSize;
-			tDesc.Height = boxSize;
-			tDesc.ArraySize = 1;
-			tDesc.MipLevels = 1;
-			tDesc.Usage = D3D11_USAGE_STAGING;
-			tDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-			tDesc.SampleDesc.Count = 1;
-			tDesc.SampleDesc.Quality = 0;
-
 			{
-
-				ComPtr<ID3D11Texture2D> texture;
-
-				Renderer::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
-
-				RenderTexture* renderTexture = new RenderTexture(boxSize, boxSize, tDesc.Format, DirectX::Colors::Black);
+				RenderTexture* renderTexture = new RenderTexture(boxSize, boxSize, envTexture->getFormat(), DirectX::Colors::Black);
 
 				Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -226,12 +209,7 @@ public:
 					renderTexture->clearRTV(DirectX::Colors::Black);
 					Camera::setView(eye, focusPoints[i], upVectors[i]);
 					Renderer::context->Draw(36, 0);
-					Renderer::context->CopyResource(texture.Get(), renderTexture->getTexture2D());
-					D3D11_MAPPED_SUBRESOURCE mappedData;
-					Renderer::context->Map(texture.Get(), 0, D3D11_MAP_READ, 0, &mappedData);
-					Renderer::context->UpdateSubresource(envCube.Get(), D3D11CalcSubresource(0, i, 5), 0,
-						mappedData.pData, mappedData.RowPitch, mappedData.DepthPitch);
-					Renderer::context->Unmap(texture.Get(), 0);
+					Renderer::context->CopySubresourceRegion(envCube.Get(), D3D11CalcSubresource(0, i, 5), 0, 0, 0, renderTexture->getTexture2D(), 0, nullptr);
 				}
 
 				delete renderTexture;
@@ -250,11 +228,6 @@ public:
 
 				renderTexture->setRTV();
 
-				tDesc.Width = irradianceSize;
-				tDesc.Height = irradianceSize;
-
-				Renderer::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
-
 				Renderer::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
 
 				irradiancePShader->use();
@@ -266,12 +239,7 @@ public:
 					renderTexture->clearRTV(DirectX::Colors::Black);
 					Camera::setView(eye, focusPoints[i], upVectors[i]);
 					Renderer::context->Draw(36, 0);
-					Renderer::context->CopyResource(texture.Get(), renderTexture->getTexture2D());
-					D3D11_MAPPED_SUBRESOURCE mappedData;
-					Renderer::context->Map(texture.Get(), 0, D3D11_MAP_READ, 0, &mappedData);
-					Renderer::context->UpdateSubresource(irradianceCube.Get(), i, 0,
-						mappedData.pData, mappedData.RowPitch, mappedData.DepthPitch);
-					Renderer::context->Unmap(texture.Get(), 0);
+					Renderer::context->CopySubresourceRegion(irradianceCube.Get(), i, 0, 0, 0, renderTexture->getTexture2D(), 0, nullptr);
 				}
 
 				delete renderTexture;
@@ -289,28 +257,6 @@ public:
 			renderTextures[3] = new RenderTexture(16, 16, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
 			renderTextures[4] = new RenderTexture(8, 8, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black);
 
-			ComPtr<ID3D11Texture2D> textures[5];
-
-			tDesc.Width = 128;
-			tDesc.Height = 128;
-			Renderer::device->CreateTexture2D(&tDesc, nullptr, textures[0].ReleaseAndGetAddressOf());
-
-			tDesc.Width = 64;
-			tDesc.Height = 64;
-			Renderer::device->CreateTexture2D(&tDesc, nullptr, textures[1].ReleaseAndGetAddressOf());
-
-			tDesc.Width = 32;
-			tDesc.Height = 32;
-			Renderer::device->CreateTexture2D(&tDesc, nullptr, textures[2].ReleaseAndGetAddressOf());
-
-			tDesc.Width = 16;
-			tDesc.Height = 16;
-			Renderer::device->CreateTexture2D(&tDesc, nullptr, textures[3].ReleaseAndGetAddressOf());
-
-			tDesc.Width = 8;
-			tDesc.Height = 8;
-			Renderer::device->CreateTexture2D(&tDesc, nullptr, textures[4].ReleaseAndGetAddressOf());
-
 			Renderer::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
 
 			int resolution = prefilterSize;
@@ -324,12 +270,7 @@ public:
 				{
 					Camera::setView(eye, focusPoints[i], upVectors[i]);
 					Renderer::context->Draw(36, 0);
-					Renderer::context->CopyResource(textures[mip].Get(), renderTextures[mip]->getTexture2D());
-					D3D11_MAPPED_SUBRESOURCE mappedData;
-					Renderer::context->Map(textures[mip].Get(), 0, D3D11_MAP_READ, 0, &mappedData);
-					Renderer::context->UpdateSubresource(prefilterCube.Get(), D3D11CalcSubresource(mip, i, 5), 0,
-						mappedData.pData, mappedData.RowPitch, mappedData.DepthPitch);
-					Renderer::context->Unmap(textures[mip].Get(), 0);
+					Renderer::context->CopySubresourceRegion(prefilterCube.Get(), D3D11CalcSubresource(mip, i, 5), 0, 0, 0, renderTextures[mip]->getTexture2D(), 0, nullptr);
 				}
 
 				resolution /= 2;

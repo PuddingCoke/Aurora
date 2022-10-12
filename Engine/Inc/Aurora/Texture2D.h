@@ -34,10 +34,7 @@ public:
 	void operator=(const Texture2D&) = delete;
 
 	//读取文件
-	Texture2D(const std::string& path, const D3D11_USAGE& usage = D3D11_USAGE_DEFAULT, const UINT& bindFlag = D3D11_BIND_SHADER_RESOURCE, const UINT& cpuAccessFlag = 0);
-
-	//创建自定义材质
-	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag = 0);
+	Texture2D(const std::string& path, const D3D11_USAGE& usage = D3D11_USAGE_IMMUTABLE, const UINT& bindFlag = D3D11_BIND_SHADER_RESOURCE, const UINT& cpuAccessFlag = 0);
 
 	//生成噪音材质、随机高斯分布材质
 	Texture2D(const unsigned int& width, const unsigned int& height, const TextureType& type);
@@ -53,6 +50,9 @@ public:
 	ID3D11Texture2D* getTexture2D() const;
 
 protected:
+
+	//创建自定义材质
+	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag = 0);
 
 	ComPtr<ID3D11Texture2D> texture;
 
