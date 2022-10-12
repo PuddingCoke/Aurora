@@ -15,90 +15,71 @@ int Aurora::iniEngine(const Configuration& config)
 
 	this->config = &config;
 
+	int screenWidth, screenHeight;
+
 	if (config.usage == Configuration::EngineUsage::Wallpaper)
 	{
-		int width;
-		int height;
-		WallpaperHelper::getSystemResolution(width, height);
-		Graphics::width = width;
-		Graphics::height = height;
+		WallpaperHelper::getSystemResolution(screenWidth, screenHeight);
 	}
 	else
 	{
-		Graphics::width = config.width;
-		Graphics::height = config.height;
+		screenWidth = config.width;
+		screenHeight = config.height;
 	}
 
-	Graphics::aspectRatio = (float)Graphics::width / (float)Graphics::height;
-	Graphics::msaaLevel = config.msaaLevel;
+	iniWindow();
+	
+	Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, config.enableDebug, config.msaaLevel);
 
-	std::cout << "[class Aurora] resolution:" << Graphics::width << " " << Graphics::height << "\n";
-	std::cout << "[class Aurora] aspectRatio:" << Graphics::aspectRatio << "\n";
-	std::cout << "[class Aurora] multisample level:" << config.msaaLevel << "\n";
+	States::instance = new States();
 
-	if (SUCCEEDED(iniWindow()))
-	{
-		std::cout << "[class Aurora] create window successfully!\n";
-	}
-	else
-	{
-		std::cout << "[class Aurora] create window failed!\n";
-		return 1;
-	}
+	Graphics::instance = new Graphics(screenWidth, screenHeight, config.msaaLevel);
 
-	if (SUCCEEDED(iniDevice()))
-	{
-		std::cout << "[class Aurora] create device successfully!\n";
-	}
-	else
-	{
-		std::cout << "[class Aurora] create device failed!\n";
-	}
-
-	if (SUCCEEDED(iniCamera()))
-	{
-		std::cout << "[class Aurora] initialize camera successfully!\n";
-	}
-	else
-	{
-		std::cout << "[class Aurora] initialize camera failed!\n";
-	}
-
-	if (SUCCEEDED(States::ini()))
-	{
-		std::cout << "[class Aurora] States initialize successfully\n";
-	}
-	else
-	{
-		std::cout << "[class Aurora] States initialize failed\n";
-	}
+	Camera::instance = new Camera();
 
 	Shader::ini();
 
 	TextureCube::iniShader();
 
-	Graphics::ini();
-
 	ShadowMap::ini();
 
+	if (config.enableDebug)
+	{
+		Renderer::device->QueryInterface(IID_ID3D11Debug, (void**)Renderer::instance->d3dDebug.ReleaseAndGetAddressOf());
+	}
+
 	//初始化一些默认状态，比如Viewport、BlendState等等 
-	Renderer::setViewport(Graphics::width, Graphics::height);
+	switch (config.cameraType)
+	{
+	default:
+	case Configuration::CameraType::Orthogonal:
+		std::cout << "[class Aurora] orthogonal camera\n";
+		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)config.width, 0, (float)config.height, 0.f, 1.f));
+		Camera::setView(DirectX::XMMatrixIdentity());
+		break;
+	case Configuration::CameraType::Perspective:
+		std::cout << "[class Aurora] perspective camera\n";
+		Camera::setProj(Math::pi / 4.f, (float)config.width / (float)config.height, 0.1f, 1000.f);
+		break;
+	}
 
-	Renderer::setBlendState(States::defBlendState.Get());
+	Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
 
-	Renderer::context->RSSetState(States::rasterCullBack.Get());
+	Renderer::setBlendState(States::get()->defBlendState.Get());
 
-	Renderer::context->OMSetDepthStencilState(States::defDepthStencilState.Get(), 0);
+	Renderer::context->RSSetState(States::get()->rasterCullBack.Get());
+
+	Renderer::context->OMSetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
 
 	Renderer::clearDefRTV(DirectX::Colors::Black);
 
 	//pixel compute shader占用第一个槽位来获取跟时间相关的变量
-	Renderer::context->PSSetConstantBuffers(0, 1, Graphics::deltaTimeBuffer.GetAddressOf());
-	Renderer::context->CSSetConstantBuffers(0, 1, Graphics::deltaTimeBuffer.GetAddressOf());
+	Renderer::context->PSSetConstantBuffers(0, 1, Graphics::instance->deltaTimeBuffer.GetAddressOf());
+	Renderer::context->CSSetConstantBuffers(0, 1, Graphics::instance->deltaTimeBuffer.GetAddressOf());
 
 	//vertex geometry hull domain shader占用前两个槽位来获取矩阵信息或者摄像头的信息
 	{
-		ID3D11Buffer* const buffers[2] = { Camera::projBuffer.Get(),Camera::viewBuffer.Get() };
+		ID3D11Buffer* const buffers[2] = { Camera::getProjBuffer(),Camera::getViewBuffer() };
 
 		Renderer::context->VSSetConstantBuffers(0, 2, buffers);
 		Renderer::context->HSSetConstantBuffers(0, 2, buffers);
@@ -124,9 +105,16 @@ void Aurora::iniGame(Game* const game)
 		break;
 	}
 
+	//解绑并释放所有资源
 	Renderer::context->ClearState();
 
 	delete game;
+
+	delete States::instance;
+
+	delete Graphics::instance;
+
+	delete Camera::instance;
 
 	Shader::release();
 
@@ -134,13 +122,16 @@ void Aurora::iniGame(Game* const game)
 
 	ShadowMap::release();
 
-	Renderer::backBuffer->Release();
-
 	if (config->enableDebug)
 	{
-		Graphics::d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 		std::cout << "[class Aurora] debug mode press any key to exit\n";
+		Renderer::instance->d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		delete Renderer::instance;
 		std::cin.get();
+	}
+	else
+	{
+		delete Renderer::instance;
 	}
 
 	if (config->usage == Configuration::EngineUsage::Wallpaper)
@@ -164,7 +155,7 @@ LRESULT Aurora::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_MOUSEMOVE:
 	{
 		const float curX = (float)GET_X_LPARAM(lParam);
-		const float curY = (float)Graphics::height - (float)GET_Y_LPARAM(lParam);
+		const float curY = (float)Graphics::getHeight() - (float)GET_Y_LPARAM(lParam);
 
 		Mouse::dx = curX - Mouse::x;
 		Mouse::dy = curY - Mouse::y;
@@ -301,7 +292,7 @@ HRESULT Aurora::iniWindow()
 
 	RegisterClassEx(&wcex);
 
-	RECT rect = { 0,0,Graphics::width,Graphics::height };
+	RECT rect = { 0,0,config->width,config->height };
 
 	AdjustWindowRect(&rect, wndStyle, false);
 
@@ -327,147 +318,11 @@ HRESULT Aurora::iniWindow()
 		HWND window = FindWindowW(nullptr, config->title.c_str());
 		HWND bg = WallpaperHelper::getWallpaperWindow();
 		SetParent(window, bg);
-		MoveWindow(window, 0, 0, Graphics::width, Graphics::height, 0);
+		MoveWindow(window, 0, 0, config->width, config->height, 0);
 	}
 	else if (config->usage == Configuration::EngineUsage::AnimationRender)
 	{
 		ShowWindow(hwnd, SW_HIDE);
-	}
-
-	return S_OK;
-}
-
-HRESULT Aurora::iniDevice()
-{
-	D3D_FEATURE_LEVEL featureLevels[] =
-	{
-		D3D_FEATURE_LEVEL_11_1,
-		D3D_FEATURE_LEVEL_11_0,
-	};
-
-	D3D_FEATURE_LEVEL maxSupportedFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
-
-	ComPtr<IDXGIDevice4> dxgiDevice;
-	ComPtr<IDXGIAdapter3> dxgiAdapter;
-	ComPtr<IDXGIFactory5> dxgiFactory;
-
-	{
-		ComPtr<ID3D11Device> device11;
-		ComPtr<ID3D11DeviceContext> context11;
-
-		D3D11_CREATE_DEVICE_FLAG deviceFlag;
-
-		if (config->enableDebug)
-		{
-			std::cout << "[class Aurora] enable debug!\n";
-			deviceFlag = D3D11_CREATE_DEVICE_DEBUG;
-		}
-		else
-		{
-			std::cout << "[class Aurora] disable debug!\n";
-			deviceFlag = (D3D11_CREATE_DEVICE_FLAG)0;
-		}
-
-		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, 2u,
-			D3D11_SDK_VERSION, device11.GetAddressOf(), &maxSupportedFeatureLevel, context11.GetAddressOf());
-
-		device11.As(&Renderer::device);
-		context11.As(&Renderer::context);
-
-		ComPtr<IDXGIDevice> dxgiDevice11;
-		device11.As(&dxgiDevice11);
-
-		ComPtr<IDXGIAdapter> dxgiAdapter11;
-		dxgiDevice11->GetAdapter(dxgiAdapter11.ReleaseAndGetAddressOf());
-
-		ComPtr<IDXGIFactory1> dxgiFactory11;
-		dxgiAdapter11->GetParent(IID_IDXGIFactory1, (void**)dxgiFactory11.ReleaseAndGetAddressOf());
-
-		dxgiDevice11.As(&dxgiDevice);
-		dxgiAdapter11.As(&dxgiAdapter);
-		dxgiFactory11.As(&dxgiFactory);
-	}
-
-	{
-		DXGI_SWAP_CHAIN_DESC1 sd = {};
-		sd.Width = Graphics::width;
-		sd.Height = Graphics::height;
-		sd.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
-		sd.SampleDesc.Count = 1;
-		sd.SampleDesc.Quality = 0;
-		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		sd.BufferCount = 3;
-		sd.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_FLIP_DISCARD;
-
-		ComPtr<IDXGISwapChain1> sc;
-		dxgiFactory->CreateSwapChainForHwnd(Renderer::device.Get(), hwnd, &sd, nullptr, nullptr, sc.GetAddressOf());
-		sc.As(&swapChain);
-	}
-
-	dxgiFactory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
-
-	if (config->enableDebug)
-	{
-		Renderer::device->QueryInterface(IID_ID3D11Debug, (void**)Graphics::d3dDebug.ReleaseAndGetAddressOf());
-	}
-
-	{
-		swapChain->GetBuffer(0, IID_ID3D11Texture2D, (void**)&Renderer::backBuffer);
-
-		if (Graphics::msaaLevel == 1)
-		{
-			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-			rtvDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
-			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
-			rtvDesc.Texture2D.MipSlice = 0;
-
-			Renderer::device->CreateRenderTargetView(Renderer::backBuffer, &rtvDesc, Renderer::defaultTargetView.ReleaseAndGetAddressOf());
-		}
-		else
-		{
-			D3D11_TEXTURE2D_DESC tDesc = {};
-			tDesc.Width = Graphics::width;
-			tDesc.Height = Graphics::height;
-			tDesc.MipLevels = 1;
-			tDesc.ArraySize = 1;
-			tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
-			tDesc.SampleDesc.Count = Graphics::msaaLevel;
-			tDesc.SampleDesc.Quality = 0;
-			tDesc.Usage = D3D11_USAGE_DEFAULT;
-			tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-			tDesc.CPUAccessFlags = 0;
-			tDesc.MiscFlags = 0;
-
-			Renderer::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
-
-			D3D11_RENDER_TARGET_VIEW_DESC msaaViewDesc = {};
-			msaaViewDesc.Format = tDesc.Format;
-			msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2DMS;
-			msaaViewDesc.Texture2D.MipSlice = 0;
-
-			Renderer::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, Renderer::defaultTargetView.ReleaseAndGetAddressOf());
-		}
-	}
-
-	return S_OK;
-}
-
-HRESULT Aurora::iniCamera()
-{
-	Camera::initialize();
-
-	switch (config->cameraType)
-	{
-	default:
-	case Configuration::CameraType::Orthogonal:
-		std::cout << "[class Aurora] orthogonal camera\n";
-		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::width, 0, (float)Graphics::height, 0.f, 1.f));
-		Camera::setView(DirectX::XMMatrixIdentity());
-		break;
-	case Configuration::CameraType::Perspective:
-		std::cout << "[class Aurora] perspective camera\n";
-		Camera::setProj(Math::pi / 4.f, Graphics::aspectRatio, 0.1f, 1000.f);
-		break;
 	}
 
 	return S_OK;
@@ -487,17 +342,17 @@ void Aurora::runGame()
 			DispatchMessage(&msg);
 		}
 		const std::chrono::steady_clock::time_point timeStart = timer.now();
-		game->update(Graphics::deltaTime.deltaTime);
+		game->update(Graphics::getDeltaTime());
 		game->render();
 		if (config->msaaLevel != 1)
 		{
-			Renderer::context->ResolveSubresource(Renderer::backBuffer, 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+			Renderer::context->ResolveSubresource(Renderer::instance->backBuffer.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
 		}
-		swapChain->Present(1, 0);
+		Renderer::instance->swapChain->Present(1, 0);
 		const std::chrono::steady_clock::time_point timeEnd = timer.now();
-		Graphics::deltaTime.deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
-		Graphics::deltaTime.sTime += Graphics::deltaTime.deltaTime;
-		Graphics::updateDeltaTimeBuffer();
+		Graphics::instance->deltaTime.deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
+		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
+		Graphics::instance->updateDeltaTimeBuffer();
 	}
 }
 
@@ -506,8 +361,8 @@ void Aurora::runEncode()
 	ComPtr<ID3D11Texture2D> encodeTexture;
 	{
 		D3D11_TEXTURE2D_DESC tDesc = {};
-		tDesc.Width = Graphics::width;
-		tDesc.Height = Graphics::height;
+		tDesc.Width = config->width;
+		tDesc.Height = config->height;
 		tDesc.MipLevels = 1;
 		tDesc.ArraySize = 1;
 		tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -525,7 +380,7 @@ void Aurora::runEncode()
 
 	bool initializeStatus;
 
-	NvidiaEncoder nvidiaEncoder(Graphics::getWidth(), Graphics::getHeight(), Graphics::recordConfig.frameToEncode, Graphics::recordConfig.frameRate, initializeStatus);
+	NvidiaEncoder nvidiaEncoder(Graphics::getWidth(), Graphics::getHeight(), Graphics::instance->recordConfig.frameToEncode, Graphics::instance->recordConfig.frameRate, initializeStatus);
 
 	if (initializeStatus)
 	{
@@ -537,21 +392,21 @@ void Aurora::runEncode()
 		return;
 	}
 
-	Graphics::deltaTime.deltaTime = 1.f / 60.f;
+	Graphics::instance->deltaTime.deltaTime = 1.f / 60.f;
 	do
 	{
-		game->update(Graphics::deltaTime.deltaTime);
+		game->update(Graphics::getDeltaTime());
 		game->render();
 		if (config->msaaLevel != 1)
 		{
-			Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+			Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
 		}
 		else
 		{
-			Renderer::context->CopyResource(encodeTexture.Get(), Renderer::backBuffer);
+			Renderer::context->CopyResource(encodeTexture.Get(), Renderer::instance->backBuffer.Get());
 		}
-		Graphics::deltaTime.sTime += Graphics::deltaTime.deltaTime;
-		Graphics::updateDeltaTimeBuffer();
+		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
+		Graphics::instance->updateDeltaTimeBuffer();
 	} while (nvidiaEncoder.encode(encodeTexture.Get()));
 
 	std::cout << "[class Aurora] encode complete!\n";

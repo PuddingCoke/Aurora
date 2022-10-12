@@ -100,7 +100,7 @@ public:
 	{
 		renderTexture->setRTV();
 		renderTexture->clearRTV(DirectX::Colors::Black);
-		Renderer::setBlendState(States::defBlendState.Get());
+		Renderer::setBlendState(States::get()->defBlendState.Get());
 
 		batch->begin();
 		for (int i = 0; i < rains.size(); i++)
@@ -118,7 +118,7 @@ public:
 		Renderer::setDefRTV();
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 
-		Renderer::setBlendState(States::defBlendState.Get());
+		Renderer::setBlendState(States::get()->defBlendState.Get());
 
 		batch->begin();
 		batch->draw(texture2D, 0, 0);

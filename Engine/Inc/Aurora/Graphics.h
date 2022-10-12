@@ -3,6 +3,8 @@
 #ifndef _GRAPHICS_H_
 #define _GRAPHICS_H_
 
+#include<iostream>
+
 #include"Renderer.h"
 
 class Graphics
@@ -21,7 +23,7 @@ public:
 
 	static const float& getSTime();
 
-	static const float& getFPS();
+	static float getFPS();
 
 	static const float& getAspectRatio();
 
@@ -29,7 +31,7 @@ public:
 
 	static const int& getHeight();
 
-	static unsigned int& getMSAALevel();
+	static const unsigned int& getMSAALevel();
 
 	static void setRecordConfig(const unsigned int& frameToEncode, const unsigned int& frameRate);
 
@@ -37,25 +39,21 @@ private:
 
 	friend class Aurora;
 
-	friend class WallpaperHelper;
+	static Graphics* instance;
 
-	friend class NvidiaEncoder;
+	Graphics(const int& width, const int& height, const unsigned int& msaaLevel);
 
-	static void ini();
+	void updateDeltaTimeBuffer();
 
-	static void updateDeltaTimeBuffer();
+	ComPtr<ID3D11Buffer> deltaTimeBuffer;
 
-	static ComPtr<ID3D11Buffer> deltaTimeBuffer;
-
-	static ComPtr<ID3D11Debug> d3dDebug;
-
-	static struct RecordConfig
+	struct RecordConfig
 	{
 		unsigned int frameToEncode;
 		unsigned int frameRate;
 	} recordConfig;
 
-	static struct DeltaTime
+	struct DeltaTime
 	{
 		float deltaTime = 0;
 		float sTime = 0;
@@ -63,19 +61,19 @@ private:
 		float v3 = 0;
 	} deltaTime;
 
-	static float frameDuration;
+	struct FPSCalculator
+	{
+		float frameTime[20];
+		int frameTimeIndex;
+	} fpsCalculator;
 
-	static int frameCount;
+	const int width;
 
-	static float framePerSec;
+	const int height;
 
-	static int width;
+	const float aspectRatio;
 
-	static int height;
-
-	static float aspectRatio;
-
-	static unsigned int msaaLevel;
+	const unsigned int msaaLevel;
 
 };
 

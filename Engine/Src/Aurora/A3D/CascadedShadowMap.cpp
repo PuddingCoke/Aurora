@@ -8,8 +8,8 @@ CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned i
 
 	GFSDK_ShadowLib_DeviceContext deviceContext;
 
-	deviceContext.pD3DDevice = Renderer::device.Get();
-	deviceContext.pDeviceContext = Renderer::context.Get();
+	deviceContext.pD3DDevice = Renderer::device;
+	deviceContext.pDeviceContext = Renderer::context;
 
 	std::cout << "[class CascadedShadowMap] NVIDIA ShadowLib create status " << GFSDK_ShadowLib_Create(&ver, &shadowCtx, &deviceContext) << "\n";
 

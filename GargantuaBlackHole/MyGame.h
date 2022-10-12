@@ -101,9 +101,9 @@ public:
 		accTexture->write()->setRTV();
 		accTexture->write()->clearRTV(DirectX::Colors::Black);
 
-		Renderer::setBlendState(States::addtiveBlend.Get());
+		Renderer::setBlendState(States::get()->addtiveBlend.Get());
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Renderer::setSampler(0, States::linearWrapSampler.Get());
+		Renderer::context->PSSetSamplers(0, 1, States::get()->linearWrapSampler.GetAddressOf());
 
 		Shader::displayVShader->use();
 		pixelShader->use();

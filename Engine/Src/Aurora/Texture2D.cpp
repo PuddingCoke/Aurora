@@ -101,7 +101,7 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 	{
 		std::wstring wFilePath = std::wstring(path.begin(), path.end());
 
-		DirectX::CreateDDSTextureFromFile(Renderer::device.Get(), wFilePath.c_str(), nullptr, shaderResourceView.ReleaseAndGetAddressOf());
+		DirectX::CreateDDSTextureFromFile(Renderer::device, wFilePath.c_str(), nullptr, shaderResourceView.ReleaseAndGetAddressOf());
 
 		ID3D11Resource* resource;
 

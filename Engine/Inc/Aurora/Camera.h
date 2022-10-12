@@ -4,8 +4,6 @@
 #define _CAMERA_H_
 
 #define NOMINMAX
-#define NONEAR
-#define NOFAR
 
 #include<DirectXMath.h>
 #include<DirectXCollision.h>
@@ -18,8 +16,6 @@
 class Camera
 {
 public:
-
-	Camera() = delete;
 
 	Camera(const Camera&) = delete;
 
@@ -55,7 +51,9 @@ private:
 
 	friend class CascadedShadowMap;
 
-	static void initialize();
+	static Camera* instance;
+
+	Camera();
 
 	//自动转置proj矩阵
 	static void setProj(const DirectX::XMMATRIX& proj);
@@ -63,22 +61,21 @@ private:
 	//自动转置view矩阵
 	static void setView(const DirectX::XMMATRIX& view);
 
-	static ComPtr<ID3D11Buffer> projBuffer;
+	ComPtr<ID3D11Buffer> projBuffer;
 
-	static ComPtr<ID3D11Buffer> viewBuffer;
+	ComPtr<ID3D11Buffer> viewBuffer;
 
-	//这两个矩阵都是没有转置的，因为在DirectXMath中，向量都是列优先。
-	static DirectX::XMMATRIX projMatrix;
+	DirectX::XMMATRIX projMatrix;
 
-	static DirectX::XMMATRIX viewMatrix;
+	DirectX::XMMATRIX viewMatrix;
 
-	static float fov;
+	float fov;
 
-	static float nearPlane;
+	float nearPlane;
 
-	static float farPlane;
+	float farPlane;
 
-	static struct ViewInfo
+	struct ViewInfo
 	{
 		DirectX::XMMATRIX view;
 		DirectX::XMMATRIX normalMatrix;//light in view space inverseView

@@ -292,10 +292,10 @@ inline void Ocean::render() const
 	oceanPShader->use();
 
 	displacementXYZ->DSSetSRV();
-	Renderer::context->DSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
+	Renderer::context->DSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
 
 	normalTexture->PSSetSRV();
-	Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
+	Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
 
 	ID3D11Buffer* const constantBuffers[1] = { Camera::getViewBuffer() };
 
@@ -306,5 +306,6 @@ inline void Ocean::render() const
 	ID3D11ShaderResourceView* nullSRV = nullptr;
 
 	Renderer::context->DSSetShaderResources(0, 1, &nullSRV);
+	Renderer::context->PSSetShaderResources(0, 1, &nullSRV);
 }
 

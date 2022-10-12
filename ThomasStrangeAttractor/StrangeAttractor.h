@@ -125,7 +125,7 @@ public:
 
 	void render() override
 	{
-		Renderer::setBlendState(States::addtiveBlend.Get());
+		Renderer::setBlendState(States::get()->addtiveBlend.Get());
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 		ID3D11Buffer* buffers[2] = { particlePosBuffer->get(),particleColorBuffer->get() };

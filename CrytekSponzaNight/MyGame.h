@@ -165,10 +165,10 @@ public:
 
 	void render()
 	{
-		Renderer::setSampler(0, States::linearWrapSampler.Get());
-		Renderer::setSampler(1, States::linearClampSampler.Get());
+		Renderer::context->PSSetSamplers(0, 1, States::get()->linearWrapSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(1, 1, States::get()->linearClampSampler.GetAddressOf());
 
-		Renderer::context->RSSetState(States::rasterCullBack.Get());
+		Renderer::context->RSSetState(States::get()->rasterCullBack.Get());
 
 		gBaseColor->clearRTV(DirectX::Colors::Black);
 		gPosition->clearRTV(DirectX::Colors::Black);

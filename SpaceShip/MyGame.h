@@ -45,9 +45,10 @@ public:
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 		Renderer::setDefRTV();
 
-		Renderer::setBlendState(States::defBlendState.Get());
+		Renderer::setBlendState(States::get()->defBlendState.Get());
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Renderer::setSampler(0, States::linearClampSampler.Get());
+
+		Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
 
 		TextureCube::shader->use();
 		skyboxPShader->use();

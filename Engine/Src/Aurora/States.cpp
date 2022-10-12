@@ -1,26 +1,13 @@
 ﻿#include<Aurora/States.h>
 
-ComPtr<ID3D11SamplerState> States::linearClampSampler;
+States* States::instance = nullptr;
 
-ComPtr<ID3D11SamplerState> States::linearWrapSampler;
+States* States::get()
+{
+	return instance;
+}
 
-ComPtr<ID3D11SamplerState> States::pointClampSampler;
-
-ComPtr<ID3D11SamplerState> States::pointWrapSampler;
-
-ComPtr<ID3D11BlendState> States::defBlendState;
-
-ComPtr<ID3D11BlendState> States::addtiveBlend;
-
-ComPtr<ID3D11RasterizerState> States::rasterCullBack;
-
-ComPtr<ID3D11RasterizerState> States::rasterCullFront;
-
-ComPtr<ID3D11RasterizerState> States::rasterCullNone;
-
-ComPtr<ID3D11DepthStencilState> States::defDepthStencilState;
-
-HRESULT States::ini()
+States::States()
 {
 	//初始化linearClampSampler
 	{
@@ -162,7 +149,7 @@ HRESULT States::ini()
 		dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
 		dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 		dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-		
+
 		dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 		dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
 		dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
@@ -170,6 +157,4 @@ HRESULT States::ini()
 
 		Renderer::device->CreateDepthStencilState(&dsDesc, defDepthStencilState.ReleaseAndGetAddressOf());
 	}
-
-	return S_OK;
 }

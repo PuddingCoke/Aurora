@@ -1,84 +1,71 @@
 ﻿#include<Aurora/Graphics.h>
 
-ComPtr<ID3D11Buffer> Graphics::deltaTimeBuffer;
-
-ComPtr<ID3D11Debug> Graphics::d3dDebug;
-
-//默认状态60帧录制30秒
-Graphics::RecordConfig Graphics::recordConfig = { 1800,60 };
-
-Graphics::DeltaTime Graphics::deltaTime = { 0,0,0,0 };
-
-float Graphics::frameDuration = 0;
-
-int Graphics::frameCount = 0;
-
-float Graphics::framePerSec = 0;
-
-int Graphics::width = 0;
-
-int Graphics::height = 0;
-
-float Graphics::aspectRatio = 0;
-
-unsigned int Graphics::msaaLevel = 0;
+Graphics* Graphics::instance = nullptr;
 
 ID3D11Buffer* Graphics::getDeltaTimeBuffer()
 {
-	return deltaTimeBuffer.Get();
+	return instance->deltaTimeBuffer.Get();
 }
 
 const float& Graphics::getDeltaTime()
 {
-	return deltaTime.deltaTime;
+	return instance->deltaTime.deltaTime;
 }
 
 const float& Graphics::getSTime()
 {
-	return deltaTime.sTime;
+	return instance->deltaTime.sTime;
 }
 
-const float& Graphics::getFPS()
+float Graphics::getFPS()
 {
-	frameDuration += deltaTime.deltaTime;
-	frameCount++;
-	if (frameDuration > .1f)
+	instance->fpsCalculator.frameTime[instance->fpsCalculator.frameTimeIndex] = instance->deltaTime.deltaTime;
+
+	instance->fpsCalculator.frameTimeIndex = (instance->fpsCalculator.frameTimeIndex + 1) % 20;
+
+	float sumTime = 0;
+
+	for (int i = 0; i < 20; i++)
 	{
-		framePerSec = frameCount / frameDuration;
-		frameCount = 0;
-		frameDuration = 0;
+		sumTime += instance->fpsCalculator.frameTime[i];
 	}
-	return framePerSec;
+
+	return 20.f / sumTime;
 }
 
 const float& Graphics::getAspectRatio()
 {
-	return aspectRatio;
+	return instance->aspectRatio;
 }
 
 const int& Graphics::getWidth()
 {
-	return width;
+	return instance->width;
 }
 
 const int& Graphics::getHeight()
 {
-	return height;
+	return instance->height;
 }
 
-unsigned int& Graphics::getMSAALevel()
+const unsigned int& Graphics::getMSAALevel()
 {
-	return msaaLevel;
+	return instance->msaaLevel;
 }
 
 void Graphics::setRecordConfig(const unsigned int& frameToEncode, const unsigned int& frameRate)
 {
-	recordConfig.frameToEncode = frameToEncode;
-	recordConfig.frameRate = frameRate;
+	instance->recordConfig.frameToEncode = frameToEncode;
+	instance->recordConfig.frameRate = frameRate;
 }
 
-void Graphics::ini()
+Graphics::Graphics(const int& width, const int& height, const unsigned int& msaaLevel) :
+	width(width), height(height), msaaLevel(msaaLevel), aspectRatio((float)width / (float)height), fpsCalculator{}, deltaTime{ 0,0,0,0 }, recordConfig{ 1800,60 }
 {
+	std::cout << "[class Graphics] resolution:" << width << " " << height << "\n";
+	std::cout << "[class Graphics] aspectRatio:" << aspectRatio << "\n";
+	std::cout << "[class Graphics] multisample level:" << msaaLevel << "\n";
+
 	//初始化和时间相关的Constant Buffer
 	{
 		D3D11_BUFFER_DESC cbd = {};
@@ -87,8 +74,8 @@ void Graphics::ini()
 		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-		Renderer::device->CreateBuffer(&cbd, nullptr, Graphics::deltaTimeBuffer.ReleaseAndGetAddressOf());
-		Graphics::updateDeltaTimeBuffer();
+		Renderer::device->CreateBuffer(&cbd, nullptr, deltaTimeBuffer.ReleaseAndGetAddressOf());
+		updateDeltaTimeBuffer();
 	}
 }
 

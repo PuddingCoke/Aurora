@@ -122,7 +122,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 
     Renderer::setViewport(textureSize, textureSize);
     Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    Renderer::setBlendState(States::defBlendState.Get());
+    Renderer::setBlendState(States::get()->defBlendState.Get());
 
     renderTexture->setRTV();
     

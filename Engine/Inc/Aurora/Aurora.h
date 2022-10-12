@@ -50,19 +50,11 @@ private:
 
 	HWND hwnd;
 
-	ComPtr<ID3D11Texture2D> msaaTexture;
-
-	ComPtr<IDXGISwapChain4> swapChain;
-
 	const Configuration* config;
 
 	Game* game;
 
 	HRESULT iniWindow();
-
-	HRESULT iniDevice();
-
-	HRESULT iniCamera();
 
 	void runGame();
 

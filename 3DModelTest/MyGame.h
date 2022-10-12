@@ -207,13 +207,13 @@ public:
 
 				Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-				Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
+				Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
 				envTexture->PSSetSRV(0);
 
 				TextureCube::shader->use();
 				cubePShader->use();
 
-				Renderer::setBlendState(States::defBlendState.Get());
+				Renderer::setBlendState(States::get()->defBlendState.Get());
 
 				renderTexture->setRTV();
 
@@ -438,9 +438,9 @@ public:
 
 		Renderer::setDefRTV(depthStencilView->get());
 
-		Renderer::setBlendState(States::defBlendState.Get());
+		Renderer::setBlendState(States::get()->defBlendState.Get());
 
-		Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
 
 		Renderer::context->PSSetShaderResources(0, 1, cubeSRV.GetAddressOf());
 
@@ -460,7 +460,7 @@ public:
 
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
 
 		for (unsigned i = 0; i < numModels; i++)
 		{

@@ -105,7 +105,7 @@ public:
 
 	void render()
 	{
-		Renderer::setBlendState(States::defBlendState.Get());
+		Renderer::setBlendState(States::get()->defBlendState.Get());
 
 		renderTexture->clearMSAARTV(DirectX::Colors::Black);
 		renderTexture->setMSAARTV();
@@ -122,10 +122,10 @@ public:
 
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Renderer::setBlendState(States::addtiveBlend.Get());
+		Renderer::setBlendState(States::get()->addtiveBlend.Get());
 		doubleRTV->write()->setRTV();
 
-		Renderer::context->PSSetSamplers(0, 1, States::linearClampSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
 		renderTexture->PSSetSRV(0);
 
 		Shader::displayVShader->use();

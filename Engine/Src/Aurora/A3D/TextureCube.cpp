@@ -239,7 +239,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 TextureCube::TextureCube(const std::string& texturePath)
 {
 	const std::wstring wTexturePath(texturePath.begin(), texturePath.end());
-	DirectX::CreateDDSTextureFromFileEx(Renderer::device.Get(), Renderer::context.Get(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, nullptr, cubeSRV.ReleaseAndGetAddressOf());
+	DirectX::CreateDDSTextureFromFileEx(Renderer::device, Renderer::context, wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, nullptr, cubeSRV.ReleaseAndGetAddressOf());
 }
 
 TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up)
@@ -291,13 +291,14 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 
 	Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	Renderer::setSampler(0, States::linearClampSampler.Get());
+	Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
+
 	equirectangularMap->PSSetSRV(0);
 
 	TextureCube::shader->use();
 	pixelShader->use();
 
-	Renderer::setBlendState(States::defBlendState.Get());
+	Renderer::setBlendState(States::get()->defBlendState.Get());
 
 	renderTexture->setRTV();
 

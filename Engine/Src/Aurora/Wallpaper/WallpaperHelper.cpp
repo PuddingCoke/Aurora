@@ -69,7 +69,7 @@ LRESULT __stdcall WallpaperHelper::MouseHookProc(int nCode, WPARAM wParam, LPARA
 		case WM_MOUSEMOVE:
 		{
 			const float curX = (float)pMouseStruct->pt.x;
-			const float curY = (float)Graphics::height - (float)pMouseStruct->pt.y;
+			const float curY = (float)Graphics::getHeight() - (float)pMouseStruct->pt.y;
 
 			Mouse::dx = curX - Mouse::x;
 			Mouse::dy = curY - Mouse::y;

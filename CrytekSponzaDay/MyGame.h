@@ -201,10 +201,10 @@ public:
 
 		Renderer::setBlendState(nullptr);
 
-		Renderer::context->RSSetState(States::rasterCullBack.Get());
+		Renderer::context->RSSetState(States::get()->rasterCullBack.Get());
 
-		Renderer::setSampler(0, States::linearWrapSampler.Get());
-		Renderer::setSampler(1, States::linearClampSampler.Get());
+		Renderer::context->PSSetSamplers(0, 1, States::get()->linearWrapSampler.GetAddressOf());
+		Renderer::context->PSSetSamplers(1, 1, States::get()->linearClampSampler.GetAddressOf());
 
 		Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
 
@@ -219,7 +219,7 @@ public:
 
 		Texture2D* const hbaoTexture = hbaoEffect.process(depthView->getSRV(), gNormalSpecular->getSRV());
 
-		Renderer::context->RSSetState(States::rasterCullNone.Get());
+		Renderer::context->RSSetState(States::get()->rasterCullNone.Get());
 
 		Renderer::context->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -234,7 +234,7 @@ public:
 				scene->drawGeometry(ShadowMap::shadowVShader);
 			});
 
-		Renderer::context->RSSetState(States::rasterCullBack.Get());
+		Renderer::context->RSSetState(States::get()->rasterCullBack.Get());
 
 		ID3D11ShaderResourceView* shadowSRV = csm.getShadowBuffer();
 

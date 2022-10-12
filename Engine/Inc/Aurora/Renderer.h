@@ -6,6 +6,7 @@
 #include<d3d11_4.h>
 #include<wrl/client.h>
 #include<DirectXMath.h>
+#include<iostream>
 
 using Microsoft::WRL::ComPtr;
 
@@ -19,9 +20,9 @@ public:
 
 	void operator=(const Renderer&) = delete;
 
-	static ComPtr<ID3D11Device4> device;
+	static ID3D11Device4* device;
 
-	static ComPtr<ID3D11DeviceContext4> context;
+	static ID3D11DeviceContext4* context;
 
 	static void setDefRTV(ID3D11DepthStencilView* const view = nullptr);
 
@@ -36,8 +37,6 @@ public:
 	static void setTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology);
 
 	static void setBlendState(ID3D11BlendState* const blendState);
-
-	static void setSampler(const unsigned int& slot, ID3D11SamplerState* const state);
 
 	static void setRasterizerState(ID3D11RasterizerState* const state);
 
@@ -55,11 +54,26 @@ private:
 
 	friend class Aurora;
 
-	static ComPtr<ID3D11RenderTargetView> defaultTargetView;
+	static Renderer* instance;
 
-	static ID3D11Texture2D* backBuffer;
+	Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel);
 
-	static D3D11_VIEWPORT vp;
+	D3D11_VIEWPORT vp;
+
+	ComPtr<ID3D11Device4> device4;
+
+	ComPtr<ID3D11DeviceContext4> context4;
+
+	ComPtr<IDXGISwapChain4> swapChain;
+
+	ComPtr<ID3D11Debug> d3dDebug;
+
+	ComPtr<ID3D11Texture2D> backBuffer;
+
+	ComPtr<ID3D11Texture2D> msaaTexture;
+
+	ComPtr<ID3D11RenderTargetView> defaultTargetView;
+
 };
 
 #endif // !_RENDERER_H_

@@ -68,7 +68,7 @@ public:
 		}
 		else
 		{
-			Renderer::context->RSSetState(States::rasterCullBack.Get());
+			Renderer::context->RSSetState(States::get()->rasterCullBack.Get());
 		}
 
 		ocean.render();
