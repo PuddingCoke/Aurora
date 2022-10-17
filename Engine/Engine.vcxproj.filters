@@ -51,7 +51,7 @@
     <ClInclude Include="Inc\Aurora\A2D\SpriteBatch.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Texture2D.h">
+    <ClInclude Include="Inc\Aurora\DX\Resource\Texture2D.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Timer.h">
@@ -114,7 +114,7 @@
     <ClInclude Include="Inc\Aurora\A3D\ShadowMap.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Buffer.h">
+    <ClInclude Include="Inc\Aurora\DX\Resource\Buffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\RCTexture.h">
@@ -129,19 +129,34 @@
     <ClInclude Include="Inc\Aurora\A3D\CascadedShadowMap.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Aurora\IBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\ComputeTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\ShaderResourceView.h">
+    <ClInclude Include="Inc\Aurora\DX\View\ShaderResourceView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\UnorderedAccessView.h">
+    <ClInclude Include="Inc\Aurora\DX\View\UnorderedAccessView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\DX\View\RenderTargetView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\ResourceTexture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\ComputeBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\DX\View\RSView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\DX\View\USView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\DX\View\RUSView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\ResManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -179,7 +194,7 @@
     <ClCompile Include="Src\Aurora\A2D\SpriteBatch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Texture2D.cpp">
+    <ClCompile Include="Src\Aurora\DX\Resource\Texture2D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Timer.cpp">
@@ -245,7 +260,7 @@
     <ClCompile Include="Src\Aurora\A3D\ShadowMap.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Buffer.cpp">
+    <ClCompile Include="Src\Aurora\DX\Resource\Buffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\RCTexture.cpp">
@@ -260,19 +275,34 @@
     <ClCompile Include="Src\Aurora\A3D\CascadedShadowMap.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DBuffer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\IBuffer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Aurora\ComputeTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\ShaderResourceView.cpp">
+    <ClCompile Include="Src\Aurora\DX\View\ShaderResourceView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\UnorderedAccessView.cpp">
+    <ClCompile Include="Src\Aurora\DX\View\UnorderedAccessView.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\ResManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\DX\View\RenderTargetView.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\ResourceTexture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\ComputeBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\DX\View\RSView.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\DX\View\USView.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\DX\View\RUSView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

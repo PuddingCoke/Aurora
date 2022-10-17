@@ -16,17 +16,17 @@ FadeEffect::FadeEffect(const unsigned int& width, const unsigned int& height) :
 	setFadeFactor(fadeFactor);
 }
 
-Texture2D* FadeEffect::process(Texture2D* const texture2D) const
+ShaderResourceView* FadeEffect::process(ShaderResourceView* const texture2D) const
 {
 	Renderer::setBlendState(nullptr);
 
 	outputRTV->clearRTV(DirectX::Colors::Black);
-	outputRTV->setRTV();
+	ResManager::get()->OMSetRTV({ outputRTV }, nullptr);
 
 	Renderer::context->PSSetConstantBuffers(3, 1, fadeBuffer.GetAddressOf());
 
 	Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
-	texture2D->PSSetSRV(0);
+	ResManager::get()->PSSetSRV({ texture2D }, 0);
 
 	Shader::displayVShader->use();
 	fadePShader->use();

@@ -43,6 +43,8 @@ int Aurora::iniEngine(const Configuration& config)
 
 	ShadowMap::ini();
 
+	ResManager::instance = new ResManager();
+
 	if (config.enableDebug)
 	{
 		Renderer::device->QueryInterface(IID_ID3D11Debug, (void**)Renderer::instance->d3dDebug.ReleaseAndGetAddressOf());
@@ -115,6 +117,8 @@ void Aurora::iniGame(Game* const game)
 	delete Graphics::instance;
 
 	delete Camera::instance;
+
+	delete ResManager::instance;
 
 	Shader::release();
 

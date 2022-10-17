@@ -8,6 +8,8 @@
 #include<Aurora/States.h>
 #include<Aurora/Shader.h>
 #include<Aurora/Graphics.h>
+#include<Aurora/ResManager.h>
+#include<Aurora/ResourceTexture.h>
 
 class EffectBase
 {
@@ -22,8 +24,6 @@ public:
 	EffectBase(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& outputFormat);
 
 	virtual ~EffectBase();
-
-	Texture2D* getOutputTexture() const;
 
 protected:
 

@@ -13,12 +13,12 @@
 
 enum class ShaderType
 {
-	Compute,
+	Vertex,
+	Hull,
 	Domain,
 	Geometry,
-	Hull,
 	Pixel,
-	Vertex
+	Compute
 };
 
 class Shader

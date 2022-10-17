@@ -5,19 +5,18 @@
 
 #include<string>
 #include<d3d11_4.h>
-#include<memory>
 #include<iostream>
+#include<vector>
+
+#include<Aurora/Renderer.h>
+#include<Aurora/Utils.h>
+#include<Aurora/Random.h>
+#include<Aurora/Graphics.h>
 
 #include<stb_image/stb_image.h>
 #include<DDSTextureLoader/DDSTextureLoader11.h>
 
-#include"Renderer.h"
-#include"Utils.h"
-#include"Random.h"
-
-#include"DX/ShaderResourceView.h"
-
-class Texture2D :public ShaderResourceView
+class Texture2D
 {
 public:
 
@@ -33,11 +32,11 @@ public:
 
 	void operator=(const Texture2D&) = delete;
 
-	//读取文件
-	Texture2D(const std::string& path, const D3D11_USAGE& usage = D3D11_USAGE_IMMUTABLE, const UINT& bindFlag = D3D11_BIND_SHADER_RESOURCE, const UINT& cpuAccessFlag = 0);
+	Texture2D(const std::string& filePath, const D3D11_USAGE& usage = D3D11_USAGE_IMMUTABLE, const UINT& bindFlags = D3D11_BIND_SHADER_RESOURCE, const UINT& cpuAccessFlag = 0);
 
-	//生成噪音材质、随机高斯分布材质
 	Texture2D(const unsigned int& width, const unsigned int& height, const TextureType& type);
+
+	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const bool& enableMSAA = false, const UINT& cpuAccessFlag = 0);
 
 	virtual ~Texture2D();
 
@@ -51,19 +50,17 @@ public:
 
 protected:
 
-	//创建自定义材质
-	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag = 0);
-
-	ComPtr<ID3D11Texture2D> texture;
-
 	unsigned int width;
 
 	unsigned int height;
 
 	DXGI_FORMAT format;
 
-};
+	unsigned int mipLevels;
 
-using Texture2DPtr = std::shared_ptr<Texture2D>;
+	bool enableMSAA;
+
+	ComPtr<ID3D11Texture2D> texture;
+};
 
 #endif // !_TEXTURE2D_H_

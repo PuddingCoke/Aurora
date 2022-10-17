@@ -7,7 +7,7 @@
 #include<unordered_map>
 #include<fstream>
 
-#include<Aurora/Texture2D.h>
+#include<Aurora/ResourceTexture.h>
 
 class BitmapFont
 {
@@ -62,7 +62,7 @@ private:
 
 	float scale;
 
-	Texture2D* const texture2D;
+	ResourceTexture* const rTexture;
 
 	ComPtr<ID3D11Buffer> vertexBuffer;
 

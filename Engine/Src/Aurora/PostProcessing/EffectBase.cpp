@@ -9,8 +9,3 @@ EffectBase::~EffectBase()
 {
 	delete outputRTV;
 }
-
-Texture2D* EffectBase::getOutputTexture() const
-{
-	return outputRTV;
-}

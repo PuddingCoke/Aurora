@@ -58,13 +58,13 @@ void SpriteBatch::end()
 	for (int i = 0; i < fontPool.size(); i++)
 	{
 		fontPool[i]->updateVerticesData();
-		fontPool[i]->texture2D->PSSetSRV(0);
+		ResManager::get()->PSSetSRV({ fontPool[i]->rTexture }, 0);
 		Renderer::context->IASetVertexBuffers(0, 1, fontPool[i]->vertexBuffer.GetAddressOf(), &stride, &offset);
 		fontPool[i]->render();
 	}
 }
 
-void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y)
+void SpriteBatch::draw(ResourceTexture* const texture, const float& x, const float& y)
 {
 	int index = texturePoolAdd(texture);
 	texturePool[index].addVertices(
@@ -75,7 +75,7 @@ void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y)
 	);
 }
 
-void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y, const float& originX, const float& originY)
+void SpriteBatch::draw(ResourceTexture* const texture, const float& x, const float& y, const float& originX, const float& originY)
 {
 	int index = texturePoolAdd(texture);
 	texturePool[index].addVertices(
@@ -86,7 +86,7 @@ void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y,
 	);
 }
 
-void SpriteBatch::draw(Texture2D* const texture, const float& x, const float& y, const float& originX, const float& originY, const float& rotation)
+void SpriteBatch::draw(ResourceTexture* const texture, const float& x, const float& y, const float& originX, const float& originY, const float& rotation)
 {
 	int index = texturePoolAdd(texture);
 
@@ -336,7 +336,7 @@ float4 main(PixelInput input) : SV_TARGET
 	}
 }
 
-int SpriteBatch::texturePoolAdd(Texture2D* const texture)
+int SpriteBatch::texturePoolAdd(ResourceTexture* const texture)
 {
 	for (int i = 0; i < TextureSlot::curTextureNum; i++)
 	{
@@ -373,7 +373,7 @@ void SpriteBatch::flush()
 	for (int i = 0; i < TextureSlot::curTextureNum; i++)
 	{
 		texturePool[i].updateVertices();
-		texturePool[i].texture->PSSetSRV(0);
+		ResManager::get()->PSSetSRV({ texturePool[i].texture }, 0);
 		Renderer::context->IASetVertexBuffers(0, 1, texturePool[i].vertexBuffer.GetAddressOf(), &stride, &offset);
 		texturePool[i].drawVertices();
 		texturePool[i].idx = 0;

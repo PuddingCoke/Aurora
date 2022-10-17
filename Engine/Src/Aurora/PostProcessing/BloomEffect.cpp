@@ -113,7 +113,7 @@ BloomEffect::~BloomEffect()
 	delete bloomVBlurShader;
 }
 
-Texture2D* BloomEffect::process(Texture2D* const texture2D) const
+ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) const
 {
 	Renderer::setBlendState(nullptr);
 	Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -123,72 +123,53 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 	Renderer::context->CSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
 	Shader::displayVShader->use();
 
-	ID3D11ShaderResourceView* const nullSRV[1] = { nullptr };
-	ID3D11RenderTargetView* const nullRTV[1] = { nullptr };
-	ID3D11UnorderedAccessView* const nullUAV[1] = { nullptr };
-
 	bloomExtract->use();
 	Renderer::setViewport(bloomWidth, bloomHeight);
-	RenderTexture::setRTVs({ originTexture,bloomTexture });
-	texture2D->PSSetSRV();
+	ResManager::get()->OMSetRTV({ originTexture,bloomTexture }, nullptr);
+	ResManager::get()->PSSetSRV({ texture2D }, 0);
 	Renderer::drawQuad();
 
 	Shader::displayPShader->use();
 	Renderer::setViewport(resolutions[0].x, resolutions[0].y);
-	rcTextures[0]->setRTV();
-	bloomTexture->PSSetSRV();
+	ResManager::get()->OMSetRTV({ rcTextures[0] }, nullptr);
+	ResManager::get()->PSSetSRV({ bloomTexture }, 0);
 	Renderer::drawQuad();
-
-	Renderer::context->OMSetRenderTargets(1, nullRTV, nullptr);
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
 		Renderer::context->CSSetShaderResources(1, 1, blurParamSRV[i].GetAddressOf());
 
 		bloomHBlurShader->use();
-		rcTextures[i * 2 + 1]->CSSetUAV();
-		rcTextures[i * 2]->CSSetSRV();
+		ResManager::get()->CSSetUAV({ rcTextures[i * 2 + 1] }, 0);
+		ResManager::get()->CSSetSRV({ rcTextures[i * 2] }, 0);
 		Renderer::context->Dispatch(rcTextures[i * 2]->getWidth() / workGroupSize.x, rcTextures[i * 2]->getHeight() / workGroupSize.y + 1, 1);
-
-		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
 
 		bloomVBlurShader->use();
-		rcTextures[i * 2]->CSSetUAV();
-		rcTextures[i * 2 + 1]->CSSetSRV();
+		ResManager::get()->CSSetUAV({ rcTextures[i * 2] }, 0);
+		ResManager::get()->CSSetSRV({ rcTextures[i * 2 + 1] }, 0);
 		Renderer::context->Dispatch(rcTextures[i * 2]->getWidth() / workGroupSize.x, rcTextures[i * 2]->getHeight() / workGroupSize.y + 1, 1);
-
-		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
-		Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
 
 		Renderer::setViewport(resolutions[i + 1].x, resolutions[i + 1].y);
 
 		Shader::displayPShader->use();
-		rcTextures[i * 2 + 2]->setRTV();
-		rcTextures[i * 2]->PSSetSRV();
+		ResManager::get()->OMSetRTV({ rcTextures[i * 2 + 2] }, nullptr);
+		ResManager::get()->PSSetSRV({ rcTextures[i * 2] }, 0);
 		Renderer::drawQuad();
-
-		Renderer::context->OMSetRenderTargets(1, nullRTV, nullptr);
 	}
-
-	Renderer::context->PSSetShaderResources(0, 1, nullSRV);
 
 	Renderer::context->CSSetShaderResources(1, 1, blurParamSRV[blurSteps - 1].GetAddressOf());
 
 	for (int i = 0; i < 2; i++)
 	{
 		bloomHBlurShader->use();
-		rcTextures[(blurSteps - 1) * 2 + 1]->CSSetUAV();
-		rcTextures[(blurSteps - 1) * 2]->CSSetSRV();
+		ResManager::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
+		ResManager::get()->CSSetSRV({ rcTextures[(blurSteps - 1) * 2] }, 0);
 		Renderer::context->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
-
-		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
 
 		bloomVBlurShader->use();
-		rcTextures[(blurSteps - 1) * 2]->CSSetUAV();
-		rcTextures[(blurSteps - 1) * 2 + 1]->CSSetSRV();
+		ResManager::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2] }, 0);
+		ResManager::get()->CSSetSRV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
 		Renderer::context->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
-
-		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
 	}
 
 	Renderer::setBlendState(States::get()->addtiveBlend.Get());
@@ -199,44 +180,33 @@ Texture2D* BloomEffect::process(Texture2D* const texture2D) const
 		Renderer::context->CSSetShaderResources(1, 1, blurParamSRV[blurSteps - 2 - i].GetAddressOf());
 
 		bloomHBlurShader->use();
-		rcTextures[(blurSteps - 2 - i) * 2 + 1]->CSSetUAV();
-		rcTextures[(blurSteps - 2 - i) * 2]->CSSetSRV();
+		ResManager::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
+		ResManager::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
 		Renderer::context->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
-
-		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
 
 		bloomVBlurShader->use();
-		rcTextures[(blurSteps - 2 - i) * 2]->CSSetUAV();
-		rcTextures[(blurSteps - 2 - i) * 2 + 1]->CSSetSRV();
+		ResManager::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
+		ResManager::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
 		Renderer::context->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
 
-		Renderer::context->CSSetShaderResources(0, 1, nullSRV);
-		Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
-
 		Shader::displayPShader->use();
-		rcTextures[(blurSteps - 2 - i) * 2]->setRTV();
-		rcTextures[(blurSteps - 1 - i) * 2]->PSSetSRV();
+		ResManager::get()->OMSetRTV({ rcTextures[(blurSteps - 2 - i) * 2] }, nullptr);
+		ResManager::get()->PSSetSRV({ rcTextures[(blurSteps - 1 - i) * 2] }, 0);
 		Renderer::drawQuad();
-
-		Renderer::context->PSSetShaderResources(0, 1, nullSRV);
 	}
 
 	Renderer::setViewport(bloomWidth, bloomHeight);
-	originTexture->setRTV();
-	rcTextures[0]->PSSetSRV();
+	ResManager::get()->OMSetRTV({ originTexture }, nullptr);
+	ResManager::get()->PSSetSRV({ rcTextures[0] }, 0);
 	Renderer::drawQuad();
 
 	bloomFinal->use();
 	outputRTV->clearRTV(DirectX::Colors::Black);
-	outputRTV->setRTV();
-	originTexture->PSSetSRV(0);
+	ResManager::get()->OMSetRTV({ outputRTV }, nullptr);
+	ResManager::get()->PSSetSRV({ originTexture }, 0);
 	Renderer::drawQuad();
 
 	Renderer::context->CSSetShader(nullptr, nullptr, 0);
-	Renderer::context->OMSetRenderTargets(1, nullRTV, nullptr);
-	Renderer::context->CSSetShaderResources(0, 1, nullSRV);
-	Renderer::context->PSSetShaderResources(0, 1, nullSRV);
-	Renderer::context->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
 
 	return outputRTV;
 }

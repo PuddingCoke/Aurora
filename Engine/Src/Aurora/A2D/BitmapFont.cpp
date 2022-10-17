@@ -7,7 +7,7 @@ BitmapFont* BitmapFont::create(const std::string& bitmapPath, const std::string&
 
 BitmapFont::~BitmapFont()
 {
-	delete texture2D;
+	delete rTexture;
 	delete[] vertices;
 }
 
@@ -33,7 +33,7 @@ const float& BitmapFont::getScale() const
 }
 
 BitmapFont::BitmapFont(const std::string& bitmapPath, const std::string& configFilePath, const int& fontSize) :
-	fontSize(fontSize), originFontSize(0), scale(1), idx(0), vertices(new float[maxCharacterCount * 32]), texture2D(new Texture2D(bitmapPath))
+	fontSize(fontSize), originFontSize(0), scale(1), idx(0), vertices(new float[maxCharacterCount * 32]), rTexture(new ResourceTexture(bitmapPath))
 {
 	std::ifstream stream(configFilePath);
 
@@ -78,7 +78,7 @@ BitmapFont::BitmapFont(const std::string& bitmapPath, const std::string& configF
 	Parse(temp);
 	const int count = std::stoi(value);
 
-	int bitmapWidth = texture2D->getWidth(), bitmapHeight = texture2D->getHeight();
+	int bitmapWidth = rTexture->getWidth(), bitmapHeight = rTexture->getHeight();
 
 	for (int i = 0; i < count; i++)
 	{

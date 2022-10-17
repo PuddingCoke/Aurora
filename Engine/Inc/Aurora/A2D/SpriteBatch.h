@@ -6,10 +6,11 @@
 #include<vector>
 
 #include<Aurora/A2D/BitmapFont.h>
-#include<Aurora/Texture2D.h>
+#include<Aurora/ResourceTexture.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/Shader.h>
 #include<Aurora/States.h>
+#include<Aurora/ResManager.h>
 
 class SpriteBatch
 {
@@ -29,11 +30,11 @@ public:
 
 	void end();
 
-	void draw(Texture2D* const texture, const float& x, const float& y);
+	void draw(ResourceTexture* const texture, const float& x, const float& y);
 
-	void draw(Texture2D* const texture, const float& x, const float& y, const float& originX, const float& originY);
+	void draw(ResourceTexture* const texture, const float& x, const float& y, const float& originX, const float& originY);
 
-	void draw(Texture2D* const texture, const float& x, const float& y, const float& originX, const float& originY, const float& rotation);
+	void draw(ResourceTexture* const texture, const float& x, const float& y, const float& originX, const float& originY, const float& rotation);
 
 	void draw(BitmapFont* const font, const std::string& context, const float& x, const float& y, const float& r = 1.f, const float& g = 1.f, const float& b = 1.f, const float& a = 1.f);
 
@@ -47,7 +48,7 @@ private:
 
 	void compileShaders();
 
-	int texturePoolAdd(Texture2D* const texture);
+	int texturePoolAdd(ResourceTexture* const texture);
 
 	void flush();
 
@@ -89,7 +90,7 @@ private:
 
 		float* vertices;
 
-		Texture2D* texture;
+		ResourceTexture* texture;
 
 		ComPtr<ID3D11Buffer> vertexBuffer;
 	};

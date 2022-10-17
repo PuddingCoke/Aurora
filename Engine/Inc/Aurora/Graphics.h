@@ -3,9 +3,7 @@
 #ifndef _GRAPHICS_H_
 #define _GRAPHICS_H_
 
-#include<iostream>
-
-#include"Renderer.h"
+#include"DX/Resource/Buffer.h"
 
 class Graphics
 {

@@ -3,11 +3,11 @@
 #ifndef _COMPUTETEXTURE_H_
 #define _COMPUTETEXTURE_H_
 
-#include"Texture2D.h"
+#include"ResourceTexture.h"
 
-#include"DX/UnorderedAccessView.h"
+#include"DX/View/USView.h"
 
-class ComputeTexture :public Texture2D, public UnorderedAccessView
+class ComputeTexture :public Texture2D, public USView
 {
 public:
 

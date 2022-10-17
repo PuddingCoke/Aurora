@@ -240,7 +240,7 @@ TextureCube::TextureCube(const std::string& texturePath)
 
 TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up, const unsigned int& mipLevels)
 {
-	Texture2D* equirectangularMap = new Texture2D(texturePath);
+	ResourceTexture* equirectangularMap = new ResourceTexture(texturePath);
 	Shader* pixelShader = equirectangularZUP;
 	if (up.y > up.z)
 	{
@@ -302,14 +302,14 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 
 	Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
 
-	equirectangularMap->PSSetSRV(0);
+	ResManager::get()->PSSetSRV({ equirectangularMap }, 0);
 
 	TextureCube::shader->use();
 	pixelShader->use();
 
 	Renderer::setBlendState(States::get()->defBlendState.Get());
 
-	renderTexture->setRTV();
+	ResManager::get()->OMSetRTV({ renderTexture }, nullptr);
 
 	Renderer::setViewport(skyboxResolution, skyboxResolution);
 

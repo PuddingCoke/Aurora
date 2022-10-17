@@ -16,7 +16,7 @@ public:
 
 	std::shared_ptr<IBuffer> particleColorBuffer;
 
-	ComPtr<ID3D11UnorderedAccessView> uavView;
+	UnorderedAccessView uav;
 
 	Shader* displayVShader;
 
@@ -75,7 +75,7 @@ public:
 			uavDesc.Buffer.Flags = 0;
 			uavDesc.Buffer.NumElements = particleNum;
 
-			Renderer::device->CreateUnorderedAccessView(particlePosBuffer->get(), &uavDesc, uavView.GetAddressOf());
+			Renderer::device->CreateUnorderedAccessView(particlePosBuffer->get(), &uavDesc, uav.ReleaseAndGetAddressOf());
 		}
 
 		delete[] positions;
@@ -113,14 +113,11 @@ public:
 	{
 		computeShader->use();
 
-		Renderer::context->CSSetUnorderedAccessViews(0, 1, uavView.GetAddressOf(), nullptr);
+		ResManager::get()->CSSetUAV({ &uav }, 0);
 
 		Renderer::context->Dispatch(particleNum / 1000u, 1, 1);
 
 		Renderer::context->CSSetShader(nullptr, nullptr, 0);
-
-		ID3D11UnorderedAccessView* nullView[1] = { nullptr };
-		Renderer::context->CSSetUnorderedAccessViews(0, 1, nullView, nullptr);
 	}
 
 	void render() override

@@ -4,12 +4,12 @@
 #define _RENDERTEXTURE_H_
 
 #include<DirectXColors.h>
-#include<iterator>
 
-#include"Texture2D.h"
+#include"ResourceTexture.h"
 #include"Graphics.h"
+#include"DX/View/RSView.h"
 
-class RenderTexture :public Texture2D
+class RenderTexture :public Texture2D, public RSView
 {
 public:
 
@@ -17,33 +17,9 @@ public:
 
 	virtual ~RenderTexture();
 
-	void setMSAARTV(ID3D11DepthStencilView* const view = nullptr) const;
-
 	ID3D11RenderTargetView* getRTV() const;
 
-	void setRTV(ID3D11DepthStencilView* const view = nullptr) const;
-
-	void clearMSAARTV(const float color[4]) const;
-
-	void clearRTV(const float color[4]) const;
-
-	void resolve() const;
-
-	static void setRTVs(std::initializer_list<RenderTexture*> renderTextures, ID3D11DepthStencilView* view = nullptr);
-
-	static void setMSAARTVs(std::initializer_list<RenderTexture*> renderTextures, ID3D11DepthStencilView* msaaView = nullptr);
-
-	static void unbindAll();
-
-private:
-
-	static ID3D11RenderTargetView* renderTargetViews[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
-
-	ComPtr<ID3D11Texture2D> msaaTexture;
-
-	ComPtr<ID3D11RenderTargetView> msaaTarget;
-
-	ComPtr<ID3D11RenderTargetView> normalTarget;
+	void resolve(Texture2D* const texture) const;
 
 };
 

@@ -102,32 +102,24 @@ public:
 		depthStencilView->clear(D3D11_CLEAR_DEPTH);
 
 		renderTexture->clearRTV(DirectX::Colors::Transparent);
-		renderTexture->setRTV(depthStencilView->get());
+		ResManager::get()->OMSetRTV({ renderTexture }, depthStencilView->get());
 
 		attractor.render();
 
-		ID3D11RenderTargetView* view = nullptr;
-		Renderer::context->OMSetRenderTargets(1, &view, nullptr);
-
-		ID3D11ShaderResourceView* resourceViews[2] = { nullptr,nullptr };
-		Renderer::context->PSSetShaderResources(0, 2, resourceViews);
-
-		Texture2D* const texture = bloomEffect.process(renderTexture);
+		ResourceTexture* const texture = bloomEffect.process(renderTexture);
 		
+		ResManager::get()->unbindRTV();
 		Renderer::setDefRTV();
 		Renderer::clearDefRTV(DirectX::Colors::Black);
 
 		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
-		texture->PSSetSRV(0);
+		ResManager::get()->PSSetSRV({ texture }, 0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
 		Renderer::context->Draw(3, 0);
-
-		Renderer::context->OMSetRenderTargets(1, &view, nullptr);
-		Renderer::context->PSSetShaderResources(0, 2, resourceViews);
 	}
 };

@@ -23,7 +23,7 @@ public:
 
 	~BloomEffect();
 
-	Texture2D* process(Texture2D* const texture2D) const;
+	ShaderResourceView* process(ShaderResourceView* const texture2D) const;
 
 	void setExposure(const float& exposure);
 

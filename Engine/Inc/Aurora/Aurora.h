@@ -20,6 +20,8 @@
 #include"States.h"
 #include"Shader.h"
 #include"Math.h"
+#include"ResManager.h"
+
 #include"A3D/TextureCube.h"
 #include"A3D/ShadowMap.h"
 

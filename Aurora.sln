@@ -21,8 +21,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TimeTableCardioid", "TimeTa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GargantuaBlackHole", "GargantuaBlackHole\GargantuaBlackHole.vcxproj", "{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3DModelTest", "3DModelTest\3DModelTest.vcxproj", "{D72A7B7A-3445-4432-8EAA-F819F521FF0C}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleProject", "SampleProject\SampleProject.vcxproj", "{1379FAFE-78EF-42A5-A425-02B55759D293}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SteeringBehavior", "SteeringBehavior\SteeringBehavior.vcxproj", "{8E1B1D1B-B41D-496F-8D36-93945C67BFF3}"
@@ -117,14 +115,6 @@ Global
 		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Release|x64.Build.0 = Release|x64
 		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Release|x86.ActiveCfg = Release|Win32
 		{F2CD634F-E4AA-41DC-BE35-CADDA9BF8912}.Release|x86.Build.0 = Release|Win32
-		{D72A7B7A-3445-4432-8EAA-F819F521FF0C}.Debug|x64.ActiveCfg = Debug|x64
-		{D72A7B7A-3445-4432-8EAA-F819F521FF0C}.Debug|x64.Build.0 = Debug|x64
-		{D72A7B7A-3445-4432-8EAA-F819F521FF0C}.Debug|x86.ActiveCfg = Debug|Win32
-		{D72A7B7A-3445-4432-8EAA-F819F521FF0C}.Debug|x86.Build.0 = Debug|Win32
-		{D72A7B7A-3445-4432-8EAA-F819F521FF0C}.Release|x64.ActiveCfg = Release|x64
-		{D72A7B7A-3445-4432-8EAA-F819F521FF0C}.Release|x64.Build.0 = Release|x64
-		{D72A7B7A-3445-4432-8EAA-F819F521FF0C}.Release|x86.ActiveCfg = Release|Win32
-		{D72A7B7A-3445-4432-8EAA-F819F521FF0C}.Release|x86.Build.0 = Release|Win32
 		{1379FAFE-78EF-42A5-A425-02B55759D293}.Debug|x64.ActiveCfg = Debug|x64
 		{1379FAFE-78EF-42A5-A425-02B55759D293}.Debug|x64.Build.0 = Debug|x64
 		{1379FAFE-78EF-42A5-A425-02B55759D293}.Debug|x86.ActiveCfg = Debug|Win32

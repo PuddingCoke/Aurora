@@ -56,10 +56,6 @@ public:
 
 	void render()
 	{
-		depthView->clear(D3D11_CLEAR_DEPTH);
-		Renderer::clearDefRTV(DirectX::Colors::AliceBlue);
-		Renderer::setDefRTV(depthView->get());
-
 		ocean.update();
 
 		if (showWireframe)
@@ -70,6 +66,10 @@ public:
 		{
 			Renderer::context->RSSetState(States::get()->rasterCullBack.Get());
 		}
+
+		depthView->clear(D3D11_CLEAR_DEPTH);
+		Renderer::clearDefRTV(DirectX::Colors::AliceBlue);
+		Renderer::setDefRTV(depthView->get());
 
 		ocean.render();
 	}

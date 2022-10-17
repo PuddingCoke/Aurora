@@ -3,12 +3,13 @@
 #ifndef _TEXTURECUBE_H_
 #define _TEXTURECUBE_H_
 
-#include<Aurora/Texture2D.h>
+#include<Aurora/ResourceTexture.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/States.h>
 #include<Aurora/Math.h>
 #include<Aurora/Camera.h>
 #include<Aurora/Shader.h>
+#include<Aurora/ResManager.h>
 
 class TextureCube
 {
