@@ -4,11 +4,6 @@ RenderTexture::~RenderTexture()
 {
 }
 
-ID3D11RenderTargetView* RenderTexture::getRTV() const
-{
-	return renderTargetView.Get();
-}
-
 void RenderTexture::resolve(Texture2D* const texture) const
 {
 	Renderer::context->ResolveSubresource(texture->getTexture2D(), 0, this->texture.Get(), 0, format);
@@ -32,25 +27,25 @@ RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& heig
 			srvDesc.Texture2D.MipLevels = mipLevels;
 		}
 
-		Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResourceView.ReleaseAndGetAddressOf());
+		createSRV(texture.Get(), srvDesc);
 	}
 
 	{
-		D3D11_RENDER_TARGET_VIEW_DESC viewDesc = {};
-		viewDesc.Format = format;
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = format;
 
 		if (enableMSAA)
 		{
-			viewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 		}
 		else
 		{
-			viewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
-			viewDesc.Texture2D.MipSlice = 0;
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
+			rtvDesc.Texture2D.MipSlice = 0;
 		}
 
-		Renderer::device->CreateRenderTargetView(texture.Get(), &viewDesc, renderTargetView.ReleaseAndGetAddressOf());
+		createRTV(texture.Get(), rtvDesc);
 	}
-
-	Renderer::context->ClearRenderTargetView(renderTargetView.Get(), color);
+	
+	clearRTV(color);
 }

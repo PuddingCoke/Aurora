@@ -69,28 +69,19 @@
     <ClInclude Include="Inc\Aurora\DoubleRTV.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\Color.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Math.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\FadeEffect.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\ParticleSystem.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\A3D\DepthStencilView.h">
+    <ClInclude Include="Inc\Aurora\DX\View\DepthStencilView.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\A3D\TextureCube.h">
@@ -118,9 +109,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\RCTexture.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\HBAOEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\A2D\GameSceneManager.h">
@@ -157,6 +145,21 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\ResManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\RenderAPI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\PostProcessing\FadeEffect.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\PostProcessing\HBAOEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -212,22 +215,13 @@
     <ClCompile Include="Src\Aurora\DoubleRTV.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Aurora\Color.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\A3D\DepthStencilView.cpp">
+    <ClCompile Include="Src\Aurora\DX\View\DepthStencilView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Math.cpp">
@@ -266,9 +260,6 @@
     <ClCompile Include="Src\Aurora\RCTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\HBAOEffect.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Aurora\A2D\GameSceneManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -303,6 +294,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\DX\View\RUSView.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\RenderAPI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

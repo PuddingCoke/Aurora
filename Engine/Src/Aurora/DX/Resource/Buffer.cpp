@@ -1,11 +1,18 @@
 #include<Aurora/DX/Resource/Buffer.h>
 
-ID3D11Buffer* Buffer::get() const
+Buffer* Buffer::curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+
+ID3D11Buffer* Buffer::nullBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+
+UINT Buffer::nullStrides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+
+ID3D11Buffer* Buffer::getBuffer() const
 {
 	return buffer.Get();
 }
 
-Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage, const void* const data, const UINT& cpuaccessFlags, const UINT& miscFlags, const UINT& structureByteStride)
+Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage, const void* const data, const UINT& cpuaccessFlags, const UINT& miscFlags, const UINT& structureByteStride) :
+	boundOnIA(false)
 {
 	D3D11_BUFFER_DESC bd = {};
 	bd.ByteWidth = byteWidth;
@@ -39,32 +46,27 @@ void Buffer::unmap(const unsigned int& subresource) const
 	Renderer::context->Unmap(buffer.Get(), subresource);
 }
 
-void Buffer::VSSetBuffer(const unsigned int& slot) const
+bool Buffer::unbindFromVertexBuffer()
 {
-	Renderer::context->VSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
+	if (boundOnIA)
+	{
+		unbindVertexBuffer();
+		return true;
+	}
+
+	return false;
 }
 
-void Buffer::HSSetBuffer(const unsigned int& slot) const
+void Buffer::unbindVertexBuffer()
 {
-	Renderer::context->HSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
+	for (unsigned int i = 0; curBuffer[i]; i++)
+	{
+		curBuffer[i]->boundOnIA = false;
+		curBuffer[i] = nullptr;
+	}
+	Renderer::context->IASetVertexBuffers(0, D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT, nullBuffer, nullStrides, nullStrides);
 }
 
-void Buffer::DSSetBuffer(const unsigned int& slot) const
+void Buffer::bindVertexBuffer()
 {
-	Renderer::context->DSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
-}
-
-void Buffer::GSSetBuffer(const unsigned int& slot) const
-{
-	Renderer::context->GSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
-}
-
-void Buffer::PSSetBuffer(const unsigned int& slot) const
-{
-	Renderer::context->PSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
-}
-
-void Buffer::CSSetBuffer(const unsigned int& slot) const
-{
-	Renderer::context->CSSetConstantBuffers(slot, 1, buffer.GetAddressOf());
 }

@@ -11,6 +11,8 @@ public:
 
 	ShaderResourceView();
 
+	ShaderResourceView(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
+
 	virtual ~ShaderResourceView();
 
 	ShaderResourceView(const ShaderResourceView&) = delete;
@@ -24,7 +26,7 @@ protected:
 	//返回是否成功解绑
 	bool unbindFromSRV();
 
-	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
+	void createSRV(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
 
 private:
 
@@ -58,6 +60,8 @@ private:
 
 	//解决binding hazard的问题
 	virtual void bindSRV();
+
+	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 
 	int VSSlot;
 

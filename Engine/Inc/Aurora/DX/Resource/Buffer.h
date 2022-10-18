@@ -19,7 +19,7 @@ public:
 	Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage,
 		const void* const data = nullptr, const UINT& cpuaccessFlags = 0, const UINT& miscFlags = 0, const UINT& structureByteStride = 0);
 
-	ID3D11Buffer* get() const;
+	ID3D11Buffer* getBuffer() const;
 
 	D3D11_MAPPED_SUBRESOURCE map(const unsigned int& subresource, const D3D11_MAP& mapType = D3D11_MAP_WRITE_DISCARD, const unsigned int& mapFlags = 0) const;
 
@@ -27,21 +27,26 @@ public:
 
 protected:
 
+	bool unbindFromVertexBuffer();
+
+private:
+
 	friend class ResManager;
 
-	void VSSetBuffer(const unsigned int& slot = 0) const;
+	static Buffer* curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
-	void HSSetBuffer(const unsigned int& slot = 0) const;
+	static ID3D11Buffer* nullBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
-	void DSSetBuffer(const unsigned int& slot = 0) const;
-	
-	void GSSetBuffer(const unsigned int& slot = 0) const;
-	
-	void PSSetBuffer(const unsigned int& slot = 0) const;
-	
-	void CSSetBuffer(const unsigned int& slot = 0) const;
+	static UINT nullStrides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+
+	static void unbindVertexBuffer();
+
+	//解决绑定时的binding hazard
+	virtual void bindVertexBuffer();
 
 	ComPtr<ID3D11Buffer> buffer;
+
+	bool boundOnIA;
 
 };
 

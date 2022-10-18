@@ -19,6 +19,12 @@ ShaderResourceView::ShaderResourceView() :
 {
 }
 
+ShaderResourceView::ShaderResourceView(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc) :
+	VSSlot(-1), HSSlot(-1), DSSlot(-1), GSSlot(-1), PSSlot(-1), CSSlot(-1)
+{
+	createSRV(resource, desc);
+}
+
 ShaderResourceView::~ShaderResourceView()
 {
 }
@@ -106,6 +112,11 @@ bool ShaderResourceView::unbindFromSRV()
 	}
 
 	return success;
+}
+
+void ShaderResourceView::createSRV(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc)
+{
+	Renderer::device->CreateShaderResourceView(resource, &desc, shaderResourceView.ReleaseAndGetAddressOf());
 }
 
 void ShaderResourceView::bindSRV()

@@ -22,6 +22,8 @@
 #include"Math.h"
 #include"ResManager.h"
 
+#include"RenderAPI.h"
+
 #include"A3D/TextureCube.h"
 #include"A3D/ShadowMap.h"
 

@@ -28,8 +28,10 @@ int Aurora::iniEngine(const Configuration& config)
 	}
 
 	iniWindow();
-	
+
 	Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, config.enableDebug, config.msaaLevel);
+
+	RenderAPI::instance = new RenderAPI(screenWidth, screenHeight, config.msaaLevel);
 
 	States::instance = new States();
 
@@ -65,29 +67,25 @@ int Aurora::iniEngine(const Configuration& config)
 		break;
 	}
 
-	Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
+	RenderAPI::get()->SetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-	Renderer::setBlendState(States::get()->defBlendState.Get());
+	RenderAPI::get()->SetBlendState(States::get()->defBlendState.Get());
 
-	Renderer::context->RSSetState(States::get()->rasterCullBack.Get());
+	RenderAPI::get()->SetRasterState(States::get()->rasterCullBack.Get());
 
-	Renderer::context->OMSetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
+	RenderAPI::get()->SetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
 
-	Renderer::clearDefRTV(DirectX::Colors::Black);
+	RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 
 	//pixel compute shader占用第一个槽位来获取跟时间相关的变量
-	Renderer::context->PSSetConstantBuffers(0, 1, Graphics::instance->deltaTimeBuffer.GetAddressOf());
-	Renderer::context->CSSetConstantBuffers(0, 1, Graphics::instance->deltaTimeBuffer.GetAddressOf());
+	RenderAPI::get()->PSSetBuffer({ Graphics::instance->deltaTimeBuffer }, 0);
+	RenderAPI::get()->CSSetBuffer({ Graphics::instance->deltaTimeBuffer }, 0);
 
 	//vertex geometry hull domain shader占用前两个槽位来获取矩阵信息或者摄像头的信息
-	{
-		ID3D11Buffer* const buffers[2] = { Camera::getProjBuffer(),Camera::getViewBuffer() };
-
-		Renderer::context->VSSetConstantBuffers(0, 2, buffers);
-		Renderer::context->HSSetConstantBuffers(0, 2, buffers);
-		Renderer::context->DSSetConstantBuffers(0, 2, buffers);
-		Renderer::context->GSSetConstantBuffers(0, 2, buffers);
-	}
+	RenderAPI::get()->VSSetBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
+	RenderAPI::get()->HSSetBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
+	RenderAPI::get()->DSSetBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
+	RenderAPI::get()->GSSetBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
 
 	return 0;
 }
@@ -119,6 +117,8 @@ void Aurora::iniGame(Game* const game)
 	delete Camera::instance;
 
 	delete ResManager::instance;
+
+	delete RenderAPI::instance;
 
 	Shader::release();
 

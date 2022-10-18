@@ -9,6 +9,12 @@ RenderTargetView::RenderTargetView() :
 {
 }
 
+RenderTargetView::RenderTargetView(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc):
+	boundOnRTV(false)
+{
+	createRTV(resource, desc);
+}
+
 RenderTargetView::~RenderTargetView()
 {
 }
@@ -16,6 +22,11 @@ RenderTargetView::~RenderTargetView()
 void RenderTargetView::clearRTV(const float* color)
 {
 	Renderer::context->ClearRenderTargetView(renderTargetView.Get(), color);
+}
+
+ID3D11RenderTargetView* RenderTargetView::getRTV() const
+{
+	return renderTargetView.Get();
 }
 
 void RenderTargetView::unbindRTV()
@@ -28,15 +39,22 @@ void RenderTargetView::unbindRTV()
 	Renderer::context->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, nullRTV, nullptr);
 }
 
+void RenderTargetView::bindRTV()
+{
+}
+
 bool RenderTargetView::unbindFromRTV()
 {
-	bool success = false;
-
 	if (boundOnRTV)
 	{
 		unbindRTV();
-		success = true;
+		return true;
 	}
 
-	return success;
+	return false;
+}
+
+void RenderTargetView::createRTV(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc)
+{
+	Renderer::device->CreateRenderTargetView(resource, &desc, renderTargetView.ReleaseAndGetAddressOf());
 }

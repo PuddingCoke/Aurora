@@ -15,7 +15,7 @@ public:
 
 	void operator=(const Graphics&) = delete;
 
-	static ID3D11Buffer* getDeltaTimeBuffer();
+	static Buffer* getDeltaTimeBuffer();
 
 	static const float& getDeltaTime();
 
@@ -23,15 +23,15 @@ public:
 
 	static float getFPS();
 
-	static const float& getAspectRatio();
+	static void setRecordConfig(const unsigned int& frameToEncode, const unsigned int& frameRate);
 
 	static const int& getWidth();
 
 	static const int& getHeight();
 
-	static const unsigned int& getMSAALevel();
+	static const float& getAspectRatio();
 
-	static void setRecordConfig(const unsigned int& frameToEncode, const unsigned int& frameRate);
+	static const unsigned int& getMSAALevel();
 
 private:
 
@@ -41,9 +41,11 @@ private:
 
 	Graphics(const int& width, const int& height, const unsigned int& msaaLevel);
 
+	~Graphics();
+
 	void updateDeltaTimeBuffer();
 
-	ComPtr<ID3D11Buffer> deltaTimeBuffer;
+	Buffer* deltaTimeBuffer;
 
 	struct RecordConfig
 	{

@@ -298,20 +298,20 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 		DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f)
 	};
 
-	Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	RenderAPI::get()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
 
-	ResManager::get()->PSSetSRV({ equirectangularMap }, 0);
+	RenderAPI::get()->PSSetSRV({ equirectangularMap }, 0);
 
 	TextureCube::shader->use();
 	pixelShader->use();
 
-	Renderer::setBlendState(States::get()->defBlendState.Get());
+	RenderAPI::get()->SetBlendState(States::get()->defBlendState.Get());
 
-	ResManager::get()->OMSetRTV({ renderTexture }, nullptr);
+	RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
 
-	Renderer::setViewport(skyboxResolution, skyboxResolution);
+	RenderAPI::get()->SetViewport(skyboxResolution, skyboxResolution);
 
 	Camera::setProj(Math::pi / 2.f, 1.f, 0.1f, 1000.f);
 
@@ -336,7 +336,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 		Renderer::context->GenerateMips(cubeSRV.Get());
 	}
 
-	Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
+	RenderAPI::get()->SetViewport(Graphics::getWidth(), Graphics::getHeight());
 
 	delete renderTexture;
 	delete equirectangularMap;

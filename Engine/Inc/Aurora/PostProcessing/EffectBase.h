@@ -8,8 +8,8 @@
 #include<Aurora/States.h>
 #include<Aurora/Shader.h>
 #include<Aurora/Graphics.h>
-#include<Aurora/ResManager.h>
 #include<Aurora/ResourceTexture.h>
+#include<Aurora/RenderAPI.h>
 
 class EffectBase
 {

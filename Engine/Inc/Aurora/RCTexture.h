@@ -3,11 +3,8 @@
 #ifndef _RCTEXTURE_H_
 #define _RCTEXTURE_H_
 
-#include"Shader.h"
-#include"ComputeTexture.h"
+#include"DX/Resource/Texture2D.h"
 #include"DX/View/RUSView.h"
-
-#include <DirectXColors.h>
 
 class RCTexture :public Texture2D, public RUSView
 {

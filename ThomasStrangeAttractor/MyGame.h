@@ -6,7 +6,7 @@
 #include<Aurora/Event.h>
 #include<Aurora/States.h>
 #include<Aurora/RenderTexture.h>
-#include<Aurora/A3D/DepthStencilView.h>
+#include<Aurora/DX/View/DepthStencilView.h>
 #include<Aurora/A3D/OrbitCamera.h>
 
 #include"StrangeAttractor.h"
@@ -100,26 +100,24 @@ public:
 	void render() override
 	{
 		depthStencilView->clear(D3D11_CLEAR_DEPTH);
-
 		renderTexture->clearRTV(DirectX::Colors::Transparent);
-		ResManager::get()->OMSetRTV({ renderTexture }, depthStencilView->get());
+		RenderAPI::get()->OMSetRTV({ renderTexture }, depthStencilView->get());
 
 		attractor.render();
 
-		ResourceTexture* const texture = bloomEffect.process(renderTexture);
+		ShaderResourceView* const textureSRV = bloomEffect.process(renderTexture);
 		
-		ResManager::get()->unbindRTV();
-		Renderer::setDefRTV();
-		Renderer::clearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
 
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
-		ResManager::get()->PSSetSRV({ texture }, 0);
+		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+		RenderAPI::get()->PSSetSRV({ textureSRV }, 0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 	}
 };

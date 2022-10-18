@@ -3,7 +3,7 @@
 #include<Aurora/Game.h>
 #include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/A3D/FPSCamera.h>
-#include<Aurora/A3D/DepthStencilView.h>
+#include<Aurora/DX/View/DepthStencilView.h>
 
 #include"Ocean.h"
 
@@ -60,16 +60,16 @@ public:
 
 		if (showWireframe)
 		{
-			Renderer::context->RSSetState(wireframeRS.Get());
+			RenderAPI::get()->SetRasterState(wireframeRS.Get());
 		}
 		else
 		{
-			Renderer::context->RSSetState(States::get()->rasterCullBack.Get());
+			RenderAPI::get()->SetRasterState(States::get()->rasterCullBack.Get());
 		}
 
 		depthView->clear(D3D11_CLEAR_DEPTH);
-		Renderer::clearDefRTV(DirectX::Colors::AliceBlue);
-		Renderer::setDefRTV(depthView->get());
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::AliceBlue);
+		RenderAPI::get()->OMSetDefRTV(depthView->get());
 
 		ocean.render();
 	}

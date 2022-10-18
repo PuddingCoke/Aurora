@@ -7,8 +7,8 @@
 #include<Aurora/States.h>
 #include<Aurora/Camera.h>
 #include<Aurora/ComputeTexture.h>
-#include<Aurora/ResManager.h>
 #include<Aurora/ComputeBuffer.h>
+#include<Aurora/RenderAPI.h>
 
 #include<memory>
 
@@ -190,40 +190,40 @@ inline void Ocean::calculatePhillipTexture() const
 	memcpy(oceanParamBuffer->map(0).pData, &param, sizeof(Param));
 	oceanParamBuffer->unmap(0);
 
-	ResManager::get()->CSSetBuffer({ oceanParamBuffer }, 1);
-	ResManager::get()->CSSetSRV({ gaussTexture }, 0);
-	ResManager::get()->CSSetUAV({ tildeh0k,tildeh0mkconj }, 0);
+	RenderAPI::get()->CSSetBuffer({ oceanParamBuffer }, 1);
+	RenderAPI::get()->CSSetSRV({ gaussTexture }, 0);
+	RenderAPI::get()->CSSetUAV({ tildeh0k,tildeh0mkconj }, 0);
 
 	phillipSpectrumShader->use();
 
-	Renderer::context->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
+	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 }
 
 inline void Ocean::IFFT(ComputeTexture* const cTexture) const
 {
-	ResManager::get()->CSSetUAV({ tempTexture }, 0);
-	ResManager::get()->CSSetSRV({ cTexture }, 0);
+	RenderAPI::get()->CSSetUAV({ tempTexture }, 0);
+	RenderAPI::get()->CSSetSRV({ cTexture }, 0);
 
 	ifftShader->use();
-	Renderer::context->Dispatch(param.mapResolution, 1u, 1u);
+	RenderAPI::get()->Dispatch(param.mapResolution, 1u, 1u);
 
-	ResManager::get()->CSSetUAV({ cTexture }, 0);
-	ResManager::get()->CSSetSRV({ tempTexture }, 0);
+	RenderAPI::get()->CSSetUAV({ cTexture }, 0);
+	RenderAPI::get()->CSSetSRV({ tempTexture }, 0);
 
 	ifftShader->use();
-	Renderer::context->Dispatch(param.mapResolution, 1u, 1u);
+	RenderAPI::get()->Dispatch(param.mapResolution, 1u, 1u);
 }
 
 inline void Ocean::update() const
 {
-	ResManager::get()->CSSetSRV({ tildeh0k,tildeh0mkconj }, 0);
-	ResManager::get()->CSSetUAV({ displacementY,displacementX,displacementZ,slopeXTexture,slopeZTexture }, 0);
+	RenderAPI::get()->CSSetSRV({ tildeh0k,tildeh0mkconj }, 0);
+	RenderAPI::get()->CSSetUAV({ displacementY,displacementX,displacementZ,slopeXTexture,slopeZTexture }, 0);
 
-	ResManager::get()->CSSetBuffer({ oceanParamBuffer }, 1);
+	RenderAPI::get()->CSSetBuffer({ oceanParamBuffer }, 1);
 
 	displacementShader->use();
 
-	Renderer::context->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
+	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
 	IFFT(displacementY);
 	IFFT(displacementX);
@@ -231,39 +231,32 @@ inline void Ocean::update() const
 	IFFT(slopeXTexture);
 	IFFT(slopeZTexture);
 
-	ResManager::get()->CSSetSRV({ displacementY,displacementX,displacementZ,slopeXTexture,slopeZTexture }, 0);
-	ResManager::get()->CSSetUAV({ displacementXYZ,normalTexture }, 0);
+	RenderAPI::get()->CSSetSRV({ displacementY,displacementX,displacementZ,slopeXTexture,slopeZTexture }, 0);
+	RenderAPI::get()->CSSetUAV({ displacementXYZ,normalTexture }, 0);
 
 	signCorrectionShader->use();
-	Renderer::context->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
+	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 }
 
 inline void Ocean::render() const
 {
-	const unsigned int stride = sizeof(Vertex);
-	const unsigned int offset = 0;
-
-	ID3D11Buffer* const vertexBuffer = patchVertexBuffer->get();
-
-	Renderer::context->IASetInputLayout(inputLayout.Get());
-	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
-	Renderer::context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+	RenderAPI::get()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+	RenderAPI::get()->IASetVertexBuffer({ patchVertexBuffer }, { sizeof(Vertex) }, { 0 });
 
 	oceanVShader->use();
 	oceanHShader->use();
 	oceanDShader->use();
 	oceanPShader->use();
 
-	ResManager::get()->DSSetSRV({ displacementXYZ }, 0);
-	ResManager::get()->PSSetSRV({ normalTexture }, 0);
+	RenderAPI::get()->DSSetSRV({ displacementXYZ }, 0);
+	RenderAPI::get()->PSSetSRV({ normalTexture }, 0);
 
-	Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
-	Renderer::context->DSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
+	RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+	RenderAPI::get()->DSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 
-	ID3D11Buffer* const constantBuffers[1] = { Camera::getViewBuffer() };
+	RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
 
-	Renderer::context->PSSetConstantBuffers(1, 1, constantBuffers);
-
-	Renderer::draw(4 * (patchSize - 1u) * (patchSize - 1u), 0u);
+	RenderAPI::get()->Draw(4 * (patchSize - 1u) * (patchSize - 1u), 0u);
 }
 

@@ -59,18 +59,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 			blurParam.texelSize = DirectX::XMFLOAT2(1.f / resolutions[i].x, 1.f / resolutions[i].y);
 			blurParam.iteration = iterations[i];
 
-			D3D11_BUFFER_DESC bd = {};
-			bd.ByteWidth = sizeof(BlurParam);
-			//也许可以在程序运行中动态调整weight和offset
-			bd.Usage = D3D11_USAGE_IMMUTABLE;
-			bd.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-			bd.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-			bd.StructureByteStride = sizeof(BlurParam);
-
-			D3D11_SUBRESOURCE_DATA data = {};
-			data.pSysMem = &blurParam;
-
-			Renderer::device->CreateBuffer(&bd, &data, blurParamBuffer[i].ReleaseAndGetAddressOf());
+			blurParamBuffer[i] = new Buffer(sizeof(BlurParam), D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE, &blurParam, 0, D3D11_RESOURCE_MISC_BUFFER_STRUCTURED, sizeof(BlurParam));
 
 			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 			srvDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -78,21 +67,13 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 			srvDesc.Buffer.FirstElement = 0;
 			srvDesc.Buffer.NumElements = 1;
 
-			Renderer::device->CreateShaderResourceView(blurParamBuffer[i].Get(), &srvDesc, blurParamSRV[i].ReleaseAndGetAddressOf());
+			blurParamSRV[i] = new ShaderResourceView(blurParamBuffer[i]->getBuffer(), srvDesc);
 		}
 	}
 
-	{
-		D3D11_BUFFER_DESC cbd = {};
-		cbd.Usage = D3D11_USAGE_DYNAMIC;
-		cbd.ByteWidth = sizeof(BloomParam);
-		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bloomParamBuffer = new Buffer(sizeof(BloomParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
 
-		Renderer::device->CreateBuffer(&cbd, nullptr, bloomParamBuffer.ReleaseAndGetAddressOf());
-
-		applyChange();
-	}
+	applyChange();
 }
 
 BloomEffect::~BloomEffect()
@@ -101,7 +82,11 @@ BloomEffect::~BloomEffect()
 	{
 		delete rcTextures[i * 2u];
 		delete rcTextures[i * 2u + 1u];
+		delete blurParamBuffer[i];
+		delete blurParamSRV[i];
 	}
+
+	delete bloomParamBuffer;
 
 	delete originTexture;
 	delete bloomTexture;
@@ -115,98 +100,96 @@ BloomEffect::~BloomEffect()
 
 ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) const
 {
-	Renderer::setBlendState(nullptr);
-	Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
-	Renderer::context->CSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
-	Renderer::context->PSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
-	Renderer::context->CSSetConstantBuffers(1, 1, bloomParamBuffer.GetAddressOf());
+	RenderAPI::get()->SetBlendState(nullptr);
+	RenderAPI::get()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+	RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+	RenderAPI::get()->PSSetBuffer({ bloomParamBuffer }, 1);
+	RenderAPI::get()->CSSetBuffer({ bloomParamBuffer }, 1);
 	Shader::displayVShader->use();
 
 	bloomExtract->use();
-	Renderer::setViewport(bloomWidth, bloomHeight);
-	ResManager::get()->OMSetRTV({ originTexture,bloomTexture }, nullptr);
-	ResManager::get()->PSSetSRV({ texture2D }, 0);
-	Renderer::drawQuad();
+	RenderAPI::get()->SetViewport(bloomWidth, bloomHeight);
+	RenderAPI::get()->OMSetRTV({ originTexture,bloomTexture }, nullptr);
+	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
+	RenderAPI::get()->DrawQuad();
 
 	Shader::displayPShader->use();
-	Renderer::setViewport(resolutions[0].x, resolutions[0].y);
-	ResManager::get()->OMSetRTV({ rcTextures[0] }, nullptr);
-	ResManager::get()->PSSetSRV({ bloomTexture }, 0);
-	Renderer::drawQuad();
+	RenderAPI::get()->SetViewport(resolutions[0].x, resolutions[0].y);
+	RenderAPI::get()->OMSetRTV({ rcTextures[0] }, nullptr);
+	RenderAPI::get()->PSSetSRV({ bloomTexture }, 0);
+	RenderAPI::get()->DrawQuad();
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		Renderer::context->CSSetShaderResources(1, 1, blurParamSRV[i].GetAddressOf());
+		RenderAPI::get()->CSSetSRV({ blurParamSRV[i] }, 1);
 
 		bloomHBlurShader->use();
-		ResManager::get()->CSSetUAV({ rcTextures[i * 2 + 1] }, 0);
-		ResManager::get()->CSSetSRV({ rcTextures[i * 2] }, 0);
-		Renderer::context->Dispatch(rcTextures[i * 2]->getWidth() / workGroupSize.x, rcTextures[i * 2]->getHeight() / workGroupSize.y + 1, 1);
+		RenderAPI::get()->CSSetUAV({ rcTextures[i * 2 + 1] }, 0);
+		RenderAPI::get()->CSSetSRV({ rcTextures[i * 2] }, 0);
+		RenderAPI::get()->Dispatch(rcTextures[i * 2]->getWidth() / workGroupSize.x, rcTextures[i * 2]->getHeight() / workGroupSize.y + 1, 1);
 
 		bloomVBlurShader->use();
-		ResManager::get()->CSSetUAV({ rcTextures[i * 2] }, 0);
-		ResManager::get()->CSSetSRV({ rcTextures[i * 2 + 1] }, 0);
-		Renderer::context->Dispatch(rcTextures[i * 2]->getWidth() / workGroupSize.x, rcTextures[i * 2]->getHeight() / workGroupSize.y + 1, 1);
+		RenderAPI::get()->CSSetUAV({ rcTextures[i * 2] }, 0);
+		RenderAPI::get()->CSSetSRV({ rcTextures[i * 2 + 1] }, 0);
+		RenderAPI::get()->Dispatch(rcTextures[i * 2]->getWidth() / workGroupSize.x, rcTextures[i * 2]->getHeight() / workGroupSize.y + 1, 1);
 
-		Renderer::setViewport(resolutions[i + 1].x, resolutions[i + 1].y);
+		RenderAPI::get()->SetViewport(resolutions[i + 1].x, resolutions[i + 1].y);
 
 		Shader::displayPShader->use();
-		ResManager::get()->OMSetRTV({ rcTextures[i * 2 + 2] }, nullptr);
-		ResManager::get()->PSSetSRV({ rcTextures[i * 2] }, 0);
-		Renderer::drawQuad();
+		RenderAPI::get()->OMSetRTV({ rcTextures[i * 2 + 2] }, nullptr);
+		RenderAPI::get()->PSSetSRV({ rcTextures[i * 2] }, 0);
+		RenderAPI::get()->DrawQuad();
 	}
 
-	Renderer::context->CSSetShaderResources(1, 1, blurParamSRV[blurSteps - 1].GetAddressOf());
+	RenderAPI::get()->CSSetSRV({ blurParamSRV[blurSteps - 1] }, 1);
 
 	for (int i = 0; i < 2; i++)
 	{
 		bloomHBlurShader->use();
-		ResManager::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
-		ResManager::get()->CSSetSRV({ rcTextures[(blurSteps - 1) * 2] }, 0);
-		Renderer::context->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
+		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
+		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 1) * 2] }, 0);
+		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
 
 		bloomVBlurShader->use();
-		ResManager::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2] }, 0);
-		ResManager::get()->CSSetSRV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
-		Renderer::context->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
+		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2] }, 0);
+		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
+		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
 	}
 
-	Renderer::setBlendState(States::get()->addtiveBlend.Get());
+	RenderAPI::get()->SetBlendState(States::get()->addtiveBlend.Get());
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		Renderer::setViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
-		Renderer::context->CSSetShaderResources(1, 1, blurParamSRV[blurSteps - 2 - i].GetAddressOf());
+		RenderAPI::get()->SetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
+		RenderAPI::get()->CSSetSRV({ blurParamSRV[blurSteps - 2 - i] }, 1);
 
 		bloomHBlurShader->use();
-		ResManager::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
-		ResManager::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
-		Renderer::context->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
+		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
+		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
+		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
 
 		bloomVBlurShader->use();
-		ResManager::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
-		ResManager::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
-		Renderer::context->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
+		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
+		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
+		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
 
 		Shader::displayPShader->use();
-		ResManager::get()->OMSetRTV({ rcTextures[(blurSteps - 2 - i) * 2] }, nullptr);
-		ResManager::get()->PSSetSRV({ rcTextures[(blurSteps - 1 - i) * 2] }, 0);
-		Renderer::drawQuad();
+		RenderAPI::get()->OMSetRTV({ rcTextures[(blurSteps - 2 - i) * 2] }, nullptr);
+		RenderAPI::get()->PSSetSRV({ rcTextures[(blurSteps - 1 - i) * 2] }, 0);
+		RenderAPI::get()->DrawQuad();
 	}
 
-	Renderer::setViewport(bloomWidth, bloomHeight);
-	ResManager::get()->OMSetRTV({ originTexture }, nullptr);
-	ResManager::get()->PSSetSRV({ rcTextures[0] }, 0);
-	Renderer::drawQuad();
+	RenderAPI::get()->SetViewport(bloomWidth, bloomHeight);
+	RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
+	RenderAPI::get()->PSSetSRV({ rcTextures[0] }, 0);
+	RenderAPI::get()->DrawQuad();
 
 	bloomFinal->use();
 	outputRTV->clearRTV(DirectX::Colors::Black);
-	ResManager::get()->OMSetRTV({ outputRTV }, nullptr);
-	ResManager::get()->PSSetSRV({ originTexture }, 0);
-	Renderer::drawQuad();
-
-	Renderer::context->CSSetShader(nullptr, nullptr, 0);
+	RenderAPI::get()->OMSetRTV({ outputRTV }, nullptr);
+	RenderAPI::get()->PSSetSRV({ originTexture }, 0);
+	RenderAPI::get()->DrawQuad();
 
 	return outputRTV;
 }
@@ -253,10 +236,8 @@ const float& BloomEffect::getIntensity() const
 
 void BloomEffect::applyChange() const
 {
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(bloomParamBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &bloomParam, sizeof(BloomParam));
-	Renderer::context->Unmap(bloomParamBuffer.Get(), 0);
+	memcpy(bloomParamBuffer->map(0).pData, &bloomParam, sizeof(BloomParam));
+	bloomParamBuffer->unmap(0);
 }
 
 void BloomEffect::compileShaders()

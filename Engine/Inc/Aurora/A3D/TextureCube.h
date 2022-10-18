@@ -9,7 +9,7 @@
 #include<Aurora/Math.h>
 #include<Aurora/Camera.h>
 #include<Aurora/Shader.h>
-#include<Aurora/ResManager.h>
+#include<Aurora/RenderAPI.h>
 
 class TextureCube
 {

@@ -17,14 +17,14 @@ public:
 
 	void operator=(const UnorderedAccessView&) = delete;
 
-	ID3D11UnorderedAccessView** ReleaseAndGetAddressOf();
+	ID3D11UnorderedAccessView* getUAV() const;
 
 protected:
 
 	//是否成功解绑
 	bool unbindFromUAV();
 
-	ComPtr<ID3D11UnorderedAccessView> unorderedAccessView;
+	void createUAV(ID3D11Resource* const resource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc);
 
 private:
 
@@ -36,6 +36,8 @@ private:
 
 	//解决binding hazard的问题
 	virtual void bindUAV() = 0;
+
+	ComPtr<ID3D11UnorderedAccessView> unorderedAccessView;
 
 	int UAVSlot;
 

@@ -13,22 +13,25 @@ UnorderedAccessView::~UnorderedAccessView()
 {
 }
 
-ID3D11UnorderedAccessView** UnorderedAccessView::ReleaseAndGetAddressOf()
+ID3D11UnorderedAccessView* UnorderedAccessView::getUAV() const
 {
-	return unorderedAccessView.ReleaseAndGetAddressOf();
+	return unorderedAccessView.Get();
 }
 
 bool UnorderedAccessView::unbindFromUAV()
 {
-	bool success = false;
-
 	if (UAVSlot != -1)
 	{
 		Renderer::context->CSSetUnorderedAccessViews(UAVSlot, 1, nullUAV, nullptr);
 		curUAV[UAVSlot] = nullptr;
 		UAVSlot = -1;
-		success = true;
+		return true;
 	}
 
-	return success;
+	return false;
+}
+
+void UnorderedAccessView::createUAV(ID3D11Resource* const resource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc)
+{
+	Renderer::device->CreateUnorderedAccessView(resource, &desc, unorderedAccessView.ReleaseAndGetAddressOf());
 }

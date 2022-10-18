@@ -10,7 +10,7 @@
 #include<Aurora/RenderTexture.h>
 #include<Aurora/Shader.h>
 #include<Aurora/States.h>
-#include<Aurora/ResManager.h>
+#include<Aurora/RenderAPI.h>
 
 class SpriteBatch
 {

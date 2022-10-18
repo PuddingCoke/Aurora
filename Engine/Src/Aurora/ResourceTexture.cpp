@@ -37,5 +37,5 @@ void ResourceTexture::createShaderResource()
 		srvDesc.Texture2D.MipLevels = mipLevels;
 	}
 
-	Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResourceView.ReleaseAndGetAddressOf());
+	createSRV(texture.Get(), srvDesc);
 }

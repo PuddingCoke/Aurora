@@ -74,11 +74,11 @@ private:
 	//float2 texelSize
 	//int iteration
 	//float v0
-	ComPtr<ID3D11Buffer> blurParamBuffer[blurSteps];
+	Buffer* blurParamBuffer[blurSteps];
 
-	ComPtr<ID3D11ShaderResourceView> blurParamSRV[blurSteps];
+	ShaderResourceView* blurParamSRV[blurSteps];
 
-	ComPtr<ID3D11Buffer> bloomParamBuffer;
+	Buffer* bloomParamBuffer;
 
 	struct BloomParam
 	{

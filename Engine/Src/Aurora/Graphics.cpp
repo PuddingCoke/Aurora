@@ -2,9 +2,9 @@
 
 Graphics* Graphics::instance = nullptr;
 
-ID3D11Buffer* Graphics::getDeltaTimeBuffer()
+Buffer* Graphics::getDeltaTimeBuffer()
 {
-	return instance->deltaTimeBuffer.Get();
+	return instance->deltaTimeBuffer;
 }
 
 const float& Graphics::getDeltaTime()
@@ -33,9 +33,10 @@ float Graphics::getFPS()
 	return 20.f / sumTime;
 }
 
-const float& Graphics::getAspectRatio()
+void Graphics::setRecordConfig(const unsigned int& frameToEncode, const unsigned int& frameRate)
 {
-	return instance->aspectRatio;
+	instance->recordConfig.frameToEncode = frameToEncode;
+	instance->recordConfig.frameRate = frameRate;
 }
 
 const int& Graphics::getWidth()
@@ -48,41 +49,32 @@ const int& Graphics::getHeight()
 	return instance->height;
 }
 
+const float& Graphics::getAspectRatio()
+{
+	return instance->aspectRatio;
+}
+
 const unsigned int& Graphics::getMSAALevel()
 {
 	return instance->msaaLevel;
 }
 
-void Graphics::setRecordConfig(const unsigned int& frameToEncode, const unsigned int& frameRate)
-{
-	instance->recordConfig.frameToEncode = frameToEncode;
-	instance->recordConfig.frameRate = frameRate;
-}
-
 Graphics::Graphics(const int& width, const int& height, const unsigned int& msaaLevel) :
-	width(width), height(height), msaaLevel(msaaLevel), aspectRatio((float)width / (float)height), fpsCalculator{}, deltaTime{ 0,0,0,0 }, recordConfig{ 1800,60 }
+	width(width), height(height), msaaLevel(msaaLevel), aspectRatio((float)width / (float)height), fpsCalculator{}, deltaTime{ 0,0,0,0 }, recordConfig{ 1800,60 },
+	deltaTimeBuffer(new Buffer(sizeof(DeltaTime),D3D11_BIND_CONSTANT_BUFFER,D3D11_USAGE_DYNAMIC,nullptr,D3D11_CPU_ACCESS_WRITE))
 {
 	std::cout << "[class Graphics] resolution:" << width << " " << height << "\n";
 	std::cout << "[class Graphics] aspectRatio:" << aspectRatio << "\n";
 	std::cout << "[class Graphics] multisample level:" << msaaLevel << "\n";
+}
 
-	//初始化和时间相关的Constant Buffer
-	{
-		D3D11_BUFFER_DESC cbd = {};
-		cbd.Usage = D3D11_USAGE_DYNAMIC;
-		cbd.ByteWidth = sizeof(DeltaTime);
-		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-		Renderer::device->CreateBuffer(&cbd, nullptr, deltaTimeBuffer.ReleaseAndGetAddressOf());
-		updateDeltaTimeBuffer();
-	}
+Graphics::~Graphics()
+{
+	delete deltaTimeBuffer;
 }
 
 void Graphics::updateDeltaTimeBuffer()
 {
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(deltaTimeBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &deltaTime, sizeof(DeltaTime));
-	Renderer::context->Unmap(deltaTimeBuffer.Get(), 0);
+	memcpy(deltaTimeBuffer->map(0).pData, &deltaTime, sizeof(DeltaTime));
+	deltaTimeBuffer->unmap(0);
 }

@@ -58,7 +58,7 @@ void SpriteBatch::end()
 	for (int i = 0; i < fontPool.size(); i++)
 	{
 		fontPool[i]->updateVerticesData();
-		ResManager::get()->PSSetSRV({ fontPool[i]->rTexture }, 0);
+		RenderAPI::get()->PSSetSRV({ fontPool[i]->rTexture }, 0);
 		Renderer::context->IASetVertexBuffers(0, 1, fontPool[i]->vertexBuffer.GetAddressOf(), &stride, &offset);
 		fontPool[i]->render();
 	}
@@ -373,7 +373,7 @@ void SpriteBatch::flush()
 	for (int i = 0; i < TextureSlot::curTextureNum; i++)
 	{
 		texturePool[i].updateVertices();
-		ResManager::get()->PSSetSRV({ texturePool[i].texture }, 0);
+		RenderAPI::get()->PSSetSRV({ texturePool[i].texture }, 0);
 		Renderer::context->IASetVertexBuffers(0, 1, texturePool[i].vertexBuffer.GetAddressOf(), &stride, &offset);
 		texturePool[i].drawVertices();
 		texturePool[i].idx = 0;

@@ -11,6 +11,8 @@ public:
 
 	RenderTargetView();
 
+	RenderTargetView(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc);
+
 	virtual ~RenderTargetView();
 
 	RenderTargetView(const RenderTargetView&) = delete;
@@ -19,12 +21,14 @@ public:
 
 	void clearRTV(const float* color);
 
+	ID3D11RenderTargetView* getRTV() const;
+
 protected:
 
 	//是否成功解绑
 	bool unbindFromRTV();
 
-	ComPtr<ID3D11RenderTargetView> renderTargetView;
+	void createRTV(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc);
 
 private:
 
@@ -37,7 +41,9 @@ private:
 	static void unbindRTV();
 
 	//解决binding hazard的问题
-	virtual void bindRTV() = 0;
+	virtual void bindRTV();
+
+	ComPtr<ID3D11RenderTargetView> renderTargetView;
 
 	bool boundOnRTV;
 };

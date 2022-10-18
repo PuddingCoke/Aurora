@@ -1,4 +1,4 @@
-﻿#include<Aurora/A3D/DepthStencilView.h>
+﻿#include<Aurora/DX/View/DepthStencilView.h>
 
 DepthStencilView* DepthStencilView::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA)
 {

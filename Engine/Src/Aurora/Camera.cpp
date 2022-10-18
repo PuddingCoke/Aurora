@@ -12,43 +12,35 @@ const DirectX::XMMATRIX& Camera::getView()
 	return instance->viewMatrix;
 }
 
-ID3D11Buffer* Camera::getProjBuffer()
+Buffer* Camera::getProjBuffer()
 {
-	return instance->projBuffer.Get();
+	return instance->projBuffer;
 }
 
-ID3D11Buffer* Camera::getViewBuffer()
+Buffer* Camera::getViewBuffer()
 {
-	return instance->viewBuffer.Get();
+	return instance->viewBuffer;
 }
 
 Camera::Camera() :
-	fov(0), nearPlane(0), farPlane(0)
+	fov(0), nearPlane(0), farPlane(0),
+	projBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
+	viewBuffer(new Buffer(sizeof(ViewInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 {
-	D3D11_BUFFER_DESC projDesc = {};
-	projDesc.Usage = D3D11_USAGE_DYNAMIC;
-	projDesc.ByteWidth = sizeof(DirectX::XMMATRIX);
-	projDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	projDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+}
 
-	D3D11_BUFFER_DESC viewDesc = {};
-	viewDesc.Usage = D3D11_USAGE_DYNAMIC;
-	viewDesc.ByteWidth = sizeof(ViewInfo);
-	viewDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	viewDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-	Renderer::device->CreateBuffer(&projDesc, nullptr, projBuffer.ReleaseAndGetAddressOf());
-	Renderer::device->CreateBuffer(&viewDesc, nullptr, viewBuffer.ReleaseAndGetAddressOf());
+Camera::~Camera()
+{
+	delete projBuffer;
+	delete viewBuffer;
 }
 
 void Camera::setProj(const DirectX::XMMATRIX& proj)
 {
 	instance->projMatrix = proj;
 	const DirectX::XMMATRIX projTrans = DirectX::XMMatrixTranspose(proj);
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(instance->projBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &projTrans, sizeof(DirectX::XMMATRIX));
-	Renderer::context->Unmap(instance->projBuffer.Get(), 0);
+	memcpy(instance->projBuffer->map(0).pData, &projTrans, sizeof(DirectX::XMMATRIX));
+	instance->projBuffer->unmap(0);
 }
 
 void Camera::setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar)
@@ -64,10 +56,9 @@ void Camera::setView(const DirectX::XMMATRIX& view)
 	instance->viewMatrix = view;
 	instance->viewInfo.view = DirectX::XMMatrixTranspose(instance->viewMatrix);
 	instance->viewInfo.normalMatrix = DirectX::XMMatrixInverse(nullptr, instance->viewMatrix);
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(instance->viewBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &instance->viewInfo, sizeof(ViewInfo));
-	Renderer::context->Unmap(instance->viewBuffer.Get(), 0);
+
+	memcpy(instance->viewBuffer->map(0).pData, &instance->viewInfo, sizeof(ViewInfo));
+	instance->viewBuffer->unmap(0);
 }
 
 void Camera::setView(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up)

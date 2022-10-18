@@ -10,7 +10,7 @@ ComputeTexture::ComputeTexture(const unsigned int& width, const unsigned int& he
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		srvDesc.Texture2D.MipLevels = mipLevels;
 
-		Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResourceView.ReleaseAndGetAddressOf());
+		createSRV(texture.Get(), srvDesc);
 	}
 
 	{
@@ -19,7 +19,7 @@ ComputeTexture::ComputeTexture(const unsigned int& width, const unsigned int& he
 		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 		uavDesc.Texture2D.MipSlice = 0;
 
-		Renderer::device->CreateUnorderedAccessView(texture.Get(), &uavDesc, unorderedAccessView.ReleaseAndGetAddressOf());
+		createUAV(texture.Get(), uavDesc);
 	}
 }
 

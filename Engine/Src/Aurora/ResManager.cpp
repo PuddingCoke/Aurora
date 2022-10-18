@@ -2,7 +2,8 @@
 
 ResManager* ResManager::instance = nullptr;
 
-ResManager::ResManager()
+ResManager::ResManager() :
+	tempBuffer{}, tempRTV{}, tempUAV{}, tempSRV{}
 {
 }
 
@@ -11,7 +12,7 @@ ResManager* ResManager::get()
 	return instance;
 }
 
-void ResManager::OMSetRTV(std::initializer_list<RenderTargetView*> rtvs, ID3D11DepthStencilView* const dsv)
+void ResManager::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv)
 {
 	for (unsigned int i = 0; RenderTargetView::curRTV[i]; i++)
 	{
@@ -23,17 +24,19 @@ void ResManager::OMSetRTV(std::initializer_list<RenderTargetView*> rtvs, ID3D11D
 
 	for (unsigned int i = 0; i < rtvs.size(); i++, it++)
 	{
+		RenderTargetView::curRTV[i] = it[0];
+
 		tempRTV[i] = it[0]->renderTargetView.Get();
 
-		it[0]->boundOnRTV = true;
-
 		it[0]->bindRTV();
+
+		it[0]->boundOnRTV = true;
 	}
 
 	Renderer::context->OMSetRenderTargets((unsigned int)rtvs.size(), tempRTV, dsv);
 }
 
-void ResManager::VSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const unsigned int& slot)
+void ResManager::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
 {
 	for (unsigned int i = slot; i < slot + srvs.size(); i++)
 	{
@@ -65,7 +68,7 @@ void ResManager::VSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const
 	Renderer::context->VSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
 }
 
-void ResManager::HSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const unsigned int& slot)
+void ResManager::HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
 {
 	for (unsigned int i = slot; i < slot + srvs.size(); i++)
 	{
@@ -97,7 +100,7 @@ void ResManager::HSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const
 	Renderer::context->HSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
 }
 
-void ResManager::DSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const unsigned int& slot)
+void ResManager::DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
 {
 	for (unsigned int i = slot; i < slot + srvs.size(); i++)
 	{
@@ -129,7 +132,7 @@ void ResManager::DSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const
 	Renderer::context->DSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
 }
 
-void ResManager::GSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const unsigned int& slot)
+void ResManager::GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
 {
 	for (unsigned int i = slot; i < slot + srvs.size(); i++)
 	{
@@ -161,7 +164,7 @@ void ResManager::GSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const
 	Renderer::context->GSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
 }
 
-void ResManager::PSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const unsigned int& slot)
+void ResManager::PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
 {
 	for (unsigned int i = slot; i < slot + srvs.size(); i++)
 	{
@@ -193,7 +196,7 @@ void ResManager::PSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const
 	Renderer::context->PSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
 }
 
-void ResManager::CSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const unsigned int& slot)
+void ResManager::CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
 {
 	for (unsigned int i = slot; i < slot + srvs.size(); i++)
 	{
@@ -225,7 +228,7 @@ void ResManager::CSSetSRV(std::initializer_list<ShaderResourceView*> srvs, const
 	Renderer::context->CSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
 }
 
-void ResManager::CSSetUAV(std::initializer_list<UnorderedAccessView*> uavs, const unsigned int& slot)
+void ResManager::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const unsigned int& slot)
 {
 	for (unsigned int i = slot; i < slot + uavs.size(); i++)
 	{
@@ -253,7 +256,7 @@ void ResManager::CSSetUAV(std::initializer_list<UnorderedAccessView*> uavs, cons
 	Renderer::context->CSSetUnorderedAccessViews(slot, (unsigned int)uavs.size(), tempUAV, nullptr);
 }
 
-void ResManager::VSSetBuffer(std::initializer_list<Buffer*> buffers, const unsigned int& slot)
+void ResManager::VSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = buffers.begin();
 
@@ -265,7 +268,7 @@ void ResManager::VSSetBuffer(std::initializer_list<Buffer*> buffers, const unsig
 	Renderer::context->VSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
 }
 
-void ResManager::HSSetBuffer(std::initializer_list<Buffer*> buffers, const unsigned int& slot)
+void ResManager::HSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = buffers.begin();
 
@@ -277,7 +280,7 @@ void ResManager::HSSetBuffer(std::initializer_list<Buffer*> buffers, const unsig
 	Renderer::context->HSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
 }
 
-void ResManager::DSSetBuffer(std::initializer_list<Buffer*> buffers, const unsigned int& slot)
+void ResManager::DSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = buffers.begin();
 
@@ -289,7 +292,7 @@ void ResManager::DSSetBuffer(std::initializer_list<Buffer*> buffers, const unsig
 	Renderer::context->DSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
 }
 
-void ResManager::GSSetBuffer(std::initializer_list<Buffer*> buffers, const unsigned int& slot)
+void ResManager::GSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = buffers.begin();
 
@@ -301,7 +304,7 @@ void ResManager::GSSetBuffer(std::initializer_list<Buffer*> buffers, const unsig
 	Renderer::context->GSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
 }
 
-void ResManager::PSSetBuffer(std::initializer_list<Buffer*> buffers, const unsigned int& slot)
+void ResManager::PSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = buffers.begin();
 
@@ -313,7 +316,7 @@ void ResManager::PSSetBuffer(std::initializer_list<Buffer*> buffers, const unsig
 	Renderer::context->PSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
 }
 
-void ResManager::CSSetBuffer(std::initializer_list<Buffer*> buffers, const unsigned int& slot)
+void ResManager::CSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = buffers.begin();
 
@@ -323,4 +326,24 @@ void ResManager::CSSetBuffer(std::initializer_list<Buffer*> buffers, const unsig
 	}
 
 	Renderer::context->CSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
+}
+
+void ResManager::IASetVertexBuffer(const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
+{
+	Buffer::unbindVertexBuffer();
+
+	std::initializer_list<Buffer*>::iterator it = buffers.begin();
+	std::initializer_list<UINT>::iterator itStride = strides.begin();
+	std::initializer_list<UINT>::iterator itOffset = offsets.begin();
+
+	for (unsigned int i = 0; i < (unsigned int)buffers.size(); i++, it++, itStride++, itOffset++)
+	{
+		tempBuffer[i] = it[0]->buffer.Get();
+		tempStrides[i] = itStride[0];
+		tempOffsets[i] = itOffset[0];
+		it[0]->boundOnIA = true;
+		it[0]->bindVertexBuffer();
+	}
+
+	Renderer::context->IASetVertexBuffers(0, (unsigned int)buffers.size(), tempBuffer, tempStrides, tempOffsets);
 }

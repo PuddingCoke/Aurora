@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include<Aurora/ParticleSystem.h>
-#include<Aurora/Buffer.h>
-#include<Aurora/IBuffer.h>
+#include<Aurora/DX/Resource/Buffer.h>
+#include<Aurora/ComputeBuffer.h>
 
 class StrangeAttractor :public ParticleSystem
 {
@@ -12,11 +12,9 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	std::shared_ptr<Buffer> particlePosBuffer;
+	ComputeBuffer* particlePosBuffer;
 
-	std::shared_ptr<IBuffer> particleColorBuffer;
-
-	UnorderedAccessView uav;
+	Buffer* particleColorBuffer;
 
 	Shader* displayVShader;
 
@@ -52,31 +50,15 @@ public:
 			}
 		}
 
-		//初始化粒子位置信息
-		particlePosBuffer = std::shared_ptr<Buffer>(Buffer::create(
-			particleNum * sizeof(DirectX::XMFLOAT4),
-			D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_UNORDERED_ACCESS,
-			D3D11_USAGE_DEFAULT,
-			positions));
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+		uavDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		uavDesc.Buffer.FirstElement = 0;
+		uavDesc.Buffer.Flags = 0;
+		uavDesc.Buffer.NumElements = particleNum;
 
-		//初始化粒子颜色信息
-		particleColorBuffer = std::shared_ptr<IBuffer>(IBuffer::create(
-			particleNum * sizeof(DirectX::XMFLOAT4),
-			D3D11_BIND_VERTEX_BUFFER,
-			colors
-		));
-
-		//创建UAV Buffer
-		{
-			D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-			uavDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-			uavDesc.Buffer.FirstElement = 0;
-			uavDesc.Buffer.Flags = 0;
-			uavDesc.Buffer.NumElements = particleNum;
-
-			Renderer::device->CreateUnorderedAccessView(particlePosBuffer->get(), &uavDesc, uav.ReleaseAndGetAddressOf());
-		}
+		particlePosBuffer = new ComputeBuffer(uavDesc, particleNum * sizeof(DirectX::XMFLOAT4), D3D11_BIND_VERTEX_BUFFER, positions);
+		particleColorBuffer = new Buffer(particleNum * sizeof(DirectX::XMFLOAT4), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE, colors);
 
 		delete[] positions;
 		delete[] colors;
@@ -113,35 +95,24 @@ public:
 	{
 		computeShader->use();
 
-		ResManager::get()->CSSetUAV({ &uav }, 0);
+		RenderAPI::get()->CSSetUAV({ particlePosBuffer }, 0);
 
-		Renderer::context->Dispatch(particleNum / 1000u, 1, 1);
-
-		Renderer::context->CSSetShader(nullptr, nullptr, 0);
+		RenderAPI::get()->Dispatch(particleNum / 1000u, 1, 1);
 	}
 
 	void render() override
 	{
-		Renderer::setBlendState(States::get()->addtiveBlend.Get());
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		RenderAPI::get()->SetBlendState(States::get()->addtiveBlend.Get());
+		RenderAPI::get()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-		ID3D11Buffer* buffers[2] = { particlePosBuffer->get(),particleColorBuffer->get() };
+		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 
-		const UINT stride[2] = { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) };
-		const UINT offset[2] = { 0,0 };
-
-		Renderer::context->IASetInputLayout(inputLayout.Get());
-
-		Renderer::context->IASetVertexBuffers(0, 2, buffers, stride, offset);
+		RenderAPI::get()->IASetVertexBuffer({ particlePosBuffer,particleColorBuffer }, { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) }, { 0,0 });
 
 		displayVShader->use();
 		displayPShader->use();
 
-		Renderer::context->Draw(particleNum, 0);
-
-		ID3D11Buffer* nullBuffers[2] = { nullptr,nullptr };
-
-		Renderer::context->IASetVertexBuffers(0, 2, nullBuffers, stride, offset);
+		RenderAPI::get()->Draw(particleNum, 0);
 	}
 
 

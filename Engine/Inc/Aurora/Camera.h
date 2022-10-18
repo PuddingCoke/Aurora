@@ -12,6 +12,7 @@
 #include"Keyboard.h"
 #include"Mouse.h"
 #include"Graphics.h"
+#include"DX/Resource/Buffer.h"
 
 class Camera
 {
@@ -25,9 +26,9 @@ public:
 
 	static const DirectX::XMMATRIX& getView();
 
-	static ID3D11Buffer* getProjBuffer();
+	static Buffer* getProjBuffer();
 
-	static ID3D11Buffer* getViewBuffer();
+	static Buffer* getViewBuffer();
 
 	static void setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar);
 
@@ -55,15 +56,17 @@ private:
 
 	Camera();
 
+	~Camera();
+
 	//自动转置proj矩阵
 	static void setProj(const DirectX::XMMATRIX& proj);
 
 	//自动转置view矩阵
 	static void setView(const DirectX::XMMATRIX& view);
 
-	ComPtr<ID3D11Buffer> projBuffer;
+	Buffer* projBuffer;
 
-	ComPtr<ID3D11Buffer> viewBuffer;
+	Buffer* viewBuffer;
 
 	DirectX::XMMATRIX projMatrix;
 

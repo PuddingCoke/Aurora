@@ -6,65 +6,7 @@ ID3D11Device4* Renderer::device = nullptr;
 
 ID3D11DeviceContext4* Renderer::context = nullptr;
 
-void Renderer::setViewport(const float& width, const float& height)
-{
-	instance->vp.Width = width;
-	instance->vp.Height = height;
-	context->RSSetViewports(1, &instance->vp);
-}
-
-void Renderer::setViewport(const unsigned int& width, const unsigned int& height)
-{
-	setViewport((float)width, (float)height);
-}
-
-void Renderer::setViewport(const int& width, const int& height)
-{
-	setViewport((float)width, (float)height);
-}
-
-void Renderer::setTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology)
-{
-	context->IASetPrimitiveTopology(topology);
-}
-
-void Renderer::setBlendState(ID3D11BlendState* const blendState)
-{
-	context->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
-}
-
-void Renderer::setRasterizerState(ID3D11RasterizerState* const state)
-{
-	context->RSSetState(state);
-}
-
-void Renderer::drawQuad()
-{
-	context->Draw(3, 0);
-}
-
-void Renderer::drawCube()
-{
-	context->Draw(36, 0);
-}
-
-void Renderer::draw(const UINT& vertexCount, const UINT& startVertexLocation)
-{
-	context->Draw(vertexCount, startVertexLocation);
-}
-
-void Renderer::drawIndexed(const UINT& indexCount, const UINT& startIndexLocation, const UINT& baseVertexLocation)
-{
-	context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
-}
-
-void Renderer::drawInstanced(const UINT& vertexCountPerInstance, const UINT& instanceCount, const UINT& startVertexLocation, const UINT& startInstanceLocation)
-{
-	context->DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
-}
-
-Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel) :
-	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }
+Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel)
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
@@ -137,16 +79,7 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 
 	swapChain->GetBuffer(0, IID_ID3D11Texture2D, (void**)backBuffer.ReleaseAndGetAddressOf());
 
-	if (msaaLevel == 1)
-	{
-		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-		rtvDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
-		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
-		rtvDesc.Texture2D.MipSlice = 0;
-
-		Renderer::device->CreateRenderTargetView(backBuffer.Get(), &rtvDesc, defaultTargetView.ReleaseAndGetAddressOf());
-	}
-	else
+	if (msaaLevel > 1)
 	{
 		D3D11_TEXTURE2D_DESC tDesc = {};
 		tDesc.Width = width;
@@ -162,28 +95,10 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		tDesc.MiscFlags = 0;
 
 		Renderer::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
-
-		D3D11_RENDER_TARGET_VIEW_DESC msaaViewDesc = {};
-		msaaViewDesc.Format = tDesc.Format;
-		msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2DMS;
-		msaaViewDesc.Texture2D.MipSlice = 0;
-
-		Renderer::device->CreateRenderTargetView(msaaTexture.Get(), &msaaViewDesc, Renderer::defaultTargetView.ReleaseAndGetAddressOf());
 	}
-
 
 	if (enableDebug)
 	{
 		Renderer::device->QueryInterface(IID_ID3D11Debug, (void**)d3dDebug.ReleaseAndGetAddressOf());
 	}
-}
-
-void Renderer::setDefRTV(ID3D11DepthStencilView* const view)
-{
-	context->OMSetRenderTargets(1, instance->defaultTargetView.GetAddressOf(), view);
-}
-
-void Renderer::clearDefRTV(const float* color)
-{
-	context->ClearRenderTargetView(instance->defaultTargetView.Get(), color);
 }

@@ -10,9 +10,13 @@ class ComputeBuffer :public Buffer, public UnorderedAccessView
 {
 public:
 
-	ComputeBuffer(const UINT& byteWidth, const UINT& extraBindFlags = 0, const void* const data = nullptr, const UINT& cpuaccessFlags = 0, const UINT& miscFlags = 0, const UINT& structureByteStride = 0);
+	ComputeBuffer(const D3D11_UNORDERED_ACCESS_VIEW_DESC& uavDesc, const UINT& byteWidth, const UINT& extraBindFlags = 0, const void* const data = nullptr, const UINT& cpuaccessFlags = 0, const UINT& miscFlags = 0, const UINT& structureByteStride = 0);
 
 	virtual ~ComputeBuffer();
+
+	virtual void bindVertexBuffer() override;
+
+	virtual void bindUAV() override;
 
 };
 

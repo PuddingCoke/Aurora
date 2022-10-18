@@ -10,16 +10,16 @@ RCTexture::RCTexture(const unsigned int& width, const unsigned int& height, cons
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		srvDesc.Texture2D.MipLevels = mipLevels;
 
-		Renderer::device->CreateShaderResourceView(texture.Get(), &srvDesc, shaderResourceView.ReleaseAndGetAddressOf());
+		createSRV(texture.Get(), srvDesc);
 	}
 
 	{
-		D3D11_RENDER_TARGET_VIEW_DESC viewDesc = {};
-		viewDesc.Format = format;
-		viewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-		viewDesc.Texture2D.MipSlice = 0;
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = format;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D.MipSlice = 0;
 
-		Renderer::device->CreateRenderTargetView(texture.Get(), &viewDesc, renderTargetView.ReleaseAndGetAddressOf());
+		createRTV(texture.Get(), rtvDesc);
 	}
 
 	{
@@ -28,10 +28,10 @@ RCTexture::RCTexture(const unsigned int& width, const unsigned int& height, cons
 		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 		uavDesc.Texture2D.MipSlice = 0;
 
-		Renderer::device->CreateUnorderedAccessView(texture.Get(), &uavDesc, unorderedAccessView.ReleaseAndGetAddressOf());
+		createUAV(texture.Get(), uavDesc);
 	}
 
-	Renderer::context->ClearRenderTargetView(renderTargetView.Get(), color);
+	clearRTV(color);
 }
 
 RCTexture::~RCTexture()
