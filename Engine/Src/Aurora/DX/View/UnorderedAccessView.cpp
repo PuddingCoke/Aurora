@@ -11,6 +11,7 @@ UnorderedAccessView::UnorderedAccessView() :
 
 UnorderedAccessView::~UnorderedAccessView()
 {
+	unbindFromUAV();
 }
 
 ID3D11UnorderedAccessView* UnorderedAccessView::getUAV() const

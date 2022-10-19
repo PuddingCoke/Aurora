@@ -17,6 +17,7 @@ RenderTargetView::RenderTargetView(ID3D11Resource* const resource, const D3D11_R
 
 RenderTargetView::~RenderTargetView()
 {
+	unbindFromRTV();
 }
 
 void RenderTargetView::clearRTV(const float* color)

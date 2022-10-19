@@ -27,6 +27,7 @@ ShaderResourceView::ShaderResourceView(ID3D11Resource* const resource, const D3D
 
 ShaderResourceView::~ShaderResourceView()
 {
+	unbindFromSRV();
 }
 
 ID3D11ShaderResourceView* ShaderResourceView::getSRV() const
