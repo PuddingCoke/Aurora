@@ -241,8 +241,8 @@ inline void Ocean::update() const
 inline void Ocean::render() const
 {
 	RenderAPI::get()->IASetInputLayout(inputLayout.Get());
-	RenderAPI::get()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
-	RenderAPI::get()->IASetVertexBuffer({ patchVertexBuffer }, { sizeof(Vertex) }, { 0 });
+	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+	RenderAPI::get()->IASetVertexBuffer(0, { patchVertexBuffer }, { sizeof(Vertex) }, { 0 });
 
 	oceanVShader->use();
 	oceanHShader->use();

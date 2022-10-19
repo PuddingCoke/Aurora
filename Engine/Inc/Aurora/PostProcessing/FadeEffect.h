@@ -13,21 +13,27 @@ public:
 
 	ShaderResourceView* process(ShaderResourceView* const texture2D) const;
 
-	const float& getFadeFactor() const;
+	const float& getFadeSpeed() const;
 
-	void setFadeFactor(const float& factor);
+	void setFadeSpeed(const float& factor);
 
 	~FadeEffect();
 
 protected:
 
-	float fadeFactor;
+	struct FadeParam
+	{
+		float fadeSpeed;
+		float v0;
+		float v1;
+		float v2;
+	} fadeParam;
 
 	void compileShaders() override;
 
 	Shader* fadePShader;
 
-	ComPtr<ID3D11Buffer> fadeBuffer;
+	Buffer* fadeBuffer;
 
 };
 

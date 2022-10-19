@@ -3,6 +3,7 @@
 #ifndef _PRIMITIVEBATCH_H_
 #define _PRIMITIVEBATCH_H_
 
+#include<Aurora/RenderAPI.h>
 #include<Aurora/Shader.h>
 
 class PrimitiveBatch
@@ -45,7 +46,7 @@ private:
 	ComPtr<ID3D11InputLayout> circleInputLayout;
 	ComPtr<ID3D11InputLayout> rcLineInputLayout;
 
-	ComPtr<ID3D11Buffer> lineBuffer;
+	Buffer* lineBuffer;
 
 	struct LineParam
 	{
@@ -80,7 +81,7 @@ private:
 
 		void addLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& r, const float& g, const float& b, const float& a);
 
-		ComPtr<ID3D11Buffer> vertexBuffer;
+		Buffer* vertexBuffer;
 
 		float* vertices;
 
@@ -106,9 +107,9 @@ private:
 
 		void addCircle(const float& x, const float& y, const float& length, const float& r, const float& g, const float& b, const float& a);
 
-		ComPtr<ID3D11Buffer> circleBuffer;
+		Buffer* circleBuffer;
 
-		ComPtr<ID3D11Buffer> vertexBuffer;
+		Buffer* vertexBuffer;
 
 		float* vertices;
 
@@ -134,7 +135,7 @@ private:
 
 		void addRoundCapLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& width, const float& r, const float& g, const float& b, const float& a);
 
-		ComPtr<ID3D11Buffer> vertexBuffer;
+		Buffer* vertexBuffer;
 
 		float* vertices;
 

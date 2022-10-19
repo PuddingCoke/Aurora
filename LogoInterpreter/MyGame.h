@@ -15,8 +15,11 @@ public:
 
 	RenderTexture* renderTexture;
 
+	ResourceTexture* texture;
+
 	MyGame() :
-		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true))
+		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
+		texture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT))
 	{
 		std::ifstream stream("info.txt");
 		std::string text;
@@ -29,10 +32,10 @@ public:
 
 		PrimitiveBatch* pBatch = PrimitiveBatch::create();
 
-		renderTexture->clearMSAARTV(DirectX::Colors::White);
-		renderTexture->setMSAARTV();
+		renderTexture->clearRTV(DirectX::Colors::White);
+		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
 
-		Renderer::setBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
 
 		pBatch->begin();
 
@@ -40,13 +43,14 @@ public:
 
 		pBatch->end();
 
-		renderTexture->resolve();
+		renderTexture->resolve(texture);
 
 		delete pBatch;
 	}
 
 	~MyGame()
 	{
+		delete texture;
 		delete renderTexture;
 	}
 
@@ -57,19 +61,18 @@ public:
 
 	void render()
 	{
-		Renderer::clearDefRTV(DirectX::Colors::White);
-		Renderer::setDefRTV();
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::White);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
 
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Renderer::setBlendState(States::get()->defBlendState.Get());
-		Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		renderTexture->PSSetSRV();
-
-		Renderer::draw(3, 0);
+		RenderAPI::get()->PSSetSRV({ texture}, 0);
+		RenderAPI::get()->Draw(3, 0);
 	}
 
 

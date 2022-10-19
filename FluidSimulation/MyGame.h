@@ -41,10 +41,10 @@ public:
 	} pointer;
 
 	//USAGE IMMUTABLE
-	ComPtr<ID3D11Buffer> simulationParamBuffer;
+	Buffer* simulationParamBuffer;
 
 	//USAGE DYNAMIC
-	ComPtr<ID3D11Buffer> splatParamBuffer;
+	Buffer* splatParamBuffer;
 
 	//ONE INV_SRC_ALPHA
 	ComPtr<ID3D11BlendState> blendState;
@@ -93,7 +93,8 @@ public:
 		sunraysShader(Shader::fromFile("Shaders\\SunraysShader.hlsl", ShaderType::Pixel)),
 		vorticityShader(Shader::fromFile("Shaders\\VorticityShader.hlsl", ShaderType::Pixel)),
 		blurHShader(Shader::fromFile("Shaders\\BlurShaderHBlur.hlsl", ShaderType::Pixel)),
-		blurVShader(Shader::fromFile("Shaders\\BlurShaderVBlur.hlsl", ShaderType::Pixel))
+		blurVShader(Shader::fromFile("Shaders\\BlurShaderVBlur.hlsl", ShaderType::Pixel)),
+		splatParamBuffer(new Buffer(sizeof(SplatParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 	{
 		//创建自定义的blendState
 		{
@@ -157,37 +158,14 @@ public:
 				constantBuffer.radius = SimulationConfig::SPLAT_RADIUS / 100.f * Graphics::getAspectRatio();
 				constantBuffer.weight = SimulationConfig::SUNRAYS_WEIGHT;
 
-				D3D11_BUFFER_DESC cbd = {};
-				cbd.ByteWidth = sizeof(ConstantBuffer);
-				cbd.Usage = D3D11_USAGE::D3D11_USAGE_IMMUTABLE;
-				cbd.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
-
-				D3D11_SUBRESOURCE_DATA subResource = {};
-				subResource.pSysMem = &constantBuffer;
-
-				Renderer::device->CreateBuffer(&cbd, &subResource, simulationParamBuffer.ReleaseAndGetAddressOf());
+				simulationParamBuffer = new Buffer(sizeof(ConstantBuffer), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &constantBuffer);
 			}
 		}
 
-		//创建每帧要更新的ConstantBuffer
-		{
-			D3D11_BUFFER_DESC cbd = {};
-			cbd.ByteWidth = sizeof(SplatParam);
-			cbd.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
-			cbd.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
-			cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		RenderAPI::get()->VSSetBuffer({ simulationParamBuffer }, 1);
+		RenderAPI::get()->PSSetBuffer({ simulationParamBuffer,splatParamBuffer }, 1);
 
-			Renderer::device->CreateBuffer(&cbd, nullptr, splatParamBuffer.ReleaseAndGetAddressOf());
-		}
-
-		ID3D11Buffer* pixelConstantBuffers[2] = { simulationParamBuffer.Get(),splatParamBuffer.Get() };
-		ID3D11Buffer* vertexConstantBuffers[1] = { simulationParamBuffer.Get() };
-
-		Renderer::context->VSSetConstantBuffers(1, 1, vertexConstantBuffers);
-
-		Renderer::context->PSSetConstantBuffers(1, 2, pixelConstantBuffers);
-
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Mouse::addLeftDownEvent([this]()
 			{
@@ -209,13 +187,16 @@ public:
 
 		ID3D11SamplerState* samplers[2] = { States::get()->linearClampSampler.Get(),States::get()->pointClampSampler.Get() };
 
-		Renderer::context->PSSetSamplers(0, 2, samplers);
+		RenderAPI::get()->PSSetSampler(samplers, 0, 2);
 
 		Shader::displayVShader->use();
 	}
 
 	~MyGame()
 	{
+		delete simulationParamBuffer;
+		delete splatParamBuffer;
+
 		delete dye;
 		delete velocity;
 		delete pressure;
@@ -268,128 +249,111 @@ public:
 		splatParam.mouseDelta = DirectX::XMFLOAT2(dx, dy);
 		splatParam.color = DirectX::XMFLOAT4(r, g, b, 1.0);
 
-		D3D11_MAPPED_SUBRESOURCE mappedData;
-		Renderer::context->Map(splatParamBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-		memcpy(mappedData.pData, &splatParam, sizeof(SplatParam));
-		Renderer::context->Unmap(splatParamBuffer.Get(), 0);
+		memcpy(splatParamBuffer->map(0).pData, &splatParam, sizeof(SplatParam));
+		splatParamBuffer->unmap(0);
 
-		Renderer::setViewport(velocity->width, velocity->height);
-		velocity->write()->setRTV();
-
+		RenderAPI::get()->RSSetViewport(velocity->width, velocity->height);
+		RenderAPI::get()->OMSetRTV({ velocity->write() }, nullptr);
 		splatVelocityShader->use();
-		velocity->read()->PSSetSRV(0);
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->PSSetSRV({ velocity->read() }, 0);
+		RenderAPI::get()->Draw(3, 0);
 		velocity->swap();
 
-		Renderer::setViewport(dye->width, dye->height);
-		dye->write()->setRTV();
+		RenderAPI::get()->RSSetViewport(dye->width, dye->height);
+		RenderAPI::get()->OMSetRTV({ dye->write() }, nullptr);
 		splatColorShader->use();
-		dye->read()->PSSetSRV(0);
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->PSSetSRV({ dye->read() }, 0);
+		RenderAPI::get()->Draw(3, 0);
 		dye->swap();
 	}
 
 	void step(const float& dt)
 	{
-		ID3D11ShaderResourceView* nullSRV[2] = { nullptr,nullptr };
+		RenderAPI::get()->OMSetBlendState(nullptr);
+		RenderAPI::get()->RSSetViewport(velocity->width, velocity->height);
 
-		Renderer::setBlendState(nullptr);
-		Renderer::setViewport(velocity->width, velocity->height);
-
-		curl->setRTV();
+		RenderAPI::get()->OMSetRTV({ curl }, nullptr);
 		curlShader->use();
-		velocity->read()->PSSetSRV(0);
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->PSSetSRV({ velocity->read() }, 0);
+		RenderAPI::get()->Draw(3, 0);
 
-		velocity->write()->setRTV();
+		RenderAPI::get()->OMSetRTV({ velocity->write() }, nullptr);
 		vorticityShader->use();
-		velocity->read()->PSSetSRV(0);
-		curl->PSSetSRV(1);
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->PSSetSRV({ velocity->read(),curl }, 0);
+		RenderAPI::get()->Draw(3, 0);
 		velocity->swap();
 
-		divergence->setRTV();
+		RenderAPI::get()->OMSetRTV({ divergence }, nullptr);
 		divergenceShader->use();
-		velocity->read()->PSSetSRV(0);
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->PSSetSRV({ velocity->read() }, 0);
+		RenderAPI::get()->Draw(3, 0);
 
-		pressure->write()->setRTV();
+		RenderAPI::get()->OMSetRTV({ pressure->write() }, nullptr);
 		clearShader->use();
-		pressure->read()->PSSetSRV(0);
-		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
+		RenderAPI::get()->PSSetSRV({ pressure->read() }, 0);
+		RenderAPI::get()->Draw(3, 0);
 		pressure->swap();
 
 		pressureShader->use();
 		for (int i = 0; i < SimulationConfig::PRESSURE_ITERATIONS; i++)
 		{
-			pressure->write()->setRTV();
-			pressure->read()->PSSetSRV(0);
-			divergence->PSSetSRV(1);
-			Renderer::context->Draw(3, 0);
-			Renderer::context->PSSetShaderResources(0, 2, nullSRV);
+			RenderAPI::get()->OMSetRTV({ pressure->write() }, nullptr);
+			RenderAPI::get()->PSSetSRV({ pressure->read(),divergence }, 0);
+			RenderAPI::get()->Draw(3, 0);
 			pressure->swap();
 		}
 
-		velocity->write()->setRTV();
+		RenderAPI::get()->OMSetRTV({ velocity->write() }, nullptr);
 		gradientSubtractShader->use();
-		pressure->read()->PSSetSRV(0);
-		velocity->read()->PSSetSRV(1);
-		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
+		RenderAPI::get()->PSSetSRV({ pressure->read(),velocity->read() }, 0);
+		RenderAPI::get()->Draw(3, 0);
 		velocity->swap();
 
-		velocity->write()->setRTV();
+		RenderAPI::get()->OMSetRTV({ velocity->write() }, nullptr);
 		advVelShader->use();
-		velocity->read()->PSSetSRV(0);
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->PSSetSRV({ velocity->read() }, 0);
+		RenderAPI::get()->Draw(3, 0);
 		velocity->swap();
 
-		Renderer::setViewport(dye->width, dye->height);
+		RenderAPI::get()->RSSetViewport(dye->width, dye->height);
 
-		dye->write()->setRTV();
+		RenderAPI::get()->OMSetRTV({ dye->write() }, nullptr);
 		advDenShader->use();
-		velocity->read()->PSSetSRV(0);
-		dye->read()->PSSetSRV(1);
-		Renderer::context->Draw(3, 0);
-		Renderer::context->PSSetShaderResources(0, 2, nullSRV);
+		RenderAPI::get()->PSSetSRV({ velocity->read(),dye->read() }, 0);
+		RenderAPI::get()->Draw(3, 0);
 		dye->swap();
 	}
 
 	void applySunrays(RenderTexture* const source, RenderTexture* const mask, RenderTexture* const destination)
 	{
-		mask->setRTV();
-		Renderer::setBlendState(nullptr);
+		RenderAPI::get()->OMSetRTV({ mask }, nullptr);
+		RenderAPI::get()->OMSetBlendState(nullptr);
 		sunrayMaskShader->use();
-		source->PSSetSRV(0);
-		Renderer::setViewport(mask->getWidth(), mask->getHeight());
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->PSSetSRV({ source }, 0);
+		RenderAPI::get()->RSSetViewport(mask->getWidth(), mask->getHeight());
+		RenderAPI::get()->Draw(3, 0);
 
-		destination->setRTV();
+		RenderAPI::get()->OMSetRTV({ destination }, nullptr);
 		sunraysShader->use();
-		mask->PSSetSRV(0);
-		Renderer::setViewport(destination->getWidth(), destination->getHeight());
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->PSSetSRV({ mask }, 0);
+		RenderAPI::get()->RSSetViewport(destination->getWidth(), destination->getHeight());
+		RenderAPI::get()->Draw(3, 0);
 	}
 
 	void blur(RenderTexture* const target, RenderTexture* const temp, const int& iterations)
 	{
-		ID3D11ShaderResourceView* nullSRV[2] = { nullptr,nullptr };
-
 		for (int i = 0; i < iterations; i++)
 		{
 			blurHShader->use();
-			temp->setRTV();
-			target->PSSetSRV(0);
-			Renderer::context->Draw(3, 0);
-			Renderer::context->PSSetShaderResources(0, 2, nullSRV);
+			RenderAPI::get()->OMSetRTV({ temp }, nullptr);
+			RenderAPI::get()->PSSetSRV({ target }, 0);
+			RenderAPI::get()->Draw(3, 0);
 
 			blurVShader->use();
 
-			target->setRTV();
-			temp->PSSetSRV(0);
-			Renderer::context->Draw(3, 0);
-			Renderer::context->PSSetShaderResources(0, 2, nullSRV);
+			RenderAPI::get()->OMSetRTV({ target }, nullptr);
+			RenderAPI::get()->PSSetSRV({ temp }, 0);
+			RenderAPI::get()->Draw(3, 0);
 		}
 	}
 
@@ -405,16 +369,15 @@ public:
 		applySunrays(dye->read(), dye->write(), sunrays);
 		blur(sunrays, sunraysTemp, 1);
 
-		Renderer::setBlendState(blendState.Get());
+		RenderAPI::get()->OMSetBlendState(blendState.Get());
 
-		Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
+		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-		Renderer::clearDefRTV(DirectX::Colors::Black);
-		Renderer::setDefRTV();
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
 		displayShader->use();
-		dye->read()->PSSetSRV(0);
-		sunrays->PSSetSRV(1);
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->PSSetSRV({ dye->read(),sunrays }, 0);
+		RenderAPI::get()->Draw(3, 0);
 	}
 
 	void updatePointerDownData(const int& id, const float& posX, const float& posY)

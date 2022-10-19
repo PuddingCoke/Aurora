@@ -21,12 +21,16 @@ public:
 
 	ID3D11ShaderResourceView* getSRV() const;
 
+	ID3D11ShaderResourceView** releaseAndGetSRV();
+
 protected:
 
 	//返回是否成功解绑
 	bool unbindFromSRV();
 
 	void createSRV(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
+
+	void generateMips() const;
 
 private:
 

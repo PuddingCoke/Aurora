@@ -7,7 +7,7 @@
 
 #include<functional>
 
-#include<Aurora/Renderer.h>
+#include<Aurora/RenderAPI.h>
 #include<Aurora/Camera.h>
 #include<Aurora/Math.h>
 
@@ -75,7 +75,7 @@ private:
 
 	GFSDK_ShadowLib_MapRenderParams smRenderParams;
 
-	ComPtr<ID3D11Buffer> lightViewProjBuffer;
+	Buffer* lightViewProjBuffer;
 
 };
 

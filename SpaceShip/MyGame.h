@@ -37,20 +37,20 @@ public:
 
 	void render()
 	{
-		Renderer::clearDefRTV(DirectX::Colors::Black);
-		Renderer::setDefRTV();
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
 
-		Renderer::setBlendState(States::get()->defBlendState.Get());
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
+		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 1, 1);
 
 		TextureCube::shader->use();
 		skyboxPShader->use();
 
-		spaceTexture->setSRV(0);
+		RenderAPI::get()->PSSetSRV({ spaceTexture }, 0);
 
-		Renderer::draw(36, 0);
+		RenderAPI::get()->DrawCube();
 	}
 
 

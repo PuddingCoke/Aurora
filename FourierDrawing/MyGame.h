@@ -54,6 +54,8 @@ public:
 
 	RenderTexture* renderTexture;
 
+	ResourceTexture* texture;
+
 	const Color color{ 0.f,0.f,0.f };
 
 	bool connected;
@@ -61,7 +63,8 @@ public:
 	MyGame() :
 		sBatch(SpriteBatch::create()),
 		pBatch(PrimitiveBatch::create()),
-		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Transparent, true)),
+		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Transparent, true)),
+		texture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
 		curFrame(0),
 		connected(false)
 	{
@@ -133,6 +136,7 @@ public:
 
 	~MyGame()
 	{
+		delete texture;
 		delete sBatch;
 		delete pBatch;
 		delete renderTexture;
@@ -146,8 +150,8 @@ public:
 
 	void render() override
 	{
-		Renderer::setDefRTV();
-		Renderer::clearDefRTV(DirectX::Colors::White);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::White);
 
 		x = startX;
 		y = startY;
@@ -165,7 +169,7 @@ public:
 		}
 		pBatch->end();
 
-		renderTexture->setMSAARTV();
+		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
 		pBatch->begin();
 		if (curFrame++ == length)
 		{
@@ -218,11 +222,11 @@ public:
 
 		pBatch->end();
 
-		renderTexture->resolve();
+		renderTexture->resolve(texture);
 
-		Renderer::setDefRTV();
+		RenderAPI::get()->OMSetDefRTV(nullptr);
 		sBatch->begin();
-		sBatch->draw(renderTexture, 0, 0);
+		sBatch->draw(texture, texture, 0, 0);
 		sBatch->end();
 
 	}

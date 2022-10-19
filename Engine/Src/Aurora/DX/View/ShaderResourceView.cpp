@@ -35,44 +35,49 @@ ID3D11ShaderResourceView* ShaderResourceView::getSRV() const
 	return shaderResourceView.Get();
 }
 
+ID3D11ShaderResourceView** ShaderResourceView::releaseAndGetSRV()
+{
+	return shaderResourceView.ReleaseAndGetAddressOf();
+}
+
 void ShaderResourceView::unbindVSRV()
 {
-	Renderer::context->VSSetShaderResources(VSSlot, 1, nullSRV);
+	Renderer::getContext()->VSSetShaderResources(VSSlot, 1, nullSRV);
 	curVSRV[VSSlot] = nullptr;
 	VSSlot = -1;
 }
 
 void ShaderResourceView::unbindHSRV()
 {
-	Renderer::context->HSSetShaderResources(HSSlot, 1, nullSRV);
+	Renderer::getContext()->HSSetShaderResources(HSSlot, 1, nullSRV);
 	curHSRV[HSSlot] = nullptr;
 	HSSlot = -1;
 }
 
 void ShaderResourceView::unbindDSRV()
 {
-	Renderer::context->DSSetShaderResources(DSSlot, 1, nullSRV);
+	Renderer::getContext()->DSSetShaderResources(DSSlot, 1, nullSRV);
 	curDSRV[DSSlot] = nullptr;
 	DSSlot = -1;
 }
 
 void ShaderResourceView::unbindGSRV()
 {
-	Renderer::context->GSSetShaderResources(GSSlot, 1, nullSRV);
+	Renderer::getContext()->GSSetShaderResources(GSSlot, 1, nullSRV);
 	curGSRV[GSSlot] = nullptr;
 	GSSlot = -1;
 }
 
 void ShaderResourceView::unbindPSRV()
 {
-	Renderer::context->PSSetShaderResources(PSSlot, 1, nullSRV);
+	Renderer::getContext()->PSSetShaderResources(PSSlot, 1, nullSRV);
 	curPSRV[PSSlot] = nullptr;
 	PSSlot = -1;
 }
 
 void ShaderResourceView::unbindCSRV()
 {
-	Renderer::context->CSSetShaderResources(CSSlot, 1, nullSRV);
+	Renderer::getContext()->CSSetShaderResources(CSSlot, 1, nullSRV);
 	curCSRV[CSSlot] = nullptr;
 	CSSlot = -1;
 }
@@ -118,6 +123,11 @@ bool ShaderResourceView::unbindFromSRV()
 void ShaderResourceView::createSRV(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc)
 {
 	Renderer::device->CreateShaderResourceView(resource, &desc, shaderResourceView.ReleaseAndGetAddressOf());
+}
+
+void ShaderResourceView::generateMips() const
+{
+	Renderer::getContext()->GenerateMips(shaderResourceView.Get());
 }
 
 void ShaderResourceView::bindSRV()

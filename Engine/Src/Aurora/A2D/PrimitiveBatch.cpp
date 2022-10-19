@@ -2,7 +2,8 @@
 
 PrimitiveBatch* PrimitiveBatch::instance = nullptr;
 
-PrimitiveBatch::PrimitiveBatch()
+PrimitiveBatch::PrimitiveBatch() :
+	lineBuffer(new Buffer(sizeof(LineParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 {
 	compileShaders();
 
@@ -40,17 +41,6 @@ PrimitiveBatch::PrimitiveBatch()
 		};
 
 		Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(rcLineVShader), rcLineInputLayout.ReleaseAndGetAddressOf());
-	}
-
-	//初始化lineBuffer
-	{
-		D3D11_BUFFER_DESC bd = {};
-		bd.ByteWidth = sizeof(LineParam);
-		bd.Usage = D3D11_USAGE_DYNAMIC;
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-		Renderer::device->CreateBuffer(&bd, nullptr, lineBuffer.ReleaseAndGetAddressOf());
 	}
 
 	setLineWidth(1.f);
@@ -302,7 +292,7 @@ cbuffer Matrix2D : register(b0)
     matrix proj;
 };
 
-cbuffer LineBuffer : register(b1)
+cbuffer LineBuffer : register(b2)
 {
 	float lineWidth;
 	float v1;
@@ -379,6 +369,7 @@ PrimitiveBatch::~PrimitiveBatch()
 	delete primitive2DPShader;
 	delete primitive2DGShader;
 	delete rcLineGShader;
+	delete lineBuffer;
 }
 
 void PrimitiveBatch::begin()
@@ -390,28 +381,28 @@ void PrimitiveBatch::begin()
 
 void PrimitiveBatch::end()
 {
-	Renderer::context->GSSetConstantBuffers(1, 1, lineBuffer.GetAddressOf());
+	RenderAPI::get()->GSSetBuffer({ lineBuffer }, 2);
 
-	Renderer::context->IASetInputLayout(primitiveInputLayout.Get());
+	RenderAPI::get()->IASetInputLayout(primitiveInputLayout.Get());
+
 	primitive2DVShader->use();
 	primitive2DPShader->use();
 	primitive2DGShader->use();
 
 	lineRenderer.end();
 
-	Renderer::context->IASetInputLayout(circleInputLayout.Get());
+	RenderAPI::get()->IASetInputLayout(circleInputLayout.Get());
 	circleVShader->use();
 
 	circleRenderer.end();
 
-	Renderer::context->IASetInputLayout(rcLineInputLayout.Get());
+	RenderAPI::get()->IASetInputLayout(rcLineInputLayout.Get());
 	rcLineVShader->use();
 	rcLineGShader->use();
 
 	rcLineRenderer.end();
 
-	Renderer::context->GSSetShader(nullptr, nullptr, 0);
-
+	RenderAPI::get()->GSSetShader(nullptr);
 }
 
 void PrimitiveBatch::drawLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& r, const float& g, const float& b, const float& a)
@@ -436,30 +427,19 @@ void PrimitiveBatch::setLineWidth(const float& width)
 
 void PrimitiveBatch::applyChange() const
 {
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(lineBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &lineParam, sizeof(LineParam));
-	Renderer::context->Unmap(lineBuffer.Get(), 0);
+	memcpy(lineBuffer->map(0).pData, &lineParam, sizeof(LineParam));
+	lineBuffer->unmap(0);
 }
 
 PrimitiveBatch::LineRenderer::LineRenderer() :
-	vertices(new float[2 * 6 * maxLineNum]), idx(0)
+	vertices(new float[2 * 6 * maxLineNum]), idx(0),
+	vertexBuffer(new Buffer(sizeof(float) * 2 * 6 * maxLineNum, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 {
-	//初始化vertexBuffer
-	{
-		D3D11_BUFFER_DESC vertexBufferDesc = {};
-		vertexBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
-		vertexBufferDesc.ByteWidth = sizeof(float) * 2 * 6 * maxLineNum;
-		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		vertexBufferDesc.MiscFlags = 0;
-
-		Renderer::device->CreateBuffer(&vertexBufferDesc, nullptr, vertexBuffer.ReleaseAndGetAddressOf());
-	}
 }
 
 PrimitiveBatch::LineRenderer::~LineRenderer()
 {
+	delete vertexBuffer;
 	delete[] vertices;
 }
 
@@ -472,20 +452,16 @@ void PrimitiveBatch::LineRenderer::end()
 {
 	updateVerticesData();
 
-	unsigned int stride = sizeof(float) * 6;
-	unsigned int offset = 0;
-	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	Renderer::context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	RenderAPI::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 6 }, { 0 });
 
-	Renderer::context->Draw(idx / 6, 0);
+	RenderAPI::get()->Draw(idx / 6, 0);
 }
 
 void PrimitiveBatch::LineRenderer::updateVerticesData() const
 {
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, vertices, sizeof(float) * idx);
-	Renderer::context->Unmap(vertexBuffer.Get(), 0);
+	memcpy(vertexBuffer->map(0).pData, vertices, sizeof(float) * idx);
+	vertexBuffer->unmap(0);
 }
 
 void PrimitiveBatch::LineRenderer::addLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& r, const float& g, const float& b, const float& a)
@@ -506,7 +482,8 @@ void PrimitiveBatch::LineRenderer::addLine(const float& x1, const float& y1, con
 }
 
 PrimitiveBatch::CircleRenderer::CircleRenderer() :
-	vertices(new float[maxCircleNum * 7]), idx(0)
+	vertices(new float[maxCircleNum * 7]), idx(0),
+	vertexBuffer(new Buffer(sizeof(float) * 7 * maxCircleNum, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 {
 	//初始化circleBuffer
 	{
@@ -525,32 +502,15 @@ PrimitiveBatch::CircleRenderer::CircleRenderer() :
 			}
 		}
 
-		D3D11_BUFFER_DESC circleBufferDesc = {};
-		circleBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_IMMUTABLE;
-		circleBufferDesc.ByteWidth = sizeof(float) * 256;
-		circleBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-		D3D11_SUBRESOURCE_DATA subResource = {};
-		subResource.pSysMem = unitCircle;
-
-		Renderer::device->CreateBuffer(&circleBufferDesc, &subResource, circleBuffer.ReleaseAndGetAddressOf());
+		circleBuffer = new Buffer(sizeof(float) * 256, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE, unitCircle);
 	}
 
-	//初始化vertexBuffer
-	{
-		D3D11_BUFFER_DESC vertexBufferDesc = {};
-		vertexBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
-		vertexBufferDesc.ByteWidth = sizeof(float) * 7 * maxCircleNum;
-		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		vertexBufferDesc.MiscFlags = 0;
-
-		Renderer::device->CreateBuffer(&vertexBufferDesc, nullptr, vertexBuffer.ReleaseAndGetAddressOf());
-	}
 }
 
 PrimitiveBatch::CircleRenderer::~CircleRenderer()
 {
+	delete circleBuffer;
+	delete vertexBuffer;
 	delete[] vertices;
 }
 
@@ -563,23 +523,16 @@ void PrimitiveBatch::CircleRenderer::end()
 {
 	updateVerticesData();
 
-	unsigned int stride[2] = { sizeof(float) * 2u,sizeof(float) * 7u };
-	unsigned int offset[2] = { 0,0 };
+	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	RenderAPI::get()->IASetVertexBuffer(0, { circleBuffer,vertexBuffer }, { sizeof(float) * 2u,sizeof(float) * 7u }, { 0,0 });
 
-	ID3D11Buffer* buffers[2] = { circleBuffer.Get(),vertexBuffer.Get() };
-
-	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	Renderer::context->IASetVertexBuffers(0, 2, buffers, stride, offset);
-
-	Renderer::context->DrawInstanced(128, idx / 7, 0, 0);
+	RenderAPI::get()->DrawInstanced(128, idx / 7, 0, 0);
 }
 
 void PrimitiveBatch::CircleRenderer::updateVerticesData() const
 {
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, vertices, sizeof(float) * idx);
-	Renderer::context->Unmap(vertexBuffer.Get(), 0);
+	memcpy(vertexBuffer->map(0).pData, vertices, sizeof(float) * idx);
+	vertexBuffer->unmap(0);
 }
 
 void PrimitiveBatch::CircleRenderer::addCircle(const float& x, const float& y, const float& length, const float& r, const float& g, const float& b, const float& a)
@@ -599,23 +552,14 @@ void PrimitiveBatch::CircleRenderer::addCircle(const float& x, const float& y, c
 }
 
 PrimitiveBatch::RCLineRenderer::RCLineRenderer() :
-	vertices(new float[maxLineNum * 7 * 2]), idx(0)
+	vertices(new float[maxLineNum * 7 * 2]), idx(0),
+	vertexBuffer(new Buffer(sizeof(float) * 2 * 7 * maxLineNum, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 {
-	//初始化vertexBuffer
-	{
-		D3D11_BUFFER_DESC vertexBufferDesc = {};
-		vertexBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
-		vertexBufferDesc.ByteWidth = sizeof(float) * 2 * 7 * maxLineNum;
-		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		vertexBufferDesc.MiscFlags = 0;
-
-		Renderer::device->CreateBuffer(&vertexBufferDesc, nullptr, vertexBuffer.ReleaseAndGetAddressOf());
-	}
 }
 
 PrimitiveBatch::RCLineRenderer::~RCLineRenderer()
 {
+	delete vertexBuffer;
 	delete[] vertices;
 }
 
@@ -628,21 +572,16 @@ void PrimitiveBatch::RCLineRenderer::end()
 {
 	updateVerticesData();
 
-	unsigned int stride = sizeof(float) * 7;
-	unsigned int offset = 0;
+	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	RenderAPI::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 7 }, { 0 });
 
-	Renderer::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	Renderer::context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
-
-	Renderer::context->Draw(idx / 7, 0);
+	RenderAPI::get()->Draw(idx / 7, 0);
 }
 
 void PrimitiveBatch::RCLineRenderer::updateVerticesData() const
 {
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, vertices, sizeof(float) * idx);
-	Renderer::context->Unmap(vertexBuffer.Get(), 0);
+	memcpy(vertexBuffer->map(0).pData, vertices, sizeof(float) * idx);
+	vertexBuffer->unmap(0);
 }
 
 void PrimitiveBatch::RCLineRenderer::addRoundCapLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& width, const float& r, const float& g, const float& b, const float& a)

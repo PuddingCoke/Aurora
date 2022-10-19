@@ -25,7 +25,7 @@ HBAOEffect::~HBAOEffect()
 	pAOContext->Release();
 }
 
-Texture2D* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV, ID3D11ShaderResourceView* const normalSRV) const
+ShaderResourceView* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV, ID3D11ShaderResourceView* const normalSRV) const
 {
 	float projMatrixArray[16];
 	float viewMatrixArray[16];
@@ -86,7 +86,7 @@ Texture2D* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV, ID3D11S
 	output.pRenderTargetView = outputRTV->getRTV();
 	output.Blend.Mode = GFSDK_SSAO_OVERWRITE_RGB;
 
-	pAOContext->RenderAO(Renderer::context, input, params, output);
+	pAOContext->RenderAO(Renderer::getContext(), input, params, output);
 
 	return outputRTV;
 }

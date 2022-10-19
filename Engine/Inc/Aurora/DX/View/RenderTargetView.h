@@ -23,6 +23,8 @@ public:
 
 	ID3D11RenderTargetView* getRTV() const;
 
+	ID3D11RenderTargetView** releaseAndGetRTV();
+
 protected:
 
 	//是否成功解绑

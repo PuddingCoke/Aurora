@@ -98,9 +98,9 @@ public:
 
 	void render() override
 	{
-		renderTexture->setRTV();
 		renderTexture->clearRTV(DirectX::Colors::Black);
-		Renderer::setBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
+		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
 
 		batch->begin();
 		for (int i = 0; i < rains.size(); i++)
@@ -113,15 +113,19 @@ public:
 		}
 		batch->end();
 
-		Texture2D* texture2D = effect.process(renderTexture);
+		ShaderResourceView* bloomTextureSRV = effect.process(renderTexture);
 
-		Renderer::setDefRTV();
-		Renderer::clearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
-		Renderer::setBlendState(States::get()->defBlendState.Get());
+		Shader::displayVShader->use();
+		Shader::displayPShader->use();
+
+		RenderAPI::get()->DrawQuad();
 
 		batch->begin();
-		batch->draw(texture2D, 0, 0);
 		batch->draw(font, "FPS:" + std::to_string(Graphics::getFPS()), 0, Graphics::getHeight(), 1.f, 1.f, 1.f, 1.f);
 		batch->end();
 

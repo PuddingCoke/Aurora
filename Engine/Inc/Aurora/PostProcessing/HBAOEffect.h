@@ -24,7 +24,7 @@ public:
 
 	~HBAOEffect();
 
-	Texture2D* process(ID3D11ShaderResourceView* const depthSRV, ID3D11ShaderResourceView* const normalSRV) const;
+	ShaderResourceView* process(ID3D11ShaderResourceView* const depthSRV, ID3D11ShaderResourceView* const normalSRV) const;
 
 	const float& getRadius() const;
 

@@ -305,5 +305,11 @@
     <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\PostProcessing\HBAOEffect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

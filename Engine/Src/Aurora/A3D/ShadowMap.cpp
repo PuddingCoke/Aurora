@@ -7,14 +7,9 @@ ShadowMap* ShadowMap::create(const unsigned int& width, const unsigned int& heig
 	return new ShadowMap(width, height);
 }
 
-void ShadowMap::setSRV(const UINT& slot) const
-{
-	Renderer::context->PSSetShaderResources(slot, 1, shadowSRV.GetAddressOf());
-}
-
 void ShadowMap::clear(const float& depth) const
 {
-	Renderer::context->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, depth, 0);
+	Renderer::getContext()->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, depth, 0);
 }
 
 ID3D11DepthStencilView* ShadowMap::get() const
@@ -25,11 +20,6 @@ ID3D11DepthStencilView* ShadowMap::get() const
 ID3D11DepthStencilView* ShadowMap::getROView() const
 {
 	return depthStencilViewRO.Get();
-}
-
-ID3D11ShaderResourceView* ShadowMap::getSRV() const
-{
-	return shadowSRV.Get();
 }
 
 void ShadowMap::ini()
@@ -102,5 +92,5 @@ ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height)
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = -1;
 
-	Renderer::device->CreateShaderResourceView(shadowTexture.Get(), &srvDesc, shadowSRV.ReleaseAndGetAddressOf());
+	createSRV(shadowTexture.Get(), srvDesc);
 }

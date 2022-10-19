@@ -5,8 +5,9 @@
 
 #include<Aurora/Renderer.h>
 #include<Aurora/Shader.h>
+#include<Aurora/DX/View/ShaderResourceView.h>
 
-class ShadowMap
+class ShadowMap :public ShaderResourceView
 {
 public:
 
@@ -18,15 +19,11 @@ public:
 
 	static ShadowMap* create(const unsigned int& width, const unsigned int& height);
 
-	void setSRV(const UINT& slot) const;
-
 	void clear(const float& depth = 1.0f) const;
 
 	ID3D11DepthStencilView* get() const;
 
 	ID3D11DepthStencilView* getROView() const;
-
-	ID3D11ShaderResourceView* getSRV() const;
 
 	static Shader* shadowVShader;
 
@@ -47,7 +44,6 @@ private:
 	//read only view
 	ComPtr<ID3D11DepthStencilView> depthStencilViewRO;
 
-	ComPtr<ID3D11ShaderResourceView> shadowSRV;
 };
 
 #endif // !_SHADOWMAP_H_

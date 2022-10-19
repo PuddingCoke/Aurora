@@ -60,11 +60,11 @@ public:
 
 		if (showWireframe)
 		{
-			RenderAPI::get()->SetRasterState(wireframeRS.Get());
+			RenderAPI::get()->RSSetState(wireframeRS.Get());
 		}
 		else
 		{
-			RenderAPI::get()->SetRasterState(States::get()->rasterCullBack.Get());
+			RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
 		}
 
 		depthView->clear(D3D11_CLEAR_DEPTH);

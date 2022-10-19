@@ -18,9 +18,9 @@ public:
 
 	Shader* pixelShader;
 
-	Texture2D* noiseTexture;
+	ResourceTexture* noiseTexture;
 
-	Texture2D* dustTexture;
+	ResourceTexture* dustTexture;
 
 	DoubleRTV* accTexture;
 
@@ -34,8 +34,8 @@ public:
 
 	MyGame() :
 		pixelShader(Shader::fromFile("GargantuaPShader.hlsl", ShaderType::Pixel)),
-		noiseTexture(new Texture2D(256, 256, Texture2D::TextureType::Noise)),
-		dustTexture(new Texture2D("Dust.jpg")),
+		noiseTexture(new ResourceTexture(256, 256, Texture2D::TextureType::Noise)),
+		dustTexture(new ResourceTexture("Dust.jpg")),
 		accTexture(DoubleRTV::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		effect(Graphics::getWidth(), Graphics::getHeight())
 	{
@@ -96,52 +96,42 @@ public:
 
 	void render() override
 	{
-		ID3D11ShaderResourceView* nullView[3] = { nullptr,nullptr,nullptr };
-
-		accTexture->write()->setRTV();
+		RenderAPI::get()->OMSetRTV({ accTexture->write() }, nullptr);
 		accTexture->write()->clearRTV(DirectX::Colors::Black);
 
-		Renderer::setBlendState(States::get()->addtiveBlend.Get());
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Renderer::context->PSSetSamplers(0, 1, States::get()->linearWrapSampler.GetAddressOf());
+		RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->PSSetSampler(States::get()->linearWrapSampler.GetAddressOf(), 0, 1);
 
 		Shader::displayVShader->use();
 		pixelShader->use();
 
-		noiseTexture->PSSetSRV(0);
-		dustTexture->PSSetSRV(1);
-		accTexture->read()->PSSetSRV(2);
+		RenderAPI::get()->PSSetSRV({ noiseTexture,dustTexture,accTexture->read() }, 0);
+		RenderAPI::get()->Draw(3, 0);
 
-		Renderer::context->Draw(3, 0);
 		accTexture->swap();
 
-		Renderer::context->PSSetShaderResources(0, 3, nullView);
-
-		Renderer::clearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 
 		if (bloom)
 		{
-			Texture2D* texture = effect.process(accTexture->read());
+			ShaderResourceView* textureSRV = effect.process(accTexture->read());
 
-			Renderer::setDefRTV();
+			RenderAPI::get()->OMSetDefRTV(nullptr);
 
 			Shader::displayPShader->use();
 
-			texture->PSSetSRV(0);
-
+			RenderAPI::get()->PSSetSRV({ textureSRV }, 0);
 		}
 		else
 		{
-			Renderer::setDefRTV();
+			RenderAPI::get()->OMSetDefRTV(nullptr);
 
 			Shader::displayPShader->use();
 
-			accTexture->read()->PSSetSRV(0);
+			RenderAPI::get()->PSSetSRV({ accTexture->read() }, 0);
 		}
 
-		Renderer::context->Draw(3, 0);
-
-
-		Renderer::context->PSSetShaderResources(0, 3, nullView);
+		RenderAPI::get()->Draw(3, 0);
 	}
 };

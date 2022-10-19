@@ -22,17 +22,23 @@ public:
 
 	static ID3D11Device4* device;
 
-	static ID3D11DeviceContext4* context;
+	static ID3D11DeviceContext4* getContext();
 
 private:
 
 	friend class Aurora;
+
+	friend class Shader;
+
+	friend class ResManager;
 
 	friend class RenderAPI;
 
 	static Renderer* instance;
 
 	Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel);
+
+	static ID3D11DeviceContext4* context;
 
 	ComPtr<ID3D11Device4> device4;
 

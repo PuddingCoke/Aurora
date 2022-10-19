@@ -8,6 +8,7 @@ BitmapFont* BitmapFont::create(const std::string& bitmapPath, const std::string&
 BitmapFont::~BitmapFont()
 {
 	delete rTexture;
+	delete vertexBuffer;
 	delete[] vertices;
 }
 
@@ -33,7 +34,8 @@ const float& BitmapFont::getScale() const
 }
 
 BitmapFont::BitmapFont(const std::string& bitmapPath, const std::string& configFilePath, const int& fontSize) :
-	fontSize(fontSize), originFontSize(0), scale(1), idx(0), vertices(new float[maxCharacterCount * 32]), rTexture(new ResourceTexture(bitmapPath))
+	fontSize(fontSize), originFontSize(0), scale(1), idx(0), vertices(new float[maxCharacterCount * 32]), rTexture(new ResourceTexture(bitmapPath)),
+	vertexBuffer(new Buffer(sizeof(float)* maxCharacterCount * 32, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 {
 	std::ifstream stream(configFilePath);
 
@@ -158,27 +160,16 @@ BitmapFont::BitmapFont(const std::string& bitmapPath, const std::string& configF
 	}
 
 	stream.close();
-
-	D3D11_BUFFER_DESC vertexBufferDesc = {};
-	vertexBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
-	vertexBufferDesc.ByteWidth = sizeof(float) * maxCharacterCount * 32;
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	vertexBufferDesc.MiscFlags = 0;
-
-	Renderer::device->CreateBuffer(&vertexBufferDesc, nullptr, vertexBuffer.ReleaseAndGetAddressOf());
 }
 
 void BitmapFont::updateVerticesData() const
 {
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, vertices, sizeof(float) * idx);
-	Renderer::context->Unmap(vertexBuffer.Get(), 0);
+	memcpy(vertexBuffer->map(0).pData, vertices, sizeof(float) * idx);
+	vertexBuffer->unmap(0);
 }
 
 void BitmapFont::render()
 {
-	Renderer::context->DrawIndexed(idx / 16 * 3, 0, 0);
+	RenderAPI::get()->DrawIndexed(idx / 16 * 3, 0, 0);
 	idx = 0;
 }

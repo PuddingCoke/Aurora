@@ -19,11 +19,16 @@ ID3D11UnorderedAccessView* UnorderedAccessView::getUAV() const
 	return unorderedAccessView.Get();
 }
 
+ID3D11UnorderedAccessView** UnorderedAccessView::releaseAndGetUAV()
+{
+	return unorderedAccessView.ReleaseAndGetAddressOf();
+}
+
 bool UnorderedAccessView::unbindFromUAV()
 {
 	if (UAVSlot != -1)
 	{
-		Renderer::context->CSSetUnorderedAccessViews(UAVSlot, 1, nullUAV, nullptr);
+		Renderer::getContext()->CSSetUnorderedAccessViews(UAVSlot, 1, nullUAV, nullptr);
 		curUAV[UAVSlot] = nullptr;
 		UAVSlot = -1;
 		return true;

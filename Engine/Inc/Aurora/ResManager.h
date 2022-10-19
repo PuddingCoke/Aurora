@@ -22,6 +22,10 @@ private:
 
 	ResManager();
 
+	ResManager(const ResManager&) = delete;
+
+	void operator=(const ResManager&) = delete;
+
 	static ResManager* get();
 
 	void OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv);

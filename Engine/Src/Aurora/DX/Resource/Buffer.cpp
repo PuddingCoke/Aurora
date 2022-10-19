@@ -34,23 +34,28 @@ Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& 
 	}
 }
 
+Buffer::~Buffer()
+{
+	unbindFromVertexBuffer();
+}
+
 D3D11_MAPPED_SUBRESOURCE Buffer::map(const unsigned int& subresource, const D3D11_MAP& mapType, const unsigned int& mapFlags) const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(buffer.Get(), subresource, mapType, mapFlags, &mappedData);
+	Renderer::getContext()->Map(buffer.Get(), subresource, mapType, mapFlags, &mappedData);
 	return mappedData;
 }
 
 void Buffer::unmap(const unsigned int& subresource) const
 {
-	Renderer::context->Unmap(buffer.Get(), subresource);
+	Renderer::getContext()->Unmap(buffer.Get(), subresource);
 }
 
 bool Buffer::unbindFromVertexBuffer()
 {
 	if (IASlot != -1)
 	{
-		Renderer::context->IASetVertexBuffers(IASlot, 1, nullBuffer, nullStrides, nullStrides);
+		Renderer::getContext()->IASetVertexBuffers(IASlot, 1, nullBuffer, nullStrides, nullStrides);
 		curBuffer[IASlot] = nullptr;
 		IASlot = -1;
 		return true;

@@ -7,7 +7,7 @@ DepthStencilView* DepthStencilView::create(const unsigned int& width, const unsi
 
 void DepthStencilView::clear(const UINT& clearFlag, const float& depth, const UINT8& stencil) const
 {
-	Renderer::context->ClearDepthStencilView(depthStencilView.Get(), clearFlag, depth, stencil);
+	Renderer::getContext()->ClearDepthStencilView(depthStencilView.Get(), clearFlag, depth, stencil);
 }
 
 ID3D11DepthStencilView* DepthStencilView::get() const

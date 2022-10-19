@@ -201,6 +201,8 @@
     <ClCompile Include="Src\Aurora\DX\View\USView.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp" />
+    <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp" />
+    <ClCompile Include="Src\Aurora\PostProcessing\HBAOEffect.cpp" />
     <ClCompile Include="Src\Aurora\RenderAPI.cpp" />
     <ClCompile Include="Src\Aurora\ResManager.cpp" />
     <ClCompile Include="Src\Aurora\DX\View\ShaderResourceView.cpp" />

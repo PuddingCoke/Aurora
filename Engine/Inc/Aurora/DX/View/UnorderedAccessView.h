@@ -19,6 +19,8 @@ public:
 
 	ID3D11UnorderedAccessView* getUAV() const;
 
+	ID3D11UnorderedAccessView** releaseAndGetUAV();
+
 protected:
 
 	//是否成功解绑

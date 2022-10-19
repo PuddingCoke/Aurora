@@ -30,11 +30,11 @@ public:
 
 	void end();
 
-	void draw(ResourceTexture* const texture, const float& x, const float& y);
+	void draw(Texture2D* const texture, ShaderResourceView* const srv, const float& x, const float& y);
 
-	void draw(ResourceTexture* const texture, const float& x, const float& y, const float& originX, const float& originY);
+	void draw(Texture2D* const texture, ShaderResourceView* const srv, const float& x, const float& y, const float& originX, const float& originY);
 
-	void draw(ResourceTexture* const texture, const float& x, const float& y, const float& originX, const float& originY, const float& rotation);
+	void draw(Texture2D* const texture, ShaderResourceView* const srv, const float& x, const float& y, const float& originX, const float& originY, const float& rotation);
 
 	void draw(BitmapFont* const font, const std::string& context, const float& x, const float& y, const float& r = 1.f, const float& g = 1.f, const float& b = 1.f, const float& a = 1.f);
 
@@ -48,7 +48,7 @@ private:
 
 	void compileShaders();
 
-	int texturePoolAdd(ResourceTexture* const texture);
+	int texturePoolAdd(ShaderResourceView* const textureSRV);
 
 	void flush();
 
@@ -58,7 +58,7 @@ private:
 
 	ComPtr<ID3D11InputLayout> bitmapInputLayout;
 
-	ComPtr<ID3D11Buffer> indexBuffer;
+	Buffer* indexBuffer;
 
 	Shader* spriteVShader;
 	Shader* spritePShader;
@@ -90,9 +90,9 @@ private:
 
 		float* vertices;
 
-		ResourceTexture* texture;
+		ShaderResourceView* textureSRV;
 
-		ComPtr<ID3D11Buffer> vertexBuffer;
+		Buffer* vertexBuffer;
 	};
 
 	TextureSlot* texturePool;

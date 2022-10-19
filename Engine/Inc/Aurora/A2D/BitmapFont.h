@@ -8,6 +8,7 @@
 #include<fstream>
 
 #include<Aurora/ResourceTexture.h>
+#include<Aurora/RenderAPI.h>
 
 class BitmapFont
 {
@@ -64,7 +65,7 @@ private:
 
 	ResourceTexture* const rTexture;
 
-	ComPtr<ID3D11Buffer> vertexBuffer;
+	Buffer* const vertexBuffer;
 
 	float* vertices;
 

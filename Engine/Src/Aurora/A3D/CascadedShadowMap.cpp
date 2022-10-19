@@ -1,7 +1,8 @@
 #include<Aurora/A3D/CascadedShadowMap.h>
 
 CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned int& height, const DirectX::XMFLOAT3& lightPos, const DirectX::XMFLOAT3& lightLookAt) :
-	shadowCtx(nullptr)
+	shadowCtx(nullptr),
+	lightViewProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 {
 	GFSDK_ShadowLib_Version ver;
 	GFSDK_ShadowLib_GetDLLVersion(&ver);
@@ -9,7 +10,7 @@ CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned i
 	GFSDK_ShadowLib_DeviceContext deviceContext;
 
 	deviceContext.pD3DDevice = Renderer::device;
-	deviceContext.pDeviceContext = Renderer::context;
+	deviceContext.pDeviceContext = Renderer::getContext();
 
 	std::cout << "[class CascadedShadowMap] NVIDIA ShadowLib create status " << GFSDK_ShadowLib_Create(&ver, &shadowCtx, &deviceContext) << "\n";
 
@@ -43,17 +44,6 @@ CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned i
 
 		shadowCtx->AddBuffer(&sbDesc, &shadowBufferHandle);
 		shadowCtx->AddMap(&smDesc, &sbDesc, &shadowMapHandle);
-	}
-
-	//´´½¨lightViewProjBuffer
-	{
-		D3D11_BUFFER_DESC bd = {};
-		bd.ByteWidth = sizeof(DirectX::XMMATRIX);
-		bd.Usage = D3D11_USAGE_DYNAMIC;
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-		Renderer::device->CreateBuffer(&bd, nullptr, lightViewProjBuffer.ReleaseAndGetAddressOf());
 	}
 
 	setLightPos(lightPos);
@@ -99,6 +89,7 @@ CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned i
 
 CascadedShadowMap::~CascadedShadowMap()
 {
+	delete lightViewProjBuffer;
 	shadowCtx->Destroy();
 }
 
@@ -147,9 +138,9 @@ void CascadedShadowMap::renderShaodwMap(ShadowMap* const shadowMap, std::functio
 
 	shadowCtx->UpdateMapBounds(shadowMapHandle, lightViewMatrices, lightProjMatrices, renderFrusta);
 
-	Renderer::context->HSSetShader(nullptr, nullptr, 0);
-	Renderer::context->DSSetShader(nullptr, nullptr, 0);
-	Renderer::context->GSSetShader(nullptr, nullptr, 0);
+	RenderAPI::get()->HSSetShader(nullptr);
+	RenderAPI::get()->DSSetShader(nullptr);
+	RenderAPI::get()->GSSetShader(nullptr);
 
 	shadowCtx->InitializeMapRendering(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_Depth);
 
@@ -161,12 +152,9 @@ void CascadedShadowMap::renderShaodwMap(ShadowMap* const shadowMap, std::functio
 		const DirectX::XMMATRIX projMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightProjMatrices[uView]);
 		const DirectX::XMMATRIX viewProjMatrix = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
 
-		D3D11_MAPPED_SUBRESOURCE mappedData;
-		Renderer::context->Map(lightViewProjBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-		memcpy(mappedData.pData, &viewProjMatrix, sizeof(DirectX::XMMATRIX));
-		Renderer::context->Unmap(lightViewProjBuffer.Get(), 0);
-
-		Renderer::context->VSSetConstantBuffers(2, 1, lightViewProjBuffer.GetAddressOf());
+		memcpy(lightViewProjBuffer->map(0).pData, &viewProjMatrix, sizeof(DirectX::XMMATRIX));
+		lightViewProjBuffer->unmap(0);
+		RenderAPI::get()->VSSetBuffer({ lightViewProjBuffer }, 2);
 
 		renderGeometry();
 
@@ -184,12 +172,9 @@ void CascadedShadowMap::beginRayTraceRender()
 	const DirectX::XMMATRIX projMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightProjMatrices[0]);
 	const DirectX::XMMATRIX viewProjMatrix = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
 
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(lightViewProjBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &viewProjMatrix, sizeof(DirectX::XMMATRIX));
-	Renderer::context->Unmap(lightViewProjBuffer.Get(), 0);
-
-	Renderer::context->VSSetConstantBuffers(2, 1, lightViewProjBuffer.GetAddressOf());
+	memcpy(lightViewProjBuffer->map(0).pData, &viewProjMatrix, sizeof(DirectX::XMMATRIX));
+	lightViewProjBuffer->unmap(0);
+	RenderAPI::get()->VSSetBuffer({ lightViewProjBuffer }, 2);
 }
 
 void CascadedShadowMap::endRayTraceRender()
@@ -207,12 +192,9 @@ void CascadedShadowMap::renderFrustumTrace(std::function<void(void)> renderGeome
 	const DirectX::XMMATRIX projMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightProjMatrices[0]);
 	const DirectX::XMMATRIX viewProjMatrix = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
 
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::context->Map(lightViewProjBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, &viewProjMatrix, sizeof(DirectX::XMMATRIX));
-	Renderer::context->Unmap(lightViewProjBuffer.Get(), 0);
-
-	Renderer::context->VSSetConstantBuffers(2, 1, lightViewProjBuffer.GetAddressOf());
+	memcpy(lightViewProjBuffer->map(0).pData, &viewProjMatrix, sizeof(DirectX::XMMATRIX));
+	lightViewProjBuffer->unmap(0);
+	RenderAPI::get()->VSSetBuffer({ lightViewProjBuffer }, 2);
 
 	renderGeometry();
 

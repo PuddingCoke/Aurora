@@ -6,6 +6,11 @@ ID3D11Device4* Renderer::device = nullptr;
 
 ID3D11DeviceContext4* Renderer::context = nullptr;
 
+ID3D11DeviceContext4* Renderer::getContext()
+{
+	return context;
+}
+
 Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel)
 {
 	D3D_FEATURE_LEVEL featureLevels[] =

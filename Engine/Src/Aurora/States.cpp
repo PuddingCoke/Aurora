@@ -20,7 +20,7 @@ States::States()
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::device->CreateSamplerState(&sampDesc, linearClampSampler.ReleaseAndGetAddressOf());
+		RenderAPI::get()->CreateSamplerState(sampDesc, linearClampSampler.ReleaseAndGetAddressOf());
 	}
 
 	//初始化linearWrapSampler
@@ -34,7 +34,7 @@ States::States()
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::device->CreateSamplerState(&sampDesc, linearWrapSampler.ReleaseAndGetAddressOf());
+		RenderAPI::get()->CreateSamplerState(sampDesc, linearWrapSampler.ReleaseAndGetAddressOf());
 	}
 
 	//初始化pointClampSampler
@@ -48,7 +48,7 @@ States::States()
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::device->CreateSamplerState(&sampDesc, pointClampSampler.ReleaseAndGetAddressOf());
+		RenderAPI::get()->CreateSamplerState(sampDesc, pointClampSampler.ReleaseAndGetAddressOf());
 	}
 
 	//初始化pointWrapSampler
@@ -62,7 +62,7 @@ States::States()
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::device->CreateSamplerState(&sampDesc, pointWrapSampler.ReleaseAndGetAddressOf());
+		RenderAPI::get()->CreateSamplerState(sampDesc, pointWrapSampler.ReleaseAndGetAddressOf());
 	}
 
 	//初始化defBlendState
@@ -83,7 +83,7 @@ States::States()
 		blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-		Renderer::device->CreateBlendState(&blendStateDesc, defBlendState.ReleaseAndGetAddressOf());
+		RenderAPI::get()->CreateBlendState(blendStateDesc, defBlendState.ReleaseAndGetAddressOf());
 	}
 
 	//初始化addtiveBlend
@@ -104,7 +104,7 @@ States::States()
 		blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-		Renderer::device->CreateBlendState(&blendStateDesc, addtiveBlend.ReleaseAndGetAddressOf());
+		RenderAPI::get()->CreateBlendState(blendStateDesc, addtiveBlend.ReleaseAndGetAddressOf());
 	}
 
 	//初始化rasterCullBack
@@ -113,7 +113,7 @@ States::States()
 		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
 
-		Renderer::device->CreateRasterizerState(&rasterizerDesc, rasterCullBack.ReleaseAndGetAddressOf());
+		RenderAPI::get()->CreateRasterizerState(rasterizerDesc, rasterCullBack.ReleaseAndGetAddressOf());
 	}
 
 	//初始化rasterCullFront
@@ -122,7 +122,7 @@ States::States()
 		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_FRONT;
 
-		Renderer::device->CreateRasterizerState(&rasterizerDesc, rasterCullFront.ReleaseAndGetAddressOf());
+		RenderAPI::get()->CreateRasterizerState(rasterizerDesc, rasterCullFront.ReleaseAndGetAddressOf());
 	}
 
 	//初始化rasterCullNone
@@ -131,7 +131,7 @@ States::States()
 		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
 
-		Renderer::device->CreateRasterizerState(&rasterizerDesc, rasterCullNone.ReleaseAndGetAddressOf());
+		RenderAPI::get()->CreateRasterizerState(rasterizerDesc, rasterCullNone.ReleaseAndGetAddressOf());
 	}
 
 	//初始化defDepthStencilState
@@ -155,6 +155,6 @@ States::States()
 		dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 		dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
-		Renderer::device->CreateDepthStencilState(&dsDesc, defDepthStencilState.ReleaseAndGetAddressOf());
+		RenderAPI::get()->CreateDepthStencilState(dsDesc, defDepthStencilState.ReleaseAndGetAddressOf());
 	}
 }

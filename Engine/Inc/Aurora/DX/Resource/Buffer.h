@@ -19,6 +19,8 @@ public:
 	Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage,
 		const void* const data = nullptr, const UINT& cpuaccessFlags = 0, const UINT& miscFlags = 0, const UINT& structureByteStride = 0);
 
+	virtual ~Buffer();
+
 	ID3D11Buffer* getBuffer() const;
 
 	D3D11_MAPPED_SUBRESOURCE map(const unsigned int& subresource, const D3D11_MAP& mapType = D3D11_MAP_WRITE_DISCARD, const unsigned int& mapFlags = 0) const;

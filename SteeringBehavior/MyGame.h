@@ -20,6 +20,8 @@ public:
 
 	RenderTexture* renderTexture;
 
+	ResourceTexture* resolvedTexture;
+
 	DoubleRTV* doubleRTV;
 
 	PrimitiveBatch* batch;
@@ -35,6 +37,7 @@ public:
 	MyGame() :
 		batch(PrimitiveBatch::create()),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
+		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
 		doubleRTV(DoubleRTV::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		fadeEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
@@ -67,6 +70,7 @@ public:
 		delete batch;
 		delete renderTexture;
 		delete doubleRTV;
+		delete resolvedTexture;
 	}
 
 	void update(const float& dt) override
@@ -105,10 +109,10 @@ public:
 
 	void render()
 	{
-		Renderer::setBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
 
-		renderTexture->clearMSAARTV(DirectX::Colors::Black);
-		renderTexture->setMSAARTV();
+		renderTexture->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
 
 		batch->begin();
 		for (unsigned int i = 0; i < vehicles.size(); i++)
@@ -118,42 +122,41 @@ public:
 		}
 		batch->end();
 
-		renderTexture->resolve();
+		renderTexture->resolve(resolvedTexture);
 
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
 
-		Renderer::setBlendState(States::get()->addtiveBlend.Get());
-		doubleRTV->write()->setRTV();
-
-		Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
-		renderTexture->PSSetSRV(0);
+		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
+		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->Draw(3, 0);
 		doubleRTV->swap();
 
-		Texture2D* bloomTexture = bloomEffect.process(doubleRTV->read());
+		ShaderResourceView* bloomTextureSRV = bloomEffect.process(doubleRTV->read());
 
-		Renderer::clearDefRTV(DirectX::Colors::Black);
-		Renderer::setDefRTV();
-		bloomTexture->PSSetSRV(0);
-
-		Shader::displayVShader->use();
-		Shader::displayPShader->use();
-
-		Renderer::context->Draw(3, 0);
-
-		Texture2D* const fadedTexture = fadeEffect.process(doubleRTV->read());
-
-		doubleRTV->write()->setRTV();
-		fadedTexture->PSSetSRV(0);
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->Draw(3, 0);
+
+		ShaderResourceView* const fadedTextureSRV = fadeEffect.process(doubleRTV->read());
+
+		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
+		RenderAPI::get()->PSSetSRV({ fadedTextureSRV }, 0);
+
+		Shader::displayVShader->use();
+		Shader::displayPShader->use();
+
+		RenderAPI::get()->Draw(3, 0);
 	}
 
 

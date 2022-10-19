@@ -22,12 +22,15 @@ public:
 
 	RenderTexture* texture;
 
+	ResourceTexture* resolvedTexture;
+
 	DoubleRTV* doubleRTV;
 
 	MyGame() :
 		pBatch(PrimitiveBatch::create()),
 		currentSkyColor{ 0.0f,0.0f,0.0f,1.0f },
 		texture(new RenderTexture(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
+		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
 		doubleRTV(DoubleRTV::create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM)),
 		effect(1920, 1080)
 	{
@@ -67,6 +70,7 @@ public:
 		delete pBatch;
 		delete texture;
 		delete doubleRTV;
+		delete resolvedTexture;
 	}
 
 	void update(const float& dt) override
@@ -186,10 +190,10 @@ public:
 
 	void render() override
 	{
-		Renderer::setBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
 
-		texture->clearMSAARTV(DirectX::Colors::Black);
-		texture->setMSAARTV();
+		texture->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetRTV({ texture }, nullptr);
 
 		pBatch->begin();
 		for (std::list<Star*>::iterator it = Star::active->begin(); it != Star::active->end(); it++)
@@ -209,40 +213,39 @@ public:
 		}
 		pBatch->end();
 
-		texture->resolve();
+		texture->resolve(resolvedTexture);
 
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
 
-		Renderer::setBlendState(States::get()->addtiveBlend.Get());
-		doubleRTV->write()->setRTV();
-
-		Renderer::context->PSSetSamplers(0, 1, States::get()->linearClampSampler.GetAddressOf());
-		texture->PSSetSRV(0);
-
+		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
+		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
+		
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 		doubleRTV->swap();
 
 		colorSky();
-		Renderer::setDefRTV();
-		doubleRTV->read()->PSSetSRV(0);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->PSSetSRV({ doubleRTV->read() }, 0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 
-		Texture2D* const fadedTexture = effect.process(doubleRTV->read());
+		ShaderResourceView* const fadedTextureSRV = effect.process(doubleRTV->read());
 
-		doubleRTV->write()->setRTV();
-		fadedTexture->PSSetSRV(0);
+		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
+		RenderAPI::get()->PSSetSRV({ fadedTextureSRV }, 0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 	}
 
 	void colorSky()
@@ -293,7 +296,7 @@ public:
 		currentSkyColor.g += (targetSkyColor.g - currentSkyColor.g) / colorChange * speed;
 		currentSkyColor.b += (targetSkyColor.b - currentSkyColor.b) / colorChange * speed;
 
-		Renderer::clearDefRTV(currentSkyColor);
+		RenderAPI::get()->ClearDefRTV(currentSkyColor);
 	}
 
 	const float GRAVITY = 0.9f;
