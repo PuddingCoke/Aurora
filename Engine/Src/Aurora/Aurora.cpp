@@ -67,13 +67,13 @@ int Aurora::iniEngine(const Configuration& config)
 		break;
 	}
 
-	RenderAPI::get()->SetViewport(Graphics::getWidth(), Graphics::getHeight());
+	RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-	RenderAPI::get()->SetBlendState(States::get()->defBlendState.Get());
+	RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
 
-	RenderAPI::get()->SetRasterState(States::get()->rasterCullBack.Get());
+	RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
 
-	RenderAPI::get()->SetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
+	RenderAPI::get()->OMSetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
 
 	RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 

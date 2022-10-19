@@ -29,39 +29,39 @@ RenderAPI::~RenderAPI()
 	delete defRenderTargetView;
 }
 
-void RenderAPI::SetViewport(const float& width, const float& height)
+void RenderAPI::RSSetViewport(const float& width, const float& height)
 {
 	vp.Width = width;
 	vp.Height = height;
 	Renderer::context->RSSetViewports(1, &vp);
 }
 
-void RenderAPI::SetViewport(const unsigned int& width, const unsigned int& height)
+void RenderAPI::RSSetViewport(const unsigned int& width, const unsigned int& height)
 {
-	SetViewport((float)width, (float)height);
+	RSSetViewport((float)width, (float)height);
 }
 
-void RenderAPI::SetViewport(const int& width, const int& height)
+void RenderAPI::RSSetViewport(const int& width, const int& height)
 {
-	SetViewport((float)width, (float)height);
+	RSSetViewport((float)width, (float)height);
 }
 
-void RenderAPI::SetTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology)
+void RenderAPI::IASetTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology)
 {
 	Renderer::context->IASetPrimitiveTopology(topology);
 }
 
-void RenderAPI::SetBlendState(ID3D11BlendState* const state)
+void RenderAPI::OMSetBlendState(ID3D11BlendState* const state)
 {
 	Renderer::context->OMSetBlendState(state, nullptr, 0xFFFFFFFF);
 }
 
-void RenderAPI::SetRasterState(ID3D11RasterizerState* const state)
+void RenderAPI::RSSetState(ID3D11RasterizerState* const state)
 {
 	Renderer::context->RSSetState(state);
 }
 
-void RenderAPI::SetDepthStencilState(ID3D11DepthStencilState* const state,const UINT& stencilRef)
+void RenderAPI::OMSetDepthStencilState(ID3D11DepthStencilState* const state, const UINT& stencilRef)
 {
 	Renderer::context->OMSetDepthStencilState(state, stencilRef);
 }
@@ -216,7 +216,7 @@ void RenderAPI::IASetInputLayout(ID3D11InputLayout* const layout)
 	Renderer::context->IASetInputLayout(layout);
 }
 
-void RenderAPI::IASetVertexBuffer(const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
+void RenderAPI::IASetVertexBuffer(const unsigned int& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
 {
-	ResManager::get()->IASetVertexBuffer(buffers, strides, offsets);
+	ResManager::get()->IASetVertexBuffer(slot, buffers, strides, offsets);
 }

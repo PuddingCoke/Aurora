@@ -39,14 +39,12 @@ private:
 
 	static UINT nullStrides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
-	static void unbindVertexBuffer();
-
 	//解决绑定时的binding hazard
 	virtual void bindVertexBuffer();
 
 	ComPtr<ID3D11Buffer> buffer;
 
-	bool boundOnIA;
+	int IASlot;
 
 };
 

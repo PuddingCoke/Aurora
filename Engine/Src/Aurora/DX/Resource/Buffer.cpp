@@ -12,7 +12,7 @@ ID3D11Buffer* Buffer::getBuffer() const
 }
 
 Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage, const void* const data, const UINT& cpuaccessFlags, const UINT& miscFlags, const UINT& structureByteStride) :
-	boundOnIA(false)
+	IASlot(-1)
 {
 	D3D11_BUFFER_DESC bd = {};
 	bd.ByteWidth = byteWidth;
@@ -48,23 +48,15 @@ void Buffer::unmap(const unsigned int& subresource) const
 
 bool Buffer::unbindFromVertexBuffer()
 {
-	if (boundOnIA)
+	if (IASlot != -1)
 	{
-		unbindVertexBuffer();
+		Renderer::context->IASetVertexBuffers(IASlot, 1, nullBuffer, nullStrides, nullStrides);
+		curBuffer[IASlot] = nullptr;
+		IASlot = -1;
 		return true;
 	}
 
 	return false;
-}
-
-void Buffer::unbindVertexBuffer()
-{
-	for (unsigned int i = 0; curBuffer[i]; i++)
-	{
-		curBuffer[i]->boundOnIA = false;
-		curBuffer[i] = nullptr;
-	}
-	Renderer::context->IASetVertexBuffers(0, D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT, nullBuffer, nullStrides, nullStrides);
 }
 
 void Buffer::bindVertexBuffer()

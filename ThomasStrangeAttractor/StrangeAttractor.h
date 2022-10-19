@@ -102,12 +102,12 @@ public:
 
 	void render() override
 	{
-		RenderAPI::get()->SetBlendState(States::get()->addtiveBlend.Get());
-		RenderAPI::get()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 
-		RenderAPI::get()->IASetVertexBuffer({ particlePosBuffer,particleColorBuffer }, { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) }, { 0,0 });
+		RenderAPI::get()->IASetVertexBuffer(0, { particlePosBuffer,particleColorBuffer }, { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) }, { 0,0 });
 
 		displayVShader->use();
 		displayPShader->use();

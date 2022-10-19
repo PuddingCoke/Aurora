@@ -100,8 +100,8 @@ BloomEffect::~BloomEffect()
 
 ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) const
 {
-	RenderAPI::get()->SetBlendState(nullptr);
-	RenderAPI::get()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	RenderAPI::get()->OMSetBlendState(nullptr);
+	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 	RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 	RenderAPI::get()->PSSetBuffer({ bloomParamBuffer }, 1);
@@ -109,13 +109,13 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	Shader::displayVShader->use();
 
 	bloomExtract->use();
-	RenderAPI::get()->SetViewport(bloomWidth, bloomHeight);
+	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
 	RenderAPI::get()->OMSetRTV({ originTexture,bloomTexture }, nullptr);
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
 	RenderAPI::get()->DrawQuad();
 
 	Shader::displayPShader->use();
-	RenderAPI::get()->SetViewport(resolutions[0].x, resolutions[0].y);
+	RenderAPI::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
 	RenderAPI::get()->OMSetRTV({ rcTextures[0] }, nullptr);
 	RenderAPI::get()->PSSetSRV({ bloomTexture }, 0);
 	RenderAPI::get()->DrawQuad();
@@ -134,7 +134,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->CSSetSRV({ rcTextures[i * 2 + 1] }, 0);
 		RenderAPI::get()->Dispatch(rcTextures[i * 2]->getWidth() / workGroupSize.x, rcTextures[i * 2]->getHeight() / workGroupSize.y + 1, 1);
 
-		RenderAPI::get()->SetViewport(resolutions[i + 1].x, resolutions[i + 1].y);
+		RenderAPI::get()->RSSetViewport(resolutions[i + 1].x, resolutions[i + 1].y);
 
 		Shader::displayPShader->use();
 		RenderAPI::get()->OMSetRTV({ rcTextures[i * 2 + 2] }, nullptr);
@@ -157,11 +157,11 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
 	}
 
-	RenderAPI::get()->SetBlendState(States::get()->addtiveBlend.Get());
+	RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		RenderAPI::get()->SetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
+		RenderAPI::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
 		RenderAPI::get()->CSSetSRV({ blurParamSRV[blurSteps - 2 - i] }, 1);
 
 		bloomHBlurShader->use();
@@ -180,7 +180,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->DrawQuad();
 	}
 
-	RenderAPI::get()->SetViewport(bloomWidth, bloomHeight);
+	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
 	RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
 	RenderAPI::get()->PSSetSRV({ rcTextures[0] }, 0);
 	RenderAPI::get()->DrawQuad();

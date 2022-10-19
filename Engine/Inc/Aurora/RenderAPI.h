@@ -62,21 +62,21 @@ public:
 
 	void IASetInputLayout(ID3D11InputLayout* const layout);
 
-	void IASetVertexBuffer(const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets);
+	void IASetVertexBuffer(const unsigned int& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets);
 
-	void SetViewport(const float& width, const float& height);
+	void RSSetViewport(const float& width, const float& height);
 
-	void SetViewport(const unsigned int& width, const unsigned int& height);
+	void RSSetViewport(const unsigned int& width, const unsigned int& height);
 
-	void SetViewport(const int& width, const int& height);
+	void RSSetViewport(const int& width, const int& height);
 
-	void SetTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology);
+	void IASetTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology);
 
-	void SetBlendState(ID3D11BlendState* const state);
+	void OMSetBlendState(ID3D11BlendState* const state);
 
-	void SetRasterState(ID3D11RasterizerState* const state);
+	void RSSetState(ID3D11RasterizerState* const state);
 
-	void SetDepthStencilState(ID3D11DepthStencilState* const state, const UINT& stencilRef);
+	void OMSetDepthStencilState(ID3D11DepthStencilState* const state, const UINT& stencilRef);
 
 	void DrawQuad();
 

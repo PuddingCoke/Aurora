@@ -52,7 +52,7 @@ private:
 
 	void CSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot);
 
-	void IASetVertexBuffer(const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets);
+	void IASetVertexBuffer(const unsigned int& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets);
 
 	static ResManager* instance;
 

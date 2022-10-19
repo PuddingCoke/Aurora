@@ -256,6 +256,39 @@ void ResManager::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uav
 	Renderer::context->CSSetUnorderedAccessViews(slot, (unsigned int)uavs.size(), tempUAV, nullptr);
 }
 
+void ResManager::IASetVertexBuffer(const unsigned int& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
+{
+	for (unsigned int i = slot; i < slot + (unsigned int)buffers.size(); i++)
+	{
+		if (Buffer::curBuffer[i])
+		{
+			Buffer::curBuffer[i]->IASlot = -1;
+			Buffer::curBuffer[i] = nullptr;
+		}
+	}
+
+	std::initializer_list<Buffer*>::iterator it = buffers.begin();
+	std::initializer_list<UINT>::iterator itStride = strides.begin();
+	std::initializer_list<UINT>::iterator itOffset = offsets.begin();
+
+	for (unsigned int i = slot; i < slot + (unsigned int)buffers.size(); i++, it++, itStride++, itOffset++)
+	{
+		Buffer::curBuffer[i] = it[0];
+		tempBuffer[i - slot] = it[0]->buffer.Get();
+		tempStrides[i - slot] = itStride[0];
+		tempOffsets[i - slot] = itOffset[0];
+
+		if (!it[0]->unbindFromVertexBuffer())
+		{
+			it[0]->bindVertexBuffer();
+		}
+
+		it[0]->IASlot = i;
+	}
+
+	Renderer::context->IASetVertexBuffers(slot, (unsigned int)buffers.size(), tempBuffer, tempStrides, tempOffsets);
+}
+
 void ResManager::VSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = buffers.begin();
@@ -326,24 +359,4 @@ void ResManager::CSSetBuffer(const std::initializer_list<Buffer*>& buffers, cons
 	}
 
 	Renderer::context->CSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
-}
-
-void ResManager::IASetVertexBuffer(const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
-{
-	Buffer::unbindVertexBuffer();
-
-	std::initializer_list<Buffer*>::iterator it = buffers.begin();
-	std::initializer_list<UINT>::iterator itStride = strides.begin();
-	std::initializer_list<UINT>::iterator itOffset = offsets.begin();
-
-	for (unsigned int i = 0; i < (unsigned int)buffers.size(); i++, it++, itStride++, itOffset++)
-	{
-		tempBuffer[i] = it[0]->buffer.Get();
-		tempStrides[i] = itStride[0];
-		tempOffsets[i] = itOffset[0];
-		it[0]->boundOnIA = true;
-		it[0]->bindVertexBuffer();
-	}
-
-	Renderer::context->IASetVertexBuffers(0, (unsigned int)buffers.size(), tempBuffer, tempStrides, tempOffsets);
 }
