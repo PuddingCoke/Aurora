@@ -43,6 +43,8 @@ private:
 
 	static Shader* equirectangularZUP;
 
+	static Shader* equirectangularVShader;
+
 	static void iniShader();
 
 	static void releaseShader();

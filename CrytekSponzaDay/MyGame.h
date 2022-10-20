@@ -219,7 +219,6 @@ public:
 		ShaderResourceView* const hbaoTexture = hbaoEffect.process(depthView->getSRV(), gNormalSpecular->getSRV());
 
 		RenderAPI::get()->RSSetState(States::get()->rasterCullNone.Get());
-		RenderAPI::get()->UnbindRTV();
 
 		csm.renderShaodwMap(depthView, [this]() {
 			scene->drawGeometry(ShadowMap::shadowVShader);
