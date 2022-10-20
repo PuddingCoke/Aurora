@@ -20,7 +20,7 @@ public:
 
 	void operator=(const Renderer&) = delete;
 
-	static ID3D11Device4* device;
+	static ID3D11Device5* device;
 
 	static ID3D11DeviceContext4* getContext();
 
@@ -40,7 +40,9 @@ private:
 
 	static ID3D11DeviceContext4* context;
 
-	ComPtr<ID3D11Device4> device4;
+	D3D11_VIEWPORT vp;
+
+	ComPtr<ID3D11Device5> device5;
 
 	ComPtr<ID3D11DeviceContext4> context4;
 

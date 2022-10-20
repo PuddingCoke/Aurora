@@ -143,11 +143,13 @@
     <ClInclude Include="Inc\Aurora\Aurora.h" />
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
     <ClInclude Include="Inc\Aurora\ComputeBuffer.h" />
+    <ClInclude Include="Inc\Aurora\ComputeTexture3D.h" />
     <ClInclude Include="Inc\Aurora\DX\Resource\Buffer.h" />
     <ClInclude Include="Inc\Aurora\Camera.h" />
     <ClInclude Include="Inc\Aurora\Color.h" />
     <ClInclude Include="Inc\Aurora\ComputeTexture.h" />
     <ClInclude Include="Inc\Aurora\Configuration.h" />
+    <ClInclude Include="Inc\Aurora\DX\Resource\Texture3D.h" />
     <ClInclude Include="Inc\Aurora\DX\View\DepthStencilView.h" />
     <ClInclude Include="Inc\Aurora\DoubleRTV.h" />
     <ClInclude Include="Inc\Aurora\DX\View\RenderTargetView.h" />
@@ -193,8 +195,10 @@
     <ClCompile Include="Src\Aurora\A3D\CascadedShadowMap.cpp" />
     <ClCompile Include="Src\Aurora\A3D\FPSCamera.cpp" />
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp" />
+    <ClCompile Include="Src\Aurora\ComputeTexture3D.cpp" />
     <ClCompile Include="Src\Aurora\DX\Resource\Buffer.cpp" />
     <ClCompile Include="Src\Aurora\ComputeTexture.cpp" />
+    <ClCompile Include="Src\Aurora\DX\Resource\Texture3D.cpp" />
     <ClCompile Include="Src\Aurora\DX\View\RenderTargetView.cpp" />
     <ClCompile Include="Src\Aurora\DX\View\RSView.cpp" />
     <ClCompile Include="Src\Aurora\DX\View\RUSView.cpp" />

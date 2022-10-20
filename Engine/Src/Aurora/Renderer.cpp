@@ -2,7 +2,7 @@
 
 Renderer* Renderer::instance = nullptr;
 
-ID3D11Device4* Renderer::device = nullptr;
+ID3D11Device5* Renderer::device = nullptr;
 
 ID3D11DeviceContext4* Renderer::context = nullptr;
 
@@ -11,7 +11,8 @@ ID3D11DeviceContext4* Renderer::getContext()
 	return context;
 }
 
-Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel)
+Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel) :
+	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
@@ -44,10 +45,10 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, 2u,
 			D3D11_SDK_VERSION, device11.GetAddressOf(), &maxSupportedFeatureLevel, context11.GetAddressOf());
 
-		device11.As(&device4);
+		device11.As(&device5);
 		context11.As(&context4);
 
-		device = device4.Get();
+		device = device5.Get();
 		context = context4.Get();
 
 		ComPtr<IDXGIDevice> dxgiDevice11;

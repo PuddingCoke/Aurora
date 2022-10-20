@@ -102,8 +102,8 @@ Shader::Shader(const std::string& source, const ShaderType& type, const std::ini
 	shaderPtr(nullptr), useFunc(nullptr), releaseFunc(nullptr)
 {
 	HRESULT hr;
-	
-	std::vector<D3D_SHADER_MACRO> shaderMacros = std::vector<D3D_SHADER_MACRO>(macros.begin(), macros.end());
+
+	std::vector<D3D_SHADER_MACRO> shaderMacros = std::vector<D3D_SHADER_MACRO>{macros};
 	shaderMacros.push_back({ nullptr,nullptr });
 
 	switch (type)
