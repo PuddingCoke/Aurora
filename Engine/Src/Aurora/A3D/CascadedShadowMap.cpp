@@ -92,8 +92,8 @@ CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned i
 
 CascadedShadowMap::~CascadedShadowMap()
 {
-	delete lightViewProjBuffer;
 	shadowCtx->Destroy();
+	delete lightViewProjBuffer;
 	delete srv;
 }
 

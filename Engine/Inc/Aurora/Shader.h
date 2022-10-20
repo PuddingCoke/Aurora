@@ -7,6 +7,7 @@
 #include<d3dcompiler.h>
 #include<string>
 #include<iostream>
+#include<vector>
 
 #include"Utils.h"
 #include"Renderer.h"
@@ -37,9 +38,9 @@ public:
 
 	ID3DBlob* getBlob() const;
 
-	static Shader* fromFile(const std::string& filePath, const ShaderType& type);
+	static Shader* fromFile(const std::string& filePath, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros = {});
 
-	static Shader* fromStr(const std::string& source, const ShaderType& type);
+	static Shader* fromStr(const std::string& source, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros = {});
 
 	static constexpr UINT  compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
@@ -57,7 +58,7 @@ private:
 
 	ComPtr<ID3DBlob> shaderBlob;
 
-	Shader(const std::string& source, const ShaderType& type);
+	Shader(const std::string& source, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros);
 
 	ID3D11DeviceChild* shaderPtr;
 

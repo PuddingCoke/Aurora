@@ -9,12 +9,12 @@ class MyGame :public Game
 {
 public:
 
-	Texture2D* texture;
+	ResourceTexture* texture;
 
 	SpriteBatch* batch;
 
 	MyGame() :
-		texture(new Texture2D(1024, 1024, Texture2D::TextureType::Noise)),
+		texture(new ResourceTexture(1024, 1024, Texture2D::TextureType::Noise)),
 		batch(SpriteBatch::create())
 	{
 	}
@@ -32,11 +32,11 @@ public:
 
 	void render()
 	{
-		Renderer::clearDefRTV(DirectX::Colors::CadetBlue);
-		Renderer::setDefRTV();
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::CadetBlue);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
 
 		batch->begin();
-		batch->draw(texture, 0, 0);
+		batch->draw(texture, texture, 0, 0);
 		batch->end();
 	}
 

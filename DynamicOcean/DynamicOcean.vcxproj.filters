@@ -30,7 +30,6 @@
   <ItemGroup>
     <FxCompile Include="PhillipsSpectrum.hlsl" />
     <FxCompile Include="Displacement.hlsl" />
-    <FxCompile Include="IFFT.hlsl" />
     <FxCompile Include="SignCorrection.hlsl" />
     <FxCompile Include="OceanDShader.hlsl" />
     <FxCompile Include="OceanHShader.hlsl" />

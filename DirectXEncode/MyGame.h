@@ -32,8 +32,8 @@ public:
 
 	void render() override
 	{
-		Renderer::setDefRTV();
+		RenderAPI::get()->OMSetDefRTV(nullptr);
 		const Color color = { cosf(sTime),sinf(sTime),1.0 };
-		Renderer::clearDefRTV(color);
+		RenderAPI::get()->ClearDefRTV(color);
 	}
 };

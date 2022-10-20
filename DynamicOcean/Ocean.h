@@ -111,7 +111,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	gaussTexture(new ResourceTexture(mapResolution, mapResolution, Texture2D::TextureType::Gauss)),
 	phillipSpectrumShader(Shader::fromFile("PhillipsSpectrum.hlsl", ShaderType::Compute)),
 	displacementShader(Shader::fromFile("Displacement.hlsl", ShaderType::Compute)),
-	ifftShader(Shader::fromFile("IFFT.hlsl", ShaderType::Compute)),
+	ifftShader(Shader::fromFile("IFFT.hlsl", ShaderType::Compute, { {"SIMRES","1024"} })),
 	signCorrectionShader(Shader::fromFile("SignCorrection.hlsl", ShaderType::Compute)),
 	oceanVShader(Shader::fromFile("OceanVShader.hlsl", ShaderType::Vertex)),
 	oceanHShader(Shader::fromFile("OceanHShader.hlsl", ShaderType::Hull)),

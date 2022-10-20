@@ -2,8 +2,6 @@
 
 RenderTargetView* RenderTargetView::curRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};
 
-ID3D11RenderTargetView* const RenderTargetView::nullRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};
-
 RenderTargetView::RenderTargetView() :
 	boundOnRTV(false)
 {
@@ -42,7 +40,7 @@ void RenderTargetView::unbindRTV()
 		curRTV[i]->boundOnRTV = false;
 		curRTV[i] = nullptr;
 	}
-	Renderer::getContext()->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, nullRTV, nullptr);
+	Renderer::getContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 void RenderTargetView::bindRTV()
