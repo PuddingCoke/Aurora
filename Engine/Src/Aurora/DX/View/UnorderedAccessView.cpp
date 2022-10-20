@@ -24,6 +24,19 @@ ID3D11UnorderedAccessView** UnorderedAccessView::releaseAndGetUAV()
 	return unorderedAccessView.ReleaseAndGetAddressOf();
 }
 
+void UnorderedAccessView::unbindUAV()
+{
+	for (unsigned int i = 0; i < D3D11_PS_CS_UAV_REGISTER_COUNT; i++)
+	{
+		if (curUAV[i])
+		{
+			curUAV[i]->UAVSlot = -1;
+			curUAV[i] = nullptr;
+		}
+	}
+	Renderer::getContext()->CSSetUnorderedAccessViews(0, D3D11_PS_CS_UAV_REGISTER_COUNT, nullUAV, nullptr);
+}
+
 bool UnorderedAccessView::unbindFromUAV()
 {
 	if (UAVSlot != -1)

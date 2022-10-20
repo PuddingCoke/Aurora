@@ -290,3 +290,8 @@ void RenderAPI::UnbindRTV()
 {
 	RenderTargetView::unbindRTV();
 }
+
+void RenderAPI::UnbindUAV()
+{
+	UnorderedAccessView::unbindUAV();
+}

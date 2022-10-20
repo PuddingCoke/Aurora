@@ -24,6 +24,8 @@ public:
 	//解决binding hazard的问题
 	virtual void bindUAV() = 0;
 
+	static void unbindUAV();
+
 protected:
 
 	//是否成功解绑

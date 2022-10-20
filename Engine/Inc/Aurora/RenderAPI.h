@@ -120,6 +120,8 @@ public:
 	//用于阴影绘制
 	void UnbindRTV();
 
+	void UnbindUAV();
+
 private:
 
 	friend class Aurora;

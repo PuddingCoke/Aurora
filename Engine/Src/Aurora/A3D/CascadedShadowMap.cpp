@@ -133,6 +133,9 @@ void CascadedShadowMap::updateMatrices()
 
 void CascadedShadowMap::renderShaodwMap(ShadowMap* const shadowMap, std::function<void(void)> renderGeometry)
 {
+	RenderAPI::get()->UnbindRTV();
+	RenderAPI::get()->UnbindUAV();
+
 	srv->unbindFromSRV();
 
 	smRenderParams.DepthBufferDesc.eDepthType = GFSDK_ShadowLib_DepthType_DepthBuffer;
