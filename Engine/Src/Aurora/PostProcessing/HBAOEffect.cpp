@@ -1,7 +1,7 @@
 #include<Aurora/PostProcessing/HBAOEffect.h>
 
 HBAOEffect::HBAOEffect(const unsigned int& width, const unsigned int& height) :
-	EffectBase(width, height, DXGI_FORMAT_R32_FLOAT)
+	EffectBase(width, height, DXGI_FORMAT_R32_FLOAT), pAOContext(nullptr)
 {
 	radius = 2.f;
 	bias = 0.1f;
@@ -27,41 +27,19 @@ HBAOEffect::~HBAOEffect()
 
 ShaderResourceView* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV, ID3D11ShaderResourceView* const normalSRV) const
 {
-	float projMatrixArray[16];
-	float viewMatrixArray[16];
-
-	DirectX::XMFLOAT4X4 matrix;
-
-	DirectX::XMStoreFloat4x4(&matrix, Camera::getProj());
-
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			projMatrixArray[i * 4 + j] = matrix.m[i][j];
-		}
-	}
-
-	DirectX::XMStoreFloat4x4(&matrix, Camera::getView());
-
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			viewMatrixArray[i * 4 + j] = matrix.m[i][j];
-		}
-	}
+	//解决一下binding hazard的问题
+	outputRTV->bindRTV();
 
 	GFSDK_SSAO_InputData_D3D11 input;
 	input.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;
 	input.DepthData.pFullResDepthTextureSRV = depthSRV;
-	input.DepthData.ProjectionMatrix.Data = GFSDK_SSAO_Float4x4(projMatrixArray);
+	input.DepthData.ProjectionMatrix.Data = GFSDK_SSAO_Float4x4((float*)&Camera::getProj());
 	input.DepthData.ProjectionMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
 	input.DepthData.MetersToViewSpaceUnits = 1.f;
 
 	input.NormalData.Enable = true;
 	input.NormalData.pFullResNormalTextureSRV = normalSRV;
-	input.NormalData.WorldToViewMatrix.Data = GFSDK_SSAO_Float4x4(viewMatrixArray);
+	input.NormalData.WorldToViewMatrix.Data = GFSDK_SSAO_Float4x4((float*)&Camera::getView());
 	input.NormalData.WorldToViewMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
 
 	input.DepthData.Viewport.Enable = true;

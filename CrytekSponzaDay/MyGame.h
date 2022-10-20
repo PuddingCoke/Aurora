@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/Texture2D.h>
+#include<Aurora/ResourceTexture.h>
 #include<Aurora/RenderTexture.h>
-#include<Aurora/DBuffer.h>
-#include<Aurora/A3D/DepthStencilView.h>
+#include<Aurora/DX/Resource/Buffer.h>
+#include<Aurora/DX/View/DepthStencilView.h>
 #include<Aurora/A3D/TextureCube.h>
 #include<Aurora/A3D/FPSCamera.h>
 #include<Aurora/A3D/ShadowMap.h>
@@ -41,7 +41,7 @@ public:
 
 	Scene* scene;
 
-	std::shared_ptr<DBuffer> lightBuffer;
+	Buffer* lightBuffer;
 
 	FPSCamera camera;
 
@@ -100,7 +100,7 @@ public:
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		csm(Graphics::getWidth(), Graphics::getHeight(), { 0,600,100 }, { 0,0,0 }),
 		skybox(TextureCube::createEquirectangularMap(assetPath + "/sky/kloppenheim_05_4k.hdr", 4096, { 0,1,0 })),
-		lightBuffer(DBuffer::create(sizeof(light),D3D11_BIND_CONSTANT_BUFFER))
+		lightBuffer(new Buffer(sizeof(light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 	{
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[5] =
@@ -138,6 +138,7 @@ public:
 
 	~MyGame()
 	{
+		delete lightBuffer;
 		delete deferredVShader;
 		delete deferredPShader;
 		delete deferredFinal;
@@ -197,31 +198,28 @@ public:
 
 	void render()
 	{
-		Renderer::context->IASetInputLayout(inputLayout.Get());
+		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+		RenderAPI::get()->OMSetBlendState(nullptr);
+		RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
 
-		Renderer::setBlendState(nullptr);
+		ID3D11SamplerState* samplers[] = { States::get()->linearWrapSampler.Get(),States::get()->linearClampSampler.Get() };
 
-		Renderer::context->RSSetState(States::get()->rasterCullBack.Get());
-
-		Renderer::context->PSSetSamplers(0, 1, States::get()->linearWrapSampler.GetAddressOf());
-		Renderer::context->PSSetSamplers(1, 1, States::get()->linearClampSampler.GetAddressOf());
-
-		Renderer::setViewport(Graphics::getWidth(), Graphics::getHeight());
+		RenderAPI::get()->PSSetSampler(samplers, 0, 2);
+		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
 		gBaseColor->clearRTV(DirectX::Colors::Black);
 		gPosition->clearRTV(DirectX::Colors::Black);
 		gNormalSpecular->clearRTV(DirectX::Colors::Black);
 		depthView->clear();
 
-		RenderTexture::setRTVs({ gPosition,gNormalSpecular,gBaseColor }, depthView->get());
+		RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, depthView->get());
 
 		scene->draw(deferredVShader, deferredPShader);
 
-		Texture2D* const hbaoTexture = hbaoEffect.process(depthView->getSRV(), gNormalSpecular->getSRV());
+		ShaderResourceView* const hbaoTexture = hbaoEffect.process(depthView->getSRV(), gNormalSpecular->getSRV());
 
-		Renderer::context->RSSetState(States::get()->rasterCullNone.Get());
-
-		Renderer::context->OMSetRenderTargets(0, nullptr, nullptr);
+		RenderAPI::get()->RSSetState(States::get()->rasterCullNone.Get());
+		RenderAPI::get()->UnbindRTV();
 
 		csm.renderShaodwMap(depthView, [this]() {
 			scene->drawGeometry(ShadowMap::shadowVShader);
@@ -234,52 +232,37 @@ public:
 				scene->drawGeometry(ShadowMap::shadowVShader);
 			});
 
-		Renderer::context->RSSetState(States::get()->rasterCullBack.Get());
+		RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
 
-		ID3D11ShaderResourceView* shadowSRV = csm.getShadowBuffer();
+		ShaderResourceView* const shadowSRV = csm.getShadowBuffer();
 
-		originTexture->setRTV();
-
-		gPosition->PSSetSRV(0);
-		gNormalSpecular->PSSetSRV(1);
-		gBaseColor->PSSetSRV(2);
-		hbaoTexture->PSSetSRV(3);
-		Renderer::context->PSSetShaderResources(4, 1, &shadowSRV);
-
-		ID3D11Buffer* buffers[2] = { Camera::getViewBuffer(),lightBuffer->get() };
-
-		Renderer::context->PSSetConstantBuffers(1, 2, buffers);
+		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
+		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoTexture,shadowSRV }, 0);
+		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),lightBuffer }, 1);
 
 		Shader::displayVShader->use();
 		deferredFinal->use();
 
-		Renderer::context->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 
-		Texture2D* const bloomTexture = bloomEffect.process(originTexture);
+		ShaderResourceView* const bloomTexture = bloomEffect.process(originTexture);
 
-		Renderer::setBlendState(nullptr);
-
-		Renderer::setDefRTV();
-
-		bloomTexture->PSSetSRV(0);
+		RenderAPI::get()->OMSetBlendState(nullptr);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->PSSetSRV({ bloomTexture }, 0);
 
 		Shader::displayVShader->use();
 		Shader::displayPShader->use();
 
-		Renderer::drawQuad();
+		RenderAPI::get()->DrawQuad();
 
-		Renderer::setDefRTV(depthView->get());
-
-		skybox->setSRV(0);
+		RenderAPI::get()->OMSetDefRTV(depthView->get());
+		RenderAPI::get()->PSSetSRV({ skybox }, 0);
 
 		TextureCube::shader->use();
 		skyboxPShader->use();
 
-		Renderer::drawCube();
-
-		ID3D11ShaderResourceView* nullView[5] = { nullptr,nullptr,nullptr,nullptr,nullptr };
-
-		Renderer::context->PSSetShaderResources(0, 5, nullView);
+		RenderAPI::get()->DrawCube();
 	}
 
 

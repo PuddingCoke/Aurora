@@ -4,9 +4,9 @@ RenderTexture::~RenderTexture()
 {
 }
 
-void RenderTexture::resolve(Texture2D* const texture) const
+void RenderTexture::resolve(Texture2D* const texture2d) const
 {
-	RenderAPI::get()->ResolveSubresource(texture->getTexture2D(), 0, this->texture.Get(), 0, format);
+	RenderAPI::get()->ResolveSubresource(texture2d->getTexture2D(), 0, texture.Get(), 0, format);
 }
 
 RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4], const bool& enableMSAA) :

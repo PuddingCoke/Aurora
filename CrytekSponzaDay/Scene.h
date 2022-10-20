@@ -95,10 +95,11 @@ public:
 		}
 		else
 		{
-			Renderer::context->PSSetShader(nullptr, nullptr, 0);
+			RenderAPI::get()->PSSetShader(nullptr);
 		}
 			
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			materials[models[i]->materialIndex]->use();
@@ -109,9 +110,8 @@ public:
 	void drawGeometry(Shader* const vertexShader)
 	{
 		vertexShader->use();
-
-		Renderer::context->PSSetShader(nullptr, nullptr, 0);
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->PSSetShader(nullptr);
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
@@ -124,9 +124,8 @@ public:
 		csm->beginRayTraceRender();
 
 		vertexShader->use();
-		Renderer::context->PSSetShader(nullptr, nullptr, 0);
-
-		Renderer::setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->PSSetShader(nullptr);
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		for (unsigned int i = 0; i < models.size(); i++)
 		{

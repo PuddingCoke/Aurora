@@ -23,6 +23,9 @@ public:
 
 	ID3D11ShaderResourceView** releaseAndGetSRV();
 
+	//解决binding hazard的问题
+	virtual void bindSRV();
+
 protected:
 
 	//返回是否成功解绑
@@ -35,6 +38,8 @@ protected:
 private:
 
 	friend class ResManager;
+
+	friend class CascadedShadowMap;
 
 	static ShaderResourceView* curVSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT];
 
@@ -61,9 +66,6 @@ private:
 	void unbindPSRV();
 
 	void unbindCSRV();
-
-	//解决binding hazard的问题
-	virtual void bindSRV();
 
 	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 

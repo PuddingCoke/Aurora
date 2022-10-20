@@ -2,8 +2,11 @@
 
 CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned int& height, const DirectX::XMFLOAT3& lightPos, const DirectX::XMFLOAT3& lightLookAt) :
 	shadowCtx(nullptr),
-	lightViewProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
+	lightViewProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
+	srv(new ShaderResourceView())
 {
+	sbRenderParams.eDebugViewType = GFSDK_ShadowLib_DebugViewType_None;
+
 	GFSDK_ShadowLib_Version ver;
 	GFSDK_ShadowLib_GetDLLVersion(&ver);
 
@@ -91,6 +94,7 @@ CascadedShadowMap::~CascadedShadowMap()
 {
 	delete lightViewProjBuffer;
 	shadowCtx->Destroy();
+	delete srv;
 }
 
 DirectX::XMFLOAT3 CascadedShadowMap::getLightPos() const
@@ -129,6 +133,8 @@ void CascadedShadowMap::updateMatrices()
 
 void CascadedShadowMap::renderShaodwMap(ShadowMap* const shadowMap, std::function<void(void)> renderGeometry)
 {
+	srv->unbindFromSRV();
+
 	smRenderParams.DepthBufferDesc.eDepthType = GFSDK_ShadowLib_DepthType_DepthBuffer;
 	smRenderParams.DepthBufferDesc.DepthSRV.pSRV = shadowMap->getSRV();
 	smRenderParams.DepthBufferDesc.ResolvedDepthSRV.pSRV = nullptr;
@@ -137,7 +143,8 @@ void CascadedShadowMap::renderShaodwMap(ShadowMap* const shadowMap, std::functio
 	shadowCtx->SetMapRenderParams(shadowMapHandle, &smRenderParams);
 
 	shadowCtx->UpdateMapBounds(shadowMapHandle, lightViewMatrices, lightProjMatrices, renderFrusta);
-
+	
+	RenderAPI::get()->PSSetShader(nullptr);
 	RenderAPI::get()->HSSetShader(nullptr);
 	RenderAPI::get()->DSSetShader(nullptr);
 	RenderAPI::get()->GSSetShader(nullptr);
@@ -206,7 +213,7 @@ void CascadedShadowMap::incrementMapPrimitiveCounter(const unsigned int& primiti
 	shadowCtx->IncrementMapPrimitiveCounter(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_RT, primitiveCount);
 }
 
-ID3D11ShaderResourceView* CascadedShadowMap::getShadowBuffer()
+ShaderResourceView* CascadedShadowMap::getShadowBuffer()
 {
 	shadowCtx->ClearBuffer(shadowBufferHandle);
 
@@ -216,5 +223,7 @@ ID3D11ShaderResourceView* CascadedShadowMap::getShadowBuffer()
 
 	shadowCtx->FinalizeBuffer(shadowBufferHandle, &shadowBufferSRV);
 
-	return shadowBufferSRV.pSRV;
+	srv->shaderResourceView = shadowBufferSRV.pSRV;
+
+	return srv;
 }

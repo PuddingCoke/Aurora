@@ -285,3 +285,8 @@ void RenderAPI::CopySubresourceRegion(ID3D11Resource* const pDstResource, const 
 {
 	Renderer::context->CopySubresourceRegion(pDstResource, DstSubresource, DstX, DstY, DstZ, pSrcResource, SrcSubresource, pSrcBox);
 }
+
+void RenderAPI::UnbindRTV()
+{
+	RenderTargetView::unbindRTV();
+}

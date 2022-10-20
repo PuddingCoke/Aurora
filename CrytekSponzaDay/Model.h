@@ -29,7 +29,7 @@ public:
 	static constexpr unsigned int offset = 0;
 
 	//pos uv normal tangent bitangent
-	ComPtr<ID3D11Buffer> modelBuffer;
+	Buffer* modelBuffer;
 
 	const unsigned int materialIndex;
 
@@ -70,21 +70,18 @@ public:
 			}
 		}
 
-		D3D11_BUFFER_DESC bd = {};
-		bd.ByteWidth = sizeof(Vertex) * vertexCount;
-		bd.Usage = D3D11_USAGE_IMMUTABLE;
-		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		
-		D3D11_SUBRESOURCE_DATA subresource = {};
-		subresource.pSysMem = vertices.data();
+		modelBuffer = new Buffer(sizeof(Vertex) * vertexCount, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE, vertices.data());
+	}
 
-		Renderer::device->CreateBuffer(&bd, &subresource, modelBuffer.ReleaseAndGetAddressOf());
+	~Model()
+	{
+		delete modelBuffer;
 	}
 
 	void draw()
 	{
-		Renderer::context->IASetVertexBuffers(0, 1, modelBuffer.GetAddressOf(), &stride, &offset);
-		Renderer::context->Draw(vertexCount, 0);
+		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
+		RenderAPI::get()->Draw(vertexCount, 0);
 	}
 
 };

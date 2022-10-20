@@ -49,7 +49,7 @@ public:
 
 	void incrementMapPrimitiveCounter(const unsigned int& primitiveCount);
 
-	ID3D11ShaderResourceView* getShadowBuffer();
+	ShaderResourceView* getShadowBuffer();
 
 private:
 
@@ -76,6 +76,8 @@ private:
 	GFSDK_ShadowLib_MapRenderParams smRenderParams;
 
 	Buffer* lightViewProjBuffer;
+
+	ShaderResourceView* srv;
 
 };
 

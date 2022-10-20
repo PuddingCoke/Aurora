@@ -14,8 +14,6 @@ public:
 
 	virtual ~RSView();
 
-private:
-
 	virtual void bindRTV() override;
 
 	virtual void bindSRV() override;

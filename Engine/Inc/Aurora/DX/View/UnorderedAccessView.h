@@ -21,6 +21,9 @@ public:
 
 	ID3D11UnorderedAccessView** releaseAndGetUAV();
 
+	//解决binding hazard的问题
+	virtual void bindUAV() = 0;
+
 protected:
 
 	//是否成功解绑
@@ -35,9 +38,6 @@ private:
 	static UnorderedAccessView* curUAV[D3D11_PS_CS_UAV_REGISTER_COUNT];
 
 	static ID3D11UnorderedAccessView* const nullUAV[D3D11_PS_CS_UAV_REGISTER_COUNT];
-
-	//解决binding hazard的问题
-	virtual void bindUAV() = 0;
 
 	ComPtr<ID3D11UnorderedAccessView> unorderedAccessView;
 

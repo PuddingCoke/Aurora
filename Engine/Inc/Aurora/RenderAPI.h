@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef _RENDERAPI_H_
 #define _RENDERAPI_H_
@@ -116,6 +116,9 @@ public:
 	void ResolveSubresource(ID3D11Resource* const pDstResource, const UINT& DstSubresource, ID3D11Resource* const pSrcResource, const UINT& SrcSubresource, const DXGI_FORMAT& format);
 
 	void CopySubresourceRegion(ID3D11Resource* const pDstResource, const UINT& DstSubresource, const UINT& DstX, const UINT& DstY, const UINT& DstZ, ID3D11Resource* const pSrcResource, const UINT& SrcSubresource, const D3D11_BOX* const pSrcBox);
+
+	//用于阴影绘制
+	void UnbindRTV();
 
 private:
 

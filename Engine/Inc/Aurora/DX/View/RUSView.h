@@ -15,8 +15,6 @@ public:
 
 	virtual ~RUSView();
 
-private:
-
 	virtual void bindRTV() override;
 
 	virtual void bindUAV() override;
