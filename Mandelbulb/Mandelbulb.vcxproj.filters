@@ -25,6 +25,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="MandelbulbPixel.hlsl" />
+    <FxCompile Include="MandelbulbCompute.hlsl" />
+    <FxCompile Include="ModelVShader.hlsl" />
+    <FxCompile Include="ModelPShader.hlsl" />
+    <FxCompile Include="RayCastVShader.hlsl" />
+    <FxCompile Include="RayCastPShader.hlsl" />
   </ItemGroup>
 </Project>
