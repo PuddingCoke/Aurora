@@ -28,8 +28,10 @@ public:
 
 	OrbitCamera camera;
 
+	ComPtr<ID3D11SamplerState> borderSampler;
+
 	MyGame() :
-		mandelTexture(new ComputeTexture3D(256, 256, 256, DXGI_FORMAT_R8G8B8A8_UNORM)),
+		mandelTexture(new ComputeTexture3D(1000, 1000, 1000, DXGI_FORMAT_R8G8B8A8_UNORM)),
 		mandelCompute(Shader::fromFile("MandelbulbCompute.hlsl", ShaderType::Compute)),
 		modelCullFront(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
 		modelCullBack(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
@@ -37,9 +39,20 @@ public:
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
 		rayCastVShader(Shader::fromFile("RayCastVShader.hlsl", ShaderType::Vertex)),
 		rayCastPSHader(Shader::fromFile("RayCastPShader.hlsl", ShaderType::Pixel)),
-		camera({ 20,0,0 }, { 0,1,0 })
+		camera({ 12,0,-8 }, { 0,0,-1 })
 	{
 		camera.registerEvent();
+
+		D3D11_SAMPLER_DESC samplerDesc = {};
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		samplerDesc.MinLOD = 0.f;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		RenderAPI::get()->CreateSamplerState(samplerDesc, borderSampler.GetAddressOf());
 
 		RenderAPI::get()->CSSetUAV({ mandelTexture }, 0);
 		mandelCompute->use();
@@ -65,6 +78,8 @@ public:
 
 	void render()
 	{
+		camera.rotateX(1.f / 160.f);
+
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		modelVShader->use();
@@ -85,7 +100,7 @@ public:
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::White);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->PSSetSRV({ mandelTexture,modelCullBack,modelCullFront }, 0);
-		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+		RenderAPI::get()->PSSetSampler(borderSampler.GetAddressOf(), 0, 1);
 
 		rayCastVShader->use();
 		rayCastPSHader->use();

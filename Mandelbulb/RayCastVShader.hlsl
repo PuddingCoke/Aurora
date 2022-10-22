@@ -58,5 +58,5 @@ static const float3 vertices[36] =
 float4 main(uint vertexID : SV_VertexID) : SV_Position
 {
     float3 pos = vertices[vertexID];
-    return mul(mul(float4(pos, 1.0), view), proj);
+    return mul(mul(float4(5.0*pos, 1.0), view), proj);
 }

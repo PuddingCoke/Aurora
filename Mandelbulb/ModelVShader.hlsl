@@ -67,7 +67,7 @@ VertexOutput main(uint vertexID : SV_VertexID)
     
     VertexOutput output;
     output.tex = 0.5 * (pos + 1.0);
-    output.pos = mul(mul(float4(pos, 1.0), view), proj);
+    output.pos = mul(mul(float4(5.0*pos, 1.0), view), proj);
     
     return output;
 }
