@@ -12,10 +12,15 @@ ComputeBuffer::~ComputeBuffer()
 
 void ComputeBuffer::bindVertexBuffer()
 {
-	unbindFromUAV();
+	unbindFromCUAV() || unbindFromPUAV();
 }
 
-void ComputeBuffer::bindUAV()
+void ComputeBuffer::bindCUAV()
+{
+	unbindFromVertexBuffer();
+}
+
+void ComputeBuffer::bindPUAV()
 {
 	unbindFromVertexBuffer();
 }

@@ -130,8 +130,19 @@ States::States()
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
 		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
-
+		
 		RenderAPI::get()->CreateRasterizerState(rasterizerDesc, rasterCullNone.ReleaseAndGetAddressOf());
+	}
+
+	//初始化rasterConserve
+	{
+		D3D11_RASTERIZER_DESC2 rasterizerDesc = {};
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.ForcedSampleCount = 8;
+		rasterizerDesc.ConservativeRaster = D3D11_CONSERVATIVE_RASTERIZATION_MODE_ON;
+
+		RenderAPI::get()->CreateRasterizerState2(rasterizerDesc, rasterConserve.ReleaseAndGetAddressOf());
 	}
 
 	//初始化defDepthStencilState

@@ -48,6 +48,11 @@ void RenderAPI::CreateRasterizerState(const D3D11_RASTERIZER_DESC& desc, ID3D11R
 	Renderer::device->CreateRasterizerState(&desc, state);
 }
 
+void RenderAPI::CreateRasterizerState2(const D3D11_RASTERIZER_DESC2& desc, ID3D11RasterizerState2** const state) const
+{
+	Renderer::device->CreateRasterizerState2(&desc, state);
+}
+
 void RenderAPI::CreateDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& desc, ID3D11DepthStencilState** const state) const
 {
 	Renderer::device->CreateDepthStencilState(&desc, state);
@@ -66,6 +71,11 @@ void RenderAPI::ClearDefRTV(const float* const color) const
 void RenderAPI::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv) const
 {
 	ResManager::get()->OMSetRTV(rtvs, dsv);
+}
+
+void RenderAPI::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs) const
+{
+	ResManager::get()->OMSetUAV(uavs);
 }
 
 void RenderAPI::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot) const
@@ -290,7 +300,12 @@ void RenderAPI::UnbindRTV() const
 	RenderTargetView::unbindRTV();
 }
 
-void RenderAPI::UnbindUAV() const
+void RenderAPI::UnbindCSUAV() const
 {
-	UnorderedAccessView::unbindUAV();
+	UnorderedAccessView::unbindCUAV();
+}
+
+void RenderAPI::UnbindPSUAV() const
+{
+	UnorderedAccessView::unbindPUAV();
 }

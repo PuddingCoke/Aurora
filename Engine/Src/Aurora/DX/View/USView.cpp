@@ -8,12 +8,17 @@ USView::~USView()
 {
 }
 
-void USView::bindUAV()
+void USView::bindCUAV()
 {
-	unbindFromSRV();
+	unbindFromPUAV() || unbindFromSRV();
+}
+
+void USView::bindPUAV()
+{
+	unbindFromCUAV() || unbindFromSRV();
 }
 
 void USView::bindSRV()
 {
-	unbindFromUAV();
+	unbindFromCUAV() || unbindFromPUAV();
 }

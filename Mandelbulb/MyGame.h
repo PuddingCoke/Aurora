@@ -31,10 +31,10 @@ public:
 	ComPtr<ID3D11SamplerState> borderSampler;
 
 	MyGame() :
-		mandelTexture(new ComputeTexture3D(1000, 1000, 1000, DXGI_FORMAT_R8G8B8A8_UNORM)),
+		mandelTexture(new ComputeTexture3D(512, 512, 512, DXGI_FORMAT_R8G8B8A8_UNORM)),
 		mandelCompute(Shader::fromFile("MandelbulbCompute.hlsl", ShaderType::Compute)),
-		modelCullFront(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
-		modelCullBack(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
+		modelCullFront(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		modelCullBack(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
 		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
 		rayCastVShader(Shader::fromFile("RayCastVShader.hlsl", ShaderType::Vertex)),
@@ -78,8 +78,6 @@ public:
 
 	void render()
 	{
-		camera.rotateX(1.f / 160.f);
-
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		modelVShader->use();
@@ -97,7 +95,7 @@ public:
 
 		RenderAPI::get()->DrawCube();
 
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::White);
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->PSSetSRV({ mandelTexture,modelCullBack,modelCullFront }, 0);
 		RenderAPI::get()->PSSetSampler(borderSampler.GetAddressOf(), 0, 1);

@@ -1,17 +1,19 @@
 #include<Aurora/DX/View/UnorderedAccessView.h>
 
-UnorderedAccessView* UnorderedAccessView::curUAV[D3D11_PS_CS_UAV_REGISTER_COUNT] = {};
+UnorderedAccessView* UnorderedAccessView::curCUAV[D3D11_PS_CS_UAV_REGISTER_COUNT] = {};
+
+UnorderedAccessView* UnorderedAccessView::curPUAV[D3D11_PS_CS_UAV_REGISTER_COUNT] = {};
 
 ID3D11UnorderedAccessView* const UnorderedAccessView::nullUAV[D3D11_PS_CS_UAV_REGISTER_COUNT] = {};
 
 UnorderedAccessView::UnorderedAccessView() :
-	UAVSlot(-1)
+	CUAVSlot(-1), boundOnRTV(false)
 {
 }
 
 UnorderedAccessView::~UnorderedAccessView()
 {
-	unbindFromUAV();
+	unbindFromCUAV() || unbindFromPUAV();
 }
 
 ID3D11UnorderedAccessView* UnorderedAccessView::getUAV() const
@@ -24,26 +26,48 @@ ID3D11UnorderedAccessView** UnorderedAccessView::releaseAndGetUAV()
 	return unorderedAccessView.ReleaseAndGetAddressOf();
 }
 
-void UnorderedAccessView::unbindUAV()
+void UnorderedAccessView::unbindCUAV()
 {
 	for (unsigned int i = 0; i < D3D11_PS_CS_UAV_REGISTER_COUNT; i++)
 	{
-		if (curUAV[i])
+		if (curCUAV[i])
 		{
-			curUAV[i]->UAVSlot = -1;
-			curUAV[i] = nullptr;
+			curCUAV[i]->CUAVSlot = -1;
+			curCUAV[i] = nullptr;
 		}
 	}
 	Renderer::getContext()->CSSetUnorderedAccessViews(0, D3D11_PS_CS_UAV_REGISTER_COUNT, nullUAV, nullptr);
 }
 
-bool UnorderedAccessView::unbindFromUAV()
+void UnorderedAccessView::unbindPUAV()
 {
-	if (UAVSlot != -1)
+	unsigned int num = 0;
+	for (num = 0; curPUAV[num]; num++)
 	{
-		Renderer::getContext()->CSSetUnorderedAccessViews(UAVSlot, 1, nullUAV, nullptr);
-		curUAV[UAVSlot] = nullptr;
-		UAVSlot = -1;
+		curPUAV[num]->boundOnRTV = false;
+		curPUAV[num] = nullptr;
+	}
+	Renderer::getContext()->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0, num, nullUAV, nullptr);
+}
+
+bool UnorderedAccessView::unbindFromCUAV()
+{
+	if (CUAVSlot != -1)
+	{
+		Renderer::getContext()->CSSetUnorderedAccessViews(CUAVSlot, 1, nullUAV, nullptr);
+		curCUAV[CUAVSlot] = nullptr;
+		CUAVSlot = -1;
+		return true;
+	}
+	
+	return false;
+}
+
+bool UnorderedAccessView::unbindFromPUAV()
+{
+	if (boundOnRTV)
+	{
+		unbindPUAV();
 		return true;
 	}
 

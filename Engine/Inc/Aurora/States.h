@@ -36,6 +36,9 @@ public:
 
 	ComPtr<ID3D11RasterizerState> rasterCullNone;
 
+	//体素化很有用 8xMSAA + Conservative Rasterization
+	ComPtr<ID3D11RasterizerState2> rasterConserve;
+
 	//depth less equal stencil disabled
 	ComPtr<ID3D11DepthStencilState> defDepthStencilState;
 

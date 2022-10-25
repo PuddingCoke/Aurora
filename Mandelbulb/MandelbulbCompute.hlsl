@@ -30,13 +30,13 @@ void main(uint3 DTid : SV_DispatchThreadID)
 {
     tTexture[DTid] = float4(0.0, 0.0, 0.0, 0.0);
     
-    const float3 pos = SCALE * float3(DTid) / 1000.0 - SCALE / 2.0;
+    const float3 pos = SCALE * float3(DTid) / 512.0 - SCALE / 2.0;
     
     float3 c = pos;
     
     uint flag = 1;
     
-    for (uint i = 0; i < 1000; i++)
+    for (uint i = 0; i < MAXITERATION; i++)
     {
         c = iteration(c, pos);
         
@@ -49,6 +49,6 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
     if (flag)
     {
-        tTexture[DTid] = float4((0.5 * sin(abs(pos)) + 0.5), 1.0);
+        tTexture[DTid] = float4((0.5 * sin(pos) + 0.5), 1.0);
     }
 }

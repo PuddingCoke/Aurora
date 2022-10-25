@@ -3,7 +3,7 @@
 ResManager* ResManager::instance = nullptr;
 
 ResManager::ResManager() :
-	tempBuffer{}, tempRTV{}, tempUAV{}, tempSRV{}
+	tempBuffer{}, tempRTV{}, tempUAV{}, tempSRV{}, tempOffsets{}, tempStrides{}
 {
 }
 
@@ -14,6 +14,8 @@ ResManager* ResManager::get()
 
 void ResManager::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv)
 {
+	UnorderedAccessView::unbindPUAV();
+
 	for (unsigned int i = 0; RenderTargetView::curRTV[i]; i++)
 	{
 		RenderTargetView::curRTV[i]->boundOnRTV = false;
@@ -34,6 +36,27 @@ void ResManager::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, 
 	}
 
 	Renderer::context->OMSetRenderTargets((unsigned int)rtvs.size(), tempRTV, dsv);
+}
+
+void ResManager::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
+{
+	UnorderedAccessView::unbindPUAV();
+	RenderTargetView::unbindRTV();
+
+	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
+
+	for (unsigned int i = 0; i < uavs.size(); i++)
+	{
+		UnorderedAccessView::curPUAV[i] = it[0];
+
+		tempUAV[i] = it[0]->unorderedAccessView.Get();
+
+		it[0]->bindPUAV();
+
+		it[0]->boundOnRTV = true;
+	}
+
+	Renderer::context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, uavs.size(), tempUAV, nullptr);
 }
 
 void ResManager::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
@@ -232,25 +255,25 @@ void ResManager::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uav
 {
 	for (unsigned int i = slot; i < slot + uavs.size(); i++)
 	{
-		if (UnorderedAccessView::curUAV[i])
+		if (UnorderedAccessView::curCUAV[i])
 		{
-			UnorderedAccessView::curUAV[i]->UAVSlot = -1;
-			UnorderedAccessView::curUAV[i] = nullptr;
+			UnorderedAccessView::curCUAV[i]->CUAVSlot = -1;
+			UnorderedAccessView::curCUAV[i] = nullptr;
 		}
 	}
 
 	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
 	for (unsigned int i = slot; i < slot + uavs.size(); i++, it++)
 	{
-		UnorderedAccessView::curUAV[i] = it[0];
+		UnorderedAccessView::curCUAV[i] = it[0];
 		tempUAV[i - slot] = it[0]->unorderedAccessView.Get();
 
-		if (!it[0]->unbindFromUAV())
+		if (!it[0]->unbindFromCUAV() || !it[0]->unbindFromPUAV())
 		{
-			it[0]->bindUAV();
+			it[0]->bindCUAV();
 		}
 
-		it[0]->UAVSlot = i;
+		it[0]->CUAVSlot = i;
 	}
 
 	Renderer::context->CSSetUnorderedAccessViews(slot, (unsigned int)uavs.size(), tempUAV, nullptr);

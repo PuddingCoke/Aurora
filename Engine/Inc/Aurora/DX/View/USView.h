@@ -14,7 +14,9 @@ public:
 
 	virtual ~USView();
 
-	virtual void bindUAV() override;
+	virtual void bindCUAV() override;
+
+	virtual void bindPUAV() override;
 
 	virtual void bindSRV() override;
 

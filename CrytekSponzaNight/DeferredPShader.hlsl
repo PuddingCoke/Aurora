@@ -35,7 +35,7 @@ PixelOutput main(PixelInput input)
     float3 T = normalize(input.tangent);
     float3x3 TBN = float3x3(T, B, N);
     
-    float3 nm = tNormal.Sample(samplerState, input.uv).xyz * 2.0 - float3(1.0, 1.0, 1.0);
+    float3 nm = tNormal.Sample(samplerState, input.uv).xyz * 2.0 - 1.0;
     nm = mul(normalize(nm), TBN);
     
     float specular = tSpecular.Sample(samplerState, input.uv).r;

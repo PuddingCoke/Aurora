@@ -8,6 +8,7 @@
 #include<Aurora/A3D/FPSCamera.h>
 #include<Aurora/A3D/ShadowMap.h>
 #include<Aurora/PostProcessing/HBAOEffect.h>
+#include<Aurora/PostProcessing/BloomEffect.h>
 
 #include"Scene.h"
 
@@ -20,6 +21,8 @@ public:
 	RenderTexture* gNormalSpecular;
 
 	RenderTexture* gBaseColor;
+
+	RenderTexture* originTexture;
 
 	TextureCube* skybox;
 
@@ -43,6 +46,8 @@ public:
 
 	HBAOEffect hbaoEffect;
 
+	BloomEffect bloomEffect;
+
 	struct LightInfo
 	{
 		struct Light
@@ -65,8 +70,10 @@ public:
 		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		shadowMap(ShadowMap::create(Graphics::getWidth(), Graphics::getHeight())),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
+		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		skybox(TextureCube::create({ assetPath + "/sky/SkyEarlyDusk_Right.png",assetPath + "/sky/SkyEarlyDusk_Left.png",assetPath + "/sky/SkyEarlyDusk_Top.png",assetPath + "/sky/SkyEarlyDusk_Bottom.png",assetPath + "/sky/SkyEarlyDusk_Front.png",assetPath + "/sky/SkyEarlyDusk_Back.png" })),
 		lightBuffer(new Buffer(sizeof(LightInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
@@ -169,7 +176,8 @@ public:
 
 		scene->draw(deferredVShader, deferredPShader);
 
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		originTexture->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
 		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()) }, 0);
 		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),lightBuffer }, 1);
 
@@ -178,13 +186,24 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
-		RenderAPI::get()->OMSetDefRTV(shadowMap->get());
+		RenderAPI::get()->OMSetRTV({ originTexture }, shadowMap->get());
 		RenderAPI::get()->PSSetSRV({ skybox }, 0);
 
 		TextureCube::shader->use();
 		skyboxPShader->use();
 
 		RenderAPI::get()->DrawCube();
+
+		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
+
+		RenderAPI::get()->OMSetBlendState(nullptr);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
+
+		Shader::displayVShader->use();
+		Shader::displayPShader->use();
+
+		RenderAPI::get()->DrawQuad();
 	}
 
 

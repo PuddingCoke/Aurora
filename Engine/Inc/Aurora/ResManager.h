@@ -30,6 +30,8 @@ private:
 
 	void OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv);
 
+	void OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs);
+
 	void VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
 
 	void HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);

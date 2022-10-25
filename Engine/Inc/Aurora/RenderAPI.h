@@ -23,6 +23,8 @@ public:
 
 	void CreateRasterizerState(const D3D11_RASTERIZER_DESC& desc, ID3D11RasterizerState** const state) const;
 
+	void CreateRasterizerState2(const D3D11_RASTERIZER_DESC2& desc, ID3D11RasterizerState2** const state) const;
+
 	void CreateDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& desc, ID3D11DepthStencilState** const state) const;
 
 	void OMSetDefRTV(ID3D11DepthStencilView* const dsv) const;
@@ -30,6 +32,8 @@ public:
 	void ClearDefRTV(const float* const color) const;
 
 	void OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv) const;
+
+	void OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs) const;
 
 	void VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot) const;
 
@@ -120,7 +124,9 @@ public:
 	//用于阴影绘制
 	void UnbindRTV() const;
 
-	void UnbindUAV() const;
+	void UnbindCSUAV() const;
+
+	void UnbindPSUAV() const;
 
 private:
 

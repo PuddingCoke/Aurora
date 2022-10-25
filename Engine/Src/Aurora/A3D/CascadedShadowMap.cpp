@@ -134,7 +134,8 @@ void CascadedShadowMap::updateMatrices()
 void CascadedShadowMap::renderShaodwMap(ShadowMap* const shadowMap, std::function<void(void)> renderGeometry)
 {
 	RenderAPI::get()->UnbindRTV();
-	RenderAPI::get()->UnbindUAV();
+	RenderAPI::get()->UnbindCSUAV();
+	RenderAPI::get()->UnbindPSUAV();
 
 	srv->unbindFromSRV();
 

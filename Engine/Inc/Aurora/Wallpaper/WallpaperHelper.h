@@ -3,6 +3,8 @@
 #ifndef _WALLPAPERHELPER_H_
 #define _WALLPAPERHELPER_H_
 
+#define NOMINMAX
+
 #include<Windows.h>
 #include<iostream>
 

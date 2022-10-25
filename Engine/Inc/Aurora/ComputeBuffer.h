@@ -16,7 +16,9 @@ public:
 
 	virtual void bindVertexBuffer() override;
 
-	virtual void bindUAV() override;
+	virtual void bindCUAV() override;
+
+	virtual void bindPUAV() override;
 
 };
 

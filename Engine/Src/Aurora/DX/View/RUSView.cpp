@@ -10,24 +10,20 @@ RUSView::~RUSView()
 
 void RUSView::bindRTV()
 {
-	if (!unbindFromSRV())
-	{
-		unbindFromUAV();
-	}
+	unbindFromSRV() || unbindFromCUAV() || unbindFromPUAV();
 }
 
-void RUSView::bindUAV()
+void RUSView::bindCUAV()
 {
-	if (!unbindFromSRV())
-	{
-		unbindFromRTV();
-	}
+	unbindFromSRV() || unbindFromPUAV() || unbindFromRTV();
+}
+
+void RUSView::bindPUAV()
+{
+	unbindFromSRV() || unbindFromCUAV() || unbindFromRTV();
 }
 
 void RUSView::bindSRV()
 {
-	if (!unbindFromUAV())
-	{
-		unbindFromRTV();
-	}
+	unbindFromCUAV() || unbindFromPUAV() || unbindFromRTV();
 }
