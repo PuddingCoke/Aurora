@@ -7,11 +7,6 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 {
 	compileShaders();
 
-	bloomParam.exposure = 0.36f;
-	bloomParam.gamma = 1.0f;
-	bloomParam.threshold = 1.0f;
-	bloomParam.intensity = 1.0f;
-
 	{
 
 		const float weights[blurSteps][4] =
@@ -72,6 +67,11 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 	}
 
 	bloomParamBuffer = new Buffer(sizeof(BloomParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
+
+	bloomParam.exposure = 0.36f;
+	bloomParam.gamma = 1.0f;
+	bloomParam.threshold = 1.0f;
+	bloomParam.intensity = 1.0f;
 
 	applyChange();
 }
@@ -236,8 +236,7 @@ const float& BloomEffect::getIntensity() const
 
 void BloomEffect::applyChange() const
 {
-	memcpy(bloomParamBuffer->map(0).pData, &bloomParam, sizeof(BloomParam));
-	bloomParamBuffer->unmap(0);
+	bloomParamBuffer->updateSubresource(STRUCTDATA(bloomParam), 0);
 }
 
 void BloomEffect::compileShaders()

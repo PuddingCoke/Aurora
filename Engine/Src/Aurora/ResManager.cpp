@@ -14,7 +14,10 @@ ResManager* ResManager::get()
 
 void ResManager::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv)
 {
-	UnorderedAccessView::unbindPUAV();
+	if (UnorderedAccessView::curPUAV[0])
+	{
+		UnorderedAccessView::unbindPUAV();
+	}
 
 	for (unsigned int i = 0; RenderTargetView::curRTV[i]; i++)
 	{
@@ -40,8 +43,14 @@ void ResManager::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, 
 
 void ResManager::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
 {
-	UnorderedAccessView::unbindPUAV();
-	RenderTargetView::unbindRTV();
+	if (UnorderedAccessView::curPUAV[0])
+	{
+		UnorderedAccessView::unbindPUAV();
+	}
+	if (RenderTargetView::curRTV[0])
+	{
+		RenderTargetView::unbindRTV();
+	}
 
 	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
 

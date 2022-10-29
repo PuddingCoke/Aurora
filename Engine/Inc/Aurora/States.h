@@ -42,6 +42,8 @@ public:
 	//depth less equal stencil disabled
 	ComPtr<ID3D11DepthStencilState> defDepthStencilState;
 
+	ComPtr<ID3D11DepthStencilState> depthStencilDisable;
+
 private:
 
 	friend class Aurora;

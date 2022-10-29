@@ -32,7 +32,7 @@ cbuffer ViewMatrix : register(b1)
 
 cbuffer LightInfo : register(b2)
 {
-    Light lights[17];
+    Light lights[8];
 };
 
 static const float AMBIENT_FACTOR = 0.15;
@@ -49,7 +49,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     const float3 V = normalize(viewPos.xyz - position);
     
     [unroll]
-    for (int i = 0; i < 17; i++)
+    for (int i = 0; i < 8; i++)
     {
         float3 L = lights[i].position.xyz - position;
         const float dist = length(L);

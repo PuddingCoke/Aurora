@@ -121,6 +121,8 @@ public:
 
 	void CopySubresourceRegion(ID3D11Resource* const pDstResource, const UINT& DstSubresource, const UINT& DstX, const UINT& DstY, const UINT& DstZ, ID3D11Resource* const pSrcResource, const UINT& SrcSubresource, const D3D11_BOX* const pSrcBox) const;
 
+	void UnbindVertexBuffer() const;
+
 	//用于阴影绘制
 	void UnbindRTV() const;
 
@@ -134,7 +136,7 @@ private:
 
 	static RenderAPI* instance;
 
-	RenderAPI(const unsigned int& width, const unsigned int& height, const unsigned int& msaaLevel);
+	RenderAPI(const unsigned int& width, const unsigned int& height, const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture);
 
 	~RenderAPI();
 

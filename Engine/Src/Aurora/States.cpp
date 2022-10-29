@@ -110,8 +110,8 @@ States::States()
 	//初始化rasterCullBack
 	{
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
-		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_BACK;
 
 		RenderAPI::get()->CreateRasterizerState(rasterizerDesc, rasterCullBack.ReleaseAndGetAddressOf());
 	}
@@ -119,8 +119,8 @@ States::States()
 	//初始化rasterCullFront
 	{
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
-		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_FRONT;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
 
 		RenderAPI::get()->CreateRasterizerState(rasterizerDesc, rasterCullFront.ReleaseAndGetAddressOf());
 	}
@@ -128,8 +128,8 @@ States::States()
 	//初始化rasterCullNone
 	{
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
-		rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-		rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
 		
 		RenderAPI::get()->CreateRasterizerState(rasterizerDesc, rasterCullNone.ReleaseAndGetAddressOf());
 	}
@@ -167,5 +167,14 @@ States::States()
 		dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
 		RenderAPI::get()->CreateDepthStencilState(dsDesc, defDepthStencilState.ReleaseAndGetAddressOf());
+	}
+
+	//初始化depthStencilDisable
+	{
+		D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+		dsDesc.DepthEnable = false;
+		dsDesc.StencilEnable = false;
+
+		RenderAPI::get()->CreateDepthStencilState(dsDesc, depthStencilDisable.ReleaseAndGetAddressOf());
 	}
 }

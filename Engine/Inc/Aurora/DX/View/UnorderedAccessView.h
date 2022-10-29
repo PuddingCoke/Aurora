@@ -30,6 +30,10 @@ public:
 
 	static void unbindPUAV();
 
+	void clear(const float* const color) const;
+
+	void clear(const unsigned int* const value) const;
+
 protected:
 
 	//是否成功解绑

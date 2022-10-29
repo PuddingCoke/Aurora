@@ -52,7 +52,7 @@ private:
 
 	const GUID profile = NV_ENC_H264_PROFILE_HIGH_GUID;
 
-	static constexpr NV_ENC_BUFFER_FORMAT pixelFormat = NV_ENC_BUFFER_FORMAT::NV_ENC_BUFFER_FORMAT_ARGB;
+	static constexpr NV_ENC_BUFFER_FORMAT pixelFormat = NV_ENC_BUFFER_FORMAT_ARGB;
 
 	const NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_ULTRA_LOW_LATENCY;
 

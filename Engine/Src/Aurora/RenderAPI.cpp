@@ -2,7 +2,7 @@
 
 RenderAPI* RenderAPI::instance = nullptr;
 
-RenderAPI::RenderAPI(const unsigned int& width, const unsigned int& height, const unsigned int& msaaLevel)
+RenderAPI::RenderAPI(const unsigned int& width, const unsigned int& height, const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture)
 {
 	if (msaaLevel == 1)
 	{
@@ -11,7 +11,7 @@ RenderAPI::RenderAPI(const unsigned int& width, const unsigned int& height, cons
 		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
 		rtvDesc.Texture2D.MipSlice = 0;
 
-		defRenderTargetView = new RenderTargetView(Renderer::instance->backBuffer.Get(), rtvDesc);
+		defRenderTargetView = new RenderTargetView(renderTexture, rtvDesc);
 	}
 	else
 	{
@@ -293,6 +293,11 @@ void RenderAPI::ResolveSubresource(ID3D11Resource* const pDstResource, const UIN
 void RenderAPI::CopySubresourceRegion(ID3D11Resource* const pDstResource, const UINT& DstSubresource, const UINT& DstX, const UINT& DstY, const UINT& DstZ, ID3D11Resource* const pSrcResource, const UINT& SrcSubresource, const D3D11_BOX* const pSrcBox) const
 {
 	Renderer::context->CopySubresourceRegion(pDstResource, DstSubresource, DstX, DstY, DstZ, pSrcResource, SrcSubresource, pSrcBox);
+}
+
+void RenderAPI::UnbindVertexBuffer() const
+{
+	Buffer::unbindVertexBuffer();
 }
 
 void RenderAPI::UnbindRTV() const

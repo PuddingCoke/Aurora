@@ -11,6 +11,12 @@ ID3D11Buffer* Buffer::getBuffer() const
 	return buffer.Get();
 }
 
+void Buffer::updateSubresource(const void* const data, const size_t& size, const unsigned int& subresource, const unsigned int& mapFlags)
+{
+	memcpy(map(subresource, D3D11_MAP_WRITE_DISCARD, mapFlags).pData, data, size);
+	unmap(subresource);
+}
+
 Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage, const void* const data, const UINT& cpuaccessFlags, const UINT& miscFlags, const UINT& structureByteStride) :
 	IASlot(-1)
 {
@@ -37,6 +43,19 @@ Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& 
 Buffer::~Buffer()
 {
 	unbindFromVertexBuffer();
+}
+
+void Buffer::unbindVertexBuffer()
+{
+	for (unsigned int i = 0; i < D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT; i++)
+	{
+		if (curBuffer[i])
+		{
+			curBuffer[i]->IASlot = -1;
+			curBuffer[i] = nullptr;
+		}
+	}
+	Renderer::getContext()->IASetVertexBuffers(0, D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT, nullBuffer, nullStrides, nullStrides);
 }
 
 D3D11_MAPPED_SUBRESOURCE Buffer::map(const unsigned int& subresource, const D3D11_MAP& mapType, const unsigned int& mapFlags) const

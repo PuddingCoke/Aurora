@@ -58,6 +58,8 @@ private:
 
 	Game* game;
 
+	ComPtr<ID3D11Texture2D> encodeTexture;
+
 	HRESULT iniWindow();
 
 	void runGame();

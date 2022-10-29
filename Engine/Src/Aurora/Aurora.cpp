@@ -31,7 +31,27 @@ int Aurora::iniEngine(const Configuration& config)
 
 	Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, config.enableDebug, config.msaaLevel);
 
-	RenderAPI::instance = new RenderAPI(screenWidth, screenHeight, config.msaaLevel);
+	if(config.usage==Configuration::EngineUsage::AnimationRender)
+	{
+		D3D11_TEXTURE2D_DESC tDesc = {};
+		tDesc.Width = config.width;
+		tDesc.Height = config.height;
+		tDesc.MipLevels = 1;
+		tDesc.ArraySize = 1;
+		tDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		tDesc.SampleDesc.Count = 1;
+		tDesc.SampleDesc.Quality = 0;
+		tDesc.Usage = D3D11_USAGE_DEFAULT;
+		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+
+		Renderer::device->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
+
+		RenderAPI::instance = new RenderAPI(screenWidth, screenHeight, config.msaaLevel, encodeTexture.Get());
+	}
+	else
+	{
+		RenderAPI::instance = new RenderAPI(screenWidth, screenHeight, config.msaaLevel, Renderer::instance->backBuffer.Get());
+	}
 
 	States::instance = new States();
 
@@ -362,26 +382,6 @@ void Aurora::runGame()
 
 void Aurora::runEncode()
 {
-	ComPtr<ID3D11Texture2D> encodeTexture;
-	{
-		D3D11_TEXTURE2D_DESC tDesc = {};
-		tDesc.Width = config->width;
-		tDesc.Height = config->height;
-		tDesc.MipLevels = 1;
-		tDesc.ArraySize = 1;
-		tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
-		tDesc.SampleDesc.Count = 1;
-		tDesc.SampleDesc.Quality = 0;
-		tDesc.Usage = D3D11_USAGE_DEFAULT;
-		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-		tDesc.CPUAccessFlags = 0;
-		tDesc.MiscFlags = 0;
-
-		Renderer::device->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
-
-		std::cout << "[class Aurora] initialize encode texture complete\n";
-	}
-
 	bool initializeStatus;
 
 	NvidiaEncoder nvidiaEncoder(Graphics::getWidth(), Graphics::getHeight(), Graphics::instance->recordConfig.frameToEncode, Graphics::instance->recordConfig.frameRate, initializeStatus);
@@ -403,11 +403,7 @@ void Aurora::runEncode()
 		game->render();
 		if (config->msaaLevel != 1)
 		{
-			Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
-		}
-		else
-		{
-			Renderer::context->CopyResource(encodeTexture.Get(), Renderer::instance->backBuffer.Get());
+			Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_R8G8B8A8_UNORM);
 		}
 		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
 		Graphics::instance->updateDeltaTimeBuffer();

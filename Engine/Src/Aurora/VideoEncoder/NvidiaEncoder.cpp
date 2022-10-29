@@ -8,9 +8,9 @@ bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
 
 	registerResource.bufferFormat = pixelFormat;
 
-	registerResource.bufferUsage = NV_ENC_BUFFER_USAGE::NV_ENC_INPUT_IMAGE;
+	registerResource.bufferUsage = NV_ENC_INPUT_IMAGE;
 
-	registerResource.resourceType = NV_ENC_INPUT_RESOURCE_TYPE::NV_ENC_INPUT_RESOURCE_TYPE_DIRECTX;
+	registerResource.resourceType = NV_ENC_INPUT_RESOURCE_TYPE_DIRECTX;
 
 	registerResource.resourceToRegister = encodeTexture;
 
@@ -36,7 +36,7 @@ bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
 
 	if (frameEncoded == frameToEncode)
 	{
-		picParams.encodePicFlags = NV_ENC_PIC_FLAGS::NV_ENC_PIC_FLAG_EOS;
+		picParams.encodePicFlags = NV_ENC_PIC_FLAG_EOS;
 
 		nvencAPI.nvEncEncodePicture(encoder, &picParams);
 
@@ -131,14 +131,14 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	memcpy(&config, &presetConfig.presetCfg, sizeof(NV_ENC_CONFIG));
 	config.version = NV_ENC_CONFIG_VER;
 	config.profileGUID = profile;
-	config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_MODE::NV_ENC_PARAMS_RC_VBR;
+	config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_VBR;
 	config.rcParams.averageBitRate = 30000000U;
 	config.rcParams.maxBitRate = 40000000U;
 	config.gopLength = NVENC_INFINITE_GOPLENGTH;
 	config.frameIntervalP = 1;
 
 	config.encodeCodecConfig.h264Config.idrPeriod = NVENC_INFINITE_GOPLENGTH;
-	config.rcParams.multiPass = NV_ENC_MULTI_PASS::NV_ENC_MULTI_PASS_DISABLED;
+	config.rcParams.multiPass = NV_ENC_MULTI_PASS_DISABLED;
 	config.rcParams.vbvBufferSize = config.rcParams.averageBitRate / frameRate * 5;
 	config.rcParams.vbvInitialDelay = config.rcParams.vbvBufferSize;
 
