@@ -2,6 +2,7 @@ Texture2D gPosition : register(t0);
 Texture2D gNormalSpecular : register(t1);
 Texture2D gBaseColor : register(t2);
 Texture2D ssaoTexture : register(t3);
+Texture3D<float4> voxelTexture : register(t4);
 
 SamplerState wrapSampler : register(s0);
 SamplerState linearSampler : register(s1);
@@ -35,7 +36,24 @@ cbuffer LightInfo : register(b2)
     Light lights[8];
 };
 
+cbuffer VoxelParam : register(b3)
+{
+    uint voxelGridRes;
+    float voxelGridLength;
+    uint2 v3;
+}
+
 static const float AMBIENT_FACTOR = 0.15;
+
+float4 ConeTrace(float3 worldPos,float3 N,float3 coneDir,float coneAperture)
+{
+    float3 color = 0.0;
+    float alpha = 0.0;
+    
+    
+    
+    return float4(1.0, 1.0, 1.0, 1.0);
+}
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {

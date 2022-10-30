@@ -100,10 +100,10 @@ public:
 		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f, 3.f)
 	{
 		{
-			voxelParam = { 512,300.f };
+			voxelParam = { 256,300.f };
 
-			voxelTextureUint=new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R32_UINT);
-			voxelTextureColor=new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_UNORM);
+			voxelTextureUint = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R32_UINT);
+			voxelTextureColor = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 			voxelParamBuffer = new Buffer(sizeof(VoxelParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &voxelParam);
 		}
@@ -147,10 +147,10 @@ public:
 
 		camera.registerEvent();
 
-		const DirectX::XMMATRIX voxelProj = DirectX::XMMatrixOrthographicOffCenterLH(
+		const DirectX::XMMATRIX voxelProj = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
 			-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f,
 			-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f,
-			-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f);
+			-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f));
 
 		memcpy(voxelProjBuffer->map(0).pData, &voxelProj, sizeof(DirectX::XMMATRIX));
 		voxelProjBuffer->unmap(0);

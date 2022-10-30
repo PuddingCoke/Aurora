@@ -5,7 +5,6 @@ struct PixelInput
     float3 normal : NORMAL;
     float3 tangent : TANGENT0;
     float3 bitangent : TANGENT1;
-    float4 svPosition : SV_Position;
 };
 
 struct Light

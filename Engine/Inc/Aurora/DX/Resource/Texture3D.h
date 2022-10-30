@@ -17,7 +17,7 @@ public:
 
 	virtual ~Texture3D();
 
-	Texture3D(const UINT& width, const UINT& height, const UINT& depth, const DXGI_FORMAT& format, const UINT& bindFlags);
+	Texture3D(const UINT& width, const UINT& height, const UINT& depth, const DXGI_FORMAT& format, const UINT& bindFlags, const UINT& miscFlags = 0, const UINT& mipLevels = 1);
 
 	const UINT width;
 
