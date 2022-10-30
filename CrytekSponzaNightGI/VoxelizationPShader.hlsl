@@ -20,7 +20,7 @@ struct Light
 
 cbuffer LightInfo : register(b1)
 {
-    Light lights[8];
+    Light lights[10];
 };
 
 cbuffer ViewMatrix : register(b2)
@@ -32,8 +32,8 @@ cbuffer ViewMatrix : register(b2)
 
 cbuffer VoxelParam : register(b3)
 {
-    uint voxelGridLength;
     uint voxelGridRes;
+    float voxelGridLength;
     uint2 v3;
 }
 
@@ -45,12 +45,9 @@ Texture2D tNormal : register(t2);
 
 SamplerState samplerState : register(s0);
 
-uint Float4ToRGBA8(float4 val)
+uint Float4ToRGBA8(in float4 val)
 {
-    return (uint(val.w) & 0x000000FF) << 24U |
-	 (uint(val.z) & 0x000000FF) << 16U |
-	 (uint(val.y) & 0x000000FF) << 8U |
-	 (uint(val.x) & 0x000000FF);
+    return (uint(val.w) & 0x000000FF) << 24U | (uint(val.z) & 0x000000FF) << 16U | (uint(val.y) & 0x000000FF) << 8U | (uint(val.x) & 0x000000FF);
 }
 
 void main(PixelInput input)
@@ -68,13 +65,13 @@ void main(PixelInput input)
     float3 T = normalize(input.tangent);
     float3x3 TBN = float3x3(T, B, N);
     
-    float3 normal = tNormal.Sample(samplerState, input.uv).xyz * 2.0 - 1.0;
-    normal = mul(normalize(normal), TBN);
+    const float3 normal = tNormal.Sample(samplerState, input.uv).xyz * 2.0 - 1.0;
+    N = mul(normalize(normal), TBN);
     
     float4 color = float4(0.0, 0.0, 0.0, 1.0);
     
     [unroll]
-    for (uint i = 0; i < 8; i++)
+    for (uint i = 0; i < 10; i++)
     {
         float3 L = lights[i].position.xyz - input.pos.xyz;
         
@@ -82,15 +79,14 @@ void main(PixelInput input)
         
         L = normalize(L);
         
-        float NDotL = max(0.0, dot(normal, L));
+        float NDotL = max(0.0, dot(N, L));
         
         color.rgb += lights[i].color.rgb * baseColor.rgb * NDotL * atten;
     }
     
-    color *= 255.0;
-    
-    float3 pos = input.pos / (float(voxelGridLength) / 2.0);
+    float3 pos = input.pos / (voxelGridLength / 2.0);
     pos = (pos * 0.5 + 0.5) * float(voxelGridRes - 1);
     
+    color *= 255.0;
     InterlockedMax(voxelTexture[uint3(pos)], Float4ToRGBA8(color));
 }

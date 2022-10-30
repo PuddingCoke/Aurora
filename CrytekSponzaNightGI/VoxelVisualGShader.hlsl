@@ -1,47 +1,47 @@
 static const float3 vertices[36] =
 {
             // back face
-            -1.0f, -1.0f, -1.0f,
-             1.0f, 1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, 1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f,
+            -0.5, -0.5, -0.5,
+             0.5, 0.5, -0.5,
+             0.5, -0.5, -0.5,
+             0.5, 0.5, -0.5,
+            -0.5, -0.5, -0.5,
+            -0.5, 0.5, -0.5,
             // front face
-            -1.0f, -1.0f, 1.0f,
-             1.0f, -1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, 1.0f,
+            -0.5, -0.5, 0.5,
+             0.5, -0.5, 0.5,
+             0.5, 0.5, 0.5,
+             0.5, 0.5, 0.5,
+            -0.5, 0.5, 0.5,
+            -0.5, -0.5, 0.5,
             // left face
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f,
+            -0.5, 0.5, 0.5,
+            -0.5, 0.5, -0.5,
+            -0.5, -0.5, -0.5,
+            -0.5, -0.5, -0.5,
+            -0.5, -0.5, 0.5,
+            -0.5, 0.5, 0.5,
             // right face
-             1.0f, 1.0f, 1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, 1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, 1.0f, 1.0f,
-             1.0f, -1.0f, 1.0f,
+             0.5, 0.5, 0.5,
+             0.5, -0.5, -0.5,
+             0.5, 0.5, -0.5,
+             0.5, -0.5, -0.5,
+             0.5, 0.5, 0.5,
+             0.5, -0.5, 0.5,
             // bottom face
-            -1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, 1.0f,
-             1.0f, -1.0f, 1.0f,
-            -1.0f, -1.0f, 1.0f,
-            -1.0f, -1.0f, -1.0f,
+            -0.5, -0.5, -0.5,
+             0.5, -0.5, -0.5,
+             0.5, -0.5, 0.5,
+             0.5, -0.5, 0.5,
+            -0.5, -0.5, 0.5,
+            -0.5, -0.5, -0.5,
             // top face
-            -1.0f, 1.0f, -1.0f,
-             1.0f, 1.0f, 1.0f,
-             1.0f, 1.0f, -1.0f,
-             1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, -1.0f,
-            -1.0f, 1.0f, 1.0f,
+            -0.5, 0.5, -0.5,
+             0.5, 0.5, 0.5,
+             0.5, 0.5, -0.5,
+             0.5, 0.5, 0.5,
+            -0.5, 0.5, -0.5,
+            -0.5, 0.5, 0.5,
 };
 
 struct GSInput
@@ -67,6 +67,13 @@ cbuffer ViewMatrix : register(b1)
     matrix normalMatrix;
 }
 
+cbuffer VoxelParam : register(b2)
+{
+    uint voxelGridRes;
+    float voxelGridLength;
+    uint2 v3;
+}
+
 Texture3D<float4> voxelTextureColor : register(t0);
 
 [maxvertexcount(36)]
@@ -75,7 +82,7 @@ void main(
 	inout TriangleStream<GSOutput> output
 )
 {
-    int3 pos = int3(input[0].vertexID / (256 * 256), (input[0].vertexID / 256) % 256, input[0].vertexID % 256);
+    int3 pos = int3(input[0].vertexID / (voxelGridRes * voxelGridRes), (input[0].vertexID / voxelGridRes) % voxelGridRes, input[0].vertexID % voxelGridRes);
     
     GSOutput element;
     element.color = voxelTextureColor[pos];
@@ -85,12 +92,14 @@ void main(
         return;
     }
     
-    pos -= 128;
+    pos -= voxelGridRes / 2;
+    
+    const float voxelSize = voxelGridLength / float(voxelGridRes);
     
     [unroll]
     for (uint i = 0; i < 36; i++)
     {
-        element.pos = mul(mul(float4(vertices[i] * 300.0 / 256.0 + float3(pos) * 600.0 / 256.0, 1.0), view), proj);
+        element.pos = mul(mul(float4(vertices[i] * voxelSize + float3(pos) * voxelSize, 1.0), view), proj);
         output.Append(element);
     }
 }
