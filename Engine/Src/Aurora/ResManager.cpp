@@ -54,7 +54,7 @@ void ResManager::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs
 
 	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
 
-	for (unsigned int i = 0; i < uavs.size(); i++)
+	for (unsigned int i = 0; i < uavs.size(); i++, it++)
 	{
 		UnorderedAccessView::curPUAV[i] = it[0];
 
@@ -65,7 +65,7 @@ void ResManager::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs
 		it[0]->boundOnRTV = true;
 	}
 
-	Renderer::context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, uavs.size(), tempUAV, nullptr);
+	Renderer::context->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, (unsigned int)uavs.size(), tempUAV, nullptr);
 }
 
 void ResManager::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)

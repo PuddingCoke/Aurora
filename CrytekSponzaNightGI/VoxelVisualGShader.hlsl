@@ -71,7 +71,8 @@ cbuffer VoxelParam : register(b2)
 {
     uint voxelGridRes;
     float voxelGridLength;
-    uint2 v3;
+    float voxelSize;
+    float v0;
 }
 
 Texture3D<float4> voxelTextureColor : register(t0);
@@ -93,8 +94,6 @@ void main(
     }
     
     pos -= voxelGridRes / 2;
-    
-    const float voxelSize = voxelGridLength / float(voxelGridRes);
     
     [unroll]
     for (uint i = 0; i < 36; i++)

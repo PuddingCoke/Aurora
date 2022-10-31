@@ -2,9 +2,12 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/ComputeTexture3D.h>
+
 #include<Aurora/A3D/FPSCamera.h>
 #include<Aurora/A3D/ShadowMap.h>
+
 #include<Aurora/PostProcessing/HBAOEffect.h>
+#include<Aurora/PostProcessing/BloomEffect.h>
 
 #include"Scene.h"
 
@@ -23,15 +26,21 @@ public:
 
 	RenderTexture* gBaseColor;
 
-	ComputeTexture3D* voxelTextureUint;
+	RenderTexture* originTexture;
+
+	ComputeTexture3D* voxelTextureTempColor;
+
+	ComputeTexture3D* voxelTextureTempNormal;
 
 	ComputeTexture3D* voxelTextureColor;
+
+	ComputeTexture3D* voxelTextureNormal;
+
+	ComputeTexture3D* voxelTextureColorFinal;
 
 	Scene* scene;
 
 	Buffer* voxelParamBuffer;
-
-	Buffer* voxelProjBuffer;
 
 	Buffer* lightBuffer;
 
@@ -42,6 +51,8 @@ public:
 	Shader* voxelPShader;
 
 	Shader* voxelConvert;
+
+	Shader* lightBounceCShader;
 
 	Shader* deferredVShader;
 
@@ -59,11 +70,14 @@ public:
 
 	HBAOEffect hbaoEffect;
 
+	BloomEffect bloomEffect;
+
 	struct VoxelParam
 	{
 		unsigned int voxelGridRes;
 		float voxelGridLength;
-		DirectX::XMFLOAT2 v0;
+		float voxelSize;
+		float v0;
 	} voxelParam{};
 
 	struct LightInfo
@@ -79,11 +93,13 @@ public:
 		}lights[10]{};
 	}lightInfo{};
 
+	bool displayMode;
+
 	MyGame() :
 		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
-		voxelProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
+		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		shadowMap(ShadowMap::create(Graphics::getWidth(), Graphics::getHeight())),
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		voxelVShader(Shader::fromFile("VoxelizationVShader.hlsl", ShaderType::Vertex)),
@@ -96,14 +112,24 @@ public:
 		visualVShader(Shader::fromFile("VoxelVisualVShader.hlsl", ShaderType::Vertex)),
 		visualGShader(Shader::fromFile("VoxelVisualGShader.hlsl", ShaderType::Geometry)),
 		visualPShader(Shader::fromFile("VoxelVisualPShader.hlsl", ShaderType::Pixel)),
+		lightBounceCShader(Shader::fromFile("LightBounceCShader.hlsl", ShaderType::Compute)),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
-		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f, 3.f)
+		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
+		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f, 3.f),
+		displayMode(false)
 	{
 		{
-			voxelParam = { 256,300.f };
+			voxelParam.voxelGridRes = 512;
+			voxelParam.voxelGridLength = 300.f;
+			voxelParam.voxelSize = voxelParam.voxelGridLength / (float)voxelParam.voxelGridRes;
 
-			voxelTextureUint = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R32_UINT);
-			voxelTextureColor = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_UNORM);
+			voxelTextureTempColor = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R32_UINT);
+			voxelTextureColor = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_RENDER_TARGET, D3D11_RESOURCE_MISC_GENERATE_MIPS, 5);
+
+			voxelTextureTempNormal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R32_UINT);
+			voxelTextureNormal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_UNORM);
+
+			voxelTextureColorFinal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_RENDER_TARGET, D3D11_RESOURCE_MISC_GENERATE_MIPS, 5);
 
 			voxelParamBuffer = new Buffer(sizeof(VoxelParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &voxelParam);
 		}
@@ -137,8 +163,8 @@ public:
 			setLight(&lightInfo.lights[5], { 120.0f, 20.0f, 41.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
 			setLight(&lightInfo.lights[6], { -110.0f, 20.0f, -43.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
 			setLight(&lightInfo.lights[7], { -110.0f, 20.0f, 41.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
-			setLight(&lightInfo.lights[8], { -0.5f * 50.0f, 10.0f, 0.0f }, { 1.f,1.f,1.f }, 120.0f);
-			setLight(&lightInfo.lights[9], { 0.75f * 50.0f, 10.0f, 0.0f }, { 1.f,1.f,1.f }, 120.0f);
+			setLight(&lightInfo.lights[8], { -0.5f * 50.0f, 20.0f, 0.0f }, { 1.f,1.f,1.f }, 120.0f);
+			setLight(&lightInfo.lights[9], { 0.75f * 50.0f, 20.0f, 0.0f }, { 1.f,1.f,1.f }, 120.0f);
 
 			lightBuffer = new Buffer(sizeof(LightInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &lightInfo);
 		}
@@ -147,57 +173,96 @@ public:
 
 		camera.registerEvent();
 
-		const DirectX::XMMATRIX voxelProj = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
-			-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f,
-			-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f,
-			-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f));
+		{
+			const DirectX::XMMATRIX voxelProj = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
+				-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f,
+				-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f,
+				-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f));
 
-		memcpy(voxelProjBuffer->map(0).pData, &voxelProj, sizeof(DirectX::XMMATRIX));
-		voxelProjBuffer->unmap(0);
+			Buffer* voxelProjBuffer = new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &voxelProj);
+
+			RenderAPI::get()->OMSetBlendState(nullptr);
+			RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+
+			const unsigned int color[4] = { 0,0,0,0 };
+			voxelTextureTempColor->clear(color);
+			voxelTextureTempNormal->clear(color);
+			RenderAPI::get()->OMSetUAV({ voxelTextureTempColor,voxelTextureTempNormal });
+
+			RenderAPI::get()->VSSetBuffer({ voxelProjBuffer }, 2);
+			RenderAPI::get()->PSSetBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer }, 1);
+			RenderAPI::get()->PSSetSampler(States::get()->linearWrapSampler.GetAddressOf(), 0, 1);
+
+			RenderAPI::get()->RSSetState(States::get()->rasterConserve.Get());
+			RenderAPI::get()->OMSetDepthStencilState(States::get()->depthStencilDisable.Get(), 0);
+
+			scene->drawVoxel(voxelVShader, voxelGShader, voxelPShader);
+
+			voxelConvert->use();
+
+			RenderAPI::get()->CSSetSRV({ voxelTextureTempColor,voxelTextureTempNormal }, 0);
+			RenderAPI::get()->CSSetUAV({ voxelTextureColor,voxelTextureNormal }, 0);
+
+			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
+
+			voxelTextureColor->generateMips();
+
+			lightBounceCShader->use();
+
+			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
+			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
+			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
+			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+
+			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
+
+			voxelTextureColorFinal->generateMips();
+
+			delete voxelProjBuffer;
+		}
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+		RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
+		RenderAPI::get()->OMSetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
 
-		const unsigned int color[4] = { 0,0,0,0 };
-
-		voxelTextureUint->clear(color);
-		RenderAPI::get()->OMSetUAV({ voxelTextureUint });
-
-		RenderAPI::get()->VSSetBuffer({ voxelProjBuffer }, 2);
-		RenderAPI::get()->PSSetBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer }, 1);
-		RenderAPI::get()->PSSetSampler(States::get()->linearWrapSampler.GetAddressOf(), 0, 1);
-
-		RenderAPI::get()->RSSetState(States::get()->rasterConserve.Get());
-		RenderAPI::get()->OMSetDepthStencilState(States::get()->depthStencilDisable.Get(), 0);
-
-		scene->drawVoxel(voxelVShader, voxelGShader, voxelPShader);
-
-		voxelConvert->use();
-
-		RenderAPI::get()->CSSetSRV({ voxelTextureUint }, 0);
-		RenderAPI::get()->CSSetUAV({ voxelTextureColor }, 0);
-
-		RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
+		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
+			{
+				displayMode = !displayMode;
+			});
 	}
 
 	~MyGame()
 	{
 		delete shadowMap;
-		delete voxelTextureUint;
-		delete voxelTextureColor;
+
 		delete gPosition;
 		delete gNormalSpecular;
 		delete gBaseColor;
+		delete originTexture;
+
 		delete scene;
-		delete voxelParamBuffer;
+
 		delete lightBuffer;
-		delete voxelVShader;
-		delete voxelGShader;
-		delete voxelPShader;
-		delete voxelConvert;
 		delete deferredVShader;
 		delete deferredPShader;
 		delete deferredFinal;
+
+		delete voxelTextureTempColor;
+		delete voxelTextureColor;
+		delete voxelTextureTempNormal;
+		delete voxelTextureNormal;
+		delete voxelTextureColorFinal;
+
+		delete voxelParamBuffer;
+
+		delete voxelConvert;
+		delete lightBounceCShader;
+
+		delete voxelVShader;
+		delete voxelGShader;
+		delete voxelPShader;
+
 		delete visualVShader;
 		delete visualGShader;
 		delete visualPShader;
@@ -210,27 +275,65 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+		if (displayMode)
+		{
+			RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
 
-		RenderAPI::get()->RSSetState(States::get()->rasterCullNone.Get());
-		RenderAPI::get()->OMSetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
+			RenderAPI::get()->UnbindVertexBuffer();
 
-		RenderAPI::get()->UnbindVertexBuffer();
+			shadowMap->clear();
+			RenderAPI::get()->OMSetDefRTV(shadowMap->get());
+			RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);
 
-		shadowMap->clear();
-		RenderAPI::get()->OMSetDefRTV(shadowMap->get());
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);
+			RenderAPI::get()->GSSetSRV({ voxelTextureColor }, 0);
+			RenderAPI::get()->GSSetBuffer({ voxelParamBuffer }, 2);
+			RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-		RenderAPI::get()->GSSetSRV({ voxelTextureColor }, 0);
-		RenderAPI::get()->GSSetBuffer({ voxelParamBuffer }, 2);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+			visualVShader->use();
+			visualGShader->use();
+			visualPShader->use();
 
-		visualVShader->use();
-		visualGShader->use();
-		visualPShader->use();
+			RenderAPI::get()->Draw(voxelParam.voxelGridRes * voxelParam.voxelGridRes * voxelParam.voxelGridRes, 0);
+		}
+		else
+		{
+			RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
 
-		RenderAPI::get()->Draw(voxelParam.voxelGridRes * voxelParam.voxelGridRes * voxelParam.voxelGridRes, 0);
+			RenderAPI::get()->GSSetShader(nullptr);
+			ID3D11SamplerState* samplers[2] = { States::get()->linearWrapSampler.Get(),States::get()->linearClampSampler.Get() };
+			RenderAPI::get()->PSSetSampler(samplers, 0, 2);
+
+			gBaseColor->clearRTV(DirectX::Colors::Black);
+			gPosition->clearRTV(DirectX::Colors::Black);
+			gNormalSpecular->clearRTV(DirectX::Colors::Black);
+			shadowMap->clear(D3D11_CLEAR_DEPTH);
+
+			RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, shadowMap->get());
+
+			scene->draw(deferredVShader, deferredPShader);
+
+			originTexture->clearRTV(DirectX::Colors::Black);
+			RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
+			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
+			RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);
+
+			Shader::displayVShader->use();
+			deferredFinal->use();
+
+			RenderAPI::get()->DrawQuad();
+
+			ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
+
+			RenderAPI::get()->OMSetBlendState(nullptr);
+			RenderAPI::get()->OMSetDefRTV(nullptr);
+			RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
+
+			Shader::displayVShader->use();
+			Shader::displayPShader->use();
+
+			RenderAPI::get()->DrawQuad();
+		}
+
 	}
 
 

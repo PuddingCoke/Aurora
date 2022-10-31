@@ -36,7 +36,8 @@ cbuffer VoxelParam : register(b3)
     uint2 v3;
 }
 
-RWTexture3D<uint> voxelTexture : register(u0);
+RWTexture3D<uint> voxelTextureTempColor : register(u0);
+RWTexture3D<uint> voxelTextureTempNormal : register(u1);
 
 Texture2D tDiffuse : register(t0);
 Texture2D tSpecular : register(t1);
@@ -84,8 +85,11 @@ void main(PixelInput input)
     }
     
     float3 pos = input.pos / (voxelGridLength / 2.0);
-    pos = (pos * 0.5 + 0.5) * float(voxelGridRes - 1);
+    pos = (pos * 0.5 + 0.5) * float(voxelGridRes);
     
     color *= 255.0;
-    InterlockedMax(voxelTexture[uint3(pos)], Float4ToRGBA8(color));
+    N = (N * 0.5 + 0.5) * 255.0;
+    
+    InterlockedMax(voxelTextureTempColor[uint3(pos)], Float4ToRGBA8(color));
+    InterlockedMax(voxelTextureTempNormal[uint3(pos)], Float4ToRGBA8(float4(N, 0.0)));
 }

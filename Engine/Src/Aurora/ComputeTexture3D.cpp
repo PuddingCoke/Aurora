@@ -7,7 +7,7 @@ ComputeTexture3D::ComputeTexture3D(const UINT& width, const UINT& height, const 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = format;
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
-		srvDesc.Texture3D.MipLevels = 1;
+		srvDesc.Texture3D.MipLevels = mipLevels;
 		srvDesc.Texture3D.MostDetailedMip = 0;
 
 		createSRV(texture.Get(), srvDesc);
