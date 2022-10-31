@@ -19,12 +19,12 @@ SamplerState linearClampSampler : register(s0);
 static const float maxMipLevel = 4.0;
 
 //ConeTraceFactor
-static const float ConeOffsetFactor = 4.0;
+static const float ConeOffsetFactor = 2.0;
 static const float ConeMaxLength = 300.0;
 static const float ConeStepSize = 1.0;
 
 //DifusseTraceFactor
-static const uint numCones = 8;
+static const uint numCones = 16;
 
 float3x3 getTangentSpace(float3 normal)
 {

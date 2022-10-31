@@ -135,7 +135,7 @@ public:
 		bloomEffect.applyChange();
 
 		{
-			voxelParam.voxelGridRes = 560;
+			voxelParam.voxelGridRes = 512;
 			voxelParam.voxelGridLength = 300.f;
 			voxelParam.voxelSize = voxelParam.voxelGridLength / (float)voxelParam.voxelGridRes;
 

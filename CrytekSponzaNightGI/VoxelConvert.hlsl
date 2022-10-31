@@ -15,9 +15,12 @@ float4 RGBA8ToFloat4(uint val)
 [numthreads(8, 8, 8)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {
-    voxelTextureColor[DTid] = RGBA8ToFloat4(voxelTextureTempColor[DTid]) / 255.0;
-	
-    float3 N = (RGBA8ToFloat4(voxelTextureTempNormal[DTid]).xyz / 255.0 - 0.5) * 2.0;
-	
-    voxelTextureNormal[DTid] = float4(N, 0.0);
+    float4 color = RGBA8ToFloat4(voxelTextureTempColor[DTid]) / 255.0;
+    
+    if(color.a>0.1)
+    {
+        voxelTextureColor[DTid] = color;
+        float3 N = (RGBA8ToFloat4(voxelTextureTempNormal[DTid]).xyz / 255.0 - 0.5) * 2.0;
+        voxelTextureNormal[DTid] = float4(N, 0.0);
+    }
 }

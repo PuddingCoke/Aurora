@@ -55,12 +55,12 @@ static const float ConeMaxLength = 300.0;
 static const float ConeStepSize = 1.0;
 
 //DifusseTraceFactor
-static const uint numCones = 8;
+static const uint numCones = 16;
 
 //SpecularTraceFactor
 static const float SpecularTraceRoughness = 0.3;
 
-float3x3 getTangentSpace(float3 normal)
+inline float3x3 getTangentSpace(float3 normal)
 {
     float3 helper = abs(normal.x) > 0.99 ? float3(0, 0, 1) : float3(1, 0, 0);
     float3 tangent = normalize(cross(normal, helper));
@@ -68,7 +68,7 @@ float3x3 getTangentSpace(float3 normal)
     return float3x3(tangent, binormal, normal);
 }
 
-float2 hammersley2d(uint idx, uint num)
+inline float2 hammersley2d(uint idx, uint num)
 {
     uint bits = idx;
     bits = (bits << 16u) | (bits >> 16u);
@@ -81,7 +81,7 @@ float2 hammersley2d(uint idx, uint num)
     return float2(float(idx) / float(num), radicalInverse_VdC);
 }
 
-float3 hemispherepoint_cos(float u, float v)
+inline float3 hemispherepoint_cos(float u, float v)
 {
     float phi = v * 2 * PI;
     float cosTheta = sqrt(1 - u);
@@ -89,7 +89,7 @@ float3 hemispherepoint_cos(float u, float v)
     return float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
 }
 
-float4 ConeTrace(float3 P, float3 N, float3 coneDir, float coneAperture)
+inline float4 ConeTrace(float3 P, float3 N, float3 coneDir, float coneAperture)
 {
     float3 color = 0.0;
     float alpha = 0.0;
@@ -123,7 +123,7 @@ float4 ConeTrace(float3 P, float3 N, float3 coneDir, float coneAperture)
     return float4(color, alpha);
 }
 
-float4 TraceDiffuse(float3 P, float3 N)
+inline float4 TraceDiffuse(float3 P, float3 N)
 {
     float4 amount = 0.0;
     float3x3 tangentSpace = getTangentSpace(N);
@@ -144,7 +144,7 @@ float4 TraceDiffuse(float3 P, float3 N)
     return amount;
 }
 
-float4 TraceSpecular(float3 P, float3 N, float3 V)
+inline float4 TraceSpecular(float3 P, float3 N, float3 V)
 {
     float apeture = tan(SpecularTraceRoughness * PI * 0.5 * 0.1);
     float3 coneDir = reflect(-V, N);
