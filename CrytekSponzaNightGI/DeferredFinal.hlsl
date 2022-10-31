@@ -189,7 +189,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     float4 iDiffuse = TraceDiffuse(position, N);
     float4 iSpecular = TraceSpecular(position, N, V);
     
-    outColor += iDiffuse.rgb * iDiffuse.a + iSpecular.rgb * iSpecular.a;
+    outColor += iDiffuse.rgb + iSpecular.rgb;
     
     const float ao = ssaoTexture.Sample(linearSampler, texCoord).r;
         
