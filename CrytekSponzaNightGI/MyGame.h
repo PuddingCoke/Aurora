@@ -66,11 +66,15 @@ public:
 
 	Shader* visualPShader;
 
+	Shader* skyboxPShader;
+
 	FPSCamera camera;
 
 	HBAOEffect hbaoEffect;
 
 	BloomEffect bloomEffect;
+
+	TextureCube* skybox;
 
 	struct VoxelParam
 	{
@@ -95,6 +99,10 @@ public:
 
 	bool displayMode;
 
+	float exposure;
+
+	float gamma;
+
 	MyGame() :
 		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
@@ -113,13 +121,21 @@ public:
 		visualGShader(Shader::fromFile("VoxelVisualGShader.hlsl", ShaderType::Geometry)),
 		visualPShader(Shader::fromFile("VoxelVisualPShader.hlsl", ShaderType::Pixel)),
 		lightBounceCShader(Shader::fromFile("LightBounceCShader.hlsl", ShaderType::Compute)),
+		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
+		skybox(TextureCube::create({ assetPath + "/sky/SkyEarlyDusk_Right.png",assetPath + "/sky/SkyEarlyDusk_Left.png",assetPath + "/sky/SkyEarlyDusk_Top.png",assetPath + "/sky/SkyEarlyDusk_Bottom.png",assetPath + "/sky/SkyEarlyDusk_Front.png",assetPath + "/sky/SkyEarlyDusk_Back.png" })),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f, 3.f),
 		displayMode(false)
 	{
+		exposure = 0.40f;
+		gamma = 1.25f;
+		bloomEffect.setExposure(exposure);
+		bloomEffect.setGamma(gamma);
+		bloomEffect.applyChange();
+
 		{
-			voxelParam.voxelGridRes = 512;
+			voxelParam.voxelGridRes = 560;
 			voxelParam.voxelGridLength = 300.f;
 			voxelParam.voxelSize = voxelParam.voxelGridLength / (float)voxelParam.voxelGridRes;
 
@@ -242,6 +258,7 @@ public:
 		delete originTexture;
 
 		delete scene;
+		delete skybox;
 
 		delete lightBuffer;
 		delete deferredVShader;
@@ -253,7 +270,6 @@ public:
 		delete voxelTextureTempNormal;
 		delete voxelTextureNormal;
 		delete voxelTextureColorFinal;
-
 		delete voxelParamBuffer;
 
 		delete voxelConvert;
@@ -266,11 +282,39 @@ public:
 		delete visualVShader;
 		delete visualGShader;
 		delete visualPShader;
+
+		delete skyboxPShader;
 	}
+
 
 	void update(const float& dt) override
 	{
 		camera.applyInput(dt);
+
+		if (Keyboard::getKeyDown(Keyboard::Z))
+		{
+			exposure += 0.01f;
+			bloomEffect.setExposure(exposure);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::X))
+		{
+			exposure -= 0.01f;
+			bloomEffect.setExposure(exposure);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::N))
+		{
+			gamma += 0.01f;
+			bloomEffect.setGamma(gamma);
+			bloomEffect.applyChange();
+		}
+		else if (Keyboard::getKeyDown(Keyboard::M))
+		{
+			gamma -= 0.01f;
+			bloomEffect.setGamma(gamma);
+			bloomEffect.applyChange();
+		}
 	}
 
 	void render()
@@ -321,6 +365,14 @@ public:
 			deferredFinal->use();
 
 			RenderAPI::get()->DrawQuad();
+
+			RenderAPI::get()->OMSetRTV({ originTexture }, shadowMap->get());
+			RenderAPI::get()->PSSetSRV({ skybox }, 0);
+
+			TextureCube::shader->use();
+			skyboxPShader->use();
+
+			RenderAPI::get()->DrawCube();
 
 			ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
 

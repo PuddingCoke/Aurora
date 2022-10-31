@@ -45,5 +45,6 @@
     <FxCompile Include="VoxelVisualPShader.hlsl" />
     <FxCompile Include="VoxelVisualGShader.hlsl" />
     <FxCompile Include="LightBounceCShader.hlsl" />
+    <FxCompile Include="SkyboxPShader.hlsl" />
   </ItemGroup>
 </Project>
