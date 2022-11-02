@@ -12,7 +12,7 @@ ResManager* ResManager::get()
 	return instance;
 }
 
-void ResManager::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv)
+void ResManager::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, DepthStencilView* const dsv)
 {
 	if (UnorderedAccessView::curPUAV[0])
 	{
@@ -25,20 +25,37 @@ void ResManager::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, 
 		RenderTargetView::curRTV[i] = nullptr;
 	}
 
-	std::initializer_list<RenderTargetView*>::iterator it = rtvs.begin();
-
-	for (unsigned int i = 0; i < rtvs.size(); i++, it++)
+	if (rtvs.size())
 	{
-		RenderTargetView::curRTV[i] = it[0];
+		std::initializer_list<RenderTargetView*>::iterator it = rtvs.begin();
 
-		tempRTV[i] = it[0]->renderTargetView.Get();
+		for (unsigned int i = 0; i < rtvs.size(); i++, it++)
+		{
+			RenderTargetView::curRTV[i] = it[0];
 
-		it[0]->bindRTV();
+			tempRTV[i] = it[0]->renderTargetView.Get();
 
-		it[0]->boundOnRTV = true;
+			it[0]->bindRTV();
+
+			it[0]->boundOnRTV = true;
+		}
+
+		if (dsv)
+		{
+			dsv->bindDSV();
+			Renderer::context->OMSetRenderTargets((unsigned int)rtvs.size(), tempRTV, dsv->get());
+		}
+		else
+		{
+			Renderer::context->OMSetRenderTargets((unsigned int)rtvs.size(), tempRTV, nullptr);
+		}
+	}
+	else
+	{
+		dsv->bindDSV();
+		Renderer::context->OMSetRenderTargets(0, nullptr, dsv->get());
 	}
 
-	Renderer::context->OMSetRenderTargets((unsigned int)rtvs.size(), tempRTV, dsv);
 }
 
 void ResManager::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)

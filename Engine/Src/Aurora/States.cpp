@@ -107,6 +107,16 @@ States::States()
 		RenderAPI::get()->CreateBlendState(blendStateDesc, addtiveBlend.ReleaseAndGetAddressOf());
 	}
 
+	{
+		D3D11_RASTERIZER_DESC rasterizerDesc = {};
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+		rasterizerDesc.DepthBias = 16;
+		rasterizerDesc.SlopeScaledDepthBias = 4.f;
+
+		RenderAPI::get()->CreateRasterizerState(rasterizerDesc, rasterShadow.ReleaseAndGetAddressOf());
+	}
+
 	//初始化rasterCullBack
 	{
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};

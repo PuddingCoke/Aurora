@@ -30,6 +30,8 @@ public:
 	//ONE ONE ALPHA ONE ZERO
 	ComPtr<ID3D11BlendState> addtiveBlend;
 
+	ComPtr<ID3D11RasterizerState> rasterShadow;
+
 	ComPtr<ID3D11RasterizerState> rasterCullBack;
 
 	ComPtr<ID3D11RasterizerState> rasterCullFront;

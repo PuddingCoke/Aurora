@@ -58,7 +58,7 @@ void RenderAPI::CreateDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& desc, ID
 	Renderer::device->CreateDepthStencilState(&desc, state);
 }
 
-void RenderAPI::OMSetDefRTV(ID3D11DepthStencilView* const dsv) const
+void RenderAPI::OMSetDefRTV(DepthStencilView* const dsv) const
 {
 	ResManager::get()->OMSetRTV({ defRenderTargetView }, dsv);
 }
@@ -68,7 +68,7 @@ void RenderAPI::ClearDefRTV(const float* const color) const
 	defRenderTargetView->clearRTV(color);
 }
 
-void RenderAPI::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv) const
+void RenderAPI::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, DepthStencilView* const dsv) const
 {
 	ResManager::get()->OMSetRTV(rtvs, dsv);
 }

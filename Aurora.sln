@@ -29,15 +29,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpaceShip", "SpaceShip\Spac
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogoInterpreter", "LogoInterpreter\LogoInterpreter.vcxproj", "{FC282766-7986-4861-87A5-EF4D002ABAED}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrytekSponzaNight", "CrytekSponzaNight\CrytekSponzaNight.vcxproj", "{27EF3BB6-FF27-4CC7-B1B6-299C0D3FA979}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrytekSponzaDay", "CrytekSponzaDay\CrytekSponzaDay.vcxproj", "{338F1B89-7ECD-456B-8ED0-71DC633E9FBE}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicOcean", "DynamicOcean\DynamicOcean.vcxproj", "{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mandelbulb", "Mandelbulb\Mandelbulb.vcxproj", "{B59DBF7D-61F0-43CE-8247-43E88106110E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrytekSponzaNightGI", "CrytekSponzaNightGI\CrytekSponzaNightGI.vcxproj", "{D280E6D7-71D0-4406-8665-F89E78DB2267}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrytekSponzaDayGI", "CrytekSponzaDayGI\CrytekSponzaDayGI.vcxproj", "{A59B2020-E69F-45E3-B87E-034DAC06AD12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -151,22 +149,6 @@ Global
 		{FC282766-7986-4861-87A5-EF4D002ABAED}.Release|x64.Build.0 = Release|x64
 		{FC282766-7986-4861-87A5-EF4D002ABAED}.Release|x86.ActiveCfg = Release|Win32
 		{FC282766-7986-4861-87A5-EF4D002ABAED}.Release|x86.Build.0 = Release|Win32
-		{27EF3BB6-FF27-4CC7-B1B6-299C0D3FA979}.Debug|x64.ActiveCfg = Debug|x64
-		{27EF3BB6-FF27-4CC7-B1B6-299C0D3FA979}.Debug|x64.Build.0 = Debug|x64
-		{27EF3BB6-FF27-4CC7-B1B6-299C0D3FA979}.Debug|x86.ActiveCfg = Debug|Win32
-		{27EF3BB6-FF27-4CC7-B1B6-299C0D3FA979}.Debug|x86.Build.0 = Debug|Win32
-		{27EF3BB6-FF27-4CC7-B1B6-299C0D3FA979}.Release|x64.ActiveCfg = Release|x64
-		{27EF3BB6-FF27-4CC7-B1B6-299C0D3FA979}.Release|x64.Build.0 = Release|x64
-		{27EF3BB6-FF27-4CC7-B1B6-299C0D3FA979}.Release|x86.ActiveCfg = Release|Win32
-		{27EF3BB6-FF27-4CC7-B1B6-299C0D3FA979}.Release|x86.Build.0 = Release|Win32
-		{338F1B89-7ECD-456B-8ED0-71DC633E9FBE}.Debug|x64.ActiveCfg = Debug|x64
-		{338F1B89-7ECD-456B-8ED0-71DC633E9FBE}.Debug|x64.Build.0 = Debug|x64
-		{338F1B89-7ECD-456B-8ED0-71DC633E9FBE}.Debug|x86.ActiveCfg = Debug|Win32
-		{338F1B89-7ECD-456B-8ED0-71DC633E9FBE}.Debug|x86.Build.0 = Debug|Win32
-		{338F1B89-7ECD-456B-8ED0-71DC633E9FBE}.Release|x64.ActiveCfg = Release|x64
-		{338F1B89-7ECD-456B-8ED0-71DC633E9FBE}.Release|x64.Build.0 = Release|x64
-		{338F1B89-7ECD-456B-8ED0-71DC633E9FBE}.Release|x86.ActiveCfg = Release|Win32
-		{338F1B89-7ECD-456B-8ED0-71DC633E9FBE}.Release|x86.Build.0 = Release|Win32
 		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Debug|x64.ActiveCfg = Debug|x64
 		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Debug|x64.Build.0 = Debug|x64
 		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Debug|x86.ActiveCfg = Debug|Win32
@@ -191,6 +173,14 @@ Global
 		{D280E6D7-71D0-4406-8665-F89E78DB2267}.Release|x64.Build.0 = Release|x64
 		{D280E6D7-71D0-4406-8665-F89E78DB2267}.Release|x86.ActiveCfg = Release|Win32
 		{D280E6D7-71D0-4406-8665-F89E78DB2267}.Release|x86.Build.0 = Release|Win32
+		{A59B2020-E69F-45E3-B87E-034DAC06AD12}.Debug|x64.ActiveCfg = Debug|x64
+		{A59B2020-E69F-45E3-B87E-034DAC06AD12}.Debug|x64.Build.0 = Debug|x64
+		{A59B2020-E69F-45E3-B87E-034DAC06AD12}.Debug|x86.ActiveCfg = Debug|Win32
+		{A59B2020-E69F-45E3-B87E-034DAC06AD12}.Debug|x86.Build.0 = Debug|Win32
+		{A59B2020-E69F-45E3-B87E-034DAC06AD12}.Release|x64.ActiveCfg = Release|x64
+		{A59B2020-E69F-45E3-B87E-034DAC06AD12}.Release|x64.Build.0 = Release|x64
+		{A59B2020-E69F-45E3-B87E-034DAC06AD12}.Release|x86.ActiveCfg = Release|Win32
+		{A59B2020-E69F-45E3-B87E-034DAC06AD12}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

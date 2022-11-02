@@ -9,7 +9,7 @@ struct VertexInput
 
 struct VertexOutput
 {
-    float3 pos : POSITION;
+    float3 pos : POSITION0;
     float2 uv : TEXCOORD;
     float3 normal : NORMAL;
     float3 tangent : TANGENT0;
@@ -17,15 +17,9 @@ struct VertexOutput
     float4 svPosition : SV_Position;
 };
 
-cbuffer ProjMatrix : register(b0)
+cbuffer VoxelProj : register(b2)
 {
     matrix proj;
-}
-
-cbuffer ViewMatrix : register(b1)
-{
-    matrix view;
-    matrix normalMatrix;
 }
 
 VertexOutput main(VertexInput input)
@@ -36,6 +30,6 @@ VertexOutput main(VertexInput input)
     output.normal = input.normal;
     output.tangent = input.tangent;
     output.bitangent = input.bitangent;
-   output.svPosition = mul(mul(float4(input.pos, 1.0), view), proj);
+    output.svPosition = mul(float4(input.pos, 1.0), proj);
     return output;
 }

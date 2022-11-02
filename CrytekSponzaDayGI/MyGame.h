@@ -18,6 +18,10 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
+	ComPtr<ID3D11SamplerState> shadowSampler;
+
+	ShadowMap* shadowTexture;
+
 	ShadowMap* shadowMap;
 
 	RenderTexture* gPosition;
@@ -43,6 +47,8 @@ public:
 	Buffer* voxelParamBuffer;
 
 	Buffer* lightBuffer;
+
+	Buffer* lightProjBuffer;
 
 	Shader* voxelVShader;
 
@@ -76,6 +82,8 @@ public:
 
 	TextureCube* skybox;
 
+	static constexpr unsigned int shadowMapRes = 4096;
+
 	struct VoxelParam
 	{
 		unsigned int voxelGridRes;
@@ -84,18 +92,11 @@ public:
 		float v0;
 	} voxelParam{};
 
-	struct LightInfo
+	struct Light
 	{
-		struct Light
-		{
-			DirectX::XMFLOAT4 position;
-			DirectX::XMFLOAT4 color;
-			float radius;
-			float quadraticFalloff;
-			float linearFalloff;
-			float v0;
-		}lights[10]{};
-	}lightInfo{};
+		DirectX::XMFLOAT4 lightDir;
+		DirectX::XMFLOAT4 lightColor;
+	} light{};
 
 	bool displayMode;
 
@@ -109,6 +110,7 @@ public:
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		shadowMap(ShadowMap::create(Graphics::getWidth(), Graphics::getHeight())),
+		shadowTexture(ShadowMap::create(shadowMapRes, shadowMapRes)),
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		voxelVShader(Shader::fromFile("VoxelizationVShader.hlsl", ShaderType::Vertex)),
 		voxelGShader(Shader::fromFile("VoxelizationGShader.hlsl", ShaderType::Geometry)),
@@ -122,7 +124,7 @@ public:
 		visualPShader(Shader::fromFile("VoxelVisualPShader.hlsl", ShaderType::Pixel)),
 		lightBounceCShader(Shader::fromFile("LightBounceCShader.hlsl", ShaderType::Compute)),
 		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
-		skybox(TextureCube::create({ assetPath + "/sky/SkyEarlyDusk_Right.png",assetPath + "/sky/SkyEarlyDusk_Left.png",assetPath + "/sky/SkyEarlyDusk_Top.png",assetPath + "/sky/SkyEarlyDusk_Bottom.png",assetPath + "/sky/SkyEarlyDusk_Front.png",assetPath + "/sky/SkyEarlyDusk_Back.png" })),
+		skybox(TextureCube::createEquirectangularMap(assetPath + "/sky/kloppenheim_05_4k.hdr", 2048, { 0,1,0 })),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f, 3.f),
@@ -163,31 +165,60 @@ public:
 			Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(voxelVShader), inputLayout.ReleaseAndGetAddressOf());
 		}
 
+		camera.registerEvent();
+
 		{
-			auto setLight = [](LightInfo::Light* light, const DirectX::XMFLOAT3& pos, const DirectX::XMFLOAT3& color, const float& radius)
-			{
-				light->position = DirectX::XMFLOAT4(pos.x, pos.y, pos.z, 1.f);
-				light->color = DirectX::XMFLOAT4(color.x, color.y, color.z, 1.f);
-				light->radius = radius;
-			};
+			const float radian = Math::half_pi - 0.25f;
 
-			setLight(&lightInfo.lights[0], { -48.75f, 16.0f, -17.8f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
-			setLight(&lightInfo.lights[1], { -48.75f, 16.0f,  18.4f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
-			setLight(&lightInfo.lights[2], { 62.0f, 16.0f, -17.8f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
-			setLight(&lightInfo.lights[3], { 62.0f, 16.0f,  18.4f }, { 1.0f, 0.6f, 0.0f }, 45.0f);
-			setLight(&lightInfo.lights[4], { 120.0f, 20.0f, -43.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
-			setLight(&lightInfo.lights[5], { 120.0f, 20.0f, 41.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
-			setLight(&lightInfo.lights[6], { -110.0f, 20.0f, -43.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
-			setLight(&lightInfo.lights[7], { -110.0f, 20.0f, 41.75f }, { 1.0f, 0.8f, 0.3f }, 75.0f);
-			setLight(&lightInfo.lights[8], { -0.5f * 50.0f, 20.0f, 0.0f }, { 1.f,1.f,1.f }, 120.0f);
-			setLight(&lightInfo.lights[9], { 0.75f * 50.0f, 20.0f, 0.0f }, { 1.f,1.f,1.f }, 120.0f);
+			light.lightDir = { 0.f,sinf(radian),cosf(radian),0.f };
+			light.lightColor = { 1.f, 1.f,1.f,1.f };
+			DirectX::XMStoreFloat4(&light.lightDir, DirectX::XMVector4Normalize(DirectX::XMLoadFloat4(&light.lightDir)));
 
-			lightBuffer = new Buffer(sizeof(LightInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &lightInfo);
+			lightBuffer = new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &light);
+
+			const float xSize = 200;
+
+			const float ySize = 100;
+			const float distance = 260.f;
+
+			const DirectX::XMVECTOR lightCamPos = DirectX::XMVectorSet(light.lightDir.x * distance, light.lightDir.y * distance, light.lightDir.z * distance, 1.f);
+
+			const DirectX::XMMATRIX lightProjMat = DirectX::XMMatrixOrthographicOffCenterLH(-xSize / 2.f, xSize / 2.f, -ySize / 2.f, ySize / 2.f, 1.f, 512);
+
+			const DirectX::XMMATRIX lightViewMat = DirectX::XMMatrixLookAtLH(lightCamPos, { 0.f,0.f,0.f,1.f }, { 0.f,1.f,0.f });
+
+			const DirectX::XMMATRIX lightMat = DirectX::XMMatrixTranspose(lightViewMat * lightProjMat);
+
+			lightProjBuffer = new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &lightMat);
 		}
 
-		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
+		{
+			D3D11_SAMPLER_DESC desc = {};
+			desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.BorderColor[0] = desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0.f;
+			desc.ComparisonFunc = D3D11_COMPARISON_GREATER;
+			desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+			desc.MinLOD = 0.f;
+			desc.MaxLOD = FLT_MAX;
 
-		camera.registerEvent();
+			RenderAPI::get()->CreateSamplerState(desc, shadowSampler.ReleaseAndGetAddressOf());
+		}
+
+		{
+			RenderAPI::get()->OMSetBlendState(nullptr);
+			RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+
+			RenderAPI::get()->RSSetState(States::get()->rasterShadow.Get());
+			RenderAPI::get()->RSSetViewport(shadowMapRes, shadowMapRes);
+			shadowTexture->clear();
+			RenderAPI::get()->OMSetRTV({}, shadowTexture);
+			RenderAPI::get()->VSSetBuffer({ lightProjBuffer }, 2);
+			scene->drawGeometry(ShadowMap::shadowVShader);
+
+			RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		}
 
 		{
 			const DirectX::XMMATRIX voxelProj = DirectX::XMMatrixTranspose(DirectX::XMMatrixOrthographicOffCenterLH(
@@ -197,17 +228,17 @@ public:
 
 			Buffer* voxelProjBuffer = new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &voxelProj);
 
-			RenderAPI::get()->OMSetBlendState(nullptr);
-			RenderAPI::get()->IASetInputLayout(inputLayout.Get());
-
 			const unsigned int color[4] = { 0,0,0,0 };
 			voxelTextureTempColor->clear(color);
 			voxelTextureTempNormal->clear(color);
 			RenderAPI::get()->OMSetUAV({ voxelTextureTempColor,voxelTextureTempNormal });
 
+			ID3D11SamplerState* samplers[2] = { States::get()->linearWrapSampler.Get(),shadowSampler.Get() };
+
 			RenderAPI::get()->VSSetBuffer({ voxelProjBuffer }, 2);
-			RenderAPI::get()->PSSetBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer }, 1);
-			RenderAPI::get()->PSSetSampler(States::get()->linearWrapSampler.GetAddressOf(), 0, 1);
+			RenderAPI::get()->PSSetBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer,lightProjBuffer }, 1);
+			RenderAPI::get()->PSSetSampler(samplers, 0, 2);
+			RenderAPI::get()->PSSetSRV({ shadowTexture }, 3);
 
 			RenderAPI::get()->RSSetState(States::get()->rasterConserve.Get());
 			RenderAPI::get()->OMSetDepthStencilState(States::get()->depthStencilDisable.Get(), 0);
@@ -235,28 +266,22 @@ public:
 			voxelTextureColorFinal->generateMips();
 
 			delete voxelProjBuffer;
-		}
 
-		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
-		RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
-		RenderAPI::get()->OMSetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
+			RenderAPI::get()->OMSetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
+		}
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
 			{
 				displayMode = !displayMode;
 			});
 
-		Keyboard::addKeyDownEvent(Keyboard::J, [this]()
-			{
-				const DirectX::XMFLOAT3 viewPos = camera.getEye();
-				std::cout << viewPos.x << " " << viewPos.y << " " << viewPos.z << "\n";
-			});
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
 	}
 
 	~MyGame()
 	{
 		delete shadowMap;
+		delete shadowTexture;
 
 		delete gPosition;
 		delete gNormalSpecular;
@@ -267,6 +292,7 @@ public:
 		delete skybox;
 
 		delete lightBuffer;
+		delete lightProjBuffer;
 		delete deferredVShader;
 		delete deferredPShader;
 		delete deferredFinal;
@@ -291,7 +317,6 @@ public:
 
 		delete skyboxPShader;
 	}
-
 
 	void update(const float& dt) override
 	{
@@ -335,7 +360,7 @@ public:
 			RenderAPI::get()->OMSetDefRTV(shadowMap);
 			RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);
 
-			RenderAPI::get()->GSSetSRV({ voxelTextureNormal }, 0);
+			RenderAPI::get()->GSSetSRV({ voxelTextureColorFinal }, 0);
 			RenderAPI::get()->GSSetBuffer({ voxelParamBuffer }, 2);
 			RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
@@ -350,8 +375,8 @@ public:
 			RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
 
 			RenderAPI::get()->GSSetShader(nullptr);
-			ID3D11SamplerState* samplers[2] = { States::get()->linearWrapSampler.Get(),States::get()->linearClampSampler.Get() };
-			RenderAPI::get()->PSSetSampler(samplers, 0, 2);
+			ID3D11SamplerState* samplers[3] = { States::get()->linearWrapSampler.Get(),States::get()->linearClampSampler.Get(),shadowSampler.Get() };
+			RenderAPI::get()->PSSetSampler(samplers, 0, 3);
 
 			gBaseColor->clearRTV(DirectX::Colors::Black);
 			gPosition->clearRTV(DirectX::Colors::Black);
@@ -362,17 +387,19 @@ public:
 
 			scene->draw(deferredVShader, deferredPShader);
 
-			originTexture->clearRTV(DirectX::Colors::Black);
-			RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
-			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
-			RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);
+			/*originTexture->clearRTV(DirectX::Colors::Black);
+			RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);*/
+			RenderAPI::get()->OMSetDefRTV(nullptr);
+			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()),shadowTexture,voxelTextureColorFinal }, 0);
+			RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer,lightProjBuffer }, 1);
 
 			Shader::displayVShader->use();
 			deferredFinal->use();
 
 			RenderAPI::get()->DrawQuad();
 
-			RenderAPI::get()->OMSetRTV({ originTexture }, shadowMap);
+			RenderAPI::get()->OMSetDefRTV(shadowMap);
+			//RenderAPI::get()->OMSetRTV({ originTexture }, shadowMap);
 			RenderAPI::get()->PSSetSRV({ skybox }, 0);
 
 			TextureCube::shader->use();
@@ -380,7 +407,7 @@ public:
 
 			RenderAPI::get()->DrawCube();
 
-			ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
+			/*ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
 
 			RenderAPI::get()->OMSetBlendState(nullptr);
 			RenderAPI::get()->OMSetDefRTV(nullptr);
@@ -389,9 +416,8 @@ public:
 			Shader::displayVShader->use();
 			Shader::displayPShader->use();
 
-			RenderAPI::get()->DrawQuad();
+			RenderAPI::get()->DrawQuad();*/
 		}
-
 	}
 
 

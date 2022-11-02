@@ -12,14 +12,9 @@ void ShadowMap::clear(const float& depth) const
 	Renderer::getContext()->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, depth, 0);
 }
 
-ID3D11DepthStencilView* ShadowMap::get() const
+void ShadowMap::bindDSV()
 {
-	return depthStencilView.Get();
-}
-
-ID3D11DepthStencilView* ShadowMap::getROView() const
-{
-	return depthStencilViewRO.Get();
+	unbindFromSRV();
 }
 
 void ShadowMap::ini()
@@ -54,7 +49,8 @@ void ShadowMap::release()
 	delete shadowVShader;
 }
 
-ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height)
+ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height):
+	DepthStencilView()
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 	tDesc.Width = width;
@@ -69,22 +65,14 @@ ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height)
 	tDesc.CPUAccessFlags = 0;
 	tDesc.MiscFlags = 0;
 
-	Renderer::device->CreateTexture2D(&tDesc, nullptr, shadowTexture.ReleaseAndGetAddressOf());
+	Renderer::device->CreateTexture2D(&tDesc, nullptr, depthStencilTexture.ReleaseAndGetAddressOf());
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Texture2D.MipSlice = 0;
 
-	Renderer::device->CreateDepthStencilView(shadowTexture.Get(), &dsvDesc, depthStencilView.ReleaseAndGetAddressOf());
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvRODesc = {};
-	dsvRODesc.Flags = D3D11_DSV_READ_ONLY_DEPTH;
-	dsvRODesc.Format = DXGI_FORMAT_D32_FLOAT;
-	dsvRODesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	dsvRODesc.Texture2D.MipSlice = 0;
-
-	Renderer::device->CreateDepthStencilView(shadowTexture.Get(), &dsvRODesc, depthStencilViewRO.ReleaseAndGetAddressOf());
+	Renderer::device->CreateDepthStencilView(depthStencilTexture.Get(), &dsvDesc, depthStencilView.ReleaseAndGetAddressOf());
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
@@ -92,5 +80,5 @@ ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height)
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = -1;
 
-	createSRV(shadowTexture.Get(), srvDesc);
+	createSRV(depthStencilTexture.Get(), srvDesc);
 }

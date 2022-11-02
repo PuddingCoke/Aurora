@@ -9,8 +9,6 @@ class DepthStencilView
 {
 public:
 
-	DepthStencilView() = delete;
-
 	DepthStencilView(const DepthStencilView&) = delete;
 
 	void operator=(const DepthStencilView&) = delete;
@@ -23,13 +21,18 @@ public:
 
 	~DepthStencilView();
 
-private:
+	virtual void bindDSV();
+
+protected:
+
+	DepthStencilView();
 
 	DepthStencilView(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA);
 
 	ComPtr<ID3D11Texture2D> depthStencilTexture;
 
 	ComPtr<ID3D11DepthStencilView> depthStencilView;
+
 };
 
 #endif // !_DEPTHSTENCILVIEW_H_

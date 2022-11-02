@@ -6,6 +6,7 @@
 #include"DX/View/RenderTargetView.h"
 #include"DX/View/UnorderedAccessView.h"
 #include"DX/View/ShaderResourceView.h"
+#include"DX/View/DepthStencilView.h"
 
 #include"DX/Resource/Buffer.h"
 
@@ -28,7 +29,7 @@ private:
 
 	static ResManager* get();
 
-	void OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv);
+	void OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, DepthStencilView* const dsv);
 
 	void OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs);
 

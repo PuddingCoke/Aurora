@@ -19,6 +19,14 @@ DepthStencilView::~DepthStencilView()
 {
 }
 
+void DepthStencilView::bindDSV()
+{
+}
+
+DepthStencilView::DepthStencilView()
+{
+}
+
 DepthStencilView::DepthStencilView(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};

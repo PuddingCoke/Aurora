@@ -27,11 +27,11 @@ public:
 
 	void CreateDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& desc, ID3D11DepthStencilState** const state) const;
 
-	void OMSetDefRTV(ID3D11DepthStencilView* const dsv) const;
+	void OMSetDefRTV(DepthStencilView* const dsv) const;
 
 	void ClearDefRTV(const float* const color) const;
 
-	void OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, ID3D11DepthStencilView* const dsv) const;
+	void OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, DepthStencilView* const dsv) const;
 
 	void OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs) const;
 

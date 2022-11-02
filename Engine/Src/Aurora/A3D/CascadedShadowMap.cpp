@@ -1,233 +1,38 @@
 #include<Aurora/A3D/CascadedShadowMap.h>
 
-CascadedShadowMap::CascadedShadowMap(const unsigned int& width, const unsigned int& height, const DirectX::XMFLOAT3& lightPos, const DirectX::XMFLOAT3& lightLookAt) :
-	shadowCtx(nullptr),
-	lightViewProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
-	srv(new ShaderResourceView())
+CascadedShadowMap::CascadedShadowMap(const DirectX::XMFLOAT3& lightDir) :
+	lightProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 {
-	sbRenderParams.eDebugViewType = GFSDK_ShadowLib_DebugViewType_None;
-
-	GFSDK_ShadowLib_Version ver;
-	GFSDK_ShadowLib_GetDLLVersion(&ver);
-
-	GFSDK_ShadowLib_DeviceContext deviceContext;
-
-	deviceContext.pD3DDevice = Renderer::device;
-	deviceContext.pDeviceContext = Renderer::getContext();
-
-	std::cout << "[class CascadedShadowMap] NVIDIA ShadowLib create status " << GFSDK_ShadowLib_Create(&ver, &shadowCtx, &deviceContext) << "\n";
-
-	//´´½¨shadowBufferHandle shadowMapHandle
-	{
-		GFSDK_ShadowLib_BufferDesc sbDesc;
-		sbDesc.uResolutionWidth = width;
-		sbDesc.uResolutionHeight = height;
-		sbDesc.uViewportLeft = 0;
-		sbDesc.uViewportTop = 0;
-		sbDesc.uViewportRight = width;
-		sbDesc.uViewportBottom = height;
-		sbDesc.uSampleCount = 1;
-
-		GFSDK_ShadowLib_MapDesc smDesc;
-		smDesc.eViewType = GFSDK_ShadowLib_ViewType_Cascades_4;
-		smDesc.uResolutionWidth = shadowMapRes;
-		smDesc.uResolutionHeight = shadowMapRes;
-
-		smDesc.FrustumTraceMapDesc.bRequireFrustumTraceMap = true;
-		smDesc.FrustumTraceMapDesc.uResolutionWidth = frustumTraceMapRes;
-		smDesc.FrustumTraceMapDesc.uResolutionHeight = frustumTraceMapRes;
-		smDesc.FrustumTraceMapDesc.uDynamicReprojectionCascades = 2;
-		smDesc.FrustumTraceMapDesc.uQuantizedListLengthTexelDimension = 4;
-
-		smDesc.RayTraceMapDesc.bRequirePrimitiveMap = true;
-		smDesc.RayTraceMapDesc.uMaxNumberOfPrimitives = 1000000;
-		smDesc.RayTraceMapDesc.uMaxNumberOfPrimitivesPerPixel = 64;
-		smDesc.RayTraceMapDesc.uResolutionWidth = rayTraceMapRes;
-		smDesc.RayTraceMapDesc.uResolutionHeight = rayTraceMapRes;
-
-		shadowCtx->AddBuffer(&sbDesc, &shadowBufferHandle);
-		shadowCtx->AddMap(&smDesc, &sbDesc, &shadowMapHandle);
-	}
-
-	setLightPos(lightPos);
-	setLightLookAt(lightLookAt);
-
-	smRenderParams.LightDesc.eLightType = GFSDK_ShadowLib_LightType_Directional;
-	smRenderParams.LightDesc.fLightSize = 2.0f;
-
-	smRenderParams.ZBiasParams.iDepthBias = 0;
-	smRenderParams.ZBiasParams.fSlopeScaledDepthBias = 0;
-	smRenderParams.ZBiasParams.bUseReceiverPlaneBias = false;
-	smRenderParams.ZBiasParams.fDistanceBiasMin = 0.000001f;
-	smRenderParams.ZBiasParams.fDistanceBiasFactor = 0.0002f;
-	smRenderParams.ZBiasParams.fDistanceBiasThreshold = 300.0f;
-	smRenderParams.ZBiasParams.fDistanceBiasPower = 3.0f;
-	smRenderParams.eCullModeType = GFSDK_ShadowLib_CullModeType_None;
-	smRenderParams.eTechniqueType = GFSDK_ShadowLib_TechniqueType_HFTS;
-	smRenderParams.PCSSPenumbraParams.fMinSizePercent[0] = 5.0f;
-	smRenderParams.PCSSPenumbraParams.fMinSizePercent[1] = 5.0f;
-	smRenderParams.PCSSPenumbraParams.fMinSizePercent[2] = 5.0f;
-	smRenderParams.PCSSPenumbraParams.fMinSizePercent[3] = 5.0f;
-	smRenderParams.PCSSPenumbraParams.fMinWeightThresholdPercent = 3.0f;
-	smRenderParams.PCSSPenumbraParams.fMaxThreshold = 1000.0f;
-	smRenderParams.eCascadedShadowMapType = GFSDK_ShadowLib_CascadedShadowMapType_SampleDistribution;
-
-	smRenderParams.fCascadeMaxDistancePercent = 125.0f;
-	smRenderParams.fCascadeZLinearScale[0] = 0.1f;
-	smRenderParams.fCascadeZLinearScale[1] = 0.2f;
-	smRenderParams.fCascadeZLinearScale[2] = 0.5f;
-	smRenderParams.fCascadeZLinearScale[3] = 1.0f;
-
-	smRenderParams.v3WorldSpaceBBox[0] = smRenderParams.v3WorldSpaceBBox[1] = GFSDK_Zero_Vector3;
-
-	smRenderParams.FrustumTraceMapRenderParams.eConservativeRasterType = GFSDK_ShadowLib_ConservativeRasterType_HW;
-	smRenderParams.FrustumTraceMapRenderParams.eCullModeType = GFSDK_ShadowLib_CullModeType_None;
-	smRenderParams.FrustumTraceMapRenderParams.fHitEpsilon = 0.01f;
-
-	smRenderParams.RayTraceMapRenderParams.eConservativeRasterType = GFSDK_ShadowLib_ConservativeRasterType_HW;
-	smRenderParams.RayTraceMapRenderParams.eCullModeType = GFSDK_ShadowLib_CullModeType_None;
-	smRenderParams.RayTraceMapRenderParams.fHitEpsilon = 0.06f;
 
 }
 
 CascadedShadowMap::~CascadedShadowMap()
 {
-	shadowCtx->Destroy();
-	delete lightViewProjBuffer;
-	delete srv;
+	delete lightProjBuffer;
 }
 
-DirectX::XMFLOAT3 CascadedShadowMap::getLightPos() const
+void CascadedShadowMap::renderShadowMap(std::function<void(void)> renderGeometry)
 {
-	return { smRenderParams.LightDesc.v3LightPos[0].x,smRenderParams.LightDesc.v3LightPos[0].y, smRenderParams.LightDesc.v3LightPos[0].z };
-}
+	DirectX::BoundingFrustum frustum;
+	DirectX::BoundingFrustum::CreateFromMatrix(frustum, Camera::getProj());
+	DirectX::XMMATRIX inverseView = DirectX::XMMatrixInverse(nullptr, Camera::getView());
+	frustum.Transform(frustum, inverseView);
 
-DirectX::XMFLOAT3 CascadedShadowMap::getLightLookAt() const
-{
-	return { smRenderParams.LightDesc.v3LightLookAt[0].x,smRenderParams.LightDesc.v3LightLookAt[0].y, smRenderParams.LightDesc.v3LightLookAt[0].z };
-}
+	DirectX::XMFLOAT3 corners[8];
 
-void CascadedShadowMap::setLightPos(const DirectX::XMFLOAT3& lightPos)
-{
-	memcpy(&smRenderParams.LightDesc.v3LightPos[0], &lightPos, sizeof(gfsdk_float3));
-	memcpy(&smRenderParams.LightDesc.v3LightPos[1], &lightPos, sizeof(gfsdk_float3));
-	memcpy(&smRenderParams.LightDesc.v3LightPos[2], &lightPos, sizeof(gfsdk_float3));
-	memcpy(&smRenderParams.LightDesc.v3LightPos[3], &lightPos, sizeof(gfsdk_float3));
-}
+	frustum.GetCorners(corners);
 
-void CascadedShadowMap::setLightLookAt(const DirectX::XMFLOAT3& lightLookAt)
-{
-	memcpy(&smRenderParams.LightDesc.v3LightLookAt[0], &lightLookAt, sizeof(gfsdk_float3));
-	memcpy(&smRenderParams.LightDesc.v3LightLookAt[1], &lightLookAt, sizeof(gfsdk_float3));
-	memcpy(&smRenderParams.LightDesc.v3LightLookAt[2], &lightLookAt, sizeof(gfsdk_float3));
-	memcpy(&smRenderParams.LightDesc.v3LightLookAt[3], &lightLookAt, sizeof(gfsdk_float3));
-}
+	DirectX::XMFLOAT3 origin = { 0,0,0 };
 
-void CascadedShadowMap::updateMatrices()
-{
-	const DirectX::XMMATRIX cameraProj = Camera::getProj();
-	const DirectX::XMMATRIX cameraView = Camera::getView();
-	memcpy(&smRenderParams.m4x4EyeProjectionMatrix, &cameraProj, sizeof(gfsdk_float4x4));
-	memcpy(&smRenderParams.m4x4EyeViewMatrix, &cameraView, sizeof(gfsdk_float4x4));
-}
-
-void CascadedShadowMap::renderShaodwMap(ShadowMap* const shadowMap, std::function<void(void)> renderGeometry)
-{
-	RenderAPI::get()->UnbindRTV();
-	RenderAPI::get()->UnbindCSUAV();
-	RenderAPI::get()->UnbindPSUAV();
-
-	srv->unbindFromSRV();
-
-	smRenderParams.DepthBufferDesc.eDepthType = GFSDK_ShadowLib_DepthType_DepthBuffer;
-	smRenderParams.DepthBufferDesc.DepthSRV.pSRV = shadowMap->getSRV();
-	smRenderParams.DepthBufferDesc.ResolvedDepthSRV.pSRV = nullptr;
-	smRenderParams.DepthBufferDesc.ReadOnlyDSV.pDSV = shadowMap->getROView();
-
-	shadowCtx->SetMapRenderParams(shadowMapHandle, &smRenderParams);
-
-	shadowCtx->UpdateMapBounds(shadowMapHandle, lightViewMatrices, lightProjMatrices, renderFrusta);
-	
-	RenderAPI::get()->PSSetShader(nullptr);
-	RenderAPI::get()->HSSetShader(nullptr);
-	RenderAPI::get()->DSSetShader(nullptr);
-	RenderAPI::get()->GSSetShader(nullptr);
-
-	shadowCtx->InitializeMapRendering(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_Depth);
-
-	for (unsigned int uView = 0; uView < 4; uView++)
+	for (const DirectX::XMFLOAT3& p : corners)
 	{
-		shadowCtx->BeginMapRendering(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_Depth, uView);
-
-		const DirectX::XMMATRIX viewMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightViewMatrices[uView]);
-		const DirectX::XMMATRIX projMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightProjMatrices[uView]);
-		const DirectX::XMMATRIX viewProjMatrix = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
-
-		memcpy(lightViewProjBuffer->map(0).pData, &viewProjMatrix, sizeof(DirectX::XMMATRIX));
-		lightViewProjBuffer->unmap(0);
-		RenderAPI::get()->VSSetBuffer({ lightViewProjBuffer }, 2);
-
-		renderGeometry();
-
-		shadowCtx->EndMapRendering(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_Depth, uView);
+		origin.x += p.x;
+		origin.y += p.y;
+		origin.z += p.z;
 	}
-}
 
-void CascadedShadowMap::beginRayTraceRender()
-{
-	shadowCtx->InitializeMapRendering(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_RT);
+	origin.x /= 8.f;
+	origin.y /= 8.f;
+	origin.z /= 8.f;
 
-	shadowCtx->BeginMapRendering(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_RT, 0);
-
-	const DirectX::XMMATRIX viewMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightViewMatrices[0]);
-	const DirectX::XMMATRIX projMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightProjMatrices[0]);
-	const DirectX::XMMATRIX viewProjMatrix = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
-
-	memcpy(lightViewProjBuffer->map(0).pData, &viewProjMatrix, sizeof(DirectX::XMMATRIX));
-	lightViewProjBuffer->unmap(0);
-	RenderAPI::get()->VSSetBuffer({ lightViewProjBuffer }, 2);
-}
-
-void CascadedShadowMap::endRayTraceRender()
-{
-	shadowCtx->EndMapRendering(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_RT, 0);
-}
-
-void CascadedShadowMap::renderFrustumTrace(std::function<void(void)> renderGeometry)
-{
-	shadowCtx->InitializeMapRendering(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_FT);
-
-	shadowCtx->BeginMapRendering(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_FT, 0);
-
-	const DirectX::XMMATRIX viewMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightViewMatrices[0]);
-	const DirectX::XMMATRIX projMatrix = DirectX::XMLoadFloat4x4((DirectX::XMFLOAT4X4*)&lightProjMatrices[0]);
-	const DirectX::XMMATRIX viewProjMatrix = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
-
-	memcpy(lightViewProjBuffer->map(0).pData, &viewProjMatrix, sizeof(DirectX::XMMATRIX));
-	lightViewProjBuffer->unmap(0);
-	RenderAPI::get()->VSSetBuffer({ lightViewProjBuffer }, 2);
-
-	renderGeometry();
-
-	shadowCtx->EndMapRendering(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_FT, 0);
-}
-
-void CascadedShadowMap::incrementMapPrimitiveCounter(const unsigned int& primitiveCount)
-{
-	shadowCtx->IncrementMapPrimitiveCounter(shadowMapHandle, GFSDK_ShadowLib_MapRenderType_RT, primitiveCount);
-}
-
-ShaderResourceView* CascadedShadowMap::getShadowBuffer()
-{
-	shadowCtx->ClearBuffer(shadowBufferHandle);
-
-	shadowCtx->RenderBuffer(shadowMapHandle, shadowBufferHandle, &sbRenderParams);
-
-	GFSDK_ShadowLib_ShaderResourceView shadowBufferSRV = {};
-
-	shadowCtx->FinalizeBuffer(shadowBufferHandle, &shadowBufferSRV);
-
-	srv->shaderResourceView = shadowBufferSRV.pSRV;
-
-	return srv;
 }

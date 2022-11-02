@@ -3,7 +3,7 @@
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
 
-#include<Aurora/Graphics.h>
+#include<Aurora/RenderAPI.h>
 #include<Aurora/ResourceTexture.h>
 
 class Material

@@ -42,7 +42,8 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 
     float color = tTexture.Sample(linearSampler, texCoord).a;
 
-    for (int i = 0; i < ITERATIONS; i++)
+    [unroll]
+    for (uint i = 0; i < ITERATIONS; i++)
     {
         coord -= dir;
         float col = tTexture.Sample(linearSampler, coord).a;

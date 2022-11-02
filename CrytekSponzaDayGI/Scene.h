@@ -3,8 +3,6 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 
-#include<Aurora/A3D/CascadedShadowMap.h>
-
 #include"Material.h"
 #include"Model.h"
 
@@ -88,18 +86,10 @@ public:
 	void draw(Shader* const vertexShader, Shader* const pixelShader)
 	{
 		vertexShader->use();
+		RenderAPI::get()->GSSetShader(nullptr);
+		pixelShader->use();
 
-		if (pixelShader)
-		{
-			pixelShader->use();
-		}
-		else
-		{
-			RenderAPI::get()->PSSetShader(nullptr);
-		}
-			
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			materials[models[i]->materialIndex]->use();
@@ -110,30 +100,28 @@ public:
 	void drawGeometry(Shader* const vertexShader)
 	{
 		vertexShader->use();
+		RenderAPI::get()->GSSetShader(nullptr);
 		RenderAPI::get()->PSSetShader(nullptr);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			models[i]->draw();
 		}
 	}
 
-	void drawRayTrace(Shader* const vertexShader, CascadedShadowMap* const csm)
+	void drawVoxel(Shader* const vertexShader, Shader* const geometryShader, Shader* const pixelShader)
 	{
-		csm->beginRayTraceRender();
-
 		vertexShader->use();
-		RenderAPI::get()->PSSetShader(nullptr);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		geometryShader->use();
+		pixelShader->use();
 
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
+			materials[models[i]->materialIndex]->use();
 			models[i]->draw();
-			csm->incrementMapPrimitiveCounter(models[i]->vertexCount);
 		}
-
-		csm->endRayTraceRender();
 	}
 
 	std::vector<Material*> materials;

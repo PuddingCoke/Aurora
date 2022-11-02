@@ -3,11 +3,12 @@
 #ifndef _SHADOWMAP_H_
 #define _SHADOWMAP_H_
 
-#include<Aurora/Renderer.h>
 #include<Aurora/Shader.h>
-#include<Aurora/DX/View/ShaderResourceView.h>
 
-class ShadowMap :public ShaderResourceView
+#include<Aurora/DX/View/ShaderResourceView.h>
+#include<Aurora/DX/View/DepthStencilView.h>
+
+class ShadowMap :public DepthStencilView, public ShaderResourceView
 {
 public:
 
@@ -21,11 +22,9 @@ public:
 
 	void clear(const float& depth = 1.0f) const;
 
-	ID3D11DepthStencilView* get() const;
-
-	ID3D11DepthStencilView* getROView() const;
-
 	static Shader* shadowVShader;
+
+	virtual void bindDSV() override;
 
 private:
 
@@ -36,13 +35,6 @@ private:
 	static void release();
 
 	ShadowMap(const unsigned int& width, const unsigned int& height);
-
-	ComPtr<ID3D11Texture2D> shadowTexture;
-
-	ComPtr<ID3D11DepthStencilView> depthStencilView;
-
-	//read only view
-	ComPtr<ID3D11DepthStencilView> depthStencilViewRO;
 
 };
 
