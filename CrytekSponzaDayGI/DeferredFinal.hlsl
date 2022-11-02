@@ -53,7 +53,7 @@ static const float ConeMaxLength = 300.0;
 static const float ConeStepSize = 1.0;
 
 //DifusseTraceFactor
-static const uint numCones = 8;
+static const uint numCones = 16;
 
 //SpecularTraceFactor
 static const float SpecularTraceRoughness = 0.3;
@@ -198,13 +198,17 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     const float3 H = normalize(V + lightDir.xyz);
     const float NdotH = max(dot(N, H), 0.0);
     const float3 specularColor = lightColor.rgb * normalSpecular.w * pow(NdotH, 32.0);
-        
+   
+    float shadow = CalShadow(position);
+    
     outColor += (diffuseColor + specularColor) * CalShadow(position);
+    
+    outColor += baseColor.rgb * 0.05;
     
     float4 iDiffuse = TraceDiffuse(position, N);
     float4 iSpecular = TraceSpecular(position, N, V);
     
-    outColor += baseColor.rgb * iDiffuse.rgb + iSpecular.rgb * normalSpecular.w;
+    outColor += baseColor.rgb * iDiffuse.rgb + iSpecular.rgb;
     
     const float ao = ssaoTexture.Sample(linearSampler, texCoord).r;
         

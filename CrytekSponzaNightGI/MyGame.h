@@ -234,6 +234,24 @@ public:
 
 			voxelTextureColorFinal->generateMips();
 
+			RenderAPI::get()->CSSetSRV({ voxelTextureColorFinal,voxelTextureNormal }, 0);
+			RenderAPI::get()->CSSetUAV({ voxelTextureColor }, 0);
+			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
+			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+
+			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
+
+			voxelTextureColor->generateMips();
+
+			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
+			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
+			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
+			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+
+			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
+
+			voxelTextureColorFinal->generateMips();
+
 			delete voxelProjBuffer;
 		}
 
@@ -335,7 +353,7 @@ public:
 			RenderAPI::get()->OMSetDefRTV(shadowMap);
 			RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);
 
-			RenderAPI::get()->GSSetSRV({ voxelTextureNormal }, 0);
+			RenderAPI::get()->GSSetSRV({ voxelTextureColorFinal }, 0);
 			RenderAPI::get()->GSSetBuffer({ voxelParamBuffer }, 2);
 			RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 

@@ -50,7 +50,7 @@ cbuffer VoxelParam : register(b3)
 static const float maxMipLevel = 4.0;
 
 //ConeTraceFactor
-static const float ConeOffsetFactor = 1.1;
+static const float ConeOffsetFactor = 1.5;
 static const float ConeMaxLength = 300.0;
 static const float ConeStepSize = 1.0;
 
@@ -83,9 +83,9 @@ inline float2 hammersley2d(uint idx, uint num)
 
 inline float3 hemispherepoint_cos(float u, float v)
 {
-    float phi = v * 2 * PI;
-    float cosTheta = sqrt(1 - u);
-    float sinTheta = sqrt(1 - cosTheta * cosTheta);
+    float phi = v * 2.0 * PI;
+    float cosTheta = sqrt(1.0 - u);
+    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
     return float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
 }
 
@@ -130,6 +130,13 @@ inline float4 TraceDiffuse(float3 P, float3 N)
     
     for (uint cone = 0; cone < numCones; cone++)
     {
+        //float cosTheta = dot(N, DIFFUSE_CONE_DIRECTIONS[cone]);
+        
+        //if(cosTheta<0.0)
+        //    continue;
+
+        //amount += ConeTrace(P, N, DIFFUSE_CONE_DIRECTIONS[cone], 0.628319);
+        
         float2 hamm = hammersley2d(cone, numCones);
         float3 hemisphere = hemispherepoint_cos(hamm.x, hamm.y);
         float3 coneDir = mul(hemisphere, tangentSpace);
@@ -138,7 +145,7 @@ inline float4 TraceDiffuse(float3 P, float3 N)
     }
     
     amount /= float(numCones);
-    amount.rgb = max(0, amount.rgb);
+    amount.rgb = max(float3(0.0, 0.0, 0.0), amount.rgb);
     amount.a = saturate(amount.a);
     
     return amount;

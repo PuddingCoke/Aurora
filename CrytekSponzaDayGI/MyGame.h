@@ -130,7 +130,7 @@ public:
 		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f, 3.f),
 		displayMode(false)
 	{
-		exposure = 0.40f;
+		exposure = 0.60f;
 		gamma = 1.25f;
 		bloomEffect.setExposure(exposure);
 		bloomEffect.setGamma(gamma);
@@ -265,6 +265,24 @@ public:
 
 			voxelTextureColorFinal->generateMips();
 
+			RenderAPI::get()->CSSetSRV({ voxelTextureColorFinal,voxelTextureNormal }, 0);
+			RenderAPI::get()->CSSetUAV({ voxelTextureColor }, 0);
+			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
+			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+
+			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
+
+			voxelTextureColor->generateMips();
+
+			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
+			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
+			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
+			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+
+			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
+
+			voxelTextureColorFinal->generateMips();
+
 			delete voxelProjBuffer;
 
 			RenderAPI::get()->OMSetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
@@ -387,9 +405,8 @@ public:
 
 			scene->draw(deferredVShader, deferredPShader);
 
-			/*originTexture->clearRTV(DirectX::Colors::Black);
-			RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);*/
-			RenderAPI::get()->OMSetDefRTV(nullptr);
+			originTexture->clearRTV(DirectX::Colors::Black);
+			RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
 			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()),shadowTexture,voxelTextureColorFinal }, 0);
 			RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer,lightProjBuffer }, 1);
 
@@ -398,8 +415,7 @@ public:
 
 			RenderAPI::get()->DrawQuad();
 
-			RenderAPI::get()->OMSetDefRTV(shadowMap);
-			//RenderAPI::get()->OMSetRTV({ originTexture }, shadowMap);
+			RenderAPI::get()->OMSetRTV({ originTexture }, shadowMap);
 			RenderAPI::get()->PSSetSRV({ skybox }, 0);
 
 			TextureCube::shader->use();
@@ -407,7 +423,7 @@ public:
 
 			RenderAPI::get()->DrawCube();
 
-			/*ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
+			ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
 
 			RenderAPI::get()->OMSetBlendState(nullptr);
 			RenderAPI::get()->OMSetDefRTV(nullptr);
@@ -416,7 +432,7 @@ public:
 			Shader::displayVShader->use();
 			Shader::displayPShader->use();
 
-			RenderAPI::get()->DrawQuad();*/
+			RenderAPI::get()->DrawQuad();
 		}
 	}
 
