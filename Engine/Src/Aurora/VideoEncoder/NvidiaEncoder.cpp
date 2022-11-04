@@ -82,7 +82,7 @@ bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
 	nvencAPI.nvEncUnregisterResource(encoder, registerResource.registeredResource);
 
 	frameEncoded++;
-
+	
 	timeEnd = timer.now();
 
 	const float frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
@@ -163,6 +163,25 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	bitstream = { NV_ENC_CREATE_BITSTREAM_BUFFER_VER };
 
 	std::cout << "[class NvidiaEncoder] create bitstream status " << nvencAPI.nvEncCreateBitstreamBuffer(encoder, &bitstream) << "\n";
+
+	Renderer::device->QueryInterface(IID_ID3D11VideoDevice2, (void**)videoDevice.ReleaseAndGetAddressOf());
+	Renderer::device->QueryInterface(IID_ID3D11VideoContext3, (void**)videoContext.ReleaseAndGetAddressOf());
+
+	D3D11_VIDEO_PROCESSOR_CONTENT_DESC contentDesc =
+	{
+		D3D11_VIDEO_FRAME_FORMAT_PROGRESSIVE,
+		{1,1},width,height,
+		{1,1},width,height,
+		D3D11_VIDEO_USAGE_PLAYBACK_NORMAL
+	};
+
+	videoDevice->CreateVideoProcessorEnumerator(&contentDesc, videoProcessEnumerator.ReleaseAndGetAddressOf());
+	
+	videoDevice->CreateVideoProcessor(videoProcessEnumerator.Get(), 0, &videoProcessor);
+
+	D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC inputViewDesc = { 0,D3D11_VPIV_DIMENSION_TEXTURE2D,{0,0} };
+
+	videoDevice->CreateVideoProcessorInputView(, videoProcessEnumerator.Get(), &inputViewDesc, inputView.ReleaseAndGetAddressOf());
 
 	std::cout << "[class NvidiaEncoder] render at " << width << " x " << height << "\n";
 	std::cout << "[class NvidiaEncoder] frameRate " << frameRate << "\n";

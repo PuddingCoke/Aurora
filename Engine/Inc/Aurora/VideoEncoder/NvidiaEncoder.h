@@ -38,6 +38,18 @@ private:
 
 	void* encoder;
 
+	ComPtr<ID3D11VideoDevice2> videoDevice;
+
+	ComPtr<ID3D11VideoContext3> videoContext;
+
+	ComPtr<ID3D11VideoProcessor> videoProcessor;
+
+	ComPtr<ID3D11VideoProcessorInputView> inputView;
+
+	ComPtr<ID3D11VideoProcessorOutputView> outputView;
+
+	ComPtr<ID3D11VideoProcessorEnumerator> videoProcessEnumerator;
+
 	NV_ENCODE_API_FUNCTION_LIST nvencAPI;
 
 	NV_ENC_CREATE_BITSTREAM_BUFFER bitstream;

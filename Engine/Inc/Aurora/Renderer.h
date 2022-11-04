@@ -36,7 +36,7 @@ private:
 
 	static Renderer* instance;
 
-	Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel);
+	Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel, const UINT& extraDeviceFlags = 0);
 
 	static ID3D11DeviceContext4* context;
 

@@ -11,7 +11,7 @@ ID3D11DeviceContext4* Renderer::getContext()
 	return context;
 }
 
-Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel) :
+Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel, const UINT& extraDeviceFlags) :
 	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
@@ -35,12 +35,14 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		if (enableDebug)
 		{
 			std::cout << "[class Renderer] enable debug!\n";
-			deviceFlag = (D3D11_CREATE_DEVICE_FLAG)((int)deviceFlag | (int)D3D11_CREATE_DEVICE_DEBUG);
+			deviceFlag = (D3D11_CREATE_DEVICE_FLAG)((UINT)deviceFlag | (UINT)D3D11_CREATE_DEVICE_DEBUG);
 		}
 		else
 		{
 			std::cout << "[class Renderer] disable debug!\n";
 		}
+
+		deviceFlag = (D3D11_CREATE_DEVICE_FLAG)((UINT)deviceFlag | (UINT)extraDeviceFlags);
 
 		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, 2u,
 			D3D11_SDK_VERSION, device11.GetAddressOf(), &maxSupportedFeatureLevel, context11.GetAddressOf());
