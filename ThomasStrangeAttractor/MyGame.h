@@ -54,6 +54,8 @@ public:
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
 			rotating = !rotating;
 			});
+
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
 	}
 
 	~MyGame()
@@ -101,7 +103,7 @@ public:
 	{
 		depthStencilView->clear(D3D11_CLEAR_DEPTH);
 		renderTexture->clearRTV(DirectX::Colors::Transparent);
-		RenderAPI::get()->OMSetRTV({ renderTexture }, depthStencilView->get());
+		RenderAPI::get()->OMSetRTV({ renderTexture }, depthStencilView);
 
 		attractor.render();
 
@@ -115,8 +117,8 @@ public:
 		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 		RenderAPI::get()->PSSetSRV({ textureSRV }, 0);
 
-		Shader::displayVShader->use();
-		Shader::displayPShader->use();
+		Shader::fullScreenVS->use();
+		Shader::fullScreenPS->use();
 
 		RenderAPI::get()->DrawQuad();
 	}

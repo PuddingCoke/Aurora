@@ -6,6 +6,15 @@
 #include<Aurora/RenderAPI.h>
 #include<Aurora/Shader.h>
 
+#include<Aurora/CompiledShaders/PrimitiveBatchLineVS.h>
+#include<Aurora/CompiledShaders/PrimitiveBatchCircleVS.h>
+#include<Aurora/CompiledShaders/PrimitiveBatchRCLineVS.h>
+
+#include<Aurora/CompiledShaders/PrimitiveBatchRCLineGS.h>
+#include<Aurora/CompiledShaders/PrimitiveBatchLineGS.h>
+
+#include<Aurora/CompiledShaders/PrimitiveBatchPS.h>
+
 class PrimitiveBatch
 {
 public:
@@ -56,14 +65,15 @@ private:
 		float v2;
 	}lineParam;
 
-	Shader* primitive2DVShader;
-	Shader* circleVShader;
-	Shader* rcLineVShader;
+	Shader* lineVS;
+	Shader* circleVS;
+	Shader* rcLineVS;
 
-	Shader* primitive2DPShader;
+	Shader* primitivePS;
 
-	Shader* primitive2DGShader;
-	Shader* rcLineGShader;
+	Shader* lineGS;
+
+	Shader* rcLineGS;
 
 	class LineRenderer
 	{

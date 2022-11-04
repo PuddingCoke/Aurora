@@ -15,8 +15,7 @@ cbuffer Light : register(b1)
 
 cbuffer ViewMatrix : register(b2)
 {
-    matrix view;
-    matrix normalMatrix;
+    matrix view;    
     float4 viewPos;
 }
 

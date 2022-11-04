@@ -12,6 +12,10 @@
 #include<Aurora/RenderAPI.h>
 #include<Aurora/DX/View/ShaderResourceView.h>
 
+#include<Aurora/CompiledShaders/SkyboxVS.h>
+#include<Aurora/CompiledShaders/EquirectangularVS.h>
+#include<Aurora/CompiledShaders/EquirectangularPS.h>
+
 class TextureCube :public ShaderResourceView
 {
 public:
@@ -29,21 +33,19 @@ public:
 	static TextureCube* createDDSCubeMap(const std::string& texturePath);
 
 	//从hdr等距柱状投影图创建天空盒 mipLevels主要用于IBL
-	static TextureCube* createEquirectangularMap(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up, const unsigned int& mipLevels = 1);
+	static TextureCube* createEquirectangularMap(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels = 1);
 
 	~TextureCube();
 
-	static Shader* shader;
+	static Shader* skyboxVS;
 
 private:
 
 	friend class Aurora;
 
-	static Shader* equirectangularYUP;
+	static Shader* equirectangularVS;
 
-	static Shader* equirectangularZUP;
-
-	static Shader* equirectangularVShader;
+	static Shader* equirectangularPS;
 
 	static void iniShader();
 
@@ -53,7 +55,7 @@ private:
 
 	TextureCube(const std::string& texturePath);
 
-	TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up, const unsigned int& mipLevels);
+	TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels);
 
 	ComPtr<ID3D11Texture2D> cubeTexture;
 

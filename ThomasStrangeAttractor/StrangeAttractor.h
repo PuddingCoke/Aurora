@@ -79,6 +79,8 @@ public:
 
 	~StrangeAttractor()
 	{
+		delete particlePosBuffer;
+		delete particleColorBuffer;
 		delete displayVShader;
 		delete displayPShader;
 		delete computeShader;
@@ -86,9 +88,9 @@ public:
 
 	void compileShaders() override
 	{
-		displayVShader = Shader::fromFile("ParticleVertexShader.hlsl", ShaderType::Vertex);
-		displayPShader = Shader::fromFile("ParticlePixelShader.hlsl", ShaderType::Pixel);
-		computeShader = Shader::fromFile("ParticleComputeShader.hlsl", ShaderType::Compute);
+		displayVShader = new Shader("ParticleVertexShader.hlsl", ShaderType::Vertex);
+		displayPShader = new Shader("ParticlePixelShader.hlsl", ShaderType::Pixel);
+		computeShader = new Shader("ParticleComputeShader.hlsl", ShaderType::Compute);
 	}
 
 	void update(const float& dt) override

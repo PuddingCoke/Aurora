@@ -6,7 +6,6 @@ cbuffer ProjMatrix : register(b0)
 cbuffer ViewMatrix : register(b1)
 {
     matrix view;
-    matrix normalMatrix;
 }
 
 static const float3 vertices[36] =

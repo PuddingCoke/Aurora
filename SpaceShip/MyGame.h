@@ -15,8 +15,8 @@ public:
 	FPSCamera camera;
 
 	MyGame() :
-		spaceTexture(TextureCube::createEquirectangularMap("D:/SpaceShipAssets/space.hdr", 2048, { 0,1,0 })),
-		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
+		spaceTexture(TextureCube::createEquirectangularMap("D:/SpaceShipAssets/space.hdr", 2048)),
+		skyboxPShader(new Shader("SkyboxPShader.hlsl", ShaderType::Pixel)),
 		camera({ 0,0,0 }, { 1,0,0 }, { 0,1,0 }, 100.f, 3.f)
 	{
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
@@ -45,7 +45,7 @@ public:
 
 		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 1, 1);
 
-		TextureCube::shader->use();
+		TextureCube::skyboxVS->use();
 		skyboxPShader->use();
 
 		RenderAPI::get()->PSSetSRV({ spaceTexture }, 0);

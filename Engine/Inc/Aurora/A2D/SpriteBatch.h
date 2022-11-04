@@ -12,6 +12,11 @@
 #include<Aurora/States.h>
 #include<Aurora/RenderAPI.h>
 
+#include<Aurora/CompiledShaders/SpriteBatchSpriteVS.h>
+#include<Aurora/CompiledShaders/SpriteBatchSpritePS.h>
+#include<Aurora/CompiledShaders/SpriteBatchTextVS.h>
+#include<Aurora/CompiledShaders/SpriteBatchTextPS.h>
+
 class SpriteBatch
 {
 public:

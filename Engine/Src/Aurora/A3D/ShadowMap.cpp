@@ -1,6 +1,6 @@
 #include<Aurora/A3D/ShadowMap.h>
 
-Shader* ShadowMap::shadowVShader;
+Shader* ShadowMap::shadowVS;
 
 ShadowMap* ShadowMap::create(const unsigned int& width, const unsigned int& height)
 {
@@ -19,34 +19,12 @@ void ShadowMap::bindDSV()
 
 void ShadowMap::ini()
 {
-	{
-		const std::string source = R"(
-struct VertexInput
-{
-    float3 pos : POSITION;
-};
-
-cbuffer Light : register(b2)
-{
-    matrix lightVewProj;
-};
-
-float4 main(VertexInput input) : SV_POSITION
-{
-    return mul(float4(input.pos, 1.0), lightVewProj);
-}
-)";
-
-		std::cout << "shadowVShader ";
-
-		shadowVShader = Shader::fromStr(source, ShaderType::Vertex);
-
-	}
+	shadowVS = new Shader(g_ShadowVSBytes, sizeof(g_ShadowVSBytes), ShaderType::Vertex);
 }
 
 void ShadowMap::release()
 {
-	delete shadowVShader;
+	delete shadowVS;
 }
 
 ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height):

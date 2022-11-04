@@ -6,8 +6,7 @@ struct PixelInput
 
 cbuffer ViewMatrix : register(b1)
 {
-    matrix view;
-    matrix normalMatrix;
+    matrix view;    
     float4 viewPos;
 }
 

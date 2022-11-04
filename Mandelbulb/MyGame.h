@@ -32,13 +32,13 @@ public:
 
 	MyGame() :
 		mandelTexture(new ComputeTexture3D(512, 512, 512, DXGI_FORMAT_R8G8B8A8_UNORM)),
-		mandelCompute(Shader::fromFile("MandelbulbCompute.hlsl", ShaderType::Compute)),
+		mandelCompute(new Shader("MandelbulbCompute.hlsl", ShaderType::Compute)),
 		modelCullFront(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		modelCullBack(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		modelVShader(Shader::fromFile("ModelVShader.hlsl", ShaderType::Vertex)),
-		modelPShader(Shader::fromFile("ModelPShader.hlsl", ShaderType::Pixel)),
-		rayCastVShader(Shader::fromFile("RayCastVShader.hlsl", ShaderType::Vertex)),
-		rayCastPSHader(Shader::fromFile("RayCastPShader.hlsl", ShaderType::Pixel)),
+		modelVShader(new Shader("ModelVShader.hlsl", ShaderType::Vertex)),
+		modelPShader(new Shader("ModelPShader.hlsl", ShaderType::Pixel)),
+		rayCastVShader(new Shader("RayCastVShader.hlsl", ShaderType::Vertex)),
+		rayCastPSHader(new Shader("RayCastPShader.hlsl", ShaderType::Pixel)),
 		camera({ 12,0,-8 }, { 0,0,-1 })
 	{
 		camera.registerEvent();

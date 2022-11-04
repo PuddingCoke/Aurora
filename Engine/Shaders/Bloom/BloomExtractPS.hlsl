@@ -20,8 +20,8 @@ PixelOutput main(float2 texCoord : TEXCOORD)
     PixelOutput output;
     const float4 color = tTexture.Sample(samplerState, texCoord);
     output.color = color;
-	output.brightColor = float4(0.0, 0.0, 0.0, 1.0);
-    if (dot(color.rgb, float3(0.2126, 0.7152, 0.0722))>threshold)
+    output.brightColor = float4(0.0, 0.0, 0.0, 1.0);
+    if (dot(color.rgb, float3(0.2126, 0.7152, 0.0722)) > threshold)
     {
         output.brightColor = color;
     }

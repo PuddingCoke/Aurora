@@ -11,6 +11,8 @@
 
 #include"Utils.h"
 #include"Renderer.h"
+#include"CompiledShaders/FullScreenVS.h"
+#include"CompiledShaders/FullScreenPS.h"
 
 enum class ShaderType
 {
@@ -34,19 +36,21 @@ public:
 
 	void operator=(const Shader&) = delete;
 
-	void use() const;
+	Shader(const std::string& filePath, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros = {});
 
-	ID3DBlob* getBlob() const;
+	Shader(const BYTE* const bytes, const size_t& byteSize, const ShaderType& type);
 
-	static Shader* fromFile(const std::string& filePath, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros = {});
-
-	static Shader* fromStr(const std::string& source, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros = {});
+	void use();
 
 	static constexpr UINT  compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
-	static Shader* displayVShader;
+	static Shader* fullScreenVS;
 
-	static Shader* displayPShader;
+	static Shader* fullScreenPS;
+
+	const void* getBufferPointer() const;
+
+	const size_t& getBufferSize() const;
 
 private:
 
@@ -58,15 +62,50 @@ private:
 
 	ComPtr<ID3DBlob> shaderBlob;
 
-	Shader(const std::string& source, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros);
+	const void* bufferPointer;
 
-	ID3D11DeviceChild* shaderPtr;
+	size_t bufferSize;
 
-	void(*useFunc)(ID3D11DeviceChild* const);
+	union ShaderPRT
+	{
+		ID3D11VertexShader* vertexShader;
+		ID3D11HullShader* hullShader;
+		ID3D11DomainShader* domainShader;
+		ID3D11GeometryShader* geometryShader;
+		ID3D11PixelShader* pixelShader;
+		ID3D11ComputeShader* computeShader;
+	} shaderPtr;
 
-	void(*releaseFunc)(ID3D11DeviceChild* const);
+	void(Shader::* useFunc)();
+
+	void(Shader::* releaseFunc)();
+
+	void vertexUse();
+
+	void hullUse();
+
+	void domainUse();
+
+	void geometryUse();
+
+	void pixelUse();
+
+	void computeUse();
+
+	void vertexRelease();
+
+	void hullRelease();
+
+	void domainRelease();
+
+	void geometryRelease();
+
+	void pixelRelease();
+
+	void computeRelease();
+
 };
 
-#define SHADERDATA(s) s->getBlob()->GetBufferPointer(),s->getBlob()->GetBufferSize()
+#define SHADERDATA(s) s->getBufferPointer(),s->getBufferSize()
 
 #endif // !_SHADER_H_

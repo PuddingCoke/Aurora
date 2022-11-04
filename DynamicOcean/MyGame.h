@@ -69,7 +69,7 @@ public:
 
 		depthView->clear(D3D11_CLEAR_DEPTH);
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::AliceBlue);
-		RenderAPI::get()->OMSetDefRTV(depthView->get());
+		RenderAPI::get()->OMSetDefRTV(depthView);
 
 		ocean.render();
 	}

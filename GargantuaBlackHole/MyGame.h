@@ -33,7 +33,7 @@ public:
 	float gamma;
 
 	MyGame() :
-		pixelShader(Shader::fromFile("GargantuaPShader.hlsl", ShaderType::Pixel)),
+		pixelShader(new Shader("GargantuaPShader.hlsl", ShaderType::Pixel)),
 		noiseTexture(new ResourceTexture(256, 256, Texture2D::TextureType::Noise)),
 		dustTexture(new ResourceTexture("Dust.jpg")),
 		accTexture(DoubleRTV::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
@@ -103,7 +103,7 @@ public:
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->PSSetSampler(States::get()->linearWrapSampler.GetAddressOf(), 0, 1);
 
-		Shader::displayVShader->use();
+		Shader::fullScreenVS->use();
 		pixelShader->use();
 
 		RenderAPI::get()->PSSetSRV({ noiseTexture,dustTexture,accTexture->read() }, 0);
@@ -119,7 +119,7 @@ public:
 
 			RenderAPI::get()->OMSetDefRTV(nullptr);
 
-			Shader::displayPShader->use();
+			Shader::fullScreenPS->use();
 
 			RenderAPI::get()->PSSetSRV({ textureSRV }, 0);
 		}
@@ -127,7 +127,7 @@ public:
 		{
 			RenderAPI::get()->OMSetDefRTV(nullptr);
 
-			Shader::displayPShader->use();
+			Shader::fullScreenPS->use();
 
 			RenderAPI::get()->PSSetSRV({ accTexture->read() }, 0);
 		}

@@ -109,14 +109,14 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	displacementXYZ(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
 	normalTexture(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
 	gaussTexture(new ResourceTexture(mapResolution, mapResolution, Texture2D::TextureType::Gauss)),
-	phillipSpectrumShader(Shader::fromFile("PhillipsSpectrum.hlsl", ShaderType::Compute)),
-	displacementShader(Shader::fromFile("Displacement.hlsl", ShaderType::Compute)),
-	ifftShader(Shader::fromFile("IFFT.hlsl", ShaderType::Compute, { {"SIMRES","1024"} })),
-	signCorrectionShader(Shader::fromFile("SignCorrection.hlsl", ShaderType::Compute)),
-	oceanVShader(Shader::fromFile("OceanVShader.hlsl", ShaderType::Vertex)),
-	oceanHShader(Shader::fromFile("OceanHShader.hlsl", ShaderType::Hull)),
-	oceanDShader(Shader::fromFile("OceanDShader.hlsl", ShaderType::Domain)),
-	oceanPShader(Shader::fromFile("OceanPShader.hlsl", ShaderType::Pixel))
+	phillipSpectrumShader(new Shader("PhillipsSpectrum.hlsl", ShaderType::Compute)),
+	displacementShader(new Shader("Displacement.hlsl", ShaderType::Compute)),
+	ifftShader(new Shader("IFFT.hlsl", ShaderType::Compute, { {"SIMRES","1024"} })),
+	signCorrectionShader(new Shader("SignCorrection.hlsl", ShaderType::Compute)),
+	oceanVShader(new Shader("OceanVShader.hlsl", ShaderType::Vertex)),
+	oceanHShader(new Shader("OceanHShader.hlsl", ShaderType::Hull)),
+	oceanDShader(new Shader("OceanDShader.hlsl", ShaderType::Domain)),
+	oceanPShader(new Shader("OceanPShader.hlsl", ShaderType::Pixel))
 {
 
 	{

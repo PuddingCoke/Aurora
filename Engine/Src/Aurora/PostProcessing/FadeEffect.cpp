@@ -20,7 +20,7 @@ ShaderResourceView* FadeEffect::process(ShaderResourceView* const texture2D) con
 	RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
 
-	Shader::displayVShader->use();
+	Shader::fullScreenVS->use();
 	fadePShader->use();
 
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -49,33 +49,5 @@ FadeEffect::~FadeEffect()
 
 void FadeEffect::compileShaders()
 {
-	{
-		const std::string source = R"(
-cbuffer DeltaTimes : register(b0)
-{
-    float deltaTime;
-    float v1;
-    float v2;
-    float v3;
-};
-
-cbuffer FadeFactor : register(b1)
-{
-	float factor;
-}
-
-SamplerState linearSampler : register(s0);
-
-Texture2D tTexture : register(t0);
-
-float4 main(float2 texCoord:TEXCOORD) : SV_TARGET
-{
-    float3 color = tTexture.Sample(linearSampler, texCoord).rgb;
-    float3 normColor = normalize(color);
-	float3 fadeColor = saturate(color - factor * deltaTime);
-    return float4(fadeColor, 1.0f);
-}
-			)";
-		fadePShader = Shader::fromStr(source, ShaderType::Pixel);
-	}
+	fadePShader = new Shader(g_FadePSBytes, sizeof(g_FadePSBytes), ShaderType::Pixel);
 }

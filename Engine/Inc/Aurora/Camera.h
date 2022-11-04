@@ -36,8 +36,6 @@ public:
 
 	static void setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up);
 
-	static DirectX::XMFLOAT3 toViewSpace(const DirectX::XMFLOAT3& pos);
-
 	static const float& getFov();
 
 	static const float& getNearPlane();
@@ -81,8 +79,7 @@ private:
 	struct ViewInfo
 	{
 		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX normalMatrix;//light in view space inverseView
-		DirectX::XMFLOAT4 eyePos;//light in world space
+		DirectX::XMFLOAT4 eyePos;
 	}viewInfo;
 
 };

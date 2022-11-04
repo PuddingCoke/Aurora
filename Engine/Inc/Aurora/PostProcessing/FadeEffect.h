@@ -5,6 +5,8 @@
 
 #include"EffectBase.h"
 
+#include<Aurora/CompiledShaders/FadePS.h>
+
 class FadeEffect :public EffectBase
 {
 public:

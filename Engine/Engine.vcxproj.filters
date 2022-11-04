@@ -168,6 +168,9 @@
     <ClInclude Include="Inc\Aurora\ComputeTexture3D.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\PostProcessing\MotionBlurEffect.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -323,5 +326,28 @@
     <ClCompile Include="Src\Aurora\ComputeTexture3D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\Bloom\BloomExtractPS.hlsl" />
+    <FxCompile Include="Shaders\Bloom\BloomFinalPS.hlsl" />
+    <FxCompile Include="Shaders\Bloom\BloomHBlurCS.hlsl" />
+    <FxCompile Include="Shaders\Bloom\BloomVBlurCS.hlsl" />
+    <FxCompile Include="Shaders\FullScreen\FullScreenVS.hlsl" />
+    <FxCompile Include="Shaders\FullScreen\FullScreenPS.hlsl" />
+    <FxCompile Include="Shaders\Fade\FadePS.hlsl" />
+    <FxCompile Include="Shaders\Shadow\ShadowVS.hlsl" />
+    <FxCompile Include="Shaders\TextureCube\SkyboxVS.hlsl" />
+    <FxCompile Include="Shaders\TextureCube\EquirectangularVS.hlsl" />
+    <FxCompile Include="Shaders\TextureCube\EquirectangularPS.hlsl" />
+    <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchLineVS.hlsl" />
+    <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchCircleVS.hlsl" />
+    <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchRCLineVS.hlsl" />
+    <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchPS.hlsl" />
+    <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchLineGS.hlsl" />
+    <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchRCLineGS.hlsl" />
+    <FxCompile Include="Shaders\SpriteBatch\SpriteBatchSpriteVS.hlsl" />
+    <FxCompile Include="Shaders\SpriteBatch\SpriteBatchTextVS.hlsl" />
+    <FxCompile Include="Shaders\SpriteBatch\SpriteBatchSpritePS.hlsl" />
+    <FxCompile Include="Shaders\SpriteBatch\SpriteBatchTextPS.hlsl" />
   </ItemGroup>
 </Project>

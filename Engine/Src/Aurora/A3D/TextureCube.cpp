@@ -1,12 +1,10 @@
 #include<Aurora/A3D/TextureCube.h>
 
-Shader* TextureCube::shader;
+Shader* TextureCube::skyboxVS;
 
-Shader* TextureCube::equirectangularYUP;
+Shader* TextureCube::equirectangularVS;
 
-Shader* TextureCube::equirectangularZUP;
-
-Shader* TextureCube::equirectangularVShader;
+Shader* TextureCube::equirectangularPS;
 
 TextureCube* TextureCube::create(std::initializer_list<std::string> texturesPath)
 {
@@ -18,9 +16,9 @@ TextureCube* TextureCube::createDDSCubeMap(const std::string& texturePath)
 	return new TextureCube(texturePath);
 }
 
-TextureCube* TextureCube::createEquirectangularMap(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up, const unsigned int& mipLevels)
+TextureCube* TextureCube::createEquirectangularMap(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels)
 {
-	return new TextureCube(texturePath, skyboxResolution, up, mipLevels);
+	return new TextureCube(texturePath, skyboxResolution, mipLevels);
 }
 
 TextureCube::~TextureCube()
@@ -29,233 +27,16 @@ TextureCube::~TextureCube()
 
 void TextureCube::iniShader()
 {
-	{
-		const std::string source = R"(
-cbuffer ProjMatrix : register(b0)
-{
-    matrix proj;
-}
-
-cbuffer ViewMatrix : register(b1)
-{
-    matrix view;
-}
-
-static const float3 vertices[36] =
-{
-            // back face
-            -1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, 1.0f, -1.0f,
-             1.0f, 1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            // front face
-            -1.0f, -1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,
-             1.0f, -1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f,
-            // left face
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, 1.0f,
-            // right face
-             1.0f, 1.0f, 1.0f,
-             1.0f, 1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,
-            // bottom face
-            -1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, 1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, 1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f, 1.0f,
-            // top face
-            -1.0f, 1.0f, -1.0f,
-             1.0f, 1.0f, -1.0f,
-             1.0f, 1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, -1.0f,
-};
-
-struct VertexOutput
-{
-    float3 worldPos : POSITION;
-    float4 position : SV_Position;
-};
-
-VertexOutput main(uint vertexID : SV_VertexID)
-{
-    float3 position = vertices[vertexID];
-    
-    float3x3 rotView = (float3x3) view;
-    float4 clipPos = mul(float4(mul(position, rotView), 1.0), proj);
-    
-    VertexOutput output;
-    output.worldPos = position;
-    output.position = clipPos.xyww;
-    
-    return output;
-}
-)";
-
-		std::cout << "skyboxVShader ";
-
-		shader = Shader::fromStr(source, ShaderType::Vertex);
-
-	}
-
-	{
-		const std::string source = R"(
-SamplerState linearSampler : register(s0);
-
-Texture2D envTexture : register(t0);
-
-static const float2 invAtan = float2(0.1591, 0.3183);
-
-float2 SampleSphjericalMap(float3 v)
-{
-    float2 uv = float2(atan2(v.x, v.z), asin(-v.y));
-    uv *= invAtan;
-    uv += 0.5;
-    return uv;
-}
-
-float4 main(float3 position : POSITION) : SV_TARGET
-{
-    float2 uv = SampleSphjericalMap(normalize(position));
-    float3 color = envTexture.Sample(linearSampler, uv);
-    return float4(color, 1.0);
-}
-)";
-
-		std::cout << "equirectangularYUP ";
-
-		equirectangularYUP = Shader::fromStr(source, ShaderType::Pixel);
-	}
-
-	{
-		const std::string source = R"(
-SamplerState linearSampler : register(s0);
-
-Texture2D envTexture : register(t0);
-
-static const float2 invAtan = float2(0.1591, 0.3183);
-
-float2 SampleSphjericalMap(float3 v)
-{
-    float2 uv = float2(atan2(v.x, -v.y), asin(-v.z));
-    uv *= invAtan;
-    uv += 0.5;
-    return uv;
-}
-
-float4 main(float3 position : POSITION) : SV_TARGET
-{
-    float2 uv = SampleSphjericalMap(normalize(position));
-    float3 color = envTexture.Sample(linearSampler, uv);
-    return float4(color, 1.0);
-}
-)";
-
-		std::cout << "equirectangularZUP ";
-
-		equirectangularZUP = Shader::fromStr(source, ShaderType::Pixel);
-	}
-
-	{
-		const std::string source = R"(
-cbuffer ProjMatrix : register(b2)
-{
-	matrix viewProj;
-}
-
-static const float3 vertices[36] =
-{
-            // back face
-            -1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, 1.0f, -1.0f,
-             1.0f, 1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            // front face
-            -1.0f, -1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,
-             1.0f, -1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f,
-            // left face
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, 1.0f,
-            // right face
-             1.0f, 1.0f, 1.0f,
-             1.0f, 1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,
-            // bottom face
-            -1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, 1.0f,
-             1.0f, -1.0f, -1.0f,
-             1.0f, -1.0f, 1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f, 1.0f,
-            // top face
-            -1.0f, 1.0f, -1.0f,
-             1.0f, 1.0f, -1.0f,
-             1.0f, 1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, -1.0f,
-};
-
-struct VertexOutput
-{
-    float3 worldPos : POSITION;
-    float4 position : SV_Position;
-};
-
-VertexOutput main(uint vertexID : SV_VertexID)
-{
-    float3 position = vertices[vertexID];
-    
-    VertexOutput output;
-    output.worldPos = position;
-    output.position = mul(float4(position,1.0),viewProj);
-    
-    return output;
-}
-)";
-
-		std::cout << "equirectangularVShader ";
-
-		equirectangularVShader = Shader::fromStr(source, ShaderType::Vertex);
-	}
-
+	skyboxVS = new Shader(g_SkyboxVSBytes, sizeof(g_SkyboxVSBytes), ShaderType::Vertex);
+	equirectangularVS = new Shader(g_EquirectangularVSBytes, sizeof(g_EquirectangularVSBytes), ShaderType::Vertex);
+	equirectangularPS = new Shader(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes), ShaderType::Pixel);
 }
 
 void TextureCube::releaseShader()
 {
-	delete shader;
-	delete equirectangularYUP;
-	delete equirectangularZUP;
-	delete equirectangularVShader;
+	delete skyboxVS;
+	delete equirectangularVS;
+	delete equirectangularPS;
 }
 
 TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
@@ -312,17 +93,11 @@ TextureCube::TextureCube(const std::string& texturePath)
 	DirectX::CreateDDSTextureFromFileEx(Renderer::device, Renderer::getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, nullptr, releaseAndGetSRV());
 }
 
-TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const DirectX::XMFLOAT3& up, const unsigned int& mipLevels)
+TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels)
 {
 	Buffer* buffer = new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
 
 	ResourceTexture* equirectangularMap = new ResourceTexture(texturePath);
-	Shader* pixelShader = equirectangularZUP;
-	
-	if (up.y > up.z)
-	{
-		pixelShader = equirectangularYUP;
-	}
 
 	D3D11_TEXTURE2D_DESC tDesc = {};
 	tDesc.Width = skyboxResolution;
@@ -364,10 +139,10 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	RenderAPI::get()->RSSetViewport(skyboxResolution, skyboxResolution);
 	RenderAPI::get()->VSSetBuffer({ buffer }, 2);
 
-	equirectangularVShader->use();
-	pixelShader->use();
+	equirectangularVS->use();
+	equirectangularPS->use();
 
-	const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 10000.f);
+	const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 10.f);
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 	rtvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;

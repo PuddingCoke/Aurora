@@ -55,7 +55,6 @@ void Camera::setView(const DirectX::XMMATRIX& view)
 {
 	instance->viewMatrix = view;
 	instance->viewInfo.view = DirectX::XMMatrixTranspose(instance->viewMatrix);
-	instance->viewInfo.normalMatrix = DirectX::XMMatrixInverse(nullptr, instance->viewMatrix);
 
 	memcpy(instance->viewBuffer->map(0).pData, &instance->viewInfo, sizeof(ViewInfo));
 	instance->viewBuffer->unmap(0);
@@ -73,14 +72,6 @@ void Camera::setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focu
 	DirectX::XMStoreFloat3(&eyePos, eye);
 	instance->viewInfo.eyePos = DirectX::XMFLOAT4(eyePos.x, eyePos.y, eyePos.z, 1.f);
 	setView(DirectX::XMMatrixLookAtLH(eye, focus, up));
-}
-
-DirectX::XMFLOAT3 Camera::toViewSpace(const DirectX::XMFLOAT3& pos)
-{
-	const DirectX::XMVECTOR transformed = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&pos), instance->viewMatrix);
-	DirectX::XMFLOAT3 outPosition;
-	DirectX::XMStoreFloat3(&outPosition, transformed);
-	return outPosition;
 }
 
 const float& Camera::getFov()

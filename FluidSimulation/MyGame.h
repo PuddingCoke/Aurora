@@ -79,21 +79,21 @@ public:
 
 	MyGame() :
 		colorUpdateTimer(1.f),
-		advVelShader(Shader::fromFile("Shaders\\AdvectionVelDissipation.hlsl", ShaderType::Pixel)),
-		advDenShader(Shader::fromFile("Shaders\\AdvectionDenDissipation.hlsl", ShaderType::Pixel)),
-		clearShader(Shader::fromFile("Shaders\\ClearShader.hlsl", ShaderType::Pixel)),
-		curlShader(Shader::fromFile("Shaders\\CurlShader.hlsl", ShaderType::Pixel)),
-		displayShader(Shader::fromFile("Shaders\\DisplayShader.hlsl", ShaderType::Pixel)),
-		divergenceShader(Shader::fromFile("Shaders\\DivergenceShader.hlsl", ShaderType::Pixel)),
-		gradientSubtractShader(Shader::fromFile("Shaders\\GradientSubtractShader.hlsl", ShaderType::Pixel)),
-		pressureShader(Shader::fromFile("Shaders\\PressureShader.hlsl", ShaderType::Pixel)),
-		splatVelocityShader(Shader::fromFile("Shaders\\SplatVelocityShader.hlsl", ShaderType::Pixel)),
-		splatColorShader(Shader::fromFile("Shaders\\SplatColorShader.hlsl", ShaderType::Pixel)),
-		sunrayMaskShader(Shader::fromFile("Shaders\\SunraysMaskShader.hlsl", ShaderType::Pixel)),
-		sunraysShader(Shader::fromFile("Shaders\\SunraysShader.hlsl", ShaderType::Pixel)),
-		vorticityShader(Shader::fromFile("Shaders\\VorticityShader.hlsl", ShaderType::Pixel)),
-		blurHShader(Shader::fromFile("Shaders\\BlurShaderHBlur.hlsl", ShaderType::Pixel)),
-		blurVShader(Shader::fromFile("Shaders\\BlurShaderVBlur.hlsl", ShaderType::Pixel)),
+		advVelShader(new Shader("Shaders\\AdvectionVelDissipation.hlsl", ShaderType::Pixel)),
+		advDenShader(new Shader("Shaders\\AdvectionDenDissipation.hlsl", ShaderType::Pixel)),
+		clearShader(new Shader("Shaders\\ClearShader.hlsl", ShaderType::Pixel)),
+		curlShader(new Shader("Shaders\\CurlShader.hlsl", ShaderType::Pixel)),
+		displayShader(new Shader("Shaders\\DisplayShader.hlsl", ShaderType::Pixel)),
+		divergenceShader(new Shader("Shaders\\DivergenceShader.hlsl", ShaderType::Pixel)),
+		gradientSubtractShader(new Shader("Shaders\\GradientSubtractShader.hlsl", ShaderType::Pixel)),
+		pressureShader(new Shader("Shaders\\PressureShader.hlsl", ShaderType::Pixel)),
+		splatVelocityShader(new Shader("Shaders\\SplatVelocityShader.hlsl", ShaderType::Pixel)),
+		splatColorShader(new Shader("Shaders\\SplatColorShader.hlsl", ShaderType::Pixel)),
+		sunrayMaskShader(new Shader("Shaders\\SunraysMaskShader.hlsl", ShaderType::Pixel)),
+		sunraysShader(new Shader("Shaders\\SunraysShader.hlsl", ShaderType::Pixel)),
+		vorticityShader(new Shader("Shaders\\VorticityShader.hlsl", ShaderType::Pixel)),
+		blurHShader(new Shader("Shaders\\BlurShaderHBlur.hlsl", ShaderType::Pixel)),
+		blurVShader(new Shader("Shaders\\BlurShaderVBlur.hlsl", ShaderType::Pixel)),
 		splatParamBuffer(new Buffer(sizeof(SplatParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 	{
 		//创建自定义的blendState
@@ -189,7 +189,7 @@ public:
 
 		RenderAPI::get()->PSSetSampler(samplers, 0, 2);
 
-		Shader::displayVShader->use();
+		Shader::fullScreenVS->use();
 	}
 
 	~MyGame()

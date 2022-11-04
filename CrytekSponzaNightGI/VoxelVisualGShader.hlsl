@@ -63,8 +63,7 @@ cbuffer ProjMatrix : register(b0)
 
 cbuffer ViewMatrix : register(b1)
 {
-    matrix view;
-    matrix normalMatrix;
+    matrix view;    
 }
 
 cbuffer VoxelParam : register(b2)

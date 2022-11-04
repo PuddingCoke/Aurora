@@ -131,8 +131,8 @@ public:
 		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
 
-		Shader::displayVShader->use();
-		Shader::displayPShader->use();
+		Shader::fullScreenVS->use();
+		Shader::fullScreenPS->use();
 
 		RenderAPI::get()->Draw(3, 0);
 		doubleRTV->swap();
@@ -143,8 +143,8 @@ public:
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
-		Shader::displayVShader->use();
-		Shader::displayPShader->use();
+		Shader::fullScreenVS->use();
+		Shader::fullScreenPS->use();
 
 		RenderAPI::get()->Draw(3, 0);
 
@@ -153,8 +153,8 @@ public:
 		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
 		RenderAPI::get()->PSSetSRV({ fadedTextureSRV }, 0);
 
-		Shader::displayVShader->use();
-		Shader::displayPShader->use();
+		Shader::fullScreenVS->use();
+		Shader::fullScreenPS->use();
 
 		RenderAPI::get()->Draw(3, 0);
 	}

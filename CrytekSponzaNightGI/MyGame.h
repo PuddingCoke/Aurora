@@ -110,18 +110,18 @@ public:
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		shadowMap(ShadowMap::create(Graphics::getWidth(), Graphics::getHeight())),
 		scene(Scene::create(assetPath + "/sponza.dae")),
-		voxelVShader(Shader::fromFile("VoxelizationVShader.hlsl", ShaderType::Vertex)),
-		voxelGShader(Shader::fromFile("VoxelizationGShader.hlsl", ShaderType::Geometry)),
-		voxelPShader(Shader::fromFile("VoxelizationPShader.hlsl", ShaderType::Pixel)),
-		voxelConvert(Shader::fromFile("VoxelConvert.hlsl", ShaderType::Compute)),
-		deferredVShader(Shader::fromFile("DeferredVShader.hlsl", ShaderType::Vertex)),
-		deferredPShader(Shader::fromFile("DeferredPShader.hlsl", ShaderType::Pixel)),
-		deferredFinal(Shader::fromFile("DeferredFinal.hlsl", ShaderType::Pixel)),
-		visualVShader(Shader::fromFile("VoxelVisualVShader.hlsl", ShaderType::Vertex)),
-		visualGShader(Shader::fromFile("VoxelVisualGShader.hlsl", ShaderType::Geometry)),
-		visualPShader(Shader::fromFile("VoxelVisualPShader.hlsl", ShaderType::Pixel)),
-		lightBounceCShader(Shader::fromFile("LightBounceCShader.hlsl", ShaderType::Compute)),
-		skyboxPShader(Shader::fromFile("SkyboxPShader.hlsl", ShaderType::Pixel)),
+		voxelVShader(new Shader("VoxelizationVShader.hlsl", ShaderType::Vertex)),
+		voxelGShader(new Shader("VoxelizationGShader.hlsl", ShaderType::Geometry)),
+		voxelPShader(new Shader("VoxelizationPShader.hlsl", ShaderType::Pixel)),
+		voxelConvert(new Shader("VoxelConvert.hlsl", ShaderType::Compute)),
+		deferredVShader(new Shader("DeferredVShader.hlsl", ShaderType::Vertex)),
+		deferredPShader(new Shader("DeferredPShader.hlsl", ShaderType::Pixel)),
+		deferredFinal(new Shader("DeferredFinal.hlsl", ShaderType::Pixel)),
+		visualVShader(new Shader("VoxelVisualVShader.hlsl", ShaderType::Vertex)),
+		visualGShader(new Shader("VoxelVisualGShader.hlsl", ShaderType::Geometry)),
+		visualPShader(new Shader("VoxelVisualPShader.hlsl", ShaderType::Pixel)),
+		lightBounceCShader(new Shader("LightBounceCShader.hlsl", ShaderType::Compute)),
+		skyboxPShader(new Shader("SkyboxPShader.hlsl", ShaderType::Pixel)),
 		skybox(TextureCube::create({ assetPath + "/sky/SkyEarlyDusk_Right.png",assetPath + "/sky/SkyEarlyDusk_Left.png",assetPath + "/sky/SkyEarlyDusk_Top.png",assetPath + "/sky/SkyEarlyDusk_Bottom.png",assetPath + "/sky/SkyEarlyDusk_Front.png",assetPath + "/sky/SkyEarlyDusk_Back.png" })),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
@@ -224,6 +224,24 @@ public:
 			voxelTextureColor->generateMips();
 
 			lightBounceCShader->use();
+
+			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
+			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
+			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
+			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+
+			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
+
+			voxelTextureColorFinal->generateMips();
+
+			RenderAPI::get()->CSSetSRV({ voxelTextureColorFinal,voxelTextureNormal }, 0);
+			RenderAPI::get()->CSSetUAV({ voxelTextureColor }, 0);
+			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
+			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+
+			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
+
+			voxelTextureColor->generateMips();
 
 			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
@@ -385,7 +403,7 @@ public:
 			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
 			RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);
 
-			Shader::displayVShader->use();
+			Shader::fullScreenVS->use();
 			deferredFinal->use();
 
 			RenderAPI::get()->DrawQuad();
@@ -393,7 +411,7 @@ public:
 			RenderAPI::get()->OMSetRTV({ originTexture }, shadowMap);
 			RenderAPI::get()->PSSetSRV({ skybox }, 0);
 
-			TextureCube::shader->use();
+			TextureCube::skyboxVS->use();
 			skyboxPShader->use();
 
 			RenderAPI::get()->DrawCube();
@@ -404,8 +422,8 @@ public:
 			RenderAPI::get()->OMSetDefRTV(nullptr);
 			RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
-			Shader::displayVShader->use();
-			Shader::displayPShader->use();
+			Shader::fullScreenVS->use();
+			Shader::fullScreenPS->use();
 
 			RenderAPI::get()->DrawQuad();
 		}

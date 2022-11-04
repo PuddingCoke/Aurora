@@ -106,7 +106,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 	RenderAPI::get()->PSSetBuffer({ bloomParamBuffer }, 1);
 	RenderAPI::get()->CSSetBuffer({ bloomParamBuffer }, 1);
-	Shader::displayVShader->use();
+	Shader::fullScreenVS->use();
 
 	bloomExtract->use();
 	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
@@ -114,7 +114,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
 	RenderAPI::get()->DrawQuad();
 
-	Shader::displayPShader->use();
+	Shader::fullScreenPS->use();
 	RenderAPI::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
 	RenderAPI::get()->OMSetRTV({ rcTextures[0] }, nullptr);
 	RenderAPI::get()->PSSetSRV({ bloomTexture }, 0);
@@ -136,7 +136,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 		RenderAPI::get()->RSSetViewport(resolutions[i + 1].x, resolutions[i + 1].y);
 
-		Shader::displayPShader->use();
+		Shader::fullScreenPS->use();
 		RenderAPI::get()->OMSetRTV({ rcTextures[i * 2 + 2] }, nullptr);
 		RenderAPI::get()->PSSetSRV({ rcTextures[i * 2] }, 0);
 		RenderAPI::get()->DrawQuad();
@@ -174,7 +174,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
 		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
 
-		Shader::displayPShader->use();
+		Shader::fullScreenPS->use();
 		RenderAPI::get()->OMSetRTV({ rcTextures[(blurSteps - 2 - i) * 2] }, nullptr);
 		RenderAPI::get()->PSSetSRV({ rcTextures[(blurSteps - 1 - i) * 2] }, 0);
 		RenderAPI::get()->DrawQuad();
@@ -241,162 +241,8 @@ void BloomEffect::applyChange() const
 
 void BloomEffect::compileShaders()
 {
-	{
-		const std::string source = R"(
-struct PixelOutput
-{
-    float4 color : SV_TARGET0;
-    float4 brightColor : SV_TARGET1;
-};
-
-Texture2D tTexture : register(t0);
-SamplerState samplerState : register(s0);
-
-cbuffer BloomParam : register(b1)
-{
-    float exposure;
-    float gamma;
-    float threshold;
-    float intensity;
-};
-
-PixelOutput main(float2 texCoord : TEXCOORD)
-{
-    PixelOutput output;
-    const float4 color = tTexture.Sample(samplerState, texCoord);
-    output.color = color;
-	output.brightColor = float4(0.0, 0.0, 0.0, 1.0);
-    if (dot(color.rgb, float3(0.2126, 0.7152, 0.0722))>threshold)
-    {
-        output.brightColor = color;
-    }
-    return output;
-}
-)";
-
-		bloomExtract = Shader::fromStr(source, ShaderType::Pixel);
-	}
-
-	{
-		const std::string source = R"(
-Texture2D tTexture : register(t0);
-SamplerState samplerState : register(s0);
-
-cbuffer BloomParam : register(b1)
-{
-    float exposure;
-    float gamma;
-    float threshold;
-    float intensity;
-};
-
-float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
-{
-    float3 hdrColor = tTexture.Sample(samplerState, texCoord).rgb;
-    float3 result = float3(1.0, 1.0, 1.0) - exp(-hdrColor * exposure);
-    result = pow(result, float3(1.0 / gamma, 1.0 / gamma, 1.0 / gamma));
-    return float4(result, 1.0);
-}
-)";
-
-		bloomFinal = Shader::fromStr(source, ShaderType::Pixel);
-	}
-
-	{
-		const std::string source = R"(
-cbuffer BloomParam : register(b1)
-{
-    float exposure;
-    float gamma;
-    float threshold;
-    float intensity;
-};
-
-struct BlurParams
-{
-    float weight[4];
-    float offset[4];
-    float2 texelSize;
-    int iteration;
-    float v0;
-};
-
-Texture2D sourceTexture : register(t0);
-StructuredBuffer<BlurParams> blurParams : register(t1);
-
-RWTexture2D<float4> destTexture : register(u0);
-
-SamplerState linearSampler : register(s0);
-
-[numthreads(60, 16, 1)]
-void main(uint3 DTid : SV_DispatchThreadID)
-{
-    const BlurParams param = blurParams.Load(0);
-    
-    const float2 texCoord = (float2(DTid.xy) + 0.5) * param.texelSize;
-    
-    float3 result = sourceTexture.SampleLevel(linearSampler, texCoord, 0.0).rgb * param.weight[0];
-    
-    [unroll]
-    for (int i = 1; i < param.iteration; ++i)
-    {
-        result += sourceTexture.SampleLevel(linearSampler, texCoord + float2(param.texelSize.x * param.offset[i], 0.0), 0.0).rgb * param.weight[i];
-        result += sourceTexture.SampleLevel(linearSampler, texCoord - float2(param.texelSize.x * param.offset[i], 0.0), 0.0).rgb * param.weight[i];
-    }
-    
-    destTexture[DTid.xy] = float4(intensity * result, 1.0);
-}
-)";
-
-		bloomHBlurShader = Shader::fromStr(source, ShaderType::Compute);
-	}
-
-	{
-		const std::string source = R"(
-cbuffer BloomParam : register(b1)
-{
-    float exposure;
-    float gamma;
-    float threshold;
-    float intensity;
-};
-
-struct BlurParams
-{
-    float weight[4];
-    float offset[4];
-    float2 texelSize;
-    int iteration;
-    float v0;
-};
-
-Texture2D sourceTexture : register(t0);
-StructuredBuffer<BlurParams> blurParams : register(t1);
-
-RWTexture2D<float4> destTexture : register(u0);
-
-SamplerState linearSampler : register(s0);
-
-[numthreads(60, 16, 1)]
-void main(uint3 DTid : SV_DispatchThreadID)
-{
-    const BlurParams param = blurParams.Load(0);
-    
-    const float2 texCoord = (float2(DTid.xy) + 0.5) * param.texelSize;
-    
-    float3 result = sourceTexture.SampleLevel(linearSampler, texCoord, 0.0).rgb * param.weight[0];
-    
-    [unroll]
-    for (int i = 1; i < param.iteration; ++i)
-    {
-        result += sourceTexture.SampleLevel(linearSampler, texCoord + float2(0.0, param.texelSize.y * param.offset[i]), 0.0).rgb * param.weight[i];
-        result += sourceTexture.SampleLevel(linearSampler, texCoord - float2(0.0, param.texelSize.y * param.offset[i]), 0.0).rgb * param.weight[i];
-    }
-    
-    destTexture[DTid.xy] = float4(intensity * result, 1.0);
-}
-)";
-
-		bloomVBlurShader = Shader::fromStr(source, ShaderType::Compute);
-	}
+	bloomExtract = new Shader(g_BloomExtractPSBytes, sizeof(g_BloomExtractPSBytes), ShaderType::Pixel);
+	bloomFinal = new Shader(g_BloomFinalPSBytes, sizeof(g_BloomFinalPSBytes), ShaderType::Pixel);
+	bloomVBlurShader = new Shader(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes), ShaderType::Compute);
+	bloomHBlurShader = new Shader(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes), ShaderType::Compute);
 }

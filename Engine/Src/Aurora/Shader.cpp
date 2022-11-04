@@ -1,219 +1,196 @@
 ﻿#include<Aurora/Shader.h>
 
-Shader* Shader::displayVShader;
-Shader* Shader::displayPShader;
+Shader* Shader::fullScreenVS;
+Shader* Shader::fullScreenPS;
 
 Shader::~Shader()
 {
-	releaseFunc(shaderPtr);
+	(this->*releaseFunc)();
 }
 
-void Shader::use() const
+void Shader::use()
 {
-	useFunc(shaderPtr);
+	(this->*useFunc)();
 }
 
-ID3DBlob* Shader::getBlob() const
+const void* Shader::getBufferPointer() const
 {
-	return shaderBlob.Get();
+	return bufferPointer;
 }
 
-Shader* Shader::fromFile(const std::string& filePath, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros)
+const size_t& Shader::getBufferSize() const
 {
-	std::cout << "[class Shader] " << filePath << " ";
-	const std::string source = Utils::File::readAllText(filePath);
-	return new Shader(source, type, macros);
-}
-
-Shader* Shader::fromStr(const std::string& source, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros)
-{
-	std::cout << "[class Shader] Raw string ";
-	return new Shader(source, type, macros);
+	return bufferSize;
 }
 
 void Shader::ini()
 {
-	//初始化displayVShader
-	{
-		const std::string source = R"(
-static const float2 positions[] =
-{
-    { -1.0, 1.0 },
-    { 3.0, 1.0 },
-    { -1.0, -3.0 }
-};
-
-static const float2 texCoords[] =
-{
-    { 0.0, 0.0 },
-    { 2.0, 0.0 },
-    { 0.0, 2.0 }
-};
-
-struct VertexOutput
-{
-    float2 texCoord : TEXCOORD;
-    float4 position : SV_Position;
-};
-
-VertexOutput main(uint vertexID : SV_VertexID)
-{
-    VertexOutput output;
-    output.texCoord = texCoords[vertexID];
-    output.position = float4(positions[vertexID], 0.0, 1.0);
-    return output;
-}
-		)";
-
-		const ShaderType type = ShaderType::Vertex;
-
-		std::cout << "displayVShader ";
-
-		displayVShader = Shader::fromStr(source, type);
-	}
-
-	//初始化displayPShader
-	{
-		const std::string source = R"(
-Texture2D objTexture : TEXTURE : register(t0);
-SamplerState objSamplerState : SAMPLER : register(s0);
-
-float4 main(float2 texCoord:TEXCOORD) : SV_TARGET
-{
-    return objTexture.Sample(objSamplerState, texCoord);
-}
-		)";
-
-		const ShaderType type = ShaderType::Pixel;
-
-		std::cout << "displayPShader ";
-
-		displayPShader = Shader::fromStr(source, type);
-	}
+	fullScreenVS = new Shader(g_FullScreenVSBytes, sizeof(g_FullScreenVSBytes), ShaderType::Vertex);
+	fullScreenPS = new Shader(g_FullScreenPSBytes, sizeof(g_FullScreenPSBytes), ShaderType::Pixel);
 }
 
 void Shader::release()
 {
-	delete displayVShader;
-	delete displayPShader;
+	delete fullScreenVS;
+	delete fullScreenPS;
 }
 
-Shader::Shader(const std::string& source, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros) :
-	shaderPtr(nullptr), useFunc(nullptr), releaseFunc(nullptr)
+Shader::Shader(const std::string& filePath, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros) :
+	useFunc(nullptr), releaseFunc(nullptr)
 {
-	HRESULT hr;
+	std::cout << "[class Shader] " << filePath;
 
-	std::vector<D3D_SHADER_MACRO> shaderMacros = std::vector<D3D_SHADER_MACRO>{macros};
+	std::vector<D3D_SHADER_MACRO> shaderMacros = std::vector<D3D_SHADER_MACRO>{ macros };
 	shaderMacros.push_back({ nullptr,nullptr });
+
+	std::wstring wFilePath = std::wstring(filePath.begin(), filePath.end());
 
 	switch (type)
 	{
 	default:
 	case ShaderType::Vertex:
-	{
-		hr = D3DCompile(source.c_str(), source.length(), nullptr, shaderMacros.data(), nullptr, "main", "vs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
-		ID3D11VertexShader* vs = nullptr;
-		Renderer::device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &vs);
-		shaderPtr = vs;
-		useFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			Renderer::context->VSSetShader((ID3D11VertexShader*)shaderPtr, nullptr, 0);
-		};
-		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			((ID3D11VertexShader*)shaderPtr)->Release();
-		};
-	}
-	break;
+		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "vs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+		Renderer::device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.vertexShader);
+		useFunc = &Shader::vertexUse;
+		releaseFunc = &Shader::vertexRelease;
+		break;
 	case ShaderType::Hull:
-	{
-		hr = D3DCompile(source.c_str(), source.length(), nullptr, shaderMacros.data(), nullptr, "main", "hs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
-		ID3D11HullShader* hs = nullptr;
-		Renderer::device->CreateHullShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &hs);
-		shaderPtr = hs;
-		useFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			Renderer::context->HSSetShader((ID3D11HullShader*)shaderPtr, nullptr, 0);
-		};
-		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			((ID3D11HullShader*)shaderPtr)->Release();
-		};
-	}
-	break;
+		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "hs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+		Renderer::device->CreateHullShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.hullShader);
+		useFunc = &Shader::hullUse;
+		releaseFunc = &Shader::hullRelease;
+		break;
 	case ShaderType::Domain:
-	{
-		hr = D3DCompile(source.c_str(), source.length(), nullptr, shaderMacros.data(), nullptr, "main", "ds_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
-		ID3D11DomainShader* ds = nullptr;
-		Renderer::device->CreateDomainShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &ds);
-		shaderPtr = ds;
-		useFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			Renderer::context->DSSetShader((ID3D11DomainShader*)shaderPtr, nullptr, 0);
-		};
-		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			((ID3D11DomainShader*)shaderPtr)->Release();
-		};
-	}
-	break;
+		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "ds_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+		Renderer::device->CreateDomainShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.domainShader);
+		useFunc = &Shader::domainUse;
+		releaseFunc = &Shader::domainRelease;
+		break;
 	case ShaderType::Geometry:
-	{
-		hr = D3DCompile(source.c_str(), source.length(), nullptr, shaderMacros.data(), nullptr, "main", "gs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
-		ID3D11GeometryShader* gs = nullptr;
-		Renderer::device->CreateGeometryShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &gs);
-		shaderPtr = gs;
-		useFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			Renderer::context->GSSetShader((ID3D11GeometryShader*)shaderPtr, nullptr, 0);
-		};
-		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			((ID3D11GeometryShader*)shaderPtr)->Release();
-		};
-	}
-	break;
+		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "gs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+		Renderer::device->CreateGeometryShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.geometryShader);
+		useFunc = &Shader::geometryUse;
+		releaseFunc = &Shader::geometryRelease;
+		break;
 	case ShaderType::Pixel:
-	{
-		hr = D3DCompile(source.c_str(), source.length(), nullptr, shaderMacros.data(), nullptr, "main", "ps_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
-		ID3D11PixelShader* ps = nullptr;
-		Renderer::device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &ps);
-		shaderPtr = ps;
-		useFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			Renderer::context->PSSetShader((ID3D11PixelShader*)shaderPtr, nullptr, 0);
-		};
-		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			((ID3D11PixelShader*)shaderPtr)->Release();
-		};
-	}
-	break;
+		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "ps_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+		Renderer::device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.pixelShader);
+		useFunc = &Shader::pixelUse;
+		releaseFunc = &Shader::pixelRelease;
+		break;
 	case ShaderType::Compute:
-	{
-		hr = D3DCompile(source.c_str(), source.length(), nullptr, shaderMacros.data(), nullptr, "main", "cs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
-		ID3D11ComputeShader* cs = nullptr;
-		Renderer::device->CreateComputeShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &cs);
-		shaderPtr = cs;
-		useFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			Renderer::context->CSSetShader((ID3D11ComputeShader*)shaderPtr, nullptr, 0);
-		};
-		releaseFunc = [](ID3D11DeviceChild* const shaderPtr)
-		{
-			((ID3D11ComputeShader*)shaderPtr)->Release();
-		};
-	}
-	break;
+		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "cs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+		Renderer::device->CreateComputeShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.computeShader);
+		useFunc = &Shader::computeUse;
+		releaseFunc = &Shader::computeRelease;
+		break;
 	}
 
-	if (SUCCEEDED(hr))
+	bufferPointer = shaderBlob->GetBufferPointer();
+	bufferSize = shaderBlob->GetBufferSize();
+
+	std::cout << " compile successfully!\n";
+}
+
+Shader::Shader(const BYTE* const bytes, const size_t& byteSize, const ShaderType& type) :
+	bufferPointer(bytes), bufferSize(byteSize)
+{
+	std::cout << "[class Shader] Byte code";
+
+	switch (type)
 	{
-		std::wcout << "compile successfully!\n";
+	default:
+	case ShaderType::Vertex:
+		Renderer::device->CreateVertexShader(bytes, byteSize, nullptr, &shaderPtr.vertexShader);
+		useFunc = &Shader::vertexUse;
+		releaseFunc = &Shader::vertexRelease;
+		break;
+	case ShaderType::Hull:
+		Renderer::device->CreateHullShader(bytes, byteSize, nullptr, &shaderPtr.hullShader);
+		useFunc = &Shader::hullUse;
+		releaseFunc = &Shader::hullRelease;
+		break;
+	case ShaderType::Domain:
+		Renderer::device->CreateDomainShader(bytes, byteSize, nullptr, &shaderPtr.domainShader);
+		useFunc = &Shader::domainUse;
+		releaseFunc = &Shader::domainRelease;
+		break;
+	case ShaderType::Geometry:
+		Renderer::device->CreateGeometryShader(bytes, byteSize, nullptr, &shaderPtr.geometryShader);
+		useFunc = &Shader::geometryUse;
+		releaseFunc = &Shader::geometryRelease;
+		break;
+	case ShaderType::Pixel:
+		Renderer::device->CreatePixelShader(bytes, byteSize, nullptr, &shaderPtr.pixelShader);
+		useFunc = &Shader::pixelUse;
+		releaseFunc = &Shader::pixelRelease;
+		break;
+	case ShaderType::Compute:
+		Renderer::device->CreateComputeShader(bytes, byteSize, nullptr, &shaderPtr.computeShader);
+		useFunc = &Shader::computeUse;
+		releaseFunc = &Shader::computeRelease;
+		break;
 	}
-	else
-	{
-		std::wcout << "compile failed!\n";
-		return;
-	}
+
+	std::cout << " compile successfully!\n";
+}
+
+void Shader::vertexUse()
+{
+	Renderer::context->VSSetShader(shaderPtr.vertexShader, nullptr, 0);
+}
+
+void Shader::hullUse()
+{
+	Renderer::context->HSSetShader(shaderPtr.hullShader, nullptr, 0);
+}
+
+void Shader::domainUse()
+{
+	Renderer::context->DSSetShader(shaderPtr.domainShader, nullptr, 0);
+}
+
+void Shader::geometryUse()
+{
+	Renderer::context->GSSetShader(shaderPtr.geometryShader, nullptr, 0);
+}
+
+void Shader::pixelUse()
+{
+	Renderer::context->PSSetShader(shaderPtr.pixelShader, nullptr, 0);
+}
+
+void Shader::computeUse()
+{
+	Renderer::context->CSSetShader(shaderPtr.computeShader, nullptr, 0);
+}
+
+void Shader::vertexRelease()
+{
+	shaderPtr.vertexShader->Release();
+}
+
+void Shader::hullRelease()
+{
+	shaderPtr.hullShader->Release();
+}
+
+void Shader::domainRelease()
+{
+	shaderPtr.domainShader->Release();
+}
+
+void Shader::geometryRelease()
+{
+	shaderPtr.geometryShader->Release();
+}
+
+void Shader::pixelRelease()
+{
+	shaderPtr.pixelShader->Release();
+}
+
+void Shader::computeRelease()
+{
+	shaderPtr.computeShader->Release();
 }

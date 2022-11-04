@@ -18,8 +18,7 @@ cbuffer DeltaTimes : register(b0)
 
 cbuffer ViewMatrix : register(b1)
 {
-    matrix view;
-    matrix normalMatrix;
+    matrix view;    
     float4 viewPos;
 }
 
@@ -208,7 +207,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     float4 iDiffuse = TraceDiffuse(position, N);
     float4 iSpecular = TraceSpecular(position, N, V);
     
-    outColor += baseColor.rgb * iDiffuse.rgb + iSpecular.rgb;
+    outColor += baseColor.rgb * iDiffuse.rgb + iSpecular.rgb * normalSpecular.w;
     
     const float ao = ssaoTexture.Sample(linearSampler, texCoord).r;
         
