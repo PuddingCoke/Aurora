@@ -20,7 +20,7 @@ public:
 
 	void operator=(const ShadowMap&) = delete;
 
-	static ShadowMap* create(const unsigned int& width, const unsigned int& height);
+	ShadowMap(const unsigned int& width, const unsigned int& height);
 
 	void clear(const float& depth = 1.0f) const;
 
@@ -35,8 +35,6 @@ private:
 	static void ini();
 
 	static void release();
-
-	ShadowMap(const unsigned int& width, const unsigned int& height);
 
 };
 

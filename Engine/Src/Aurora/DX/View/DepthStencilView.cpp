@@ -1,32 +1,5 @@
 ﻿#include<Aurora/DX/View/DepthStencilView.h>
 
-DepthStencilView* DepthStencilView::create(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA)
-{
-	return new DepthStencilView(width, height, format, enableMSAA);
-}
-
-void DepthStencilView::clear(const UINT& clearFlag, const float& depth, const UINT8& stencil) const
-{
-	Renderer::getContext()->ClearDepthStencilView(depthStencilView.Get(), clearFlag, depth, stencil);
-}
-
-ID3D11DepthStencilView* DepthStencilView::get() const
-{
-	return depthStencilView.Get();
-}
-
-DepthStencilView::~DepthStencilView()
-{
-}
-
-void DepthStencilView::bindDSV()
-{
-}
-
-DepthStencilView::DepthStencilView()
-{
-}
-
 DepthStencilView::DepthStencilView(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
@@ -66,4 +39,26 @@ DepthStencilView::DepthStencilView(const unsigned int& width, const unsigned int
 	dsvDesc.Texture2D.MipSlice = 0;
 
 	Renderer::device->CreateDepthStencilView(depthStencilTexture.Get(), &dsvDesc, depthStencilView.ReleaseAndGetAddressOf());
+}
+
+void DepthStencilView::clear(const UINT& clearFlag, const float& depth, const UINT8& stencil) const
+{
+	Renderer::getContext()->ClearDepthStencilView(depthStencilView.Get(), clearFlag, depth, stencil);
+}
+
+ID3D11DepthStencilView* DepthStencilView::get() const
+{
+	return depthStencilView.Get();
+}
+
+DepthStencilView::~DepthStencilView()
+{
+}
+
+void DepthStencilView::bindDSV()
+{
+}
+
+DepthStencilView::DepthStencilView()
+{
 }

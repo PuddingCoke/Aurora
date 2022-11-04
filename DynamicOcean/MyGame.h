@@ -24,7 +24,7 @@ public:
 	MyGame() :
 		camera({ -240,200,0 }, { 1,-1,0 }, { 0,1,0 }, 100, 3),
 		ocean(1024, 256, { 16.f,0.f }, 0.000007f),
-		depthView(DepthStencilView::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true))
+		depthView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true))
 	{
 		{
 			D3D11_RASTERIZER_DESC rsDesc = {};

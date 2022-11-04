@@ -6,39 +6,6 @@ Shader* TextureCube::equirectangularVS;
 
 Shader* TextureCube::equirectangularPS;
 
-TextureCube* TextureCube::create(std::initializer_list<std::string> texturesPath)
-{
-	return new TextureCube(texturesPath);
-}
-
-TextureCube* TextureCube::createDDSCubeMap(const std::string& texturePath)
-{
-	return new TextureCube(texturePath);
-}
-
-TextureCube* TextureCube::createEquirectangularMap(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels)
-{
-	return new TextureCube(texturePath, skyboxResolution, mipLevels);
-}
-
-TextureCube::~TextureCube()
-{
-}
-
-void TextureCube::iniShader()
-{
-	skyboxVS = new Shader(g_SkyboxVSBytes, sizeof(g_SkyboxVSBytes), ShaderType::Vertex);
-	equirectangularVS = new Shader(g_EquirectangularVSBytes, sizeof(g_EquirectangularVSBytes), ShaderType::Vertex);
-	equirectangularPS = new Shader(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes), ShaderType::Pixel);
-}
-
-void TextureCube::releaseShader()
-{
-	delete skyboxVS;
-	delete equirectangularVS;
-	delete equirectangularPS;
-}
-
 TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 {
 	Texture2D* textures[6]{};
@@ -183,4 +150,22 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 
 	delete equirectangularMap;
 	delete buffer;
+}
+
+TextureCube::~TextureCube()
+{
+}
+
+void TextureCube::iniShader()
+{
+	skyboxVS = new Shader(g_SkyboxVSBytes, sizeof(g_SkyboxVSBytes), ShaderType::Vertex);
+	equirectangularVS = new Shader(g_EquirectangularVSBytes, sizeof(g_EquirectangularVSBytes), ShaderType::Vertex);
+	equirectangularPS = new Shader(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes), ShaderType::Pixel);
+}
+
+void TextureCube::releaseShader()
+{
+	delete skyboxVS;
+	delete equirectangularVS;
+	delete equirectangularPS;
 }

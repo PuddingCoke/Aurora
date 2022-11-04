@@ -40,7 +40,7 @@ public:
 
 	Shader(const BYTE* const bytes, const size_t& byteSize, const ShaderType& type);
 
-	void use();
+	void use() const;
 
 	static constexpr UINT  compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
@@ -76,21 +76,21 @@ private:
 		ID3D11ComputeShader* computeShader;
 	} shaderPtr;
 
-	void(Shader::* useFunc)();
+	void(Shader::* useFunc)() const;
 
 	void(Shader::* releaseFunc)();
 
-	void vertexUse();
+	void vertexUse() const;
 
-	void hullUse();
+	void hullUse() const;
 
-	void domainUse();
+	void domainUse() const;
 
-	void geometryUse();
+	void geometryUse() const;
 
-	void pixelUse();
+	void pixelUse() const;
 
-	void computeUse();
+	void computeUse() const;
 
 	void vertexRelease();
 

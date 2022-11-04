@@ -2,32 +2,7 @@
 
 Shader* ShadowMap::shadowVS;
 
-ShadowMap* ShadowMap::create(const unsigned int& width, const unsigned int& height)
-{
-	return new ShadowMap(width, height);
-}
-
-void ShadowMap::clear(const float& depth) const
-{
-	Renderer::getContext()->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, depth, 0);
-}
-
-void ShadowMap::bindDSV()
-{
-	unbindFromSRV();
-}
-
-void ShadowMap::ini()
-{
-	shadowVS = new Shader(g_ShadowVSBytes, sizeof(g_ShadowVSBytes), ShaderType::Vertex);
-}
-
-void ShadowMap::release()
-{
-	delete shadowVS;
-}
-
-ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height):
+ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height) :
 	DepthStencilView()
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
@@ -59,4 +34,24 @@ ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height):
 	srvDesc.Texture2D.MipLevels = -1;
 
 	createSRV(depthStencilTexture.Get(), srvDesc);
+}
+
+void ShadowMap::clear(const float& depth) const
+{
+	Renderer::getContext()->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, depth, 0);
+}
+
+void ShadowMap::bindDSV()
+{
+	unbindFromSRV();
+}
+
+void ShadowMap::ini()
+{
+	shadowVS = new Shader(g_ShadowVSBytes, sizeof(g_ShadowVSBytes), ShaderType::Vertex);
+}
+
+void ShadowMap::release()
+{
+	delete shadowVS;
 }

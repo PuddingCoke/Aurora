@@ -26,14 +26,14 @@ public:
 
 	void operator=(const TextureCube&) = delete;
 
-	//xp xn yp yn zp zn
-	static TextureCube* create(std::initializer_list<std::string> texturesPath);
+	//从6个贴图创建天空盒 xp xn yp yn zp zn
+	TextureCube(std::initializer_list<std::string> texturesPath);
 
-	//最好用这个方法载入天空盒和辐照图
-	static TextureCube* createDDSCubeMap(const std::string& texturePath);
+	//读取dds天空盒
+	TextureCube(const std::string& texturePath);
 
-	//从hdr等距柱状投影图创建天空盒 mipLevels主要用于IBL
-	static TextureCube* createEquirectangularMap(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels = 1);
+	//从等距柱状图创建天空盒
+	TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels = 1);
 
 	~TextureCube();
 
@@ -50,12 +50,6 @@ private:
 	static void iniShader();
 
 	static void releaseShader();
-
-	TextureCube(std::initializer_list<std::string> texturesPath);
-
-	TextureCube(const std::string& texturePath);
-
-	TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels);
 
 	ComPtr<ID3D11Texture2D> cubeTexture;
 

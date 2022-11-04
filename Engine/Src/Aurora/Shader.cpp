@@ -8,7 +8,7 @@ Shader::~Shader()
 	(this->*releaseFunc)();
 }
 
-void Shader::use()
+void Shader::use() const
 {
 	(this->*useFunc)();
 }
@@ -135,32 +135,32 @@ Shader::Shader(const BYTE* const bytes, const size_t& byteSize, const ShaderType
 	std::cout << " compile successfully!\n";
 }
 
-void Shader::vertexUse()
+void Shader::vertexUse() const
 {
 	Renderer::context->VSSetShader(shaderPtr.vertexShader, nullptr, 0);
 }
 
-void Shader::hullUse()
+void Shader::hullUse() const
 {
 	Renderer::context->HSSetShader(shaderPtr.hullShader, nullptr, 0);
 }
 
-void Shader::domainUse()
+void Shader::domainUse() const
 {
 	Renderer::context->DSSetShader(shaderPtr.domainShader, nullptr, 0);
 }
 
-void Shader::geometryUse()
+void Shader::geometryUse() const
 {
 	Renderer::context->GSSetShader(shaderPtr.geometryShader, nullptr, 0);
 }
 
-void Shader::pixelUse()
+void Shader::pixelUse() const
 {
 	Renderer::context->PSSetShader(shaderPtr.pixelShader, nullptr, 0);
 }
 
-void Shader::computeUse()
+void Shader::computeUse() const
 {
 	Renderer::context->CSSetShader(shaderPtr.computeShader, nullptr, 0);
 }

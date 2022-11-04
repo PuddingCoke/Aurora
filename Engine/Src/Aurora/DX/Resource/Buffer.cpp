@@ -11,7 +11,7 @@ ID3D11Buffer* Buffer::getBuffer() const
 	return buffer.Get();
 }
 
-void Buffer::updateSubresource(const void* const data, const size_t& size, const unsigned int& subresource, const unsigned int& mapFlags)
+void Buffer::updateSubresource(const void* const data, const size_t& size, const unsigned int& subresource, const unsigned int& mapFlags) const
 {
 	memcpy(map(subresource, D3D11_MAP_WRITE_DISCARD, mapFlags).pData, data, size);
 	unmap(subresource);
