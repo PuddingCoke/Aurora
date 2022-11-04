@@ -117,8 +117,6 @@ private:
 
 		void addCircle(const float& x, const float& y, const float& length, const float& r, const float& g, const float& b, const float& a);
 
-		Buffer* circleBuffer;
-
 		Buffer* vertexBuffer;
 
 		float* vertices;

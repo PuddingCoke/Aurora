@@ -1,7 +1,7 @@
 struct GeometryInput
 {
-    float4 pos : SV_Position;
-    float4 color : COLOR;
+	float4 pos : SV_Position;
+	float4 color : COLOR;
 };
 
 struct GeometryOutput
@@ -17,10 +17,10 @@ cbuffer Matrix2D : register(b0)
 
 cbuffer LineBuffer : register(b2)
 {
-    float lineWidth;
-    float v1;
-    float v2;
-    float v3;
+	float lineWidth;
+	float v1;
+	float v2;
+	float v3;
 };
 
 [maxvertexcount(6)]

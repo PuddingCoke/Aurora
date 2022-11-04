@@ -20,12 +20,11 @@ PrimitiveBatch::PrimitiveBatch() :
 
 	//初始化circleInputLayout
 	{
-		D3D11_INPUT_ELEMENT_DESC layout[4] =
+		D3D11_INPUT_ELEMENT_DESC layout[3] =
 		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"POSITION",1,DXGI_FORMAT_R32G32_FLOAT,1,0,D3D11_INPUT_PER_INSTANCE_DATA,1},
-			{"POSITION",2,DXGI_FORMAT_R32_FLOAT,1,8,D3D11_INPUT_PER_INSTANCE_DATA,1},
-			{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,1,12,D3D11_INPUT_PER_INSTANCE_DATA,1}
+			{"POSITION",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_INSTANCE_DATA,1},
+			{"POSITION",1,DXGI_FORMAT_R32_FLOAT,0,8,D3D11_INPUT_PER_INSTANCE_DATA,1},
+			{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,12,D3D11_INPUT_PER_INSTANCE_DATA,1}
 		};
 
 		Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(circleVS), circleInputLayout.ReleaseAndGetAddressOf());
@@ -201,31 +200,10 @@ PrimitiveBatch::CircleRenderer::CircleRenderer() :
 	vertices(new float[maxCircleNum * 7]), idx(0),
 	vertexBuffer(new Buffer(sizeof(float) * 7 * maxCircleNum, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 {
-	//初始化circleBuffer
-	{
-		float unitCircle[256];
-
-		{
-			float theta = 0.f;
-
-			for (int i = 0; i < 64; i++)
-			{
-				unitCircle[i * 4] = cosf(theta);
-				unitCircle[i * 4 + 1] = sinf(theta);
-				unitCircle[i * 4 + 2] = cosf(theta + DirectX::XM_PI / 32.f);
-				unitCircle[i * 4 + 3] = sinf(theta + DirectX::XM_PI / 32.f);
-				theta += DirectX::XM_PI / 32.f;
-			}
-		}
-
-		circleBuffer = new Buffer(sizeof(float) * 256, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE, unitCircle);
-	}
-
 }
 
 PrimitiveBatch::CircleRenderer::~CircleRenderer()
 {
-	delete circleBuffer;
 	delete vertexBuffer;
 	delete[] vertices;
 }
@@ -240,7 +218,7 @@ void PrimitiveBatch::CircleRenderer::end()
 	updateVerticesData();
 
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	RenderAPI::get()->IASetVertexBuffer(0, { circleBuffer,vertexBuffer }, { sizeof(float) * 2u,sizeof(float) * 7u }, { 0,0 });
+	RenderAPI::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 7u }, { 0 });
 
 	RenderAPI::get()->DrawInstanced(128, idx / 7, 0, 0);
 }
