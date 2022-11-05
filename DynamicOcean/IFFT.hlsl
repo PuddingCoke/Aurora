@@ -1,6 +1,5 @@
 #define TWO_PI 6.283185307179586476925286766559
 
-
 cbuffer OceanParam : register(b1)
 {
     uint mapResolution;
@@ -20,9 +19,9 @@ float2 ComplexMul(float2 z, float2 w)
 Texture2D<float2> input : register(t0);
 RWTexture2D<float2> output : register(u0);
 
-groupshared float2 pingpong[2][SIMRES];
+groupshared float2 pingpong[2][1024];
 
-[numthreads(SIMRES, 1, 1)]
+[numthreads(1024, 1, 1)]
 void main(uint3 groupThreadID : SV_GroupThreadID, uint3 groupID : SV_GroupID)
 {
     const float N = float(mapResolution);

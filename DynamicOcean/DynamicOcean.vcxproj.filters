@@ -35,5 +35,7 @@
     <FxCompile Include="OceanHShader.hlsl" />
     <FxCompile Include="OceanVShader.hlsl" />
     <FxCompile Include="OceanPShader.hlsl" />
+    <FxCompile Include="OceanGenNormalCS.hlsl" />
+    <FxCompile Include="IFFT.hlsl" />
   </ItemGroup>
 </Project>

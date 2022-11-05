@@ -38,15 +38,9 @@ private:
 
 	ComputeTexture* const displacementZ;
 
-	ComputeTexture* const slopeXTexture;
-
-	ComputeTexture* const slopeZTexture;
-
 	ComputeTexture* const displacementXYZ;
 
 	ComputeTexture* const normalTexture;
-
-	ResourceTexture* const gaussTexture;
 
 	Buffer* patchVertexBuffer;
 
@@ -59,6 +53,8 @@ private:
 	Shader* const ifftShader;
 
 	Shader* const signCorrectionShader;
+
+	Shader* const oceanGenNormal;
 
 	Shader* const oceanVShader;
 
@@ -103,20 +99,18 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	displacementY(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
 	displacementX(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
 	displacementZ(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	slopeXTexture(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	slopeZTexture(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
 	tempTexture(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
 	displacementXYZ(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
 	normalTexture(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
-	gaussTexture(new ResourceTexture(mapResolution, mapResolution, Texture2D::TextureType::Gauss)),
 	phillipSpectrumShader(new Shader("PhillipsSpectrum.hlsl", ShaderType::Compute)),
 	displacementShader(new Shader("Displacement.hlsl", ShaderType::Compute)),
-	ifftShader(new Shader("IFFT.hlsl", ShaderType::Compute, { {"SIMRES","1024"} })),
+	ifftShader(new Shader("IFFT.hlsl", ShaderType::Compute)),
 	signCorrectionShader(new Shader("SignCorrection.hlsl", ShaderType::Compute)),
 	oceanVShader(new Shader("OceanVShader.hlsl", ShaderType::Vertex)),
 	oceanHShader(new Shader("OceanHShader.hlsl", ShaderType::Hull)),
 	oceanDShader(new Shader("OceanDShader.hlsl", ShaderType::Domain)),
-	oceanPShader(new Shader("OceanPShader.hlsl", ShaderType::Pixel))
+	oceanPShader(new Shader("OceanPShader.hlsl", ShaderType::Pixel)),
+	oceanGenNormal(new Shader("OceanGenNormalCS.hlsl",ShaderType::Compute))
 {
 
 	{
@@ -171,15 +165,13 @@ inline Ocean::~Ocean()
 	delete oceanHShader;
 	delete oceanDShader;
 	delete oceanPShader;
+	delete oceanGenNormal;
 
 	delete tildeh0k;
 	delete tildeh0mkconj;
-	delete gaussTexture;
 	delete displacementY;
 	delete displacementX;
 	delete displacementZ;
-	delete slopeXTexture;
-	delete slopeZTexture;
 	delete tempTexture;
 	delete displacementXYZ;
 	delete normalTexture;
@@ -190,6 +182,8 @@ inline void Ocean::calculatePhillipTexture() const
 	memcpy(oceanParamBuffer->map(0).pData, &param, sizeof(Param));
 	oceanParamBuffer->unmap(0);
 
+	ResourceTexture* gaussTexture = new ResourceTexture(param.mapResolution, param.mapResolution, Texture2D::TextureType::Gauss);
+
 	RenderAPI::get()->CSSetBuffer({ oceanParamBuffer }, 1);
 	RenderAPI::get()->CSSetSRV({ gaussTexture }, 0);
 	RenderAPI::get()->CSSetUAV({ tildeh0k,tildeh0mkconj }, 0);
@@ -197,6 +191,8 @@ inline void Ocean::calculatePhillipTexture() const
 	phillipSpectrumShader->use();
 
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
+
+	delete gaussTexture;
 }
 
 inline void Ocean::IFFT(ComputeTexture* const cTexture) const
@@ -216,10 +212,10 @@ inline void Ocean::IFFT(ComputeTexture* const cTexture) const
 
 inline void Ocean::update() const
 {
-	RenderAPI::get()->CSSetSRV({ tildeh0k,tildeh0mkconj }, 0);
-	RenderAPI::get()->CSSetUAV({ displacementY,displacementX,displacementZ,slopeXTexture,slopeZTexture }, 0);
-
 	RenderAPI::get()->CSSetBuffer({ oceanParamBuffer }, 1);
+
+	RenderAPI::get()->CSSetSRV({ tildeh0k,tildeh0mkconj }, 0);
+	RenderAPI::get()->CSSetUAV({ displacementY,displacementX,displacementZ}, 0);
 
 	displacementShader->use();
 
@@ -228,13 +224,17 @@ inline void Ocean::update() const
 	IFFT(displacementY);
 	IFFT(displacementX);
 	IFFT(displacementZ);
-	IFFT(slopeXTexture);
-	IFFT(slopeZTexture);
 
-	RenderAPI::get()->CSSetSRV({ displacementY,displacementX,displacementZ,slopeXTexture,slopeZTexture }, 0);
-	RenderAPI::get()->CSSetUAV({ displacementXYZ,normalTexture }, 0);
+	RenderAPI::get()->CSSetSRV({ displacementY,displacementX,displacementZ }, 0);
+	RenderAPI::get()->CSSetUAV({ displacementXYZ }, 0);
 
 	signCorrectionShader->use();
+	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
+
+	RenderAPI::get()->CSSetSRV({ displacementXYZ }, 0);
+	RenderAPI::get()->CSSetUAV({ normalTexture }, 0);
+
+	oceanGenNormal->use();
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 }
 
