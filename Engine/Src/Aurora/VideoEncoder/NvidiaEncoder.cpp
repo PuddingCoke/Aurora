@@ -10,7 +10,7 @@ bool NvidiaEncoder::encode()
 
 	NV_ENC_REGISTER_RESOURCE registerResource = { NV_ENC_REGISTER_RESOURCE_VER };
 
-	registerResource.bufferFormat = pixelFormat;
+	registerResource.bufferFormat = NV_ENC_BUFFER_FORMAT_NV12;
 
 	registerResource.bufferUsage = NV_ENC_INPUT_IMAGE;
 
@@ -58,7 +58,7 @@ bool NvidiaEncoder::encode()
 
 		picParams.inputBuffer = mapResource.mappedResource;
 
-		picParams.bufferFmt = pixelFormat;
+		picParams.bufferFmt = NV_ENC_BUFFER_FORMAT_NV12;
 
 		picParams.inputWidth = width;
 

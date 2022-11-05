@@ -7,6 +7,7 @@
 #include<Aurora/RCTexture.h>
 #include<Aurora/States.h>
 #include<Aurora/Shader.h>
+#include<Aurora/Camera.h>
 #include<Aurora/Graphics.h>
 #include<Aurora/ResourceTexture.h>
 #include<Aurora/RenderAPI.h>

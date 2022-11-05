@@ -5,14 +5,23 @@
 
 #include"EffectBase.h"
 
+#include<Aurora/CompiledShaders/MotionBlurPS.h>
+
 class MotionBlurEffect :public EffectBase
 {
 public:
 
-	MotionBlurEffect
+	MotionBlurEffect(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format);
 
-	void process(ShaderResourceView* const gPosition, ShaderResourceView* const depthView);
+	~MotionBlurEffect();
 
+	ShaderResourceView* process(ShaderResourceView* const gPosition, ShaderResourceView* const colorTexture);
+
+private:
+
+	void compileShaders() override;
+
+	Shader* motionBlurPS;
 
 };
 

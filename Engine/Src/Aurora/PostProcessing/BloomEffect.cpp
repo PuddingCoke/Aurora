@@ -236,7 +236,8 @@ const float& BloomEffect::getIntensity() const
 
 void BloomEffect::applyChange() const
 {
-	bloomParamBuffer->updateSubresource(STRUCTDATA(bloomParam), 0);
+	memcpy(bloomParamBuffer->map(0).pData, &bloomParam, sizeof(BloomParam));
+	bloomParamBuffer->unmap(0);
 }
 
 void BloomEffect::compileShaders()

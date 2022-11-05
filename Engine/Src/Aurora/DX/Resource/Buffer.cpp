@@ -11,10 +11,9 @@ ID3D11Buffer* Buffer::getBuffer() const
 	return buffer.Get();
 }
 
-void Buffer::updateSubresource(const void* const data, const size_t& size, const unsigned int& subresource, const unsigned int& mapFlags) const
+void Buffer::updateSubresource(const void* const data, const size_t& size, const unsigned int& subresource) const
 {
-	memcpy(map(subresource, D3D11_MAP_WRITE_DISCARD, mapFlags).pData, data, size);
-	unmap(subresource);
+	Renderer::getContext()->UpdateSubresource(buffer.Get(), subresource, nullptr, data, 0, 0);
 }
 
 Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage, const void* const data, const UINT& cpuaccessFlags, const UINT& miscFlags, const UINT& structureByteStride) :

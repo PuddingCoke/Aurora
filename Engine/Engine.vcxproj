@@ -208,6 +208,7 @@
     <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\HBAOEffect.cpp" />
+    <ClCompile Include="Src\Aurora\PostProcessing\MotionBlurEffect.cpp" />
     <ClCompile Include="Src\Aurora\RenderAPI.cpp" />
     <ClCompile Include="Src\Aurora\ResManager.cpp" />
     <ClCompile Include="Src\Aurora\DX\View\ShaderResourceView.cpp" />
@@ -284,6 +285,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\FullScreen\FullScreenVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -293,6 +295,15 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
+    </FxCompile>
+    <FxCompile Include="Shaders\MotionBlur\MotionBlurPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchCircleVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>

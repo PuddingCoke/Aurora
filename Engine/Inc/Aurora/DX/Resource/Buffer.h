@@ -25,7 +25,7 @@ public:
 
 	ID3D11Buffer* getBuffer() const;
 
-	void updateSubresource(const void* const data, const size_t& size, const unsigned int& subresource, const unsigned int& mapFlags = 0) const;
+	void updateSubresource(const void* const data, const size_t& size, const unsigned int& subresource) const;
 
 	D3D11_MAPPED_SUBRESOURCE map(const unsigned int& subresource, const D3D11_MAP& mapType = D3D11_MAP_WRITE_DISCARD, const unsigned int& mapFlags = 0) const;
 

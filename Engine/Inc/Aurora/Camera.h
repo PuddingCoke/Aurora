@@ -36,12 +36,6 @@ public:
 
 	static void setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up);
 
-	static const float& getFov();
-
-	static const float& getNearPlane();
-
-	static const float& getFarPlane();
-
 	static constexpr float epsilon = 0.01f;
 
 private:
@@ -70,16 +64,11 @@ private:
 
 	DirectX::XMMATRIX viewMatrix;
 
-	float fov;
-
-	float nearPlane;
-
-	float farPlane;
-
 	struct ViewInfo
 	{
 		DirectX::XMMATRIX view;
 		DirectX::XMFLOAT4 eyePos;
+		DirectX::XMMATRIX prevViewProj;
 	}viewInfo;
 
 };

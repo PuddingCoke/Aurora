@@ -326,6 +326,9 @@
     <ClCompile Include="Src\Aurora\ComputeTexture3D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Aurora\PostProcessing\MotionBlurEffect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Bloom\BloomExtractPS.hlsl" />
@@ -349,5 +352,6 @@
     <FxCompile Include="Shaders\SpriteBatch\SpriteBatchTextVS.hlsl" />
     <FxCompile Include="Shaders\SpriteBatch\SpriteBatchSpritePS.hlsl" />
     <FxCompile Include="Shaders\SpriteBatch\SpriteBatchTextPS.hlsl" />
+    <FxCompile Include="Shaders\MotionBlur\MotionBlurPS.hlsl" />
   </ItemGroup>
 </Project>
