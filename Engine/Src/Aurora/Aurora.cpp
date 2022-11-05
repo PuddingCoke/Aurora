@@ -38,14 +38,14 @@ int Aurora::iniEngine(const Configuration& config)
 		Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, config.enableDebug, config.msaaLevel);
 	}
 
-	if(config.usage==Configuration::EngineUsage::AnimationRender)
+	if (config.usage == Configuration::EngineUsage::AnimationRender)
 	{
 		D3D11_TEXTURE2D_DESC tDesc = {};
 		tDesc.Width = config.width;
 		tDesc.Height = config.height;
 		tDesc.MipLevels = 1;
 		tDesc.ArraySize = 1;
-		tDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		tDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 		tDesc.SampleDesc.Count = 1;
 		tDesc.SampleDesc.Quality = 0;
 		tDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -377,7 +377,7 @@ void Aurora::runGame()
 		game->render();
 		if (config->msaaLevel != 1)
 		{
-			Renderer::context->ResolveSubresource(Renderer::instance->backBuffer.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+			Renderer::context->ResolveSubresource(Renderer::instance->backBuffer.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
 		Renderer::instance->swapChain->Present(1, 0);
 		const std::chrono::steady_clock::time_point timeEnd = timer.now();
@@ -391,7 +391,7 @@ void Aurora::runEncode()
 {
 	bool initializeStatus;
 
-	NvidiaEncoder nvidiaEncoder(Graphics::getWidth(), Graphics::getHeight(), Graphics::instance->recordConfig.frameToEncode, Graphics::instance->recordConfig.frameRate, initializeStatus);
+	NvidiaEncoder nvidiaEncoder(Graphics::getWidth(), Graphics::getHeight(), Graphics::instance->recordConfig.frameToEncode, Graphics::instance->recordConfig.frameRate, encodeTexture.Get(), initializeStatus);
 
 	if (initializeStatus)
 	{
@@ -410,11 +410,11 @@ void Aurora::runEncode()
 		game->render();
 		if (config->msaaLevel != 1)
 		{
-			Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_R8G8B8A8_UNORM);
+			Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
 		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
 		Graphics::instance->updateDeltaTimeBuffer();
-	} while (nvidiaEncoder.encode(encodeTexture.Get()));
+	} while (nvidiaEncoder.encode());
 
 	std::cout << "[class Aurora] encode complete!\n";
 

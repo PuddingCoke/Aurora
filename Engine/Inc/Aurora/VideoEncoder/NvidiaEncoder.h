@@ -18,9 +18,9 @@ public:
 
 	NvidiaEncoder(const NvidiaEncoder&) = delete;
 
-	bool encode(ID3D11Texture2D* const encodeTexture);
+	bool encode();
 
-	NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate, bool& initializeStatus);
+	NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate,ID3D11Resource* const inputTexture2D, bool& initializeStatus);
 
 	~NvidiaEncoder();
 
@@ -37,6 +37,8 @@ private:
 	bool encoding;
 
 	void* encoder;
+
+	ComPtr<ID3D11Texture2D> nv12Texture;
 
 	ComPtr<ID3D11VideoDevice2> videoDevice;
 
@@ -64,7 +66,7 @@ private:
 
 	const GUID profile = NV_ENC_H264_PROFILE_HIGH_GUID;
 
-	static constexpr NV_ENC_BUFFER_FORMAT pixelFormat = NV_ENC_BUFFER_FORMAT_ARGB;
+	static constexpr NV_ENC_BUFFER_FORMAT pixelFormat = NV_ENC_BUFFER_FORMAT_NV12;
 
 	const NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_ULTRA_LOW_LATENCY;
 

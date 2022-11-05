@@ -7,8 +7,8 @@ RenderAPI::RenderAPI(const unsigned int& width, const unsigned int& height, cons
 	if (msaaLevel == 1)
 	{
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-		rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		rtvDesc.Texture2D.MipSlice = 0;
 
 		defRenderTargetView = new RenderTargetView(renderTexture, rtvDesc);
@@ -16,8 +16,8 @@ RenderAPI::RenderAPI(const unsigned int& width, const unsigned int& height, cons
 	else
 	{
 		D3D11_RENDER_TARGET_VIEW_DESC msaaViewDesc = {};
-		msaaViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2DMS;
+		msaaViewDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 
 		defRenderTargetView = new RenderTargetView(Renderer::instance->msaaTexture.Get(), msaaViewDesc);
 	}

@@ -71,12 +71,12 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		DXGI_SWAP_CHAIN_DESC1 sd = {};
 		sd.Width = width;
 		sd.Height = height;
-		sd.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+		sd.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.BufferCount = 3;
-		sd.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_FLIP_DISCARD;
+		sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
 		ComPtr<IDXGISwapChain1> sc;
 		dxgiFactory->CreateSwapChainForHwnd(Renderer::device, hWnd, &sd, nullptr, nullptr, sc.GetAddressOf());
@@ -94,7 +94,7 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		tDesc.Height = height;
 		tDesc.MipLevels = 1;
 		tDesc.ArraySize = 1;
-		tDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+		tDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 		tDesc.SampleDesc.Count = msaaLevel;
 		tDesc.SampleDesc.Quality = 0;
 		tDesc.Usage = D3D11_USAGE_DEFAULT;

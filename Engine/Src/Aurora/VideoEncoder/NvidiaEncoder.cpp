@@ -1,8 +1,12 @@
 ﻿#include<Aurora/VideoEncoder/NvidiaEncoder.h>
 
-bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
+bool NvidiaEncoder::encode()
 {
 	timeStart = timer.now();
+
+	D3D11_VIDEO_PROCESSOR_STREAM processorStream = { TRUE,0,0,0,0,NULL,inputView.Get(),NULL };
+
+	videoContext->VideoProcessorBlt(videoProcessor.Get(), outputView.Get(), 0, 1, &processorStream);
 
 	NV_ENC_REGISTER_RESOURCE registerResource = { NV_ENC_REGISTER_RESOURCE_VER };
 
@@ -12,7 +16,7 @@ bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
 
 	registerResource.resourceType = NV_ENC_INPUT_RESOURCE_TYPE_DIRECTX;
 
-	registerResource.resourceToRegister = encodeTexture;
+	registerResource.resourceToRegister = nv12Texture.Get();
 
 	registerResource.width = width;
 
@@ -82,7 +86,7 @@ bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
 	nvencAPI.nvEncUnregisterResource(encoder, registerResource.registeredResource);
 
 	frameEncoded++;
-	
+
 	timeEnd = timer.now();
 
 	const float frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
@@ -92,7 +96,7 @@ bool NvidiaEncoder::encode(ID3D11Texture2D* const encodeTexture)
 	return encoding;
 }
 
-NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate, bool& initializeStatus) :
+NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate, ID3D11Resource* const inputTexture2D, bool& initializeStatus) :
 	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0), width(width), height(height)
 {
 	nvencAPI = { NV_ENCODE_API_FUNCTION_LIST_VER };
@@ -107,6 +111,20 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	}
 
 	initializeStatus = true;
+
+	{
+		D3D11_TEXTURE2D_DESC tDesc = {};
+		tDesc.Width = width;
+		tDesc.Height = height;
+		tDesc.MipLevels = 1;
+		tDesc.ArraySize = 1;
+		tDesc.Format = DXGI_FORMAT_NV12;
+		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+		tDesc.SampleDesc.Count = 1;
+		tDesc.SampleDesc.Quality = 0;
+
+		Renderer::device->CreateTexture2D(&tDesc, nullptr, nv12Texture.ReleaseAndGetAddressOf());
+	}
 
 	typedef NVENCSTATUS(*APICreateInstance)(NV_ENCODE_API_FUNCTION_LIST*);
 
@@ -165,7 +183,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	std::cout << "[class NvidiaEncoder] create bitstream status " << nvencAPI.nvEncCreateBitstreamBuffer(encoder, &bitstream) << "\n";
 
 	Renderer::device->QueryInterface(IID_ID3D11VideoDevice2, (void**)videoDevice.ReleaseAndGetAddressOf());
-	Renderer::device->QueryInterface(IID_ID3D11VideoContext3, (void**)videoContext.ReleaseAndGetAddressOf());
+	Renderer::getContext()->QueryInterface(IID_ID3D11VideoContext3, (void**)videoContext.ReleaseAndGetAddressOf());
 
 	D3D11_VIDEO_PROCESSOR_CONTENT_DESC contentDesc =
 	{
@@ -176,12 +194,16 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	};
 
 	videoDevice->CreateVideoProcessorEnumerator(&contentDesc, videoProcessEnumerator.ReleaseAndGetAddressOf());
-	
+
 	videoDevice->CreateVideoProcessor(videoProcessEnumerator.Get(), 0, &videoProcessor);
 
 	D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC inputViewDesc = { 0,D3D11_VPIV_DIMENSION_TEXTURE2D,{0,0} };
 
-	videoDevice->CreateVideoProcessorInputView(, videoProcessEnumerator.Get(), &inputViewDesc, inputView.ReleaseAndGetAddressOf());
+	videoDevice->CreateVideoProcessorInputView(inputTexture2D, videoProcessEnumerator.Get(), &inputViewDesc, inputView.ReleaseAndGetAddressOf());
+
+	D3D11_VIDEO_PROCESSOR_OUTPUT_VIEW_DESC outputViewDesc = { D3D11_VPOV_DIMENSION_TEXTURE2D };
+
+	videoDevice->CreateVideoProcessorOutputView(nv12Texture.Get(), videoProcessEnumerator.Get(), &outputViewDesc, outputView.ReleaseAndGetAddressOf());
 
 	std::cout << "[class NvidiaEncoder] render at " << width << " x " << height << "\n";
 	std::cout << "[class NvidiaEncoder] frameRate " << frameRate << "\n";
