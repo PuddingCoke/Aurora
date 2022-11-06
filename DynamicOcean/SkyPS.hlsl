@@ -29,7 +29,7 @@ float4 main(PixelInput input) : SV_TARGET
     float sun_disk = pow(max(0.0, (dot(V, L) - 0.99995) / 0.00005), 1.001); // cos(0.57 deg) = 0.99995: Our sun disk is ~2 times larger than it is in real life
 
 	// Getting sky color
-    float2 uv = (V.xy / (1.0 + V.z)) * (0.5 / 1.5) + 0.5;
+    float2 uv = (V.xz / (1.0 + V.y)) * (0.5 / 1.5) + 0.5;
     float3 sky_color = skyDome.Sample(samplerState, uv).rgb;
     sky_color *= 1.0;
 	

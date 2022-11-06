@@ -90,14 +90,14 @@ float SolarRadianceApproximation(float3 L)
     return pow(0.7, pow(airmass, 0.678));
 }
 
-float4 main(float2 texCoord:TEXCOORD) : SV_TARGET
+float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
     float2 uv = (2.0 * texCoord - 1.0) * 1.5;
-	
+    
     float l = dot(uv, uv);
 
     float3 r = float3(2.0 * uv, 1.0 - l) / (1.0 + l);
-    float a = r.z;
+    
     if (l > 1.0)
     {
         l = min(1.0, 1.0 * (l - 1.0));

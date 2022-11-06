@@ -13,8 +13,14 @@ cbuffer ViewMatrix : register(b1)
 #define ONE_OVER_4PI	0.0795774715459476
 
 Texture2D normalTexture : register(t0);
+TextureCube skyTexture : register(t1);
 
 SamplerState linearSampler : register(s0);
+
+float2 ClampUV(float2 uv)
+{
+    return max(0.0, min(1.0, uv));
+}
 
 float4 main(PixelInput input) : SV_TARGET
 {
@@ -50,10 +56,14 @@ float4 main(PixelInput input) : SV_TARGET
 
     float spec = mult * exp(-((hdotx * hdotx) + (hdoty * hdoty)) / (hdotn * hdotn));
     
+    float3 R = reflect(-V, N);
+    
+    float3 refl = skyTexture.Sample(linearSampler, R).rgb;
+    
     float3 color = emissive_color * emissive_contribution +
 		    ambient_color * ambient_contribution +
 		    diffuse_color * diffuse_contribution * max(dot(N, L), 0) +
-			specular_color * specular_contribution * (pow(max(dot(N, H), 0.0), 360.0) + spec*0.5);
+			specular_color * specular_contribution * (pow(max(dot(N, H), 0.0), 360.0) + spec * 0.5) + refl * 0.3;
     
     return float4(color, 1.0);
 }

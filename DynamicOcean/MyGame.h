@@ -35,16 +35,19 @@ public:
 
 	RenderTexture* skyTexture;
 
+	TextureCube* textureCube;
+
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	MyGame() :
-		camera({ -200,25,0 }, { 1,-0.07f,0 }, { 0,1,0 }, 100, 3),
+		camera({ -200,30,0 }, { 1,-0.07f,0 }, { 0,1,0 }, 50, 3),
 		ocean(1024, 512, { 20.f,0.f }, 0.000005f),
 		depthView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, false)),
 		skyVS(new Shader("SkyVS.hlsl", ShaderType::Vertex)),
 		skyPS(new Shader("SkyPS.hlsl", ShaderType::Pixel)),
 		skyUpdatePS(new Shader("SkyUpdatePS.hlsl", ShaderType::Pixel)),
-		skyTexture(new RenderTexture(skyDomeRes, skyDomeRes, DXGI_FORMAT_R16G16B16A16_FLOAT))
+		skyTexture(new RenderTexture(skyDomeRes, skyDomeRes, DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		textureCube(new TextureCube("ocean_env.dds"))
 	{
 		camera.registerEvent();
 
@@ -133,6 +136,7 @@ public:
 		delete skyVS;
 		delete skyPS;
 		delete skyVertexBuffer;
+		delete textureCube;
 	}
 
 	void update(const float& dt) override
@@ -166,6 +170,8 @@ public:
 
 		depthView->clear(D3D11_CLEAR_DEPTH);
 		RenderAPI::get()->OMSetDefRTV(depthView);
+
+		RenderAPI::get()->PSSetSRV({ textureCube }, 1);
 
 		ocean.render();
 	}
