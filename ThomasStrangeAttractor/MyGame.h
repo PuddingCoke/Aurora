@@ -102,7 +102,7 @@ public:
 	void render() override
 	{
 		depthStencilView->clear(D3D11_CLEAR_DEPTH);
-		renderTexture->clearRTV(DirectX::Colors::Transparent);
+		renderTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ renderTexture }, depthStencilView);
 
 		attractor.render();

@@ -26,7 +26,7 @@ cbuffer OceanParam : register(b1)
 
 float dispersion(float2 k)
 {
-    float w_0 = 2.0 * M_PI / 200.0;
+    float w_0 =  M_PI / 100.0;
     return floor(sqrt(gravity * length(k)) / w_0) * w_0;
 }
 
@@ -57,7 +57,7 @@ void main( uint3 DTid : SV_DispatchThreadID )
     
     float len = length(k);
     
-    if(len<0.000001)
+    if(len<0.0000001)
     {
         displacementX[DTid.xy] = ComplexMul(result, float2(0.0, 0.0));
         displacementZ[DTid.xy] = ComplexMul(result, float2(0.0, 0.0));

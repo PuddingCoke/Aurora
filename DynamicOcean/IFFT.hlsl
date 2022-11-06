@@ -29,22 +29,22 @@ void main(uint3 groupThreadID : SV_GroupThreadID, uint3 groupID : SV_GroupID)
     uint z = groupID.x;
     uint x = groupThreadID.x;
     
-    uint nj = (reversebits(x) >> (32u - log2MapResolution)) & (mapResolution - 1u);
-    pingpong[0u][nj] = input[uint2(z, x)];
+    uint nj = (reversebits(x) >> (32 - log2MapResolution)) & (mapResolution - 1);
+    pingpong[0][nj] = input[uint2(z, x)];
     
     GroupMemoryBarrierWithGroupSync();
     
-    uint src = 0u;
+    uint src = 0;
     
     [unroll]
-    for (uint s = 1u; s <= log2MapResolution; ++s)
+    for (uint s = 1; s <= log2MapResolution; ++s)
     {
-        uint m = 1u << s;
-        uint mh = m >> 1u;
+        uint m = 1 << s;
+        uint mh = m >> 1;
         
-        uint k = (x * (mapResolution / m)) & (mapResolution - 1u);
-        uint i = (x & ~(m - 1u));
-        uint j = (x & (mh - 1u));
+        uint k = (x * (mapResolution / m)) & (mapResolution - 1);
+        uint i = (x & ~(m - 1));
+        uint j = (x & (mh - 1));
         
         float theta = (TWO_PI * float(k)) / N;
         
@@ -53,7 +53,7 @@ void main(uint3 groupThreadID : SV_GroupThreadID, uint3 groupID : SV_GroupID)
         float2 input1 = pingpong[src][i + j + mh];
         float2 input2 = pingpong[src][i + j];
         
-        src = 1u - src;
+        src = 1 - src;
         pingpong[src][x] = input2 + ComplexMul(W_N_k, input1);
         
         GroupMemoryBarrierWithGroupSync();

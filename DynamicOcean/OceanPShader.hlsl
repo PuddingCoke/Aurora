@@ -6,9 +6,11 @@ struct PixelInput
 
 cbuffer ViewMatrix : register(b1)
 {
-    matrix view;    
+    matrix view;
     float4 viewPos;
 }
+
+#define ONE_OVER_4PI	0.0795774715459476
 
 Texture2D normalTexture : register(t0);
 
@@ -26,20 +28,32 @@ float4 main(PixelInput input) : SV_TARGET
     
     float3 emissive_color = float3(1.0, 1.0, 1.0);
     float3 ambient_color = float3(0.0, 0.65, 0.75);
-    float3 diffuse_color = float3(0.5, 0.65, 0.75);
+    float3 diffuse_color = float3(0.5, 0.65, 1.0);
     float3 specular_color = float3(1.0, 1.0, 1.0);
 
     float emissive_contribution = 0.10;
     float ambient_contribution = 0.30;
     float diffuse_contribution = 0.30;
     float specular_contribution = 0.70;
- 
-    float3 c = float3(1.0, 1.0, 1.0);
+    
+    const float rho = 0.3;
+    const float ax = 0.2;
+    const float ay = 0.1;
+
+    float3 x = cross(L, N);
+    float3 y = cross(x, N);
+
+    float mult = (ONE_OVER_4PI * rho / (ax * ay * sqrt(max(1e-5, dot(L, N) * dot(V, N)))));
+    float hdotx = dot(H, x) / ax;
+    float hdoty = dot(H, y) / ay;
+    float hdotn = dot(H, N);
+
+    float spec = mult * exp(-((hdotx * hdotx) + (hdoty * hdoty)) / (hdotn * hdotn));
     
     float3 color = emissive_color * emissive_contribution +
-		    ambient_color * ambient_contribution * c +
-		    diffuse_color * diffuse_contribution * c * max(dot(N, L), 0) +
-			specular_color * specular_contribution * c * pow(max(dot(N, H), 0.0), 360.0);
+		    ambient_color * ambient_contribution +
+		    diffuse_color * diffuse_contribution * max(dot(N, L), 0) +
+			specular_color * specular_contribution * (pow(max(dot(N, H), 0.0), 360.0) + spec*0.5);
     
     return float4(color, 1.0);
 }
