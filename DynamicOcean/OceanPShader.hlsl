@@ -42,20 +42,6 @@ float4 main(PixelInput input) : SV_TARGET
     float diffuse_contribution = 0.30;
     float specular_contribution = 0.70;
     
-    const float rho = 0.3;
-    const float ax = 0.2;
-    const float ay = 0.1;
-
-    float3 x = cross(L, N);
-    float3 y = cross(x, N);
-
-    float mult = (ONE_OVER_4PI * rho / (ax * ay * sqrt(max(1e-5, dot(L, N) * dot(V, N)))));
-    float hdotx = dot(H, x) / ax;
-    float hdoty = dot(H, y) / ay;
-    float hdotn = dot(H, N);
-
-    float spec = mult * exp(-((hdotx * hdotx) + (hdoty * hdoty)) / (hdotn * hdotn));
-    
     float3 R = reflect(-V, N);
     
     float3 refl = skyTexture.Sample(linearSampler, R).rgb;
@@ -63,7 +49,7 @@ float4 main(PixelInput input) : SV_TARGET
     float3 color = emissive_color * emissive_contribution +
 		    ambient_color * ambient_contribution +
 		    diffuse_color * diffuse_contribution * max(dot(N, L), 0) +
-			specular_color * specular_contribution * (pow(max(dot(N, H), 0.0), 360.0) + spec * 0.5) + refl * 0.3;
+			specular_color * specular_contribution * (pow(max(dot(R, H), 0.0), 32.0)) + refl * 0.3;
     
     return float4(color, 1.0);
 }

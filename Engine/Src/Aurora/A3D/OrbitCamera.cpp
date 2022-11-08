@@ -1,13 +1,10 @@
 ﻿#include<Aurora/A3D/OrbitCamera.h>
 
 OrbitCamera::OrbitCamera(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& up) :
-	eye(DirectX::XMLoadFloat3(&eye)), up(DirectX::XMLoadFloat3(&up))
+	eye(DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&eye))), up(DirectX::XMLoadFloat3(&up))
 {
-	const DirectX::XMFLOAT3 focusP = { 0,0,0 };
-
-	DirectX::XMLoadFloat3(&focusP);
-
-	Camera::setView(this->eye, focus, this->up);
+	DirectX::XMStoreFloat(&length, DirectX::XMVector3Length(DirectX::XMLoadFloat3(&eye)));
+	curLength = length;
 }
 
 void OrbitCamera::registerEvent()
@@ -42,17 +39,24 @@ void OrbitCamera::registerEvent()
 				const DirectX::XMMATRIX upRotMat = DirectX::XMMatrixRotationAxis(upCrossLookDir, rotAngle);
 
 				eye = DirectX::XMVector3Transform(eye, upRotMat);
-
-				Camera::setView(eye, focus, up);
 			}
 		});
 
 	Mouse::addScrollEvent([this]()
 		{
-			eye = DirectX::XMVectorAdd(eye, DirectX::XMVectorScale(DirectX::XMVector3Normalize(eye), -2.f * Mouse::getWheelDelta()));
-
-			Camera::setView(eye, focus, up);
+			length -= 0.5f * Mouse::getWheelDelta();
+			if (length < 0.1f)
+			{
+				length = 0.1f;
+			}
 		});
+}
+
+void OrbitCamera::applyInput(const float& dt)
+{
+	curLength = Math::lerp(curLength, length, Math::clamp(dt * 20.f, 0.f, 1.f));
+
+	Camera::setView(DirectX::XMVectorScale(eye, curLength), { 0,0,0 }, up);
 }
 
 void OrbitCamera::rotateX(const float& angle)
@@ -60,6 +64,4 @@ void OrbitCamera::rotateX(const float& angle)
 	const DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationAxis(up, angle);
 
 	eye = DirectX::XMVector3Transform(eye, rotMat);
-
-	Camera::setView(eye, focus, up);
 }

@@ -41,7 +41,7 @@ public:
 
 	MyGame() :
 		camera({ -200,30,0 }, { 1,-0.07f,0 }, { 0,1,0 }, 50, 3),
-		ocean(1024, 512, { 20.f,0.f }, 0.000005f),
+		ocean(1024, 512, { 20.f,0.f }, 0.000004f),
 		depthView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
 		skyVS(new Shader("SkyVS.hlsl", ShaderType::Vertex)),
 		skyPS(new Shader("SkyPS.hlsl", ShaderType::Pixel)),

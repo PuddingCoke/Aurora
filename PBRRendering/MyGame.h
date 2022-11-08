@@ -42,9 +42,12 @@ public:
 
 	void update(const float& dt) override
 	{
-		DirectX::XMFLOAT4 lightPos = Camera::getEye();
-		DirectX::XMStoreFloat4(&lightPos, DirectX::XMVectorScale(DirectX::XMVector4Normalize(DirectX::XMLoadFloat4(&lightPos)), 1.15f));
-		light.lightPos = lightPos;
+		camera.applyInput(dt);
+
+		DirectX::XMFLOAT3 lightPos = { Camera::getEye().x,Camera::getEye().y,Camera::getEye().z };
+		DirectX::XMStoreFloat3(&lightPos, DirectX::XMVectorScale(DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&lightPos)), 1.0f));
+
+		light.lightPos = DirectX::XMFLOAT4(lightPos.x, lightPos.y, lightPos.z, 1.f);
 
 		memcpy(lightBuffer->map(0).pData, &light, sizeof(Light));
 		lightBuffer->unmap(0);
@@ -57,6 +60,7 @@ public:
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::CadetBlue);
 		RenderAPI::get()->OMSetDefRTV(depthView);
 
+		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
 		RenderAPI::get()->PSSetBuffer({ lightBuffer }, 3);
 
 		scene.draw();

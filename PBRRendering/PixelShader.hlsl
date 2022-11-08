@@ -66,11 +66,11 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
 }
 
 static const float metallic = 0.5;
-static const float roughness = 0.0;
+static const float roughness = 0.1;
 
 float4 main(PixelInput input) : SV_TARGET
 {
-    float3 albedo = diffuseColor.rgb;
+    float3 albedo = pow(diffuseColor.rgb, 2.2);
     
     float3 N = normalize(input.normal);
     float3 V = normalize(viewPos.xyz - input.pos);

@@ -21,11 +21,17 @@ public:
 
 	void registerEvent();
 
+	void applyInput(const float& dt);
+
 	void rotateX(const float& angle);
 
 private:
 
 	DirectX::XMVECTOR eye;
+
+	float curLength;
+
+	float length;
 
 	const DirectX::XMVECTOR up;
 
