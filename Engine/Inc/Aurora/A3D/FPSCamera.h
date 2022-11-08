@@ -24,8 +24,6 @@ public:
 
 	void registerEvent();
 
-	const DirectX::XMFLOAT3& getEye() const;
-
 private:
 
 	const float moveSpeed;

@@ -283,11 +283,6 @@ public:
 				displayMode = !displayMode;
 			});
 
-		Keyboard::addKeyDownEvent(Keyboard::J, [this]()
-			{
-				const DirectX::XMFLOAT3 viewPos = camera.getEye();
-				std::cout << viewPos.x << " " << viewPos.y << " " << viewPos.z << "\n";
-			});
 	}
 
 	~MyGame()

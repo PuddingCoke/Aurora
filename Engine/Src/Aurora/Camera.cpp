@@ -34,6 +34,11 @@ Camera::~Camera()
 	delete viewBuffer;
 }
 
+const DirectX::XMFLOAT4& Camera::getEye()
+{
+	return instance->viewInfo.eyePos;
+}
+
 void Camera::setProj(const DirectX::XMMATRIX& proj)
 {
 	instance->projMatrix = proj;

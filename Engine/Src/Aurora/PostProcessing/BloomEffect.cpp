@@ -106,6 +106,8 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 	RenderAPI::get()->PSSetBuffer({ bloomParamBuffer }, 1);
 	RenderAPI::get()->CSSetBuffer({ bloomParamBuffer }, 1);
+	RenderAPI::get()->HSSetShader(nullptr);
+	RenderAPI::get()->DSSetShader(nullptr);
 	Shader::fullScreenVS->use();
 
 	bloomExtract->use();

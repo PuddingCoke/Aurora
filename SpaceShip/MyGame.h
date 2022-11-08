@@ -15,7 +15,7 @@ public:
 	FPSCamera camera;
 
 	MyGame() :
-		spaceTexture(new TextureCube("D:/SpaceShipAssets/space.hdr", 2048)),
+		spaceTexture(new TextureCube("D:/Assets/SpaceShip/space.hdr", 2048)),
 		skyboxPShader(new Shader("SkyboxPShader.hlsl", ShaderType::Pixel)),
 		camera({ 0,0,0 }, { 1,0,0 }, { 0,1,0 }, 100.f, 3.f)
 	{

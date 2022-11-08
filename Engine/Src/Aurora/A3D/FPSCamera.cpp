@@ -92,8 +92,3 @@ void FPSCamera::registerEvent()
 			}
 		});
 }
-
-const DirectX::XMFLOAT3& FPSCamera::getEye() const
-{
-	return eye;
-}

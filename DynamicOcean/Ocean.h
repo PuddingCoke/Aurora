@@ -258,5 +258,8 @@ inline void Ocean::render() const
 	RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
 
 	RenderAPI::get()->Draw(4 * (patchSize - 1u) * (patchSize - 1u), 0u);
+
+	RenderAPI::get()->HSSetShader(nullptr);
+	RenderAPI::get()->DSSetShader(nullptr);
 }
 

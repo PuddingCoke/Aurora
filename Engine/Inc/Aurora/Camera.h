@@ -30,6 +30,8 @@ public:
 
 	static Buffer* getViewBuffer();
 
+	static const DirectX::XMFLOAT4& getEye();
+
 	static void setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar);
 
 	static void setView(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up);
