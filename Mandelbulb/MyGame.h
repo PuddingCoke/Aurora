@@ -73,7 +73,7 @@ public:
 
 	void update(const float& dt) override
 	{
-
+		camera.applyInput(dt);
 	}
 
 	void render()

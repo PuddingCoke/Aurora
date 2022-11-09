@@ -71,6 +71,8 @@ public:
 			camera.rotateX(dt);
 		}
 
+		camera.applyInput(dt);
+
 		if (Keyboard::getKeyDown(Keyboard::A))
 		{
 			exposure += 0.01f;

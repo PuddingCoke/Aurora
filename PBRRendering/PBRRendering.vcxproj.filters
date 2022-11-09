@@ -33,5 +33,7 @@
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl" />
     <FxCompile Include="PixelShader.hlsl" />
+    <FxCompile Include="BRDFGenPS.hlsl" />
+    <FxCompile Include="SkyboxPS.hlsl" />
   </ItemGroup>
 </Project>

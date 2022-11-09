@@ -23,6 +23,12 @@ cbuffer Light : register(b3)
     float4 lightColor;
 }
 
+Texture2D<float2> brdfLookup : register(t0);
+TextureCube irradianceCube : register(t1);
+TextureCube prefilterCube : register(t2);
+
+SamplerState linearSampler : register(s0);
+
 #define PI 3.14159265358979323846264
 
 float DistributionGGX(float3 N, float3 H, float roughness)
@@ -65,6 +71,11 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+float3 fresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
+{
+    return F0 + (max(float3(1.0 - roughness, 1.0 - roughness, 1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
 static const float metallic = 0.5;
 static const float roughness = 0.1;
 
@@ -76,6 +87,7 @@ float4 main(PixelInput input) : SV_TARGET
     float3 V = normalize(viewPos.xyz - input.pos);
     float3 L = normalize(lightPos.xyz - input.pos);
     float3 H = normalize(V + L);
+    float3 R = reflect(-V, N);
     
     float3 F0 = float3(0.04, 0.04, 0.04);
     F0 = lerp(F0, albedo, metallic);
@@ -102,9 +114,29 @@ float4 main(PixelInput input) : SV_TARGET
     
     float3 color = (kD * albedo / PI + specular) * radiance * NdotL;
     
+    F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+    
+    kS = F;
+    
+    kD = float3(1.0, 1.0, 1.0) - kS;
+    kD *= 1.0 - metallic;
+    
+    float3 irradiance = irradianceCube.Sample(linearSampler, N).rgb;
+    float3 diffuse = irradiance * albedo;
+    
+    const float MAX_REFLECTION_LOD = 9.0;
+    
+    float3 prefilteredColor = prefilterCube.SampleLevel(linearSampler, R, roughness * MAX_REFLECTION_LOD).rgb;
+    float2 brdf = brdfLookup.Sample(linearSampler, float2(max(dot(N, V), 0.0), roughness)).rg;
+    specular = prefilteredColor * (F * brdf.x + brdf.y);
+    
+    float3 ambient = kD * diffuse + specular;
+    
+    color += ambient;
+    
     color = color / (color + 1.0);
     
     color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
     
-    return float4(color + diffuseColor.rgb * 0.2, 1.0);
+    return float4(color, 1.0);
 }
