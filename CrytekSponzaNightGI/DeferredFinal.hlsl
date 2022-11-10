@@ -118,7 +118,6 @@ inline float4 ConeTrace(float3 P, float3 N, float3 coneDir, float coneAperture)
         dist += diameter * ConeStepSize;
     }
     
-    
     return float4(color, alpha);
 }
 
@@ -129,13 +128,6 @@ inline float4 TraceDiffuse(float3 P, float3 N)
     
     for (uint cone = 0; cone < numCones; cone++)
     {
-        //float cosTheta = dot(N, DIFFUSE_CONE_DIRECTIONS[cone]);
-        
-        //if(cosTheta<0.0)
-        //    continue;
-
-        //amount += ConeTrace(P, N, DIFFUSE_CONE_DIRECTIONS[cone], 0.628319);
-        
         float2 hamm = hammersley2d(cone, numCones);
         float3 hemisphere = hemispherepoint_cos(hamm.x, hamm.y);
         float3 coneDir = mul(hemisphere, tangentSpace);

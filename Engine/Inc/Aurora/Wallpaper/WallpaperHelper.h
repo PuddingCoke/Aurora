@@ -6,7 +6,6 @@
 #define NOMINMAX
 
 #include<Windows.h>
-#include<iostream>
 
 #include<Aurora/Graphics.h>
 #include<Aurora/Mouse.h>

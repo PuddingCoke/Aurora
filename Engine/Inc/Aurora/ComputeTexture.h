@@ -3,8 +3,7 @@
 #ifndef _COMPUTETEXTURE_H_
 #define _COMPUTETEXTURE_H_
 
-#include"ResourceTexture.h"
-
+#include"DX/Resource/Texture2D.h"
 #include"DX/View/USView.h"
 
 class ComputeTexture :public Texture2D, public USView

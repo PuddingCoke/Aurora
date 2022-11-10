@@ -9,7 +9,6 @@
 #include<Aurora/Math.h>
 #include<Aurora/Shader.h>
 #include<Aurora/RenderAPI.h>
-#include<Aurora/DX/View/ShaderResourceView.h>
 
 #include<Aurora/CompiledShaders/EquirectangularVS.h>
 #include<Aurora/CompiledShaders/EquirectangularPS.h>

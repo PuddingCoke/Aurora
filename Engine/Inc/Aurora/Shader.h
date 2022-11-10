@@ -6,10 +6,9 @@
 #include<d3d11_4.h>
 #include<d3dcompiler.h>
 #include<string>
-#include<iostream>
 #include<vector>
+#include<iostream>
 
-#include"Utils.h"
 #include"Renderer.h"
 
 enum class ShaderType
