@@ -3,8 +3,6 @@
 #ifndef _CASCADEDSHADOWMAP_H_
 #define _CASCADEDSHADOWMAP_H_
 
-#define __GFSDK_DX11__
-
 #include<functional>
 
 #include<Aurora/RenderAPI.h>
@@ -12,8 +10,6 @@
 #include<Aurora/Math.h>
 
 #include"ShadowMap.h"
-
-#include<GFSDK_ShadowLib/GFSDK_ShadowLib.h>
 
 class CascadedShadowMap
 {
