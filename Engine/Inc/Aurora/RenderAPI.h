@@ -11,6 +11,7 @@
 #include"CompiledShaders/FullScreenPS.h"
 #include"CompiledShaders/ShadowVS.h"
 #include"CompiledShaders/SkyboxVS.h"
+#include"CompiledShaders/RandNoiseCS.h"
 
 class RenderAPI
 {
@@ -135,6 +136,8 @@ public:
 
 	void UnbindPSUAV() const;
 
+	void GenNoise(UnorderedAccessView* const uav, const unsigned int& textureWidth, const unsigned int& textureHeight);
+
 	static Shader* fullScreenVS;
 
 	static Shader* fullScreenPS;
@@ -142,6 +145,8 @@ public:
 	static Shader* skyboxVS;
 
 	static Shader* shadowVS;
+
+	static Shader* randNoiseCS;
 
 private:
 

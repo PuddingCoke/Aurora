@@ -6,6 +6,7 @@ Shader* RenderAPI::fullScreenVS;
 Shader* RenderAPI::fullScreenPS;
 Shader* RenderAPI::skyboxVS;
 Shader* RenderAPI::shadowVS;
+Shader* RenderAPI::randNoiseCS;
 
 RenderAPI::RenderAPI(const unsigned int& width, const unsigned int& height, const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture)
 {
@@ -35,6 +36,8 @@ RenderAPI::RenderAPI(const unsigned int& width, const unsigned int& height, cons
 	skyboxVS = new Shader(g_SkyboxVSBytes, sizeof(g_SkyboxVSBytes), ShaderType::Vertex);
 	std::cout << "shadowVS ";
 	shadowVS = new Shader(g_ShadowVSBytes, sizeof(g_ShadowVSBytes), ShaderType::Vertex);
+	std::cout << "randNoiseCS ";
+	randNoiseCS = new Shader(g_RandNoiseCSBytes, sizeof(g_RandNoiseCSBytes), ShaderType::Compute);
 }
 
 RenderAPI* RenderAPI::get()
@@ -331,4 +334,11 @@ void RenderAPI::UnbindCSUAV() const
 void RenderAPI::UnbindPSUAV() const
 {
 	UnorderedAccessView::unbindPUAV();
+}
+
+void RenderAPI::GenNoise(UnorderedAccessView* const uav, const unsigned int& textureWidth, const unsigned int& textureHeight)
+{
+	randNoiseCS->use();
+	CSSetUAV({ uav }, 0);
+	RenderAPI::get()->Dispatch(textureWidth / 32, textureHeight / 18, 1);
 }
