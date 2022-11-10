@@ -103,7 +103,7 @@ public:
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->PSSetSampler(States::get()->linearWrapSampler.GetAddressOf(), 0, 1);
 
-		Shader::fullScreenVS->use();
+		RenderAPI::fullScreenVS->use();
 		pixelShader->use();
 
 		RenderAPI::get()->PSSetSRV({ noiseTexture,dustTexture,accTexture->read() }, 0);
@@ -119,7 +119,7 @@ public:
 
 			RenderAPI::get()->OMSetDefRTV(nullptr);
 
-			Shader::fullScreenPS->use();
+			RenderAPI::fullScreenPS->use();
 
 			RenderAPI::get()->PSSetSRV({ textureSRV }, 0);
 		}
@@ -127,7 +127,7 @@ public:
 		{
 			RenderAPI::get()->OMSetDefRTV(nullptr);
 
-			Shader::fullScreenPS->use();
+			RenderAPI::fullScreenPS->use();
 
 			RenderAPI::get()->PSSetSRV({ accTexture->read() }, 0);
 		}

@@ -189,7 +189,7 @@ public:
 
 		RenderAPI::get()->PSSetSampler(samplers, 0, 2);
 
-		Shader::fullScreenVS->use();
+		RenderAPI::fullScreenVS->use();
 	}
 
 	~MyGame()

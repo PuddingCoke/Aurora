@@ -6,7 +6,6 @@
 #define NOMINMAX
 
 #include<DirectXMath.h>
-#include<DirectXCollision.h>
 
 #include"Renderer.h"
 #include"Keyboard.h"

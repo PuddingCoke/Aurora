@@ -1,7 +1,5 @@
 #include<Aurora/A3D/ShadowMap.h>
 
-Shader* ShadowMap::shadowVS;
-
 ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height) :
 	DepthStencilView()
 {
@@ -44,14 +42,4 @@ void ShadowMap::clear(const float& depth) const
 void ShadowMap::bindDSV()
 {
 	unbindFromSRV();
-}
-
-void ShadowMap::ini()
-{
-	shadowVS = new Shader(g_ShadowVSBytes, sizeof(g_ShadowVSBytes), ShaderType::Vertex);
-}
-
-void ShadowMap::release()
-{
-	delete shadowVS;
 }

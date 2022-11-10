@@ -11,8 +11,6 @@
 
 #include"Utils.h"
 #include"Renderer.h"
-#include"CompiledShaders/FullScreenVS.h"
-#include"CompiledShaders/FullScreenPS.h"
 
 enum class ShaderType
 {
@@ -44,19 +42,11 @@ public:
 
 	static constexpr UINT  compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
-	static Shader* fullScreenVS;
-
-	static Shader* fullScreenPS;
-
 	const void* getBufferPointer() const;
 
 	const size_t& getBufferSize() const;
 
 private:
-
-	static void ini();
-
-	static void release();
 
 	friend class Aurora;
 

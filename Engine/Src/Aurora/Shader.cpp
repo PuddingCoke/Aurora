@@ -1,8 +1,5 @@
 ﻿#include<Aurora/Shader.h>
 
-Shader* Shader::fullScreenVS;
-Shader* Shader::fullScreenPS;
-
 Shader::~Shader()
 {
 	(this->*releaseFunc)();
@@ -21,18 +18,6 @@ const void* Shader::getBufferPointer() const
 const size_t& Shader::getBufferSize() const
 {
 	return bufferSize;
-}
-
-void Shader::ini()
-{
-	fullScreenVS = new Shader(g_FullScreenVSBytes, sizeof(g_FullScreenVSBytes), ShaderType::Vertex);
-	fullScreenPS = new Shader(g_FullScreenPSBytes, sizeof(g_FullScreenPSBytes), ShaderType::Pixel);
-}
-
-void Shader::release()
-{
-	delete fullScreenVS;
-	delete fullScreenPS;
 }
 
 Shader::Shader(const std::string& filePath, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros) :

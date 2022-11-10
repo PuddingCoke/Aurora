@@ -8,8 +8,8 @@
 #include<iostream>
 #include<vector>
 
-#include<Aurora/Renderer.h>
 #include<Aurora/Utils.h>
+#include<Aurora/Renderer.h>
 #include<Aurora/Random.h>
 #include<Aurora/Graphics.h>
 

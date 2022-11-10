@@ -66,11 +66,7 @@ int Aurora::iniEngine(const Configuration& config)
 
 	Camera::instance = new Camera();
 
-	Shader::ini();
-
 	TextureCube::iniShader();
-
-	ShadowMap::ini();
 
 	ResManager::instance = new ResManager();
 
@@ -147,11 +143,7 @@ void Aurora::iniGame(Game* const game)
 
 	delete RenderAPI::instance;
 
-	Shader::release();
-
 	TextureCube::releaseShader();
-
-	ShadowMap::release();
 
 	if (config->enableDebug)
 	{

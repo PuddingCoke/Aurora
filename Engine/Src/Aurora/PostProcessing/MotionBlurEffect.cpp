@@ -22,7 +22,7 @@ ShaderResourceView* MotionBlurEffect::process(ShaderResourceView* const gPositio
 	RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
 	RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 
-	Shader::fullScreenVS->use();
+	RenderAPI::fullScreenVS->use();
 	motionBlurPS->use();
 
 	RenderAPI::get()->DrawQuad();

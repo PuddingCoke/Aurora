@@ -45,7 +45,7 @@ public:
 
 		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 1, 1);
 
-		TextureCube::skyboxVS->use();
+		RenderAPI::skyboxVS->use();
 		skyboxPShader->use();
 
 		RenderAPI::get()->PSSetSRV({ spaceTexture }, 0);

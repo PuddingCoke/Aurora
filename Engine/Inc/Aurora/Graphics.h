@@ -4,6 +4,7 @@
 #define _GRAPHICS_H_
 
 #include"DX/Resource/Buffer.h"
+#include"Random.h"
 
 class Graphics
 {
@@ -57,8 +58,8 @@ private:
 	{
 		float deltaTime = 0;
 		float sTime = 0;
-		float v2 = 0;
-		float v3 = 0;
+		unsigned int uintSeed = 0;
+		float floatSeed = 0;
 	} deltaTime;
 
 	struct FPSCalculator

@@ -15,17 +15,12 @@
 #include"Graphics.h"
 #include"Configuration.h"
 #include"Game.h"
-#include"Random.h"
 #include"Keyboard.h"
 #include"States.h"
-#include"Shader.h"
 #include"Math.h"
 #include"ResManager.h"
-
 #include"RenderAPI.h"
-
 #include"A3D/TextureCube.h"
-#include"A3D/ShadowMap.h"
 
 #include"VideoEncoder/NvidiaEncoder.h"
 #include"Wallpaper/WallpaperHelper.h"

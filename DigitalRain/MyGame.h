@@ -120,8 +120,8 @@ public:
 		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
 		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
-		Shader::fullScreenVS->use();
-		Shader::fullScreenPS->use();
+		RenderAPI::fullScreenVS->use();
+		RenderAPI::fullScreenPS->use();
 
 		RenderAPI::get()->DrawQuad();
 

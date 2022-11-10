@@ -20,7 +20,7 @@ ShaderResourceView* FadeEffect::process(ShaderResourceView* const texture2D) con
 	RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
 
-	Shader::fullScreenVS->use();
+	RenderAPI::fullScreenVS->use();
 	fadePShader->use();
 
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

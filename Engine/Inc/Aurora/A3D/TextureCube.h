@@ -11,7 +11,6 @@
 #include<Aurora/RenderAPI.h>
 #include<Aurora/DX/View/ShaderResourceView.h>
 
-#include<Aurora/CompiledShaders/SkyboxVS.h>
 #include<Aurora/CompiledShaders/EquirectangularVS.h>
 #include<Aurora/CompiledShaders/EquirectangularPS.h>
 
@@ -35,8 +34,6 @@ public:
 	TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels = 1);
 
 	~TextureCube();
-
-	static Shader* skyboxVS;
 
 private:
 

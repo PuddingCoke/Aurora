@@ -75,6 +75,8 @@ Graphics::~Graphics()
 
 void Graphics::updateDeltaTimeBuffer()
 {
+	deltaTime.uintSeed = Random::Uint();
+	deltaTime.floatSeed = Random::Float();
 	memcpy(deltaTimeBuffer->map(0).pData, &deltaTime, sizeof(DeltaTime));
 	deltaTimeBuffer->unmap(0);
 }

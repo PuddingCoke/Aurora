@@ -5,7 +5,6 @@
 
 #include<map>
 #include<functional>
-#include<iostream>
 
 class Event
 {

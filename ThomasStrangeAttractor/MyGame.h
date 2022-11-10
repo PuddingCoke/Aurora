@@ -119,8 +119,8 @@ public:
 		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 		RenderAPI::get()->PSSetSRV({ textureSRV }, 0);
 
-		Shader::fullScreenVS->use();
-		Shader::fullScreenPS->use();
+		RenderAPI::fullScreenVS->use();
+		RenderAPI::fullScreenPS->use();
 
 		RenderAPI::get()->DrawQuad();
 	}

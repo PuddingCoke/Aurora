@@ -1,7 +1,5 @@
 #include<Aurora/A3D/TextureCube.h>
 
-Shader* TextureCube::skyboxVS;
-
 Shader* TextureCube::equirectangularVS;
 
 Shader* TextureCube::equirectangularPS;
@@ -158,14 +156,14 @@ TextureCube::~TextureCube()
 
 void TextureCube::iniShader()
 {
-	skyboxVS = new Shader(g_SkyboxVSBytes, sizeof(g_SkyboxVSBytes), ShaderType::Vertex);
+	std::cout << "equirectangularVS ";
 	equirectangularVS = new Shader(g_EquirectangularVSBytes, sizeof(g_EquirectangularVSBytes), ShaderType::Vertex);
+	std::cout << "equirectangularPS ";
 	equirectangularPS = new Shader(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes), ShaderType::Pixel);
 }
 
 void TextureCube::releaseShader()
 {
-	delete skyboxVS;
 	delete equirectangularVS;
 	delete equirectangularPS;
 }

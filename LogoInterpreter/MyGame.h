@@ -68,8 +68,8 @@ public:
 		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
 		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 
-		Shader::fullScreenVS->use();
-		Shader::fullScreenPS->use();
+		RenderAPI::fullScreenVS->use();
+		RenderAPI::fullScreenPS->use();
 
 		RenderAPI::get()->PSSetSRV({ texture}, 0);
 		RenderAPI::get()->Draw(3, 0);

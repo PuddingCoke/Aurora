@@ -7,6 +7,11 @@
 #include"ResManager.h"
 #include"Shader.h"
 
+#include"CompiledShaders/FullScreenVS.h"
+#include"CompiledShaders/FullScreenPS.h"
+#include"CompiledShaders/ShadowVS.h"
+#include"CompiledShaders/SkyboxVS.h"
+
 class RenderAPI
 {
 public:
@@ -129,6 +134,14 @@ public:
 	void UnbindCSUAV() const;
 
 	void UnbindPSUAV() const;
+
+	static Shader* fullScreenVS;
+
+	static Shader* fullScreenPS;
+
+	static Shader* skyboxVS;
+
+	static Shader* shadowVS;
 
 private:
 

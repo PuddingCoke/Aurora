@@ -7,7 +7,6 @@
 
 #include<Aurora/A2D/BitmapFont.h>
 #include<Aurora/ResourceTexture.h>
-#include<Aurora/RenderTexture.h>
 #include<Aurora/Shader.h>
 #include<Aurora/States.h>
 #include<Aurora/RenderAPI.h>

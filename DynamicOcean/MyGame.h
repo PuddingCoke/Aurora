@@ -59,7 +59,7 @@ public:
 			skyTexture->clearRTV(DirectX::Colors::Black);
 			RenderAPI::get()->OMSetRTV({ skyTexture }, nullptr);
 
-			Shader::fullScreenVS->use();
+			RenderAPI::fullScreenVS->use();
 			skyUpdatePS->use();
 
 			RenderAPI::get()->DrawQuad();

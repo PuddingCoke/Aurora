@@ -57,7 +57,7 @@ public:
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->OMSetRTV({ brdfTex }, nullptr);
 
-		Shader::fullScreenVS->use();
+		RenderAPI::fullScreenVS->use();
 		brdfGenPS->use();
 
 		RenderAPI::get()->DrawQuad();
@@ -109,7 +109,7 @@ public:
 		RenderAPI::get()->PSSetSRV({ envCube }, 0);
 		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
 
-		TextureCube::skyboxVS->use();
+		RenderAPI::skyboxVS->use();
 		skyboxPS->use();
 
 		RenderAPI::get()->DrawCube();

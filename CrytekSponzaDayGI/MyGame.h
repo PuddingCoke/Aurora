@@ -215,7 +215,7 @@ public:
 			shadowTexture->clear();
 			RenderAPI::get()->OMSetRTV({}, shadowTexture);
 			RenderAPI::get()->VSSetBuffer({ lightProjBuffer }, 2);
-			scene->drawGeometry(ShadowMap::shadowVS);
+			scene->drawGeometry(RenderAPI::shadowVS);
 
 			RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		}
@@ -428,7 +428,7 @@ public:
 			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()),shadowTexture,voxelTextureColorFinal }, 0);
 			RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer,lightProjBuffer }, 1);
 
-			Shader::fullScreenVS->use();
+			RenderAPI::fullScreenVS->use();
 			deferredFinal->use();
 
 			RenderAPI::get()->DrawQuad();
@@ -436,7 +436,7 @@ public:
 			RenderAPI::get()->OMSetRTV({ originTexture }, shadowMap);
 			RenderAPI::get()->PSSetSRV({ skybox }, 0);
 
-			TextureCube::skyboxVS->use();
+			RenderAPI::skyboxVS->use();
 			skyboxPShader->use();
 
 			RenderAPI::get()->DrawCube();
@@ -447,8 +447,8 @@ public:
 			RenderAPI::get()->OMSetDefRTV(nullptr);
 			RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
-			Shader::fullScreenVS->use();
-			Shader::fullScreenPS->use();
+			RenderAPI::fullScreenVS->use();
+			RenderAPI::fullScreenPS->use();
 
 			RenderAPI::get()->DrawQuad();
 		}

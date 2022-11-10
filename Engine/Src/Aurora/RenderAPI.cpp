@@ -2,6 +2,11 @@
 
 RenderAPI* RenderAPI::instance = nullptr;
 
+Shader* RenderAPI::fullScreenVS;
+Shader* RenderAPI::fullScreenPS;
+Shader* RenderAPI::skyboxVS;
+Shader* RenderAPI::shadowVS;
+
 RenderAPI::RenderAPI(const unsigned int& width, const unsigned int& height, const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture)
 {
 	if (msaaLevel == 1)
@@ -21,6 +26,15 @@ RenderAPI::RenderAPI(const unsigned int& width, const unsigned int& height, cons
 
 		defRenderTargetView = new RenderTargetView(Renderer::instance->msaaTexture.Get(), msaaViewDesc);
 	}
+
+	std::cout << "fullScreenVS ";
+	fullScreenVS = new Shader(g_FullScreenVSBytes, sizeof(g_FullScreenVSBytes), ShaderType::Vertex);
+	std::cout << "fullScreenPS ";
+	fullScreenPS = new Shader(g_FullScreenPSBytes, sizeof(g_FullScreenPSBytes), ShaderType::Pixel);
+	std::cout << "skyboxVS ";
+	skyboxVS = new Shader(g_SkyboxVSBytes, sizeof(g_SkyboxVSBytes), ShaderType::Vertex);
+	std::cout << "shadowVS ";
+	shadowVS = new Shader(g_ShadowVSBytes, sizeof(g_ShadowVSBytes), ShaderType::Vertex);
 }
 
 RenderAPI* RenderAPI::get()
@@ -31,6 +45,10 @@ RenderAPI* RenderAPI::get()
 RenderAPI::~RenderAPI()
 {
 	delete defRenderTargetView;
+	delete fullScreenVS;
+	delete fullScreenPS;
+	delete skyboxVS;
+	delete shadowVS;
 }
 
 void RenderAPI::CreateSamplerState(const D3D11_SAMPLER_DESC& desc, ID3D11SamplerState** const state) const

@@ -108,7 +108,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->CSSetBuffer({ bloomParamBuffer }, 1);
 	RenderAPI::get()->HSSetShader(nullptr);
 	RenderAPI::get()->DSSetShader(nullptr);
-	Shader::fullScreenVS->use();
+	RenderAPI::fullScreenVS->use();
 
 	bloomExtract->use();
 	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
@@ -116,7 +116,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
 	RenderAPI::get()->DrawQuad();
 
-	Shader::fullScreenPS->use();
+	RenderAPI::fullScreenPS->use();
 	RenderAPI::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
 	RenderAPI::get()->OMSetRTV({ rcTextures[0] }, nullptr);
 	RenderAPI::get()->PSSetSRV({ bloomTexture }, 0);
@@ -138,7 +138,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 		RenderAPI::get()->RSSetViewport(resolutions[i + 1].x, resolutions[i + 1].y);
 
-		Shader::fullScreenPS->use();
+		RenderAPI::fullScreenPS->use();
 		RenderAPI::get()->OMSetRTV({ rcTextures[i * 2 + 2] }, nullptr);
 		RenderAPI::get()->PSSetSRV({ rcTextures[i * 2] }, 0);
 		RenderAPI::get()->DrawQuad();
@@ -176,7 +176,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
 		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
 
-		Shader::fullScreenPS->use();
+		RenderAPI::fullScreenPS->use();
 		RenderAPI::get()->OMSetRTV({ rcTextures[(blurSteps - 2 - i) * 2] }, nullptr);
 		RenderAPI::get()->PSSetSRV({ rcTextures[(blurSteps - 1 - i) * 2] }, 0);
 		RenderAPI::get()->DrawQuad();

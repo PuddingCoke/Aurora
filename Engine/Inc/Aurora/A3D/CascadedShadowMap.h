@@ -4,6 +4,7 @@
 #define _CASCADEDSHADOWMAP_H_
 
 #include<functional>
+#include<DirectXCollision.h>
 
 #include<Aurora/RenderAPI.h>
 #include<Aurora/Camera.h>
