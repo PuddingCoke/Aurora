@@ -98,7 +98,7 @@ public:
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->PSSetSRV({ mandelTexture,modelCullBack,modelCullFront }, 0);
-		RenderAPI::get()->PSSetSampler(borderSampler.GetAddressOf(), 0, 1);
+		RenderAPI::get()->PSSetSampler({ borderSampler.Get() }, 0);
 
 		rayCastVShader->use();
 		rayCastPSHader->use();

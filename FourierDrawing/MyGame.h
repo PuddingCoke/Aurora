@@ -71,7 +71,7 @@ public:
 		pBatch->setLineWidth(1.5f);
 		pBatch->applyChange();
 
-		const std::string filePath = "dft_data.json";
+		const std::string filePath = "maomao.json";
 		std::ifstream ifs(filePath);
 		json dftData = json::parse(ifs);
 		ifs.close();

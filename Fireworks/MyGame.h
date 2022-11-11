@@ -219,7 +219,7 @@ public:
 		RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
 
 		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
-		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+		RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
 		
 		RenderAPI::fullScreenVS->use();

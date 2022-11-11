@@ -3,7 +3,7 @@
 ResManager* ResManager::instance = nullptr;
 
 ResManager::ResManager() :
-	tempBuffer{}, tempRTV{}, tempUAV{}, tempSRV{}, tempOffsets{}, tempStrides{}
+	tempBuffer{}, tempRTV{}, tempUAV{}, tempSRV{}, tempOffsets{}, tempStrides{}, tempSampler{}
 {
 }
 
@@ -408,4 +408,76 @@ void ResManager::CSSetBuffer(const std::initializer_list<Buffer*>& buffers, cons
 	}
 
 	Renderer::context->CSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
+}
+
+void ResManager::VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+{
+	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
+
+	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	{
+		tempSampler[i - slot] = it[0];
+	}
+
+	Renderer::context->VSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+}
+
+void ResManager::HSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+{
+	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
+
+	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	{
+		tempSampler[i - slot] = it[0];
+	}
+
+	Renderer::context->HSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+}
+
+void ResManager::DSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+{
+	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
+
+	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	{
+		tempSampler[i - slot] = it[0];
+	}
+
+	Renderer::context->DSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+}
+
+void ResManager::GSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+{
+	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
+
+	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	{
+		tempSampler[i - slot] = it[0];
+	}
+
+	Renderer::context->GSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+}
+
+void ResManager::PSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+{
+	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
+
+	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	{
+		tempSampler[i - slot] = it[0];
+	}
+
+	Renderer::context->PSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+}
+
+void ResManager::CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+{
+	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
+
+	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	{
+		tempSampler[i - slot] = it[0];
+	}
+
+	Renderer::context->CSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
 }

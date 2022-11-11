@@ -252,8 +252,8 @@ inline void Ocean::render() const
 	RenderAPI::get()->DSSetSRV({ displacementXYZ }, 0);
 	RenderAPI::get()->PSSetSRV({ normalTexture }, 0);
 
-	RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
-	RenderAPI::get()->DSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+	RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+	RenderAPI::get()->DSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 
 	RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
 

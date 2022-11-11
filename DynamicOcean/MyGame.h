@@ -156,7 +156,7 @@ public:
 		RenderAPI::get()->IASetVertexBuffer(0, { skyVertexBuffer }, { sizeof(float) * 6 }, { 0 });
 
 		RenderAPI::get()->PSSetSRV({ skyTexture }, 0);
-		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+		RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 
 		skyVS->use();
 		skyPS->use();

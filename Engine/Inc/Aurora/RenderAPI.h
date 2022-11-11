@@ -67,17 +67,17 @@ public:
 
 	void CSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot) const;
 
-	void VSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const;
+	void VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
 
-	void HSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const;
+	void HSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
 
-	void DSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const;
+	void DSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
 
-	void GSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const;
+	void GSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
 
-	void PSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const;
+	void PSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
 
-	void CSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const;
+	void CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
 
 	void IASetInputLayout(ID3D11InputLayout* const layout) const;
 

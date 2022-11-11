@@ -102,8 +102,8 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 {
 	RenderAPI::get()->OMSetBlendState(nullptr);
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
-	RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+	RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+	RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 	RenderAPI::get()->PSSetBuffer({ bloomParamBuffer }, 1);
 	RenderAPI::get()->CSSetBuffer({ bloomParamBuffer }, 1);
 	RenderAPI::get()->HSSetShader(nullptr);

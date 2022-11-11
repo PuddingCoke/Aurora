@@ -233,11 +233,9 @@ public:
 			voxelTextureTempNormal->clear(color);
 			RenderAPI::get()->OMSetUAV({ voxelTextureTempColor,voxelTextureTempNormal });
 
-			ID3D11SamplerState* samplers[2] = { States::get()->linearWrapSampler.Get(),shadowSampler.Get() };
-
 			RenderAPI::get()->VSSetBuffer({ voxelProjBuffer }, 2);
 			RenderAPI::get()->PSSetBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer,lightProjBuffer }, 1);
-			RenderAPI::get()->PSSetSampler(samplers, 0, 2);
+			RenderAPI::get()->PSSetSampler({ States::get()->linearWrapSampler.Get(),shadowSampler.Get() }, 0);
 			RenderAPI::get()->PSSetSRV({ shadowTexture }, 3);
 
 			RenderAPI::get()->RSSetState(States::get()->rasterConserve.Get());
@@ -259,7 +257,7 @@ public:
 			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
 			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+			RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
 
@@ -268,7 +266,7 @@ public:
 			RenderAPI::get()->CSSetSRV({ voxelTextureColorFinal,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColor }, 0);
 			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+			RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
 
@@ -277,7 +275,7 @@ public:
 			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
 			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+			RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
 
@@ -286,7 +284,7 @@ public:
 			RenderAPI::get()->CSSetSRV({ voxelTextureColorFinal,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColor }, 0);
 			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+			RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
 
@@ -295,7 +293,7 @@ public:
 			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
 			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+			RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
 
@@ -411,8 +409,7 @@ public:
 			RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
 
 			RenderAPI::get()->GSSetShader(nullptr);
-			ID3D11SamplerState* samplers[3] = { States::get()->linearWrapSampler.Get(),States::get()->linearClampSampler.Get(),shadowSampler.Get() };
-			RenderAPI::get()->PSSetSampler(samplers, 0, 3);
+			RenderAPI::get()->PSSetSampler({ States::get()->linearWrapSampler.Get(),States::get()->linearClampSampler.Get(),shadowSampler.Get() }, 0);
 
 			gBaseColor->clearRTV(DirectX::Colors::Black);
 			gPosition->clearRTV(DirectX::Colors::Black);

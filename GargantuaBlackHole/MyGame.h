@@ -101,7 +101,7 @@ public:
 
 		RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->PSSetSampler(States::get()->linearWrapSampler.GetAddressOf(), 0, 1);
+		RenderAPI::get()->PSSetSampler({ States::get()->linearWrapSampler.Get() }, 0);
 
 		RenderAPI::fullScreenVS->use();
 		pixelShader->use();

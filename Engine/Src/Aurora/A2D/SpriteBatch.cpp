@@ -49,7 +49,7 @@ void SpriteBatch::end()
 	bitmapPShader->use();
 	bitmapVShader->use();
 
-	RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+	RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 	RenderAPI::get()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -239,7 +239,7 @@ int SpriteBatch::texturePoolAdd(ShaderResourceView* const texture)
 
 void SpriteBatch::flush()
 {
-	RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+	RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 	RenderAPI::get()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

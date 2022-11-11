@@ -185,9 +185,7 @@ public:
 				pointer.down = false;
 			});
 
-		ID3D11SamplerState* samplers[2] = { States::get()->linearClampSampler.Get(),States::get()->pointClampSampler.Get() };
-
-		RenderAPI::get()->PSSetSampler(samplers, 0, 2);
+		RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get(),States::get()->pointClampSampler.Get() }, 0);
 
 		RenderAPI::fullScreenVS->use();
 	}

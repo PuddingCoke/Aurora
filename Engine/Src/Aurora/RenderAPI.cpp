@@ -164,34 +164,34 @@ void RenderAPI::CSSetBuffer(const std::initializer_list<Buffer*>& buffers, const
 	ResManager::get()->CSSetBuffer(buffers, slot);
 }
 
-void RenderAPI::VSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const
+void RenderAPI::VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const
 {
-	Renderer::context->VSSetSamplers(slot, num, samplers);
+	ResManager::get()->VSSetSampler(samplers, slot);
 }
 
-void RenderAPI::HSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const
+void RenderAPI::HSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const
 {
-	Renderer::context->HSSetSamplers(slot, num, samplers);
+	ResManager::get()->HSSetSampler(samplers, slot);
 }
 
-void RenderAPI::DSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const
+void RenderAPI::DSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const
 {
-	Renderer::context->DSSetSamplers(slot, num, samplers);
+	ResManager::get()->DSSetSampler(samplers, slot);
 }
 
-void RenderAPI::GSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const
+void RenderAPI::GSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const
 {
-	Renderer::context->GSSetSamplers(slot, num, samplers);
+	ResManager::get()->GSSetSampler(samplers, slot);
 }
 
-void RenderAPI::PSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const
+void RenderAPI::PSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const
 {
-	Renderer::context->PSSetSamplers(slot, num, samplers);
+	ResManager::get()->PSSetSampler(samplers, slot);
 }
 
-void RenderAPI::CSSetSampler(ID3D11SamplerState** const samplers, const unsigned int& slot, const unsigned int& num) const
+void RenderAPI::CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const
 {
-	Renderer::context->CSSetSamplers(slot, num, samplers);
+	ResManager::get()->CSSetSampler(samplers, slot);
 }
 
 void RenderAPI::IASetInputLayout(ID3D11InputLayout* const layout) const

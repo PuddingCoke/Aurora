@@ -101,13 +101,13 @@ public:
 		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
 		RenderAPI::get()->PSSetBuffer({ lightBuffer }, 3);
 		RenderAPI::get()->PSSetSRV({ brdfTex,irradianceCube,prefilterCube }, 0);
-		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+		RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 
 		scene.draw();
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->PSSetSRV({ envCube }, 0);
-		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 0, 1);
+		RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
 
 		RenderAPI::skyboxVS->use();
 		skyboxPS->use();
