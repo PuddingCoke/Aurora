@@ -92,11 +92,11 @@ int Aurora::iniEngine(const Configuration& config)
 
 	RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-	RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
+	RenderAPI::get()->OMSetBlendState(States::defBlendState);
 
-	RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
+	RenderAPI::get()->RSSetState(States::rasterCullBack);
 
-	RenderAPI::get()->OMSetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
+	RenderAPI::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
 
 	RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 
@@ -133,9 +133,9 @@ void Aurora::iniGame(Game* const game)
 
 	delete game;
 
-	delete States::instance;
-
 	delete Graphics::instance;
+
+	delete States::instance;
 
 	delete Camera::instance;
 

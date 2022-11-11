@@ -150,13 +150,13 @@ public:
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::AliceBlue);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->RSSetState(States::get()->rasterCullNone.Get());
+		RenderAPI::get()->RSSetState(States::rasterCullNone);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 		RenderAPI::get()->IASetVertexBuffer(0, { skyVertexBuffer }, { sizeof(float) * 6 }, { 0 });
 
 		RenderAPI::get()->PSSetSRV({ skyTexture }, 0);
-		RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		skyVS->use();
 		skyPS->use();
@@ -166,7 +166,7 @@ public:
 		RenderAPI::get()->Draw(skyDomeSliceCount * (skyDomeSliceCount + 2) * 2, 0);
 		RenderAPI::get()->UnbindVertexBuffer();
 
-		RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
+		RenderAPI::get()->RSSetState(States::rasterCullBack);
 
 		depthView->clear(D3D11_CLEAR_DEPTH);
 		RenderAPI::get()->OMSetDefRTV(depthView);

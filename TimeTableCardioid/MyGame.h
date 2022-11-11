@@ -64,7 +64,7 @@ public:
 	void render() override
 	{
 		color = Color::HSVtoRGB({ (float)hue,1.f,1.f });
-		RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
+		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		pBatch->begin();

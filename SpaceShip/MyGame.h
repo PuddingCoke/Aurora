@@ -49,7 +49,7 @@ public:
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->PSSetSRV({ noiseTexture }, 0);
-		RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
@@ -57,10 +57,10 @@ public:
 		RenderAPI::get()->DrawQuad();
 
 
-		/*RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
+		/*RenderAPI::get()->OMSetBlendState(States::defBlendState);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->PSSetSampler(States::get()->linearClampSampler.GetAddressOf(), 1, 1);
+		RenderAPI::get()->PSSetSampler(States::linearClampSampler.GetAddressOf(), 1, 1);
 
 		RenderAPI::skyboxVS->use();
 		skyboxPShader->use();

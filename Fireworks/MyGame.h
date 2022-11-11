@@ -190,7 +190,7 @@ public:
 
 	void render() override
 	{
-		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 
 		texture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ texture }, nullptr);
@@ -216,10 +216,10 @@ public:
 		texture->resolve(resolvedTexture);
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
+		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 
 		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
-		RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
 		
 		RenderAPI::fullScreenVS->use();

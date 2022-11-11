@@ -16,35 +16,35 @@ public:
 
 	void operator=(const States&) = delete;
 
-	ComPtr<ID3D11SamplerState> linearClampSampler;
+	static ID3D11SamplerState* linearClampSampler;
 
-	ComPtr<ID3D11SamplerState> linearWrapSampler;
+	static ID3D11SamplerState* linearWrapSampler;
 
-	ComPtr<ID3D11SamplerState> pointClampSampler;
+	static ID3D11SamplerState* pointClampSampler;
 
-	ComPtr<ID3D11SamplerState> pointWrapSampler;
+	static ID3D11SamplerState* pointWrapSampler;
 
 	//SRC_ALPHA INV_SRC_ALPHA
-	ComPtr<ID3D11BlendState> defBlendState;
+	static ID3D11BlendState* defBlendState;
 
 	//ONE ONE ALPHA ONE ZERO
-	ComPtr<ID3D11BlendState> addtiveBlend;
+	static ID3D11BlendState* addtiveBlend;
 
-	ComPtr<ID3D11RasterizerState> rasterShadow;
+	static ID3D11RasterizerState* rasterShadow;
 
-	ComPtr<ID3D11RasterizerState> rasterCullBack;
+	static ID3D11RasterizerState* rasterCullBack;
 
-	ComPtr<ID3D11RasterizerState> rasterCullFront;
+	static ID3D11RasterizerState* rasterCullFront;
 
-	ComPtr<ID3D11RasterizerState> rasterCullNone;
+	static ID3D11RasterizerState* rasterCullNone;
 
 	//体素化很有用 8xMSAA + Conservative Rasterization
-	ComPtr<ID3D11RasterizerState2> rasterConserve;
+	static ID3D11RasterizerState2* rasterConserve;
 
 	//depth less equal stencil disabled
-	ComPtr<ID3D11DepthStencilState> defDepthStencilState;
+	static ID3D11DepthStencilState* defDepthStencilState;
 
-	ComPtr<ID3D11DepthStencilState> depthStencilDisable;
+	static ID3D11DepthStencilState* depthStencilDisable;
 
 private:
 
@@ -53,6 +53,9 @@ private:
 	static States* instance;
 
 	States();
+
+	~States();
+
 };
 
 #endif // !_STATES_H_

@@ -85,13 +85,13 @@ public:
 
 		modelCullFront->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ modelCullFront }, nullptr);
-		RenderAPI::get()->RSSetState(States::get()->rasterCullFront.Get());
+		RenderAPI::get()->RSSetState(States::rasterCullFront);
 
 		RenderAPI::get()->DrawCube();
 
 		modelCullBack->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ modelCullBack }, nullptr);
-		RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
+		RenderAPI::get()->RSSetState(States::rasterCullBack);
 
 		RenderAPI::get()->DrawCube();
 

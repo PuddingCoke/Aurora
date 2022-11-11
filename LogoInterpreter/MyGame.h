@@ -35,7 +35,7 @@ public:
 		renderTexture->clearRTV(DirectX::Colors::White);
 		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
 
-		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 
 		pBatch->begin();
 
@@ -65,8 +65,8 @@ public:
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
-		RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+		RenderAPI::get()->OMSetBlendState(States::defBlendState);
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();

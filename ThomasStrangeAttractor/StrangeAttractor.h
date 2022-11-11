@@ -104,7 +104,7 @@ public:
 
 	void render() override
 	{
-		RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
+		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 		RenderAPI::get()->IASetInputLayout(inputLayout.Get());

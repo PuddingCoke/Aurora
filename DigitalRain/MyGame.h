@@ -100,7 +100,7 @@ public:
 	{
 		renderTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
-		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 
 		batch->begin();
 		for (int i = 0; i < rains.size(); i++)
@@ -117,7 +117,7 @@ public:
 
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
+		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
 		RenderAPI::fullScreenVS->use();

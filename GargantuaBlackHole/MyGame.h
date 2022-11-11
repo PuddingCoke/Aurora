@@ -99,9 +99,9 @@ public:
 		RenderAPI::get()->OMSetRTV({ accTexture->write() }, nullptr);
 		accTexture->write()->clearRTV(DirectX::Colors::Black);
 
-		RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
+		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->PSSetSampler({ States::get()->linearWrapSampler.Get() }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler }, 0);
 
 		RenderAPI::fullScreenVS->use();
 		pixelShader->use();

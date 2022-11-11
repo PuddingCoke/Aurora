@@ -207,10 +207,10 @@ public:
 
 			RenderAPI::get()->VSSetBuffer({ voxelProjBuffer }, 2);
 			RenderAPI::get()->PSSetBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer }, 1);
-			RenderAPI::get()->PSSetSampler({ States::get()->linearWrapSampler.Get() }, 0);
+			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler }, 0);
 
-			RenderAPI::get()->RSSetState(States::get()->rasterConserve.Get());
-			RenderAPI::get()->OMSetDepthStencilState(States::get()->depthStencilDisable.Get(), 0);
+			RenderAPI::get()->RSSetState(States::rasterConserve);
+			RenderAPI::get()->OMSetDepthStencilState(States::depthStencilDisable, 0);
 
 			scene->drawVoxel(voxelVShader, voxelGShader, voxelPShader);
 
@@ -228,7 +228,7 @@ public:
 			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
 			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
 
@@ -237,7 +237,7 @@ public:
 			RenderAPI::get()->CSSetSRV({ voxelTextureColorFinal,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColor }, 0);
 			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
 
@@ -246,7 +246,7 @@ public:
 			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
 			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
 
@@ -255,7 +255,7 @@ public:
 			RenderAPI::get()->CSSetSRV({ voxelTextureColorFinal,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColor }, 0);
 			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
 
@@ -264,7 +264,7 @@ public:
 			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
 			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
 
@@ -275,8 +275,8 @@ public:
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
-		RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
-		RenderAPI::get()->OMSetDepthStencilState(States::get()->defDepthStencilState.Get(), 0);
+		RenderAPI::get()->RSSetState(States::rasterCullBack);
+		RenderAPI::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
 			{
@@ -358,7 +358,7 @@ public:
 	{
 		if (displayMode)
 		{
-			RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
+			RenderAPI::get()->RSSetState(States::rasterCullBack);
 
 			RenderAPI::get()->UnbindVertexBuffer();
 
@@ -366,7 +366,7 @@ public:
 			RenderAPI::get()->OMSetDefRTV(shadowMap);
 			RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);
 
-			RenderAPI::get()->GSSetSRV({ voxelTextureColorFinal }, 0);
+			RenderAPI::get()->GSSetSRV({ voxelTextureNormal }, 0);
 			RenderAPI::get()->GSSetBuffer({ voxelParamBuffer }, 2);
 			RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
@@ -378,10 +378,10 @@ public:
 		}
 		else
 		{
-			RenderAPI::get()->RSSetState(States::get()->rasterCullBack.Get());
+			RenderAPI::get()->RSSetState(States::rasterCullBack);
 
 			RenderAPI::get()->GSSetShader(nullptr);
-			RenderAPI::get()->PSSetSampler({ States::get()->linearWrapSampler.Get(),States::get()->linearClampSampler.Get() }, 0);
+			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler }, 0);
 
 			gBaseColor->clearRTV(DirectX::Colors::Black);
 			gPosition->clearRTV(DirectX::Colors::Black);

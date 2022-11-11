@@ -102,8 +102,8 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 {
 	RenderAPI::get()->OMSetBlendState(nullptr);
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
-	RenderAPI::get()->CSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+	RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 	RenderAPI::get()->PSSetBuffer({ bloomParamBuffer }, 1);
 	RenderAPI::get()->CSSetBuffer({ bloomParamBuffer }, 1);
 	RenderAPI::get()->HSSetShader(nullptr);
@@ -159,7 +159,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
 	}
 
-	RenderAPI::get()->OMSetBlendState(States::get()->addtiveBlend.Get());
+	RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{

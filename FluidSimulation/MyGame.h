@@ -185,7 +185,7 @@ public:
 				pointer.down = false;
 			});
 
-		RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get(),States::get()->pointClampSampler.Get() }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler,States::pointClampSampler }, 0);
 
 		RenderAPI::fullScreenVS->use();
 	}

@@ -98,9 +98,9 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	};
 
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RenderAPI::get()->PSSetSampler({ States::get()->linearClampSampler.Get() }, 0);
+	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 	RenderAPI::get()->PSSetSRV({ equirectangularMap }, 0);
-	RenderAPI::get()->OMSetBlendState(States::get()->defBlendState.Get());
+	RenderAPI::get()->OMSetBlendState(States::defBlendState);
 	RenderAPI::get()->RSSetViewport(skyboxResolution, skyboxResolution);
 	RenderAPI::get()->VSSetBuffer({ buffer }, 2);
 
