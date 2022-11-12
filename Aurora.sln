@@ -39,6 +39,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrytekSponzaDayGI", "Crytek
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PBRRendering", "PBRRendering\PBRRendering.vcxproj", "{61811CAB-F032-4137-8CB4-AA38B8C4B7C7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntelSponza", "IntelSponza\IntelSponza.vcxproj", "{77D17C4C-26B8-497F-8312-13C3CA773D29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -191,6 +193,14 @@ Global
 		{61811CAB-F032-4137-8CB4-AA38B8C4B7C7}.Release|x64.Build.0 = Release|x64
 		{61811CAB-F032-4137-8CB4-AA38B8C4B7C7}.Release|x86.ActiveCfg = Release|Win32
 		{61811CAB-F032-4137-8CB4-AA38B8C4B7C7}.Release|x86.Build.0 = Release|Win32
+		{77D17C4C-26B8-497F-8312-13C3CA773D29}.Debug|x64.ActiveCfg = Debug|x64
+		{77D17C4C-26B8-497F-8312-13C3CA773D29}.Debug|x64.Build.0 = Debug|x64
+		{77D17C4C-26B8-497F-8312-13C3CA773D29}.Debug|x86.ActiveCfg = Debug|Win32
+		{77D17C4C-26B8-497F-8312-13C3CA773D29}.Debug|x86.Build.0 = Debug|Win32
+		{77D17C4C-26B8-497F-8312-13C3CA773D29}.Release|x64.ActiveCfg = Release|x64
+		{77D17C4C-26B8-497F-8312-13C3CA773D29}.Release|x64.Build.0 = Release|x64
+		{77D17C4C-26B8-497F-8312-13C3CA773D29}.Release|x86.ActiveCfg = Release|Win32
+		{77D17C4C-26B8-497F-8312-13C3CA773D29}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

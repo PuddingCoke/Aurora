@@ -24,6 +24,10 @@ public:
 
 	static ID3D11SamplerState* pointWrapSampler;
 
+	static ID3D11SamplerState* shadowSamplerZero;
+
+	static ID3D11SamplerState* shadowSamplerOne;
+
 	//SRC_ALPHA INV_SRC_ALPHA
 	static ID3D11BlendState* defBlendState;
 

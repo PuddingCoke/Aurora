@@ -8,6 +8,7 @@ ComputeBuffer::ComputeBuffer(const D3D11_UNORDERED_ACCESS_VIEW_DESC& uavDesc, co
 
 ComputeBuffer::~ComputeBuffer()
 {
+	unbindFromCUAV() || unbindFromPUAV() || unbindFromVertexBuffer();
 }
 
 void ComputeBuffer::bindVertexBuffer()

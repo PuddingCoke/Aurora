@@ -6,7 +6,7 @@ std::normal_distribution<float> Random::normalDistribution = std::normal_distrib
 
 std::uniform_real_distribution<float> Random::floatDistribution = std::uniform_real_distribution<float>(0.f, 1.f);
 
-std::uniform_real_distribution<double> Random::doubleDistribution = std::uniform_real_distribution<double>(0.f, 1.f);
+std::uniform_real_distribution<double> Random::doubleDistribution = std::uniform_real_distribution<double>(0.0, 1.0);
 
 std::uniform_int_distribution<int> Random::intDistribution;
 

@@ -18,8 +18,6 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	ComPtr<ID3D11SamplerState> shadowSampler;
-
 	ShadowMap* shadowTexture;
 
 	ShadowMap* shadowMap;
@@ -193,20 +191,6 @@ public:
 		}
 
 		{
-			D3D11_SAMPLER_DESC desc = {};
-			desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-			desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-			desc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-			desc.BorderColor[0] = desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0.f;
-			desc.ComparisonFunc = D3D11_COMPARISON_GREATER;
-			desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
-			desc.MinLOD = 0.f;
-			desc.MaxLOD = FLT_MAX;
-
-			RenderAPI::get()->CreateSamplerState(desc, shadowSampler.ReleaseAndGetAddressOf());
-		}
-
-		{
 			RenderAPI::get()->OMSetBlendState(nullptr);
 			RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 
@@ -235,7 +219,7 @@ public:
 
 			RenderAPI::get()->VSSetBuffer({ voxelProjBuffer }, 2);
 			RenderAPI::get()->PSSetBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer,lightProjBuffer }, 1);
-			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,shadowSampler.Get() }, 0);
+			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::shadowSamplerZero }, 0);
 			RenderAPI::get()->PSSetSRV({ shadowTexture }, 3);
 
 			RenderAPI::get()->RSSetState(States::rasterConserve);
@@ -409,7 +393,7 @@ public:
 			RenderAPI::get()->RSSetState(States::rasterCullBack);
 
 			RenderAPI::get()->GSSetShader(nullptr);
-			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,shadowSampler.Get() }, 0);
+			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSamplerZero }, 0);
 
 			gBaseColor->clearRTV(DirectX::Colors::Black);
 			gPosition->clearRTV(DirectX::Colors::Black);
