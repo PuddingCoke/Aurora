@@ -16,6 +16,10 @@ public:
 
 	void operator=(const States&) = delete;
 
+	static ID3D11SamplerState* anisotropicClampSampler;
+
+	static ID3D11SamplerState* anisotropicWrapSampler;
+
 	static ID3D11SamplerState* linearClampSampler;
 
 	static ID3D11SamplerState* linearWrapSampler;

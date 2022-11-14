@@ -366,7 +366,7 @@ public:
 			RenderAPI::get()->OMSetDefRTV(shadowMap);
 			RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);
 
-			RenderAPI::get()->GSSetSRV({ voxelTextureNormal }, 0);
+			RenderAPI::get()->GSSetSRV({ voxelTextureColorFinal }, 0);
 			RenderAPI::get()->GSSetBuffer({ voxelParamBuffer }, 2);
 			RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 

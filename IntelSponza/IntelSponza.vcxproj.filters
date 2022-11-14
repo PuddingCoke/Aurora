@@ -18,10 +18,27 @@
     <ClInclude Include="MyGame.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="DeferredVShader.hlsl" />
+    <FxCompile Include="DeferredPSHasTex.hlsl" />
+    <FxCompile Include="DeferredPSNoTex.hlsl" />
+    <FxCompile Include="DeferredPSTrans.hlsl" />
+    <FxCompile Include="DebugPS.hlsl" />
+    <FxCompile Include="DeferredFinal.hlsl" />
   </ItemGroup>
 </Project>
