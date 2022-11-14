@@ -36,7 +36,7 @@ public:
 	float gamma;
 
 	MyGame() :
-		attractor(1000000),
+		attractor(2000000),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Transparent)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		depthStencilView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),

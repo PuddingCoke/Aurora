@@ -70,6 +70,7 @@ private:
 		DirectX::XMMATRIX view;
 		DirectX::XMFLOAT4 eyePos;
 		DirectX::XMMATRIX prevViewProj;
+		DirectX::XMMATRIX viewProj;
 	}viewInfo;
 
 };

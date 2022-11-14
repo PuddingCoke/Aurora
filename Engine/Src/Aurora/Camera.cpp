@@ -58,6 +58,7 @@ void Camera::setView(const DirectX::XMMATRIX& view)
 	instance->viewInfo.prevViewProj = DirectX::XMMatrixTranspose(instance->viewMatrix * instance->projMatrix);
 	instance->viewMatrix = view;
 	instance->viewInfo.view = DirectX::XMMatrixTranspose(instance->viewMatrix);
+	instance->viewInfo.viewProj = DirectX::XMMatrixTranspose(instance->viewMatrix * instance->projMatrix);
 
 	memcpy(instance->viewBuffer->map(0).pData, &instance->viewInfo, sizeof(ViewInfo));
 	instance->viewBuffer->unmap(0);

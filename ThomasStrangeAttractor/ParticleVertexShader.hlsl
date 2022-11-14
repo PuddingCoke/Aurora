@@ -18,12 +18,15 @@ cbuffer ProjMatrix : register(b0)
 cbuffer ViewMatrix : register(b1)
 {
     matrix view;
+    float4 viewPos;
+    matrix prevViewProj;
+    matrix viewProj;
 }
 
 VertexOuput main(VertexInput input)
 {
     VertexOuput output;
-    output.position = mul(mul(input.position, view), proj);
+    output.position = mul(input.position, viewProj);
     output.color = input.color;
     return output;
 }
