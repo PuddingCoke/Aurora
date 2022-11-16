@@ -19,6 +19,9 @@ cbuffer ProjMatrix : register(b0)
 cbuffer ViewMatrix : register(b1)
 {
     matrix view;
+    float4 viewPos;
+    matrix preViewProj;
+    matrix viewProj;
 }
 
 VertexOutput main(VertexInput input)
@@ -26,6 +29,6 @@ VertexOutput main(VertexInput input)
     VertexOutput output;
     output.pos = input.pos;
     output.normal = input.normal;
-    output.svPos = mul(mul(float4(input.pos, 1.0), view), proj);
+    output.svPos = mul(float4(input.pos, 1.0), viewProj);
 	return output;
 }

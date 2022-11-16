@@ -107,7 +107,7 @@ public:
 		pixelShader->use();
 
 		RenderAPI::get()->PSSetSRV({ noiseTexture,dustTexture,accTexture->read() }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 
 		accTexture->swap();
 
@@ -132,6 +132,6 @@ public:
 			RenderAPI::get()->PSSetSRV({ accTexture->read() }, 0);
 		}
 
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 	}
 };

@@ -219,7 +219,7 @@ public:
 
 			RenderAPI::get()->VSSetBuffer({ voxelProjBuffer }, 2);
 			RenderAPI::get()->PSSetBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer,lightProjBuffer }, 1);
-			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::shadowSamplerZero }, 0);
+			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::shadowSampler }, 0);
 			RenderAPI::get()->PSSetSRV({ shadowTexture }, 3);
 
 			RenderAPI::get()->RSSetState(States::rasterConserve);
@@ -393,7 +393,7 @@ public:
 			RenderAPI::get()->RSSetState(States::rasterCullBack);
 
 			RenderAPI::get()->GSSetShader(nullptr);
-			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSamplerZero }, 0);
+			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
 			gBaseColor->clearRTV(DirectX::Colors::Black);
 			gPosition->clearRTV(DirectX::Colors::Black);

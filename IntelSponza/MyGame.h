@@ -4,6 +4,7 @@
 #include<Aurora/A3D/FPSCamera.h>
 #include<Aurora/A3D/ShadowMap.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
+#include<Aurora/PostProcessing/HBAOEffect.h>
 
 #include"Scene.h"
 
@@ -14,9 +15,9 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	ShadowMap* depthView;
-
 	FPSCamera camera;
+
+	ShadowMap* depthView;
 
 	Scene* mainScene;
 
@@ -49,6 +50,8 @@ public:
 
 	BloomEffect bloomEffect;
 
+	HBAOEffect hbaoEffect;
+
 	float exposure;
 
 	float gamma;
@@ -69,12 +72,12 @@ public:
 		deferredPSTrans(new Shader("DeferredPSTrans.hlsl", ShaderType::Pixel)),
 		debugPS(new Shader("DebugPS.hlsl", ShaderType::Pixel)),
 		deferredFinal(new Shader("DeferredFinal.hlsl", ShaderType::Pixel)),
-		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
+		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
+		hbaoEffect(Graphics::getWidth(), Graphics::getHeight())
 	{
 		exposure = bloomEffect.getExposure();
 		gamma = bloomEffect.getGamma();
-		bloomEffect.setThreshold(2.f);
-		bloomEffect.setIntensity(0.8f);
+		bloomEffect.setIntensity(0.7f);
 		bloomEffect.applyChange();
 
 		{
@@ -167,16 +170,30 @@ public:
 
 		RenderAPI::get()->RSSetState(States::rasterCullBack);
 
+		ShaderResourceView* hbaoSRV = hbaoEffect.process(depthView->getSRV(), gNormal->getSRV());
+
 		originTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
 
-		RenderAPI::get()->PSSetSRV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic }, 0);
+		RenderAPI::get()->PSSetSRV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic,hbaoSRV }, 0);
 		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),mainScene->lightBuffer }, 1);
 
 		RenderAPI::fullScreenVS->use();
 		deferredFinal->use();
 
 		RenderAPI::get()->DrawQuad();
+
+		/*RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
+		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
+		RenderAPI::get()->PSSetSRV({ reflectTexture }, 0);
+		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
+
+		RenderAPI::fullScreenVS->use();
+		RenderAPI::fullScreenPS->use();
+
+		RenderAPI::get()->DrawQuad();
+
+		RenderAPI::get()->OMSetBlendState(nullptr);*/
 
 		ShaderResourceView* bloomSRV = bloomEffect.process(originTexture);
 
@@ -185,7 +202,7 @@ public:
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
 		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
 
 		RenderAPI::fullScreenVS->use();

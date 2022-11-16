@@ -2,9 +2,9 @@ Texture2D gBaseColor : register(t0);
 Texture2D gPosition : register(t1);
 Texture2D gNormal : register(t2);
 Texture2D gRoughnessMetallic : register(t3);
+Texture2D<float> hbaoTexture : register(t4);
 
-SamplerState anisotrophicWrapSamer : register(s0);
-SamplerState linearClampSampler : register(s1);
+SamplerState pointSampler : register(s0);
 
 #define PI 3.14159265358979323846264
 
@@ -12,6 +12,9 @@ cbuffer ViewInfo : register(b1)
 {
     matrix view;
     float4 viewPos;
+    matrix prevViewProj;
+    matrix viewProj;
+    matrix normalMatrix;
 };
 
 struct Light
@@ -71,11 +74,11 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float3 baseColor = gBaseColor.Sample(linearClampSampler, texCoord).rgb;
-    float2 roughnessMetallic = gRoughnessMetallic.Sample(linearClampSampler, texCoord).rg;
+    float3 baseColor = gBaseColor.Sample(pointSampler, texCoord).rgb;
+    float2 roughnessMetallic = gRoughnessMetallic.Sample(pointSampler, texCoord).rg;
     
-    float3 P = gPosition.Sample(linearClampSampler, texCoord).xyz;
-    float3 N = normalize(gNormal.Sample(linearClampSampler, texCoord).rgb);
+    float3 P = gPosition.Sample(pointSampler, texCoord).xyz;
+    float3 N = normalize(gNormal.Sample(pointSampler, texCoord).rgb);
     float3 V = normalize(viewPos.xyz - P);
     
     float roughness = roughnessMetallic.r;
@@ -113,6 +116,10 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
         L0 += (kD * baseColor / PI + specular) * radiance * NdotL;
     }
-
+    
+    float ao = hbaoTexture.Sample(pointSampler, texCoord).r;
+    
+    L0 *= ao;
+    
     return float4(L0, 1.0);
 }

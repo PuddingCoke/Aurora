@@ -8,8 +8,7 @@ ID3D11SamplerState* States::linearClampSampler;
 ID3D11SamplerState* States::linearWrapSampler;
 ID3D11SamplerState* States::pointClampSampler;
 ID3D11SamplerState* States::pointWrapSampler;
-ID3D11SamplerState* States::shadowSamplerOne;
-ID3D11SamplerState* States::shadowSamplerZero;
+ID3D11SamplerState* States::shadowSampler;
 ID3D11BlendState* States::defBlendState;
 ID3D11BlendState* States::addtiveBlend;
 ID3D11RasterizerState* States::rasterShadow;
@@ -122,21 +121,7 @@ States::States()
 		desc.MinLOD = 0.f;
 		desc.MaxLOD = FLT_MAX;
 
-		RenderAPI::get()->CreateSamplerState(desc, &shadowSamplerZero);
-	}
-
-	{
-		D3D11_SAMPLER_DESC desc = {};
-		desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-		desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-		desc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-		desc.BorderColor[0] = desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 1.f;
-		desc.ComparisonFunc = D3D11_COMPARISON_GREATER;
-		desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
-		desc.MinLOD = 0.f;
-		desc.MaxLOD = FLT_MAX;
-
-		RenderAPI::get()->CreateSamplerState(desc, &shadowSamplerOne);
+		RenderAPI::get()->CreateSamplerState(desc, &shadowSampler);
 	}
 
 	//初始化defBlendState
@@ -271,8 +256,7 @@ States::~States()
 	linearWrapSampler->Release();
 	pointClampSampler->Release();
 	pointWrapSampler->Release();
-	shadowSamplerOne->Release();
-	shadowSamplerZero->Release();
+	shadowSampler->Release();
 	defBlendState->Release();
 	addtiveBlend->Release();
 	rasterShadow->Release();

@@ -23,7 +23,7 @@ Buffer* Camera::getViewBuffer()
 }
 
 Camera::Camera():
-	projBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr,D3D11_CPU_ACCESS_WRITE)),
+	projBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DEFAULT)),
 	viewBuffer(new Buffer(sizeof(ViewInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
 {
 }
@@ -43,9 +43,7 @@ void Camera::setProj(const DirectX::XMMATRIX& proj)
 {
 	instance->projMatrix = proj;
 	const DirectX::XMMATRIX projTrans = DirectX::XMMatrixTranspose(proj);
-	memcpy(instance->projBuffer->map(0).pData, &projTrans, sizeof(DirectX::XMMATRIX));
-	instance->projBuffer->unmap(0);
-	//instance->projBuffer->updateSubresource(&projTrans, sizeof(DirectX::XMMATRIX), 0);
+	instance->projBuffer->updateSubresource(&projTrans, sizeof(DirectX::XMMATRIX), 0);
 }
 
 void Camera::setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar)
@@ -56,6 +54,7 @@ void Camera::setProj(const float& fov, const float& aspectRatio, const float& zN
 void Camera::setView(const DirectX::XMMATRIX& view)
 {
 	instance->viewInfo.prevViewProj = DirectX::XMMatrixTranspose(instance->viewMatrix * instance->projMatrix);
+
 	instance->viewMatrix = view;
 	instance->viewInfo.view = DirectX::XMMatrixTranspose(instance->viewMatrix);
 	instance->viewInfo.viewProj = DirectX::XMMatrixTranspose(instance->viewMatrix * instance->projMatrix);

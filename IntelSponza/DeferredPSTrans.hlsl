@@ -19,14 +19,6 @@ Texture2D tBaseColor : register(t0);
 
 SamplerState linearWrapSampler : register(s0);
 
-cbuffer Material : register(b1)
-{
-    float4 baseColor;
-    float roughness;
-    float metallic;
-    float2 v0;
-}
-
 PixelOutput main(PixelInput input)
 {
     PixelOutput output;

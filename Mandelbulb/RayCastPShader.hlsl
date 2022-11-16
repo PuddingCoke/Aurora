@@ -28,10 +28,10 @@ float4 main(float4 pos : SV_Position) : SV_TARGET
     
     float4 dst = float4(0.0, 0.0, 0.0, 0.0);
     
-    [unroll]
-    for (uint i = 0; i < 2 * MAXITERAION / 3; i++)
+    [loop]
+    for (uint i = 0; i < 256; i++)
     {
-        float4 src = mandelTexture.Sample(borderSampler, v);
+        float4 src = mandelTexture.SampleLevel(borderSampler, v, 0.0);
         
         dst.rgb = dst.rgb + (1.0 - dst.a) * src.a * src.rgb;
         dst.a = dst.a + (1.0 - dst.a) * src.a;

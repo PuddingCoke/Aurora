@@ -254,14 +254,14 @@ public:
 		RenderAPI::get()->OMSetRTV({ velocity->write() }, nullptr);
 		splatVelocityShader->use();
 		RenderAPI::get()->PSSetSRV({ velocity->read() }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 		velocity->swap();
 
 		RenderAPI::get()->RSSetViewport(dye->width, dye->height);
 		RenderAPI::get()->OMSetRTV({ dye->write() }, nullptr);
 		splatColorShader->use();
 		RenderAPI::get()->PSSetSRV({ dye->read() }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 		dye->swap();
 	}
 
@@ -273,23 +273,23 @@ public:
 		RenderAPI::get()->OMSetRTV({ curl }, nullptr);
 		curlShader->use();
 		RenderAPI::get()->PSSetSRV({ velocity->read() }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 
 		RenderAPI::get()->OMSetRTV({ velocity->write() }, nullptr);
 		vorticityShader->use();
 		RenderAPI::get()->PSSetSRV({ velocity->read(),curl }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 		velocity->swap();
 
 		RenderAPI::get()->OMSetRTV({ divergence }, nullptr);
 		divergenceShader->use();
 		RenderAPI::get()->PSSetSRV({ velocity->read() }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 
 		RenderAPI::get()->OMSetRTV({ pressure->write() }, nullptr);
 		clearShader->use();
 		RenderAPI::get()->PSSetSRV({ pressure->read() }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 		pressure->swap();
 
 		pressureShader->use();
@@ -297,20 +297,20 @@ public:
 		{
 			RenderAPI::get()->OMSetRTV({ pressure->write() }, nullptr);
 			RenderAPI::get()->PSSetSRV({ pressure->read(),divergence }, 0);
-			RenderAPI::get()->Draw(3, 0);
+			RenderAPI::get()->DrawQuad();
 			pressure->swap();
 		}
 
 		RenderAPI::get()->OMSetRTV({ velocity->write() }, nullptr);
 		gradientSubtractShader->use();
 		RenderAPI::get()->PSSetSRV({ pressure->read(),velocity->read() }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 		velocity->swap();
 
 		RenderAPI::get()->OMSetRTV({ velocity->write() }, nullptr);
 		advVelShader->use();
 		RenderAPI::get()->PSSetSRV({ velocity->read() }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 		velocity->swap();
 
 		RenderAPI::get()->RSSetViewport(dye->width, dye->height);
@@ -318,7 +318,7 @@ public:
 		RenderAPI::get()->OMSetRTV({ dye->write() }, nullptr);
 		advDenShader->use();
 		RenderAPI::get()->PSSetSRV({ velocity->read(),dye->read() }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 		dye->swap();
 	}
 
@@ -329,13 +329,13 @@ public:
 		sunrayMaskShader->use();
 		RenderAPI::get()->PSSetSRV({ source }, 0);
 		RenderAPI::get()->RSSetViewport(mask->getWidth(), mask->getHeight());
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 
 		RenderAPI::get()->OMSetRTV({ destination }, nullptr);
 		sunraysShader->use();
 		RenderAPI::get()->PSSetSRV({ mask }, 0);
 		RenderAPI::get()->RSSetViewport(destination->getWidth(), destination->getHeight());
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 	}
 
 	void blur(RenderTexture* const target, RenderTexture* const temp, const int& iterations)
@@ -345,13 +345,13 @@ public:
 			blurHShader->use();
 			RenderAPI::get()->OMSetRTV({ temp }, nullptr);
 			RenderAPI::get()->PSSetSRV({ target }, 0);
-			RenderAPI::get()->Draw(3, 0);
+			RenderAPI::get()->DrawQuad();
 
 			blurVShader->use();
 
 			RenderAPI::get()->OMSetRTV({ target }, nullptr);
 			RenderAPI::get()->PSSetSRV({ temp }, 0);
-			RenderAPI::get()->Draw(3, 0);
+			RenderAPI::get()->DrawQuad();
 		}
 	}
 
@@ -375,7 +375,7 @@ public:
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		displayShader->use();
 		RenderAPI::get()->PSSetSRV({ dye->read(),sunrays }, 0);
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 	}
 
 	void updatePointerDownData(const int& id, const float& posX, const float& posY)

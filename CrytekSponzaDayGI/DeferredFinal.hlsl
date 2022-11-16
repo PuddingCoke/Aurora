@@ -158,7 +158,6 @@ inline float4 TraceSpecular(float3 P, float3 N, float3 V)
 float CalShadow(float3 P)
 {
     float4 shadowPos = mul(float4(P, 1.0), lightViewProj);
-    shadowPos.xyz / shadowPos.w;
     shadowPos.xy = shadowPos.xy * 0.5 + 0.5;
     shadowPos.y = 1.0 - shadowPos.y;
     

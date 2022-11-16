@@ -30,7 +30,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
 {
     tTexture[DTid] = float4(0.0, 0.0, 0.0, 0.0);
     
-    const float3 pos = SCALE * float3(DTid) / 512.0 - SCALE / 2.0;
+    const float3 pos = SCALE * float3(DTid) / 1000.0 - SCALE / 2.0;
     
     float3 c = pos;
     

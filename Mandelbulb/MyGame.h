@@ -31,7 +31,7 @@ public:
 	ComPtr<ID3D11SamplerState> borderSampler;
 
 	MyGame() :
-		mandelTexture(new ComputeTexture3D(512, 512, 512, DXGI_FORMAT_R8G8B8A8_UNORM)),
+		mandelTexture(new ComputeTexture3D(1000, 1000, 1000, DXGI_FORMAT_R8G8B8A8_UNORM)),
 		mandelCompute(new Shader("MandelbulbCompute.hlsl", ShaderType::Compute)),
 		modelCullFront(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		modelCullBack(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),

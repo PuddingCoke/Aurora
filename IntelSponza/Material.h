@@ -22,7 +22,7 @@ public:
 
 	Material() = delete;
 
-	Material(const aiScene* scene,unsigned int& idx)
+	Material(const aiScene* scene, unsigned int& idx)
 	{
 		aiString texturePath;
 
@@ -59,7 +59,7 @@ public:
 		scene->mMaterials[idx]->Get(AI_MATKEY_BASE_COLOR, color);
 		scene->mMaterials[idx]->Get(AI_MATKEY_METALLIC_FACTOR, metallic);
 		scene->mMaterials[idx]->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness);
-		
+
 		if (basePath != "" && metallicRoughnessPath != "")
 		{
 			type = Normal;
@@ -73,7 +73,7 @@ public:
 			type = Trans;
 		}
 
-		std::cout << "material name " << scene->mMaterials[idx]->GetName().C_Str() << "\n";
+		/*std::cout << "material name " << scene->mMaterials[idx]->GetName().C_Str() << "\n";
 		std::cout << "baseColor " << basePath << "\n";
 		std::cout << "metallicRoughness " << metallicRoughnessPath << "\n";
 		std::cout << "normal " << normalPath << "\n";
@@ -81,7 +81,7 @@ public:
 		std::cout << "metalness " << metallic << "\n";
 		std::cout << "roughness " << roughness << "\n";
 		std::cout << "type " << type << "\n";
-		std::cout << "\n";
+		std::cout << "\n";*/
 
 		struct MaterialProp
 		{
@@ -103,8 +103,20 @@ public:
 		if (materialBuffer)
 		{
 			delete materialBuffer;
+		}
+
+		if (baseColor)
+		{
 			delete baseColor;
+		}
+
+		if (metallicRoughness)
+		{
 			delete metallicRoughness;
+		}
+
+		if (normal)
+		{
 			delete normal;
 		}
 	}

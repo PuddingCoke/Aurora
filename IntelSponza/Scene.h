@@ -31,6 +31,7 @@ public:
 			{
 				transparentModel.push_back(new Model(scene, scene->mMeshes[i]));
 			}
+
 		}
 
 		struct Light
@@ -46,7 +47,7 @@ public:
 		for (unsigned int i = 2; i < scene->mNumLights; i++)
 		{
 			lights[i - 2].position = { scene->mLights[i]->mPosition.x,scene->mLights[i]->mPosition.y - 1.f, scene->mLights[i]->mPosition.z,1.f };
-			lights[i - 2].color = { 1.f,1.f,0.65f,1.f };
+			lights[i - 2].color = { 1.f,1.f,1.f,1.f };
 			lights[i - 2].radius = 30.f;
 		}
 

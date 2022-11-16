@@ -134,7 +134,7 @@ public:
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 		doubleRTV->swap();
 
 		ShaderResourceView* bloomTextureSRV = bloomEffect.process(doubleRTV->read());
@@ -146,7 +146,7 @@ public:
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 
 		ShaderResourceView* const fadedTextureSRV = fadeEffect.process(doubleRTV->read());
 
@@ -156,7 +156,7 @@ public:
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 
-		RenderAPI::get()->Draw(3, 0);
+		RenderAPI::get()->DrawQuad();
 	}
 
 

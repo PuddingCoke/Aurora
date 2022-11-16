@@ -24,7 +24,7 @@ ShaderResourceView* FadeEffect::process(ShaderResourceView* const texture2D) con
 	fadePShader->use();
 
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RenderAPI::get()->Draw(3, 0);
+	RenderAPI::get()->DrawQuad();
 
 	return outputRTV;
 }
