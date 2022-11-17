@@ -1,9 +1,9 @@
 ﻿#include<Aurora/A3D/OrbitCamera.h>
 
-OrbitCamera::OrbitCamera(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& up) :
-	eye(DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&eye))), up(DirectX::XMLoadFloat3(&up))
+OrbitCamera::OrbitCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& up) :
+	eye(DirectX::XMVector3Normalize(eye)), up(DirectX::XMVector3Normalize(up))
 {
-	DirectX::XMStoreFloat(&length, DirectX::XMVector3Length(DirectX::XMLoadFloat3(&eye)));
+	DirectX::XMStoreFloat(&length, DirectX::XMVector3Length(eye));
 	curLength = length;
 }
 
@@ -19,7 +19,7 @@ void OrbitCamera::registerEvent()
 
 				float eyeUpAngle;
 
-				DirectX::XMStoreFloat(&eyeUpAngle, DirectX::XMVector3AngleBetweenVectors(eye, up));
+				DirectX::XMStoreFloat(&eyeUpAngle, DirectX::XMVector3AngleBetweenNormals(eye, up));
 
 				const float destAngle = eyeUpAngle + Mouse::getDY() / 120.f;
 
