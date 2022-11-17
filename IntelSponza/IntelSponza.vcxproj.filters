@@ -40,7 +40,6 @@
     <FxCompile Include="DeferredPSTrans.hlsl" />
     <FxCompile Include="DebugPS.hlsl" />
     <FxCompile Include="DeferredFinal.hlsl" />
-    <FxCompile Include="SSRPS.hlsl" />
-    <FxCompile Include="ViewSpaceConvertPS.hlsl" />
+    <FxCompile Include="SkyboxPS.hlsl" />
   </ItemGroup>
 </Project>
