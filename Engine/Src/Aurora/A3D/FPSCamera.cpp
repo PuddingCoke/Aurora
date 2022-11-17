@@ -21,13 +21,13 @@ void FPSCamera::applyInput(const float& dt)
 
 	if (Keyboard::getKeyDown(Keyboard::A))
 	{
-		const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Cross(up, lookDir);
+		const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(up, lookDir));
 		eye = DirectX::XMVectorAdd(eye, DirectX::XMVectorScale(upCrossLookDir, -dt * moveSpeed));
 	}
 
 	if (Keyboard::getKeyDown(Keyboard::D))
 	{
-		const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Cross(up, lookDir);
+		const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(up, lookDir));
 		eye = DirectX::XMVectorAdd(eye, DirectX::XMVectorScale(upCrossLookDir, dt * moveSpeed));
 	}
 
@@ -44,7 +44,7 @@ void FPSCamera::registerEvent()
 
 				lookDir = DirectX::XMVector3Transform(lookDir, rotMat);
 
-				const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Cross(up, lookDir);
+				const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(up, lookDir));
 
 				float lookUpAngle;
 
