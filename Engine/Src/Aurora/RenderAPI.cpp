@@ -54,31 +54,6 @@ RenderAPI::~RenderAPI()
 	delete shadowVS;
 }
 
-void RenderAPI::CreateSamplerState(const D3D11_SAMPLER_DESC& desc, ID3D11SamplerState** const state) const
-{
-	Renderer::device->CreateSamplerState(&desc, state);
-}
-
-void RenderAPI::CreateBlendState(const D3D11_BLEND_DESC& desc, ID3D11BlendState** const state) const
-{
-	Renderer::device->CreateBlendState(&desc, state);
-}
-
-void RenderAPI::CreateRasterizerState(const D3D11_RASTERIZER_DESC& desc, ID3D11RasterizerState** const state) const
-{
-	Renderer::device->CreateRasterizerState(&desc, state);
-}
-
-void RenderAPI::CreateRasterizerState2(const D3D11_RASTERIZER_DESC2& desc, ID3D11RasterizerState2** const state) const
-{
-	Renderer::device->CreateRasterizerState2(&desc, state);
-}
-
-void RenderAPI::CreateDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& desc, ID3D11DepthStencilState** const state) const
-{
-	Renderer::device->CreateDepthStencilState(&desc, state);
-}
-
 void RenderAPI::OMSetDefRTV(DepthStencilView* const dsv) const
 {
 	ResManager::get()->OMSetRTV({ defRenderTargetView }, dsv);
@@ -341,4 +316,22 @@ void RenderAPI::GenNoise(UnorderedAccessView* const uav, const unsigned int& tex
 	randNoiseCS->use();
 	CSSetUAV({ uav }, 0);
 	RenderAPI::get()->Dispatch(textureWidth / 32, textureHeight / 18, 1);
+}
+
+void RenderAPI::DebugDraw(ShaderResourceView* const srv)
+{
+	IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	OMSetBlendState(nullptr);
+	ClearDefRTV(DirectX::Colors::Black);
+	OMSetDefRTV(nullptr);
+	PSSetSRV({ srv }, 0);
+	PSSetSampler({ States::pointClampSampler }, 0);
+
+	fullScreenVS->use();
+	fullScreenPS->use();
+	DSSetShader(nullptr);
+	HSSetShader(nullptr);
+	GSSetShader(nullptr);
+
+	RenderAPI::get()->DrawQuad();
 }

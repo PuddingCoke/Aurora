@@ -3,7 +3,7 @@
 #ifndef _STATES_H_
 #define _STATES_H_
 
-#include"RenderAPI.h"
+#include"Renderer.h"
 
 //这里定义了一些有用的状态
 class States

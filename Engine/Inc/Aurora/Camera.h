@@ -69,6 +69,7 @@ private:
 		DirectX::XMVECTOR eyePos;
 		DirectX::XMMATRIX prevViewProj;
 		DirectX::XMMATRIX viewProj;
+		DirectX::XMMATRIX normalMatrix;
 	}viewInfo;
 
 };

@@ -33,6 +33,8 @@ public:
 
 	RenderTexture* gRoughnessMetallic;
 
+	RenderTexture* gViewSpacePosition;
+
 	RenderTexture* originTexture;
 
 	Shader* deferredVS;
@@ -52,6 +54,8 @@ public:
 
 	Shader* screenSpaceReflection;
 
+	Shader* viewSpaceConvert;
+
 	BloomEffect bloomEffect;
 
 	HBAOEffect hbaoEffect;
@@ -69,6 +73,7 @@ public:
 		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
 		gNormal(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
 		gRoughnessMetallic(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM)),
+		gViewSpacePosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		deferredVS(new Shader("DeferredVShader.hlsl", ShaderType::Vertex)),
 		deferredPSHasTex(new Shader("DeferredPSHasTex.hlsl", ShaderType::Pixel)),
@@ -77,6 +82,7 @@ public:
 		debugPS(new Shader("DebugPS.hlsl", ShaderType::Pixel)),
 		deferredFinal(new Shader("DeferredFinal.hlsl", ShaderType::Pixel)),
 		screenSpaceReflection(new Shader("SSRPS.hlsl", ShaderType::Pixel)),
+		viewSpaceConvert(new Shader("ViewSpaceConvertPS.hlsl", ShaderType::Pixel)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight())
 	{
@@ -108,17 +114,17 @@ public:
 			desc.BorderColor[2] = 0.f;
 			desc.BorderColor[3] = 1.f;
 			desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-			desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+			desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 			desc.MinLOD = 0.f;
 			desc.MaxLOD = FLT_MAX;
-			
-			RenderAPI::get()->CreateSamplerState(desc, borderSampler.ReleaseAndGetAddressOf());
+
+			Renderer::device->CreateSamplerState(&desc, borderSampler.ReleaseAndGetAddressOf());
 
 		}
 
 		camera.registerEvent();
 
-		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 1024.f);
 	}
 
 	~MyGame()
@@ -132,6 +138,7 @@ public:
 		delete gPosition;
 		delete gNormal;
 		delete gRoughnessMetallic;
+		delete gViewSpacePosition;
 		delete originTexture;
 
 		delete deferredVS;
@@ -141,6 +148,7 @@ public:
 		delete debugPS;
 		delete deferredFinal;
 		delete screenSpaceReflection;
+		delete viewSpaceConvert;
 	}
 
 	void update(const float& dt) override
@@ -207,25 +215,27 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
+		gViewSpacePosition->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetRTV({ gViewSpacePosition }, nullptr);
+		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
+		RenderAPI::get()->PSSetSRV({ gPosition }, 0);
+		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
+
+		RenderAPI::fullScreenVS->use();
+		viewSpaceConvert->use();
+
+		RenderAPI::get()->DrawQuad();
+
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetSRV({ originTexture,gPosition,gNormal,depthView }, 0);
-		RenderAPI::get()->PSSetSampler({ borderSampler.Get()}, 0);
+		RenderAPI::get()->PSSetBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
+		RenderAPI::get()->PSSetSRV({ originTexture,gViewSpacePosition,gNormal }, 0);
+		RenderAPI::get()->PSSetSampler({ borderSampler.Get() }, 0);
 
 		RenderAPI::fullScreenVS->use();
 		screenSpaceReflection->use();
 
 		RenderAPI::get()->DrawQuad();
-
-		/*RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetSRV({ gNormal }, 0);
-		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
-
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
-
-		RenderAPI::get()->DrawQuad();*/
 
 		/*ShaderResourceView* bloomSRV = bloomEffect.process(originTexture);
 

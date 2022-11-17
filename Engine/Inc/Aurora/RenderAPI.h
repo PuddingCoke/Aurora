@@ -3,9 +3,11 @@
 #ifndef _RENDERAPI_H_
 #define _RENDERAPI_H_
 
-#include"Renderer.h"
+#include<DirectXColors.h>
+
 #include"ResManager.h"
 #include"Shader.h"
+#include"States.h"
 
 #include"CompiledShaders/FullScreenVS.h"
 #include"CompiledShaders/FullScreenPS.h"
@@ -22,16 +24,6 @@ public:
 	RenderAPI(const RenderAPI&) = delete;
 
 	void operator=(const RenderAPI&) = delete;
-
-	void CreateSamplerState(const D3D11_SAMPLER_DESC& desc, ID3D11SamplerState** const state) const;
-
-	void CreateBlendState(const D3D11_BLEND_DESC& desc, ID3D11BlendState** const state) const;
-
-	void CreateRasterizerState(const D3D11_RASTERIZER_DESC& desc, ID3D11RasterizerState** const state) const;
-
-	void CreateRasterizerState2(const D3D11_RASTERIZER_DESC2& desc, ID3D11RasterizerState2** const state) const;
-
-	void CreateDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& desc, ID3D11DepthStencilState** const state) const;
 
 	void OMSetDefRTV(DepthStencilView* const dsv) const;
 
@@ -137,6 +129,8 @@ public:
 	void UnbindPSUAV() const;
 
 	void GenNoise(UnorderedAccessView* const uav, const unsigned int& textureWidth, const unsigned int& textureHeight);
+
+	void DebugDraw(ShaderResourceView* const srv);
 
 	static Shader* fullScreenVS;
 
