@@ -20,7 +20,7 @@ public:
 	MyGame() :
 		spaceTexture(new TextureCube("D:/Assets/SpaceShip/space.hdr", 2048)),
 		skyboxPShader(new Shader("SkyboxPShader.hlsl", ShaderType::Pixel)),
-		camera({ 0,0,0 }, { 1,0,0 }, { 0,1,0 }, 100.f, 3.f),
+		camera({ 0,0,0 }, { 1,0,0 }, { 0,1,0 }, 100.f),
 		noiseTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM))
 	{
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
@@ -42,32 +42,20 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->GenNoise(noiseTexture, noiseTexture->getWidth(), noiseTexture->getHeight());
-
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
+		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->PSSetSRV({ noiseTexture }, 0);
+
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
-
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
-
-		RenderAPI::get()->DrawQuad();
-
-
-		/*RenderAPI::get()->OMSetBlendState(States::defBlendState);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		RenderAPI::get()->PSSetSampler(States::linearClampSampler.GetAddressOf(), 1, 1);
 
 		RenderAPI::skyboxVS->use();
 		skyboxPShader->use();
 
 		RenderAPI::get()->PSSetSRV({ spaceTexture }, 0);
 
-		RenderAPI::get()->DrawCube();*/
+		RenderAPI::get()->DrawCube();
 	}
 
 

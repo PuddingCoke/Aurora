@@ -18,7 +18,7 @@ public:
 
 	void operator=(const FPSCamera&) = delete;
 
-	FPSCamera(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& lookDir, const DirectX::XMFLOAT3& up, const float& moveSpeed, const float& rotationSpeed);
+	FPSCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& lookDir, const DirectX::XMVECTOR& up, const float& moveSpeed);
 
 	void applyInput(const float& dt);
 
@@ -28,13 +28,11 @@ private:
 
 	const float moveSpeed;
 
-	const float rotationSpeed;
+	DirectX::XMVECTOR eye;
 
-	DirectX::XMFLOAT3 eye;
+	DirectX::XMVECTOR lookDir;
 
-	DirectX::XMFLOAT3 lookDir;
-
-	DirectX::XMFLOAT3 up;
+	DirectX::XMVECTOR up;
 
 };
 

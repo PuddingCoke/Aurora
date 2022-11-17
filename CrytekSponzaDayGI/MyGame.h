@@ -125,7 +125,7 @@ public:
 		skybox(new TextureCube(assetPath + "/sky/kloppenheim_05_4k.hdr", 2048)),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f, 3.f),
+		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f),
 		displayMode(false)
 	{
 		exposure = 0.60f;

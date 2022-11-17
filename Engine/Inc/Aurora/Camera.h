@@ -29,7 +29,7 @@ public:
 
 	static Buffer* getViewBuffer();
 
-	static const DirectX::XMFLOAT4& getEye();
+	static const DirectX::XMVECTOR& getEye();
 
 	static void setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar);
 
@@ -42,8 +42,6 @@ public:
 private:
 
 	friend class Aurora;
-
-	friend class CascadedShadowMap;
 
 	static Camera* instance;
 
@@ -68,7 +66,7 @@ private:
 	struct ViewInfo
 	{
 		DirectX::XMMATRIX view;
-		DirectX::XMFLOAT4 eyePos;
+		DirectX::XMVECTOR eyePos;
 		DirectX::XMMATRIX prevViewProj;
 		DirectX::XMMATRIX viewProj;
 	}viewInfo;

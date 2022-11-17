@@ -57,7 +57,7 @@ public:
 	float gamma;
 
 	MyGame() :
-		camera({ 0,10,0 }, { 1,0,0 }, { 0,1,0 }, 10, 0.f),
+		camera({ 0,10,0 }, { 1,0,0 }, { 0,1,0 }, 10),
 		depthView(new ShadowMap(Graphics::getWidth(), Graphics::getHeight())),
 		mainScene(new Scene("D:\\Assets\\SuperSponza\\NewSponza_Main_glTF_002.gltf")),
 		curtainScene(new Scene("D:\\Assets\\SuperSponza\\NewSponza_Curtains_glTF.gltf")),

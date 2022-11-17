@@ -35,7 +35,7 @@ public:
 
 	struct Light
 	{
-		DirectX::XMFLOAT4 lightPos;
+		DirectX::XMVECTOR lightPos;
 		DirectX::XMFLOAT4 lightColor;
 	}light;
 
@@ -82,10 +82,10 @@ public:
 	{
 		camera.applyInput(dt);
 
-		DirectX::XMFLOAT3 lightPos = { Camera::getEye().x,Camera::getEye().y,Camera::getEye().z };
-		DirectX::XMStoreFloat3(&lightPos, DirectX::XMVectorScale(DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&lightPos)), 1.0f));
+		DirectX::XMVECTOR lightPos = Camera::getEye();
+		lightPos = DirectX::XMVectorScale(DirectX::XMVector3Normalize(lightPos), 1.0f);
 
-		light.lightPos = DirectX::XMFLOAT4(lightPos.x, lightPos.y, lightPos.z, 1.f);
+		light.lightPos = lightPos;
 
 		memcpy(lightBuffer->map(0).pData, &light, sizeof(Light));
 		lightBuffer->unmap(0);

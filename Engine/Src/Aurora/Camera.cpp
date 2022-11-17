@@ -22,6 +22,11 @@ Buffer* Camera::getViewBuffer()
 	return instance->viewBuffer;
 }
 
+const DirectX::XMVECTOR& Camera::getEye()
+{
+	return instance->viewInfo.eyePos;
+}
+
 Camera::Camera():
 	projBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DEFAULT)),
 	viewBuffer(new Buffer(sizeof(ViewInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
@@ -32,11 +37,6 @@ Camera::~Camera()
 {
 	delete projBuffer;
 	delete viewBuffer;
-}
-
-const DirectX::XMFLOAT4& Camera::getEye()
-{
-	return instance->viewInfo.eyePos;
 }
 
 void Camera::setProj(const DirectX::XMMATRIX& proj)
@@ -70,8 +70,6 @@ void Camera::setView(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focu
 
 void Camera::setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up)
 {
-	DirectX::XMFLOAT3 eyePos;
-	DirectX::XMStoreFloat3(&eyePos, eye);
-	instance->viewInfo.eyePos = DirectX::XMFLOAT4(eyePos.x, eyePos.y, eyePos.z, 1.f);
+	instance->viewInfo.eyePos = eye;
 	setView(DirectX::XMMatrixLookAtLH(eye, focus, up));
 }

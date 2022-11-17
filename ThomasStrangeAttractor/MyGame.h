@@ -56,6 +56,8 @@ public:
 			});
 
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
+
+		std::cout << sizeof(DirectX::XMVECTOR) << "\n";
 	}
 
 	~MyGame()

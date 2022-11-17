@@ -1,6 +1,6 @@
-SamplerState linearSampler : register(s1);
-
 TextureCube skyCube : register(t0);
+
+SamplerState linearSampler : register(s0);
 
 cbuffer DeltaTimes : register(b0)
 {
