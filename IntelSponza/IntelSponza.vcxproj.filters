@@ -40,5 +40,6 @@
     <FxCompile Include="DeferredPSTrans.hlsl" />
     <FxCompile Include="DebugPS.hlsl" />
     <FxCompile Include="DeferredFinal.hlsl" />
+    <FxCompile Include="SSRPS.hlsl" />
   </ItemGroup>
 </Project>

@@ -15,6 +15,8 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
+	ComPtr<ID3D11SamplerState> borderSampler;
+
 	FPSCamera camera;
 
 	ShadowMap* depthView;
@@ -48,6 +50,8 @@ public:
 
 	Shader* deferredFinal;
 
+	Shader* screenSpaceReflection;
+
 	BloomEffect bloomEffect;
 
 	HBAOEffect hbaoEffect;
@@ -72,6 +76,7 @@ public:
 		deferredPSTrans(new Shader("DeferredPSTrans.hlsl", ShaderType::Pixel)),
 		debugPS(new Shader("DebugPS.hlsl", ShaderType::Pixel)),
 		deferredFinal(new Shader("DeferredFinal.hlsl", ShaderType::Pixel)),
+		screenSpaceReflection(new Shader("SSRPS.hlsl", ShaderType::Pixel)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight())
 	{
@@ -91,6 +96,24 @@ public:
 			};
 
 			Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(deferredVS), inputLayout.ReleaseAndGetAddressOf());
+		}
+
+		{
+			D3D11_SAMPLER_DESC desc = {};
+			desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+			desc.BorderColor[0] = 0.f;
+			desc.BorderColor[1] = 0.f;
+			desc.BorderColor[2] = 0.f;
+			desc.BorderColor[3] = 1.f;
+			desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+			desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+			desc.MinLOD = 0.f;
+			desc.MaxLOD = FLT_MAX;
+			
+			RenderAPI::get()->CreateSamplerState(desc, borderSampler.ReleaseAndGetAddressOf());
+
 		}
 
 		camera.registerEvent();
@@ -117,6 +140,7 @@ public:
 		delete deferredPSTrans;
 		delete debugPS;
 		delete deferredFinal;
+		delete screenSpaceReflection;
 	}
 
 	void update(const float& dt) override
@@ -183,19 +207,27 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
-		/*RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
-		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
-		RenderAPI::get()->PSSetSRV({ reflectTexture }, 0);
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->PSSetSRV({ originTexture,gPosition,gNormal,depthView }, 0);
+		RenderAPI::get()->PSSetSampler({ borderSampler.Get()}, 0);
+
+		RenderAPI::fullScreenVS->use();
+		screenSpaceReflection->use();
+
+		RenderAPI::get()->DrawQuad();
+
+		/*RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->PSSetSRV({ gNormal }, 0);
 		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
 
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 
-		RenderAPI::get()->DrawQuad();
+		RenderAPI::get()->DrawQuad();*/
 
-		RenderAPI::get()->OMSetBlendState(nullptr);*/
-
-		ShaderResourceView* bloomSRV = bloomEffect.process(originTexture);
+		/*ShaderResourceView* bloomSRV = bloomEffect.process(originTexture);
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 
@@ -208,7 +240,7 @@ public:
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 
-		RenderAPI::get()->DrawQuad();
+		RenderAPI::get()->DrawQuad();*/
 
 	}
 
