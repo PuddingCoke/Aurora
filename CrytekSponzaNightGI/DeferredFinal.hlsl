@@ -101,8 +101,8 @@ inline float4 ConeTrace(float3 P, float3 N, float3 coneDir, float coneAperture)
         float diameter = max(voxelSize, 2.0 * coneAperture * dist);
         float mipLevel = log2(diameter / voxelSize);
         
-        float3 tc = (startPos + coneDir * dist) / (voxelGridLength / 2.0);
-        tc = tc * 0.5 + 0.5;
+        float3 tc = (startPos + coneDir * dist) / voxelGridLength;
+        tc = tc + 0.5;
         
         if (tc.x != saturate(tc.x) || tc.y != saturate(tc.y) || tc.z != saturate(tc.z) || mipLevel >= maxMipLevel)
         {
@@ -112,7 +112,7 @@ inline float4 ConeTrace(float3 P, float3 N, float3 coneDir, float coneAperture)
         float4 sam = voxelTexture.SampleLevel(linearSampler, tc, mipLevel);
         
         float a = 1.0 - alpha;
-        color += a * sam.rgb;
+        color += a * sam.a * sam.rgb;
         alpha += a * sam.a;
         
         dist += diameter * ConeStepSize;

@@ -28,15 +28,11 @@ public:
 
 	RenderTexture* originTexture;
 
-	ComputeTexture3D* voxelTextureTempColor;
-
-	ComputeTexture3D* voxelTextureTempNormal;
-
 	ComputeTexture3D* voxelTextureColor;
 
-	ComputeTexture3D* voxelTextureNormal;
-
 	ComputeTexture3D* voxelTextureColorFinal;
+
+	ComputeTexture3D* voxelTextureNormal;
 
 	Scene* scene;
 
@@ -49,8 +45,6 @@ public:
 	Shader* voxelGShader;
 
 	Shader* voxelPShader;
-
-	Shader* voxelConvert;
 
 	Shader* lightBounceCShader;
 
@@ -113,7 +107,6 @@ public:
 		voxelVShader(new Shader("VoxelizationVShader.hlsl", ShaderType::Vertex)),
 		voxelGShader(new Shader("VoxelizationGShader.hlsl", ShaderType::Geometry)),
 		voxelPShader(new Shader("VoxelizationPShader.hlsl", ShaderType::Pixel)),
-		voxelConvert(new Shader("VoxelConvert.hlsl", ShaderType::Compute)),
 		deferredVShader(new Shader("DeferredVShader.hlsl", ShaderType::Vertex)),
 		deferredPShader(new Shader("DeferredPShader.hlsl", ShaderType::Pixel)),
 		deferredFinal(new Shader("DeferredFinal.hlsl", ShaderType::Pixel)),
@@ -139,13 +132,9 @@ public:
 			voxelParam.voxelGridLength = 300.f;
 			voxelParam.voxelSize = voxelParam.voxelGridLength / (float)voxelParam.voxelGridRes;
 
-			voxelTextureTempColor = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R32_UINT);
-			voxelTextureColor = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_RENDER_TARGET, D3D11_RESOURCE_MISC_GENERATE_MIPS, 5);
-
-			voxelTextureTempNormal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R32_UINT);
-			voxelTextureNormal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R16G16B16A16_SNORM);
-
+			voxelTextureColor = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, D3D11_BIND_RENDER_TARGET, D3D11_RESOURCE_MISC_GENERATE_MIPS, 5);
 			voxelTextureColorFinal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_RENDER_TARGET, D3D11_RESOURCE_MISC_GENERATE_MIPS, 5);
+			voxelTextureNormal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT);
 
 			voxelParamBuffer = new Buffer(sizeof(VoxelParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &voxelParam);
 		}
@@ -201,9 +190,9 @@ public:
 			RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 
 			const unsigned int color[4] = { 0,0,0,0 };
-			voxelTextureTempColor->clear(color);
-			voxelTextureTempNormal->clear(color);
-			RenderAPI::get()->OMSetUAV({ voxelTextureTempColor,voxelTextureTempNormal });
+			voxelTextureColor->clear(color);
+			voxelTextureNormal->clear(color);
+			RenderAPI::get()->OMSetUAV({ voxelTextureColor,voxelTextureNormal });
 
 			RenderAPI::get()->VSSetBuffer({ voxelProjBuffer }, 2);
 			RenderAPI::get()->PSSetBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer }, 1);
@@ -214,14 +203,9 @@ public:
 
 			scene->drawVoxel(voxelVShader, voxelGShader, voxelPShader);
 
-			voxelConvert->use();
-
-			RenderAPI::get()->CSSetSRV({ voxelTextureTempColor,voxelTextureTempNormal }, 0);
-			RenderAPI::get()->CSSetUAV({ voxelTextureColor,voxelTextureNormal }, 0);
-
-			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
-
 			voxelTextureColor->generateMips();
+
+			delete voxelProjBuffer;
 
 			lightBounceCShader->use();
 
@@ -234,43 +218,6 @@ public:
 
 			voxelTextureColorFinal->generateMips();
 
-			RenderAPI::get()->CSSetSRV({ voxelTextureColorFinal,voxelTextureNormal }, 0);
-			RenderAPI::get()->CSSetUAV({ voxelTextureColor }, 0);
-			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
-
-			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
-
-			voxelTextureColor->generateMips();
-
-			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
-			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
-			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
-
-			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
-
-			voxelTextureColorFinal->generateMips();
-
-			RenderAPI::get()->CSSetSRV({ voxelTextureColorFinal,voxelTextureNormal }, 0);
-			RenderAPI::get()->CSSetUAV({ voxelTextureColor }, 0);
-			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
-
-			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
-
-			voxelTextureColor->generateMips();
-
-			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
-			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
-			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
-			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
-
-			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
-
-			voxelTextureColorFinal->generateMips();
-
-			delete voxelProjBuffer;
 		}
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
@@ -302,14 +249,11 @@ public:
 		delete deferredPShader;
 		delete deferredFinal;
 
-		delete voxelTextureTempColor;
 		delete voxelTextureColor;
-		delete voxelTextureTempNormal;
 		delete voxelTextureNormal;
 		delete voxelTextureColorFinal;
 		delete voxelParamBuffer;
 
-		delete voxelConvert;
 		delete lightBounceCShader;
 
 		delete voxelVShader;
@@ -358,7 +302,7 @@ public:
 	{
 		if (displayMode)
 		{
-			RenderAPI::get()->RSSetState(States::rasterCullBack);
+			RenderAPI::get()->RSSetState(States::rasterCullNone);
 
 			RenderAPI::get()->UnbindVertexBuffer();
 

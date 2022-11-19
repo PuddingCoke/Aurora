@@ -3,6 +3,8 @@ Texture3D<float4> normalTexture : register(t1);
 
 RWTexture3D<float4> outputTexture : register(u0);
 
+SamplerState linearClampSampler : register(s0);
+
 cbuffer VoxelParam : register(b1)
 {
     uint voxelGridRes;
@@ -11,19 +13,15 @@ cbuffer VoxelParam : register(b1)
     float v0;
 }
 
-SamplerState linearClampSampler : register(s0);
-
 #define SQRT2 1.41421356237309504880
 #define PI 3.14159265358979323846264
 
 static const float maxMipLevel = 4.0;
 
-//ConeTraceFactor
-static const float ConeOffsetFactor = 2.0;
+static const float ConeOffsetFactor = 4.0;
 static const float ConeMaxLength = 300.0;
 static const float ConeStepSize = 1.0;
 
-//DifusseTraceFactor
 static const uint numCones = 16;
 
 float3x3 getTangentSpace(float3 normal)
@@ -68,8 +66,8 @@ float4 ConeTrace(float3 P, float3 N, float3 coneDir, float coneAperture)
         float diameter = max(voxelSize, 2.0 * coneAperture * dist);
         float mipLevel = log2(diameter / voxelSize);
         
-        float3 tc = (startPos + coneDir * dist) / (voxelGridLength / 2.0);
-        tc = tc * 0.5 + 0.5;
+        float3 tc = (startPos + coneDir * dist) / voxelGridLength;
+        tc = tc + 0.5;
         
         if (tc.x != saturate(tc.x) || tc.y != saturate(tc.y) || tc.z != saturate(tc.z) || mipLevel >= maxMipLevel)
         {
@@ -79,7 +77,7 @@ float4 ConeTrace(float3 P, float3 N, float3 coneDir, float coneAperture)
         float4 sam = colorTexture.SampleLevel(linearClampSampler, tc, mipLevel);
         
         float a = 1.0 - alpha;
-        color += a * sam.rgb;
+        color += a * sam.a * sam.rgb;
         alpha += a * sam.a;
         
         dist += diameter * ConeStepSize;
@@ -111,13 +109,13 @@ float4 TraceDiffuse(float3 P, float3 N)
 }
 
 [numthreads(8, 8, 8)]
-void main( uint3 DTid : SV_DispatchThreadID )
+void main(uint3 DTid : SV_DispatchThreadID)
 {
     float4 emission = colorTexture[DTid];
     
-    if(emission.a>0.1)
+    if (emission.a > 0.1)
     {
-        float3 N = normalTexture[DTid].xyz;
+        float3 N = normalize(normalTexture[DTid].xyz * 2.0 - 1.0);
         
         float3 P = ((float3(DTid) + 0.5) / float(voxelGridRes) - 0.5) * voxelGridLength;
         

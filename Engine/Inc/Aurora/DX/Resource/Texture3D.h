@@ -25,8 +25,6 @@ public:
 
 	const UINT depth;
 
-	const DXGI_FORMAT format;
-
 protected:
 
 	ComPtr<ID3D11Texture3D> texture;

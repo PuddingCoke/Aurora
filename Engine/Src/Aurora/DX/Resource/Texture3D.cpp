@@ -5,7 +5,7 @@ Texture3D::~Texture3D()
 }
 
 Texture3D::Texture3D(const UINT& width, const UINT& height, const UINT& depth, const DXGI_FORMAT& format, const UINT& bindFlags, const UINT& miscFlags, const UINT& mipLevels) :
-	width(width), height(height), depth(depth), format(format)
+	width(width), height(height), depth(depth)
 {
 	D3D11_TEXTURE3D_DESC desc = {};
 	desc.Width = width;

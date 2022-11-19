@@ -35,8 +35,8 @@ cbuffer VoxelParam : register(b3)
     uint2 v3;
 }
 
-RWTexture3D<uint> voxelTextureTempColor : register(u0);
-RWTexture3D<uint> voxelTextureTempNormal : register(u1);
+RWTexture3D<uint> voxelTextureColor : register(u0);
+RWTexture3D<uint> voxelTextureNormal : register(u1);
 
 Texture2D tDiffuse : register(t0);
 Texture2D tSpecular : register(t1);
@@ -44,9 +44,9 @@ Texture2D tNormal : register(t2);
 
 SamplerState samplerState : register(s0);
 
-uint Float4ToRGBA8(in float4 val)
+uint PackFloat4(float4 val)
 {
-    return (uint(val.w) & 0x000000FF) << 24U | (uint(val.z) & 0x000000FF) << 16U | (uint(val.y) & 0x000000FF) << 8U | (uint(val.x) & 0x000000FF);
+    return (uint(val.a) & 0x000000FF) << 24U | (uint(val.b) & 0x000000FF) << 16U | (uint(val.g) & 0x000000FF) << 8U | (uint(val.r) & 0x000000FF);
 }
 
 void main(PixelInput input)
@@ -89,6 +89,6 @@ void main(PixelInput input)
     color *= 255.0;
     N = (N + 1.0) / 2.0 * 255.0;
     
-    InterlockedMax(voxelTextureTempColor[uint3(pos)], Float4ToRGBA8(color));
-    InterlockedMax(voxelTextureTempNormal[uint3(pos)], Float4ToRGBA8(float4(N, 255.0)));
+    InterlockedMax(voxelTextureColor[uint3(pos)], PackFloat4(color));
+    InterlockedMax(voxelTextureNormal[uint3(pos)], PackFloat4(float4(N, 255.0)));
 }

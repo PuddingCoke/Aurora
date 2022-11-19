@@ -37,7 +37,6 @@
     <FxCompile Include="VoxelizationVShader.hlsl" />
     <FxCompile Include="VoxelizationGShader.hlsl" />
     <FxCompile Include="VoxelizationPShader.hlsl" />
-    <FxCompile Include="VoxelConvert.hlsl" />
     <FxCompile Include="DeferredPShader.hlsl" />
     <FxCompile Include="DeferredVShader.hlsl" />
     <FxCompile Include="DeferredFinal.hlsl" />
