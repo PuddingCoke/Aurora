@@ -78,29 +78,29 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 
 	RenderTargetView* rtv;
 
-	const DirectX::XMFLOAT3 focusPoints[6] =
+	const DirectX::XMVECTOR focusPoints[6] =
 	{
-		DirectX::XMFLOAT3(1.0f,  0.0f,  0.0f),
-		DirectX::XMFLOAT3(-1.0f,  0.0f,  0.0f),
-		DirectX::XMFLOAT3(0.0f,  1.0f,  0.0f),
-		DirectX::XMFLOAT3(0.0f, -1.0f,  0.0f),
-		DirectX::XMFLOAT3(0.0f,  0.0f,  1.0f),
-		DirectX::XMFLOAT3(0.0f,  0.0f, -1.0f)
+		{1.0f,  0.0f,  0.0f},
+		{-1.0f,  0.0f,  0.0f},
+		{0.0f,  1.0f,  0.0f},
+		{0.0f, -1.0f,  0.0f},
+		{0.0f,  0.0f,  1.0f},
+		{0.0f,  0.0f, -1.0f}
 	};
-	const DirectX::XMFLOAT3 upVectors[6] =
+	const DirectX::XMVECTOR upVectors[6] =
 	{
-		DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f),
-		DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f),
-		DirectX::XMFLOAT3(0.0f,  0.0f,  -1.0f),
-		DirectX::XMFLOAT3(0.0f,  0.0f, 1.0f),
-		DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f),
-		DirectX::XMFLOAT3(0.0f, 1.0f,  0.0f)
+		{0.0f, 1.0f,  0.0f},
+		{0.0f, 1.0f,  0.0f},
+		{0.0f,  0.0f,  -1.0f},
+		{0.0f,  0.0f, 1.0f},
+		{0.0f, 1.0f,  0.0f},
+		{0.0f, 1.0f,  0.0f}
 	};
 
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 	RenderAPI::get()->PSSetSRV({ equirectangularMap }, 0);
-	RenderAPI::get()->OMSetBlendState(States::defBlendState);
+	RenderAPI::get()->OMSetBlendState(nullptr);
 	RenderAPI::get()->RSSetViewport(skyboxResolution, skyboxResolution);
 	RenderAPI::get()->VSSetBuffer({ buffer }, 2);
 
@@ -122,7 +122,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 		rtv = new RenderTargetView(cubeTexture.Get(), rtvDesc);
 
 		RenderAPI::get()->OMSetRTV({ rtv }, nullptr);
-		const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH({ 0.f,0.f,0.f }, { focusPoints[i].x,focusPoints[i].y, focusPoints[i].z }, { upVectors[i].x,upVectors[i].y,upVectors[i].z });
+		const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH({ 0.f,0.f,0.f }, focusPoints[i], upVectors[i]);
 		const DirectX::XMMATRIX viewProj = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
 		memcpy(buffer->map(0).pData, &viewProj, sizeof(DirectX::XMMATRIX));
 		buffer->unmap(0);

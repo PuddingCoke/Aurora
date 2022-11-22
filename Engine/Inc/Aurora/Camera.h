@@ -33,8 +33,6 @@ public:
 
 	static void setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar);
 
-	static void setView(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up);
-
 	static void setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up);
 
 	static constexpr float epsilon = 0.01f;

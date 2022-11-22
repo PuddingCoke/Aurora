@@ -312,6 +312,7 @@ public:
 
 			RenderAPI::get()->GSSetSRV({ voxelTextureColorFinal }, 0);
 			RenderAPI::get()->GSSetBuffer({ voxelParamBuffer }, 2);
+			RenderAPI::get()->GSSetSampler({ States::pointClampSampler }, 0);
 			RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 			visualVShader->use();

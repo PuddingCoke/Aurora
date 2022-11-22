@@ -31,7 +31,7 @@ int Aurora::iniEngine(const Configuration& config)
 
 	if (config.usage == Configuration::EngineUsage::AnimationRender)
 	{
-		Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, config.enableDebug, config.msaaLevel, D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
+		Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, config.enableDebug, config.msaaLevel, D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
 	}
 	else
 	{

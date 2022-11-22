@@ -1,7 +1,7 @@
 ﻿#include<Aurora/A3D/OrbitCamera.h>
 
-OrbitCamera::OrbitCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& up) :
-	eye(DirectX::XMVector3Normalize(eye)), up(DirectX::XMVector3Normalize(up))
+OrbitCamera::OrbitCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& up, const float& scaleSpeed) :
+	eye(DirectX::XMVector3Normalize(eye)), up(DirectX::XMVector3Normalize(up)), scaleSpeed(scaleSpeed)
 {
 	DirectX::XMStoreFloat(&length, DirectX::XMVector3Length(eye));
 	curLength = length;
@@ -44,11 +44,11 @@ void OrbitCamera::registerEvent()
 
 	Mouse::addScrollEvent([this]()
 		{
-			length -= 0.5f * Mouse::getWheelDelta();
-			if (length < 0.1f)
-			{
-				length = 0.1f;
-			}
+			length -= 0.5f * scaleSpeed * Mouse::getWheelDelta();
+	if (length < 0.1f)
+	{
+		length = 0.1f;
+	}
 		});
 }
 

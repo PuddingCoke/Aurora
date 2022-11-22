@@ -17,7 +17,7 @@ public:
 
 	void operator=(const OrbitCamera&) = delete;
 
-	OrbitCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& up);
+	OrbitCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& up, const float& scaleSpeed = 1.f);
 
 	void registerEvent();
 
@@ -32,6 +32,8 @@ private:
 	float curLength;
 
 	float length;
+
+	const float scaleSpeed;
 
 	const DirectX::XMVECTOR up;
 

@@ -30,7 +30,7 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		ComPtr<ID3D11Device> device11;
 		ComPtr<ID3D11DeviceContext> context11;
 
-		D3D11_CREATE_DEVICE_FLAG deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED;
+		D3D11_CREATE_DEVICE_FLAG deviceFlag = (D3D11_CREATE_DEVICE_FLAG)(D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT);
 
 		if (enableDebug)
 		{
@@ -75,7 +75,7 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		sd.BufferCount = 3;
+		sd.BufferCount = 16;
 		sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
 		ComPtr<IDXGISwapChain1> sc;

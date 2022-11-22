@@ -64,11 +64,6 @@ void Camera::setView(const DirectX::XMMATRIX& view)
 	instance->viewBuffer->unmap(0);
 }
 
-void Camera::setView(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up)
-{
-	setView(DirectX::XMLoadFloat3(&eye), DirectX::XMLoadFloat3(&focus), DirectX::XMLoadFloat3(&up));
-}
-
 void Camera::setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up)
 {
 	instance->viewInfo.eyePos = eye;

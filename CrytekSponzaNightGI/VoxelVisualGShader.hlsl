@@ -63,7 +63,10 @@ cbuffer ProjMatrix : register(b0)
 
 cbuffer ViewMatrix : register(b1)
 {
-    matrix view;    
+    matrix view;
+    float4 viewPos;
+    matrix prevViewProj;
+    matrix viewProj;
 }
 
 cbuffer VoxelParam : register(b2)
@@ -76,6 +79,8 @@ cbuffer VoxelParam : register(b2)
 
 Texture3D<float4> voxelTextureColor : register(t0);
 
+SamplerState pointSampler : register(s0);
+
 [maxvertexcount(36)]
 void main(
 	point GSInput input[1],
@@ -83,9 +88,10 @@ void main(
 )
 {
     int3 pos = int3(input[0].vertexID / (voxelGridRes * voxelGridRes), (input[0].vertexID / voxelGridRes) % voxelGridRes, input[0].vertexID % voxelGridRes);
+    float3 uvw = float3(pos) / voxelGridRes;
     
     GSOutput element;
-    element.color = voxelTextureColor[pos];
+    element.color = voxelTextureColor.SampleLevel(pointSampler, uvw, 0.0);
     
     if (element.color.a < 0.1)
     {
@@ -97,7 +103,7 @@ void main(
     [unroll]
     for (uint i = 0; i < 36; i++)
     {
-        element.pos = mul(mul(float4(vertices[i] * voxelSize + float3(pos) * voxelSize, 1.0), view), proj);
+        element.pos = mul(float4(vertices[i] * voxelSize + float3(pos) * voxelSize, 1.0), viewProj);
         output.Append(element);
     }
 }

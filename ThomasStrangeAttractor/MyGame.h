@@ -40,7 +40,7 @@ public:
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		depthStencilView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
-		camera({ 4,4,-11 }, { -1,-1,-1 })
+		camera({ 4,4,-11 }, { -1,-1,-1 }, 2.f)
 	{
 		camera.registerEvent();
 
@@ -112,7 +112,7 @@ public:
 		attractor.render();
 
 		ShaderResourceView* const textureSRV = bloomEffect.process(renderTexture);
-		
+
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
