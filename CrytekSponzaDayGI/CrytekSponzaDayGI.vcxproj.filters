@@ -37,14 +37,6 @@
     <FxCompile Include="DeferredFinal.hlsl" />
     <FxCompile Include="DeferredPShader.hlsl" />
     <FxCompile Include="DeferredVShader.hlsl" />
-    <FxCompile Include="LightBounceCShader.hlsl" />
     <FxCompile Include="SkyboxPShader.hlsl" />
-    <FxCompile Include="VoxelConvert.hlsl" />
-    <FxCompile Include="VoxelizationGShader.hlsl" />
-    <FxCompile Include="VoxelizationPShader.hlsl" />
-    <FxCompile Include="VoxelizationVShader.hlsl" />
-    <FxCompile Include="VoxelVisualGShader.hlsl" />
-    <FxCompile Include="VoxelVisualPShader.hlsl" />
-    <FxCompile Include="VoxelVisualVShader.hlsl" />
   </ItemGroup>
 </Project>
