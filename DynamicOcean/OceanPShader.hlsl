@@ -49,7 +49,7 @@ float4 main(PixelInput input) : SV_TARGET
     float3 color = emissive_color * emissive_contribution +
 		    ambient_color * ambient_contribution +
 		    diffuse_color * diffuse_contribution * max(dot(N, L), 0) +
-			specular_color * specular_contribution * (pow(max(dot(R, H), 0.0), 32.0)) + refl * 0.3;
+			specular_color * specular_contribution * (pow(max(dot(R, H), 0.0), 64.0)) + refl * 0.3;
     
     return float4(color, 1.0);
 }

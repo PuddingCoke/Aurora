@@ -149,9 +149,11 @@ public:
 		light.lightDir = { 0.f,sinf(sunAngle),cosf(sunAngle),0.f };
 		light.lightColor = DirectX::Colors::White;
 
+		light.lightDir = DirectX::XMVector3Normalize(light.lightDir);
+
 		const DirectX::XMVECTOR lightCamPos = DirectX::XMVectorScale(light.lightDir, distance);
-		const DirectX::XMMATRIX lightProjMat = DirectX::XMMatrixOrthographicOffCenterLH(-xSize / 2.f, xSize / 2.f, -ySize / 2.f, ySize / 2.f, 1.f, 512);
-		const DirectX::XMMATRIX lightViewMat = DirectX::XMMatrixLookAtLH(lightCamPos, { 0.f,0.f,0.f,1.f }, { 0.f,1.f,0.f });
+		const DirectX::XMMATRIX lightProjMat = DirectX::XMMatrixOrthographicOffCenterLH(-xSize / 2.f, xSize / 2.f, -ySize / 2.f, ySize / 2.f, 1.f, 512.f);
+		const DirectX::XMMATRIX lightViewMat = DirectX::XMMatrixLookAtLH(lightCamPos, { 0.f,0.f,0.f }, { 0.f,1.f,0.f });
 		const DirectX::XMMATRIX lightMat = DirectX::XMMatrixTranspose(lightViewMat * lightProjMat);
 
 		memcpy(lightBuffer->map(0).pData, &light, sizeof(Light));

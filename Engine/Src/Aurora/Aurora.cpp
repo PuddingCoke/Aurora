@@ -81,7 +81,7 @@ int Aurora::iniEngine(const Configuration& config)
 	default:
 	case Configuration::CameraType::Orthogonal:
 		std::cout << "[class Aurora] orthogonal camera\n";
-		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)config.width, 0, (float)config.height, 0.f, 1.f));
+		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)config.width, 0, (float)config.height, -1.f, 1.f));
 		Camera::setView(DirectX::XMMatrixIdentity());
 		break;
 	case Configuration::CameraType::Perspective:

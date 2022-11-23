@@ -47,10 +47,8 @@ private:
 
 	~Camera();
 
-	//自动转置proj矩阵
 	static void setProj(const DirectX::XMMATRIX& proj);
 
-	//自动转置view矩阵
 	static void setView(const DirectX::XMMATRIX& view);
 
 	Buffer* projBuffer;

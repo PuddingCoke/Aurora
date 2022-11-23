@@ -1,7 +1,6 @@
 #include<Aurora/A3D/ShadowMap.h>
 
-ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height) :
-	DepthStencilView()
+ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 	tDesc.Width = width;
@@ -27,9 +26,9 @@ ShadowMap::ShadowMap(const unsigned int& width, const unsigned int& height) :
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = -1;
+	srvDesc.Texture2D.MipLevels = 1;
 
 	createSRV(depthStencilTexture.Get(), srvDesc);
 }
