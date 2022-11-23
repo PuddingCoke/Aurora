@@ -60,13 +60,13 @@ private:
 
 	HMODULE moduleNvEncAPI;
 
-	const GUID codec = NV_ENC_CODEC_H264_GUID;
+	const GUID codec = NV_ENC_CODEC_HEVC_GUID;
 
-	const GUID preset = NV_ENC_PRESET_P2_GUID;
+	const GUID preset = NV_ENC_PRESET_P7_GUID;
 
-	const GUID profile = NV_ENC_H264_PROFILE_HIGH_GUID;
+	const GUID profile = NV_ENC_HEVC_PROFILE_MAIN_GUID;
 
-	const NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_ULTRA_LOW_LATENCY;
+	const NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_HIGH_QUALITY;
 
 	std::chrono::steady_clock timer;
 

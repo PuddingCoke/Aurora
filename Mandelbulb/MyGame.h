@@ -52,7 +52,7 @@ public:
 		samplerDesc.MinLOD = 0.f;
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		RenderAPI::get()->CreateSamplerState(samplerDesc, borderSampler.GetAddressOf());
+		Renderer::device->CreateSamplerState(&samplerDesc, borderSampler.ReleaseAndGetAddressOf());
 
 		RenderAPI::get()->CSSetUAV({ mandelTexture }, 0);
 		mandelCompute->use();

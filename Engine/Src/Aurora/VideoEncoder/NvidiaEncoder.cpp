@@ -150,15 +150,16 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	config.version = NV_ENC_CONFIG_VER;
 	config.profileGUID = profile;
 	config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_VBR;
-	config.rcParams.averageBitRate = 30000000U;
-	config.rcParams.maxBitRate = 40000000U;
-	config.gopLength = NVENC_INFINITE_GOPLENGTH;
+	config.rcParams.averageBitRate = 8000000U;
+	config.rcParams.maxBitRate = 9000000U;
+	config.gopLength = 120;
 	config.frameIntervalP = 1;
 
-	config.encodeCodecConfig.h264Config.idrPeriod = NVENC_INFINITE_GOPLENGTH;
-	config.rcParams.multiPass = NV_ENC_MULTI_PASS_DISABLED;
-	config.rcParams.vbvBufferSize = config.rcParams.averageBitRate / frameRate * 5;
-	config.rcParams.vbvInitialDelay = config.rcParams.vbvBufferSize;
+	config.encodeCodecConfig.hevcConfig.idrPeriod = config.gopLength;
+	config.rcParams.multiPass = NV_ENC_TWO_PASS_FULL_RESOLUTION;
+	config.rcParams.vbvBufferSize = config.rcParams.maxBitRate * 4;
+	config.rcParams.vbvInitialDelay = 0;
+	config.rcParams.enableAQ = 1;
 
 	NV_ENC_INITIALIZE_PARAMS encoderParams = { NV_ENC_INITIALIZE_PARAMS_VER };
 	encoderParams.encodeConfig = &config;
@@ -188,9 +189,9 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	D3D11_VIDEO_PROCESSOR_CONTENT_DESC contentDesc =
 	{
 		D3D11_VIDEO_FRAME_FORMAT_PROGRESSIVE,
-		{1,1},width,height,
-		{1,1},width,height,
-		D3D11_VIDEO_USAGE_PLAYBACK_NORMAL
+		{frameRate,1},width,height,
+		{frameRate,1},width,height,
+		D3D11_VIDEO_USAGE_OPTIMAL_QUALITY
 	};
 
 	videoDevice->CreateVideoProcessorEnumerator(&contentDesc, videoProcessEnumerator.ReleaseAndGetAddressOf());
@@ -210,7 +211,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	std::cout << "[class NvidiaEncoder] frameToEncode " << frameToEncode << "\n";
 	std::cout << "[class NvidiaEncoder] start encoding\n";
 
-	stream = _popen("ffmpeg -y -f h264 -i pipe: -c copy output.mp4", "wb");
+	stream = _popen("ffmpeg -y -f hevc -i pipe: -c copy output.mp4", "wb");
 
 }
 

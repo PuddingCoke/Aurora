@@ -112,7 +112,7 @@ inline float4 ConeTrace(float3 P, float3 N, float3 coneDir, float coneAperture)
         float4 sam = voxelTexture.SampleLevel(linearSampler, tc, mipLevel);
         
         float a = 1.0 - alpha;
-        color += a * sam.a * sam.rgb;
+        color += a * sam.rgb;
         alpha += a * sam.a;
         
         dist += diameter * ConeStepSize;
