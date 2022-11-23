@@ -44,23 +44,15 @@ public:
 
 	Shader* skyboxPShader;
 
+	TextureCube* skybox;
+
 	FPSCamera camera;
 
 	HBAOEffect hbaoEffect;
 
 	BloomEffect bloomEffect;
 
-	TextureCube* skybox;
-
 	static constexpr unsigned int shadowMapRes = 4096;
-
-	struct VoxelParam
-	{
-		unsigned int voxelGridRes;
-		float voxelGridLength;
-		float voxelSize;
-		float v0;
-	} voxelParam{};
 
 	struct Light
 	{
@@ -68,15 +60,13 @@ public:
 		DirectX::XMFLOAT4 lightColor;
 	} light{};
 
-	bool displayMode;
-
 	float exposure;
 
 	float gamma;
 
 	MyGame() :
 		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
-		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_SNORM, DirectX::Colors::Black)),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		shadowMap(new ShadowMap(Graphics::getWidth(), Graphics::getHeight())),
@@ -89,12 +79,12 @@ public:
 		skybox(new TextureCube(assetPath + "/sky/kloppenheim_05_4k.hdr", 2048)),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f),
-		displayMode(false)
+		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f)
 	{
 		exposure = 1.0f;
 		gamma = 1.25f;
 		bloomEffect.setThreshold(0.6f);
+		bloomEffect.setIntensity(0.92f);
 		bloomEffect.setExposure(exposure);
 		bloomEffect.setGamma(gamma);
 		bloomEffect.applyChange();
@@ -115,7 +105,7 @@ public:
 		camera.registerEvent();
 
 		{
-			const float radian = Math::half_pi - 0.25f;
+			const float radian = Math::half_pi - 0.05f;
 
 			light.lightDir = { 0.f,sinf(radian),cosf(radian),0.f };
 			light.lightColor = { 1.f, 1.f,1.f,1.f };
@@ -153,11 +143,6 @@ public:
 			RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		}
 
-		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
-			{
-				displayMode = !displayMode;
-			});
-
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
 	}
 
@@ -186,6 +171,8 @@ public:
 	void update(const float& dt) override
 	{
 		camera.applyInput(dt);
+
+		
 
 		if (Keyboard::getKeyDown(Keyboard::Z))
 		{
