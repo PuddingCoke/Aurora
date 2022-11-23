@@ -51,7 +51,7 @@ public:
 
 	BloomEffect bloomEffect;
 
-	static constexpr unsigned int shadowMapRes = 4096;
+	static constexpr unsigned int shadowMapRes = 3072;
 
 	struct Light
 	{
@@ -143,7 +143,7 @@ public:
 	void updateShadow()
 	{
 		const float xSize = 200;
-		const float ySize = 100;
+		const float ySize = 130;
 		const float distance = 260.f;
 
 		light.lightDir = { 0.f,sinf(sunAngle),cosf(sunAngle),0.f };
