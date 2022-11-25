@@ -2,7 +2,7 @@
 
 HHOOK WallpaperHelper::mouseHook;
 
-void WallpaperHelper::getSystemResolution(int& width, int& height)
+void WallpaperHelper::getSystemResolution(UINT& width, UINT& height)
 {
 	HMONITOR monitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTONEAREST);
 	MONITORINFO info = {};
@@ -17,8 +17,8 @@ void WallpaperHelper::getSystemResolution(int& width, int& height)
 
 	std::cout << "[class WallpaperHelper] system dpi " << dpi << "\n"; 
 
-	width = width * dpi / 96;
-	height = height * dpi / 96;
+	width = width * dpi / 96u;
+	height = height * dpi / 96u;
 }
 
 HWND WallpaperHelper::getWallpaperWindow()

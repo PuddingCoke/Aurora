@@ -20,7 +20,7 @@ public:
 
 	void operator=(const WallpaperHelper&) = delete;
 
-	static void getSystemResolution(int& width, int& height);
+	static void getSystemResolution(UINT& width, UINT& height);
 
 	static HWND getWallpaperWindow();
 

@@ -49,13 +49,15 @@ private:
 
 	HWND hwnd;
 
-	const Configuration* config;
-
 	Game* game;
+
+	Configuration::EngineUsage usage;
+
+	bool enableDebug;
 
 	ComPtr<ID3D11Texture2D> encodeTexture;
 
-	HRESULT iniWindow();
+	HRESULT iniWindow(const HINSTANCE& hInstance,const std::wstring& title, const UINT& width, const UINT& height);
 
 	void runGame();
 

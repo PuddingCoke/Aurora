@@ -9,13 +9,14 @@ Aurora& Aurora::get()
 
 int Aurora::iniEngine(const Configuration& config)
 {
+	usage = config.usage;
+	enableDebug = config.enableDebug;
+
 	allocateConsole();
 
 	Keyboard::ini();
 
-	this->config = &config;
-
-	int screenWidth, screenHeight;
+	UINT screenWidth, screenHeight;
 
 	if (config.usage == Configuration::EngineUsage::Wallpaper)
 	{
@@ -27,7 +28,7 @@ int Aurora::iniEngine(const Configuration& config)
 		screenHeight = config.height;
 	}
 
-	iniWindow();
+	iniWindow(config.hInstance, config.title, screenWidth, screenHeight);
 
 	if (config.usage == Configuration::EngineUsage::AnimationRender)
 	{
@@ -116,7 +117,8 @@ int Aurora::iniEngine(const Configuration& config)
 void Aurora::iniGame(Game* const game)
 {
 	this->game = game;
-	switch (config->usage)
+
+	switch (usage)
 	{
 	default:
 	case Configuration::EngineUsage::Wallpaper:
@@ -145,7 +147,7 @@ void Aurora::iniGame(Game* const game)
 
 	TextureCube::releaseShader();
 
-	if (config->enableDebug)
+	if (enableDebug)
 	{
 		std::cout << "[class Aurora] debug mode press any key to exit\n";
 		Renderer::instance->d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
@@ -157,7 +159,7 @@ void Aurora::iniGame(Game* const game)
 		delete Renderer::instance;
 	}
 
-	if (config->usage == Configuration::EngineUsage::Wallpaper)
+	if (usage == Configuration::EngineUsage::Wallpaper)
 	{
 		WallpaperHelper::unregisterHOOK();
 	}
@@ -260,7 +262,7 @@ LRESULT Aurora::WallpaperProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	return 0;
 }
 
-HRESULT Aurora::iniWindow()
+HRESULT Aurora::iniWindow(const HINSTANCE& hInstance,const std::wstring& title, const UINT& width, const UINT& height)
 {
 	WNDCLASSEX wcex = {};
 	wcex.cbSize = sizeof(WNDCLASSEX);
@@ -274,13 +276,13 @@ HRESULT Aurora::iniWindow()
 
 	wcex.lpszClassName = L"MyWindowClass";
 
-	wcex.hInstance = config->hInstance;
+	wcex.hInstance = hInstance;
 
 	LRESULT(*wndProc)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = nullptr;
 
 	DWORD wndStyle = normalWndStyle;
 
-	switch (config->usage)
+	switch (usage)
 	{
 	default:
 	case Configuration::EngineUsage::Normal:
@@ -315,17 +317,17 @@ HRESULT Aurora::iniWindow()
 
 	RegisterClassEx(&wcex);
 
-	RECT rect = { 0,0,config->width,config->height };
+	RECT rect = { 0,0,width,height };
 
 	AdjustWindowRect(&rect, wndStyle, false);
 
-	if (config->usage == Configuration::EngineUsage::Wallpaper)
+	if (usage == Configuration::EngineUsage::Wallpaper)
 	{
-		hwnd = CreateWindow(L"MyWindowClass", config->title.c_str(), wndStyle, 0, 0, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, config->hInstance, nullptr);
+		hwnd = CreateWindow(L"MyWindowClass", title.c_str(), wndStyle, 0, 0, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, hInstance, nullptr);
 	}
 	else
 	{
-		hwnd = CreateWindow(L"MyWindowClass", config->title.c_str(), wndStyle, 100, 100, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, config->hInstance, nullptr);
+		hwnd = CreateWindow(L"MyWindowClass", title.c_str(), wndStyle, 100, 100, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, hInstance, nullptr);
 	}
 
 	if (!hwnd)
@@ -335,15 +337,14 @@ HRESULT Aurora::iniWindow()
 
 	ShowWindow(hwnd, SW_SHOW);
 
-	if (config->usage == Configuration::EngineUsage::Wallpaper)
+	if (usage == Configuration::EngineUsage::Wallpaper)
 	{
 		WallpaperHelper::registerHOOK();
-		HWND window = FindWindowW(nullptr, config->title.c_str());
 		HWND bg = WallpaperHelper::getWallpaperWindow();
-		SetParent(window, bg);
-		MoveWindow(window, 0, 0, config->width, config->height, 0);
+		SetParent(hwnd, bg);
+		MoveWindow(hwnd, 0, 0, width, height, 0);
 	}
-	else if (config->usage == Configuration::EngineUsage::AnimationRender)
+	else if (usage == Configuration::EngineUsage::AnimationRender)
 	{
 		ShowWindow(hwnd, SW_HIDE);
 	}
@@ -367,7 +368,7 @@ void Aurora::runGame()
 		const std::chrono::steady_clock::time_point timeStart = timer.now();
 		game->update(Graphics::getDeltaTime());
 		game->render();
-		if (config->msaaLevel != 1)
+		if (Graphics::instance->msaaLevel != 1)
 		{
 			Renderer::context->ResolveSubresource(Renderer::instance->backBuffer.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
@@ -400,7 +401,7 @@ void Aurora::runEncode()
 	{
 		game->update(Graphics::getDeltaTime());
 		game->render();
-		if (config->msaaLevel != 1)
+		if (Graphics::instance->msaaLevel != 1)
 		{
 			Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
@@ -426,7 +427,7 @@ void Aurora::allocateConsole()
 }
 
 Aurora::Aurora() :
-	hwnd(0), config(nullptr), game(nullptr)
+	hwnd(0), game(nullptr)
 {
 
 }
