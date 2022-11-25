@@ -32,14 +32,20 @@ int Aurora::iniEngine(const Configuration& config)
 
 	if (config.usage == Configuration::EngineUsage::AnimationRender)
 	{
-		Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, config.enableDebug, config.msaaLevel, D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
+		Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, enableDebug, config.msaaLevel, D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
 	}
 	else
 	{
-		Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, config.enableDebug, config.msaaLevel);
+		Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, enableDebug, config.msaaLevel);
 	}
 
-	if (config.usage == Configuration::EngineUsage::AnimationRender)
+	States::instance = new States();
+
+	Graphics::instance = new Graphics(screenWidth, screenHeight, config.msaaLevel);
+
+	Camera::instance = new Camera();
+
+	if (usage == Configuration::EngineUsage::AnimationRender)
 	{
 		D3D11_TEXTURE2D_DESC tDesc = {};
 		tDesc.Width = screenWidth;
@@ -54,24 +60,18 @@ int Aurora::iniEngine(const Configuration& config)
 
 		Renderer::device->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
 
-		RenderAPI::instance = new RenderAPI(screenWidth, screenHeight, config.msaaLevel, encodeTexture.Get());
+		RenderAPI::instance = new RenderAPI(screenWidth, screenHeight, Graphics::instance->msaaLevel, encodeTexture.Get());
 	}
 	else
 	{
-		RenderAPI::instance = new RenderAPI(screenWidth, screenHeight, config.msaaLevel, Renderer::instance->backBuffer.Get());
+		RenderAPI::instance = new RenderAPI(screenWidth, screenHeight, Graphics::instance->msaaLevel, Renderer::instance->backBuffer.Get());
 	}
-
-	States::instance = new States();
-
-	Graphics::instance = new Graphics(screenWidth, screenHeight, config.msaaLevel);
-
-	Camera::instance = new Camera();
 
 	TextureCube::iniShader();
 
 	ResManager::instance = new ResManager();
 
-	if (config.enableDebug)
+	if (enableDebug)
 	{
 		Renderer::device->QueryInterface(IID_ID3D11Debug, (void**)Renderer::instance->d3dDebug.ReleaseAndGetAddressOf());
 	}
