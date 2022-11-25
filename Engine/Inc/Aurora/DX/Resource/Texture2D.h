@@ -58,8 +58,6 @@ protected:
 
 	unsigned int mipLevels;
 
-	bool enableMSAA;
-
 	ComPtr<ID3D11Texture2D> texture;
 };
 

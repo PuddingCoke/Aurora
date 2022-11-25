@@ -51,7 +51,7 @@ public:
 
 	BloomEffect bloomEffect;
 
-	static constexpr unsigned int shadowMapRes = 3072;
+	static constexpr unsigned int shadowMapRes = 4096;
 
 	struct Light
 	{

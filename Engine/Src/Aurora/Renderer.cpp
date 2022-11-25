@@ -20,7 +20,7 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		D3D_FEATURE_LEVEL_11_0,
 	};
 
-	D3D_FEATURE_LEVEL maxSupportedFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
+	D3D_FEATURE_LEVEL maxSupportedFeatureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	ComPtr<IDXGIDevice4> dxgiDevice;
 	ComPtr<IDXGIAdapter3> dxgiAdapter;
@@ -30,25 +30,23 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		ComPtr<ID3D11Device> device11;
 		ComPtr<ID3D11DeviceContext> context11;
 
-		D3D11_CREATE_DEVICE_FLAG deviceFlag = (D3D11_CREATE_DEVICE_FLAG)(D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT);
+		UINT deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT | extraDeviceFlags;
 
 		if (enableDebug)
 		{
 			std::cout << "[class Renderer] enable debug!\n";
-			deviceFlag = (D3D11_CREATE_DEVICE_FLAG)((UINT)deviceFlag | (UINT)D3D11_CREATE_DEVICE_DEBUG);
+			deviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
 		}
 		else
 		{
 			std::cout << "[class Renderer] disable debug!\n";
 		}
 
-		deviceFlag = (D3D11_CREATE_DEVICE_FLAG)((UINT)deviceFlag | (UINT)extraDeviceFlags);
+		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, ARRAYSIZE(featureLevels),
+			D3D11_SDK_VERSION, device11.ReleaseAndGetAddressOf(), &maxSupportedFeatureLevel, context11.ReleaseAndGetAddressOf());
 
-		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, 2u,
-			D3D11_SDK_VERSION, device11.GetAddressOf(), &maxSupportedFeatureLevel, context11.GetAddressOf());
-
-		device11.As(&device5);
-		context11.As(&context4);
+		device11->QueryInterface(IID_ID3D11Device5, (void**)device5.ReleaseAndGetAddressOf());
+		context11->QueryInterface(IID_ID3D11DeviceContext4, (void**)context4.ReleaseAndGetAddressOf());
 
 		device = device5.Get();
 		context = context4.Get();
@@ -79,7 +77,7 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
 		ComPtr<IDXGISwapChain1> sc;
-		dxgiFactory->CreateSwapChainForHwnd(Renderer::device, hWnd, &sd, nullptr, nullptr, sc.GetAddressOf());
+		dxgiFactory->CreateSwapChainForHwnd(Renderer::device, hWnd, &sd, nullptr, nullptr, sc.ReleaseAndGetAddressOf());
 		sc.As(&swapChain);
 	}
 
@@ -99,8 +97,6 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		tDesc.SampleDesc.Quality = 0;
 		tDesc.Usage = D3D11_USAGE_DEFAULT;
 		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-		tDesc.CPUAccessFlags = 0;
-		tDesc.MiscFlags = 0;
 
 		Renderer::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
 	}

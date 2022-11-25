@@ -1,7 +1,6 @@
 ﻿#include<Aurora/DX/Resource/Texture2D.h>
 
-Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag) :
-	enableMSAA(false)
+Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 
@@ -101,7 +100,7 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 }
 
 Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const bool& enableMSAA, const UINT& cpuAccessFlag) :
-	width(width), height(height), format(format), mipLevels(1), enableMSAA(enableMSAA)
+	width(width), height(height), format(format), mipLevels(1)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 	tDesc.Width = width;
@@ -119,7 +118,7 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 }
 
 Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const TextureType& type) :
-	width(width), height(height), format(DXGI_FORMAT_R32G32B32A32_FLOAT), mipLevels(1), enableMSAA(false)
+	width(width), height(height), format(DXGI_FORMAT_R32G32B32A32_FLOAT), mipLevels(1)
 {
 	std::vector<DirectX::XMFLOAT4> colors(width * height);
 

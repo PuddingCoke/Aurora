@@ -24,10 +24,6 @@ public:
 
 	virtual ~ResourceTexture();
 
-private:
-
-	void createShaderResource();
-
 };
 
 #endif // !_RESOURCETEXTURE_H_
