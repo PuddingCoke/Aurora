@@ -45,6 +45,7 @@ void FadeEffect::setFadeSpeed(const float& speed)
 FadeEffect::~FadeEffect()
 {
 	delete fadePShader;
+	delete fadeBuffer;
 }
 
 void FadeEffect::compileShaders()

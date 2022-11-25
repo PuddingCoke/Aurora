@@ -41,7 +41,7 @@ public:
 
 		Mouse::addLeftDownEvent([] {
 			std::cout << "Launch\n";
-			(new Shell(getShellConfig(ShellType::random)))->launch(Mouse::getX(), Mouse::getY());
+		(new Shell(getShellConfig(ShellType::random)))->launch(Mouse::getX(), Mouse::getY());
 			});
 	}
 
@@ -67,6 +67,7 @@ public:
 		{
 			delete* it;
 		}
+
 		delete pBatch;
 		delete texture;
 		delete doubleRTV;
@@ -221,7 +222,7 @@ public:
 		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
-		
+
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 
