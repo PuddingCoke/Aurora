@@ -52,6 +52,7 @@ RenderAPI::~RenderAPI()
 	delete fullScreenPS;
 	delete skyboxVS;
 	delete shadowVS;
+	delete randNoiseCS;
 }
 
 void RenderAPI::OMSetDefRTV(DepthStencilView* const dsv) const

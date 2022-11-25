@@ -42,8 +42,8 @@ int Aurora::iniEngine(const Configuration& config)
 	if (config.usage == Configuration::EngineUsage::AnimationRender)
 	{
 		D3D11_TEXTURE2D_DESC tDesc = {};
-		tDesc.Width = config.width;
-		tDesc.Height = config.height;
+		tDesc.Width = screenWidth;
+		tDesc.Height = screenHeight;
 		tDesc.MipLevels = 1;
 		tDesc.ArraySize = 1;
 		tDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -82,12 +82,12 @@ int Aurora::iniEngine(const Configuration& config)
 	default:
 	case Configuration::CameraType::Orthogonal:
 		std::cout << "[class Aurora] orthogonal camera\n";
-		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)config.width, 0, (float)config.height, -1.f, 1.f));
+		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::getWidth(), 0, (float)Graphics::getHeight(), -1.f, 1.f));
 		Camera::setView(DirectX::XMMatrixIdentity());
 		break;
 	case Configuration::CameraType::Perspective:
 		std::cout << "[class Aurora] perspective camera\n";
-		Camera::setProj(Math::pi / 4.f, (float)config.width / (float)config.height, 0.1f, 1000.f);
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
 		break;
 	}
 
