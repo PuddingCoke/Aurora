@@ -4,7 +4,7 @@
 #include<Aurora/DoubleRTV.h>
 #include<Aurora/Random.h>
 #include<Aurora/Math.h>
-#include<Aurora/A2D/PrimitiveBatch.h>
+#include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/PostProcessing/FadeEffect.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
 
@@ -22,9 +22,11 @@ public:
 
 	ResourceTexture* resolvedTexture;
 
+	ResourceTexture* arrowTexture;
+
 	DoubleRTV* doubleRTV;
 
-	PrimitiveBatch* batch;
+	SpriteBatch* batch;
 
 	FadeEffect fadeEffect;
 
@@ -35,27 +37,31 @@ public:
 	float gamma;
 
 	MyGame() :
-		batch(PrimitiveBatch::create()),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
 		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
+		arrowTexture(new ResourceTexture("arrow.png")),
+		batch(SpriteBatch::create()),
 		doubleRTV(DoubleRTV::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		fadeEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
 	{
 		bloomEffect.setExposure(2.05f);
 		bloomEffect.setGamma(0.29f);
-		bloomEffect.setThreshold(0);
+		bloomEffect.setIntensity(0.97f);
+		bloomEffect.setThreshold(0.0f);
 		bloomEffect.applyChange();
+
+		fadeEffect.setFadeSpeed(7.0f);
 
 		exposure = bloomEffect.getExposure();
 		gamma = bloomEffect.getGamma();
 
-		for (size_t i = 0; i < 1500; i++)
+		for (size_t i = 0; i < 1000; i++)
 		{
 			float angle = Random::Float() * Math::two_pi;
 			float xSpeed = 3.f * cosf(angle);
 			float ySpeed = 3.f * sinf(angle);
-			vehicles.push_back(Vehicle(Vector(Random::Float() * Graphics::getWidth(), Random::Float() * Graphics::getHeight()), Vector(xSpeed, ySpeed), 2.f, 0.05f, Random::Float(), Random::Float(), Random::Float()));
+			vehicles.push_back(Vehicle(Vector(Random::Float() * Graphics::getWidth(), Random::Float() * Graphics::getHeight()), Vector(xSpeed, ySpeed), 3.f, 0.1f));
 		}
 
 		Keyboard::addKeyDownEvent(Keyboard::B, [this]()
@@ -67,10 +73,11 @@ public:
 
 	~MyGame()
 	{
-		delete batch;
 		delete renderTexture;
 		delete doubleRTV;
 		delete resolvedTexture;
+		delete arrowTexture;
+		delete batch;
 	}
 
 	void update(const float& dt) override
@@ -103,7 +110,17 @@ public:
 		for (unsigned int i = 0; i < vehicles.size(); i++)
 		{
 			vehicles[i].flock(vehicles);
-			vehicles[i].update(dt * 100.f);
+
+			float length;
+
+			DirectX::XMStoreFloat(&length, DirectX::XMVector2Length(DirectX::XMVectorSubtract({ vehicles[i].pos.x,vehicles[i].pos.y }, { Mouse::getX(),Mouse::getY() })));
+
+			if (length < 50.f)
+			{
+				vehicles[i].apply(vehicles[i].flee(Vector(Mouse::getX(), Mouse::getY())) * 10.f);
+			}
+
+			vehicles[i].update(dt * 150.f);
 		}
 	}
 
@@ -115,10 +132,9 @@ public:
 		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
 
 		batch->begin();
-		for (unsigned int i = 0; i < vehicles.size(); i++)
+		for (size_t i = 0; i < vehicles.size(); i++)
 		{
-			batch->drawRoundCapLine(vehicles[i].prePos.x, vehicles[i].prePos.y, vehicles[i].pos.x, vehicles[i].pos.y, 4.f, vehicles[i].r, vehicles[i].g, vehicles[i].b);
-			batch->drawRoundCapLine(vehicles[i].pos.x, vehicles[i].pos.y, vehicles[i].pos.x, vehicles[i].pos.y, 6.f, 1.f, 1.f, 1.f);
+			batch->draw(arrowTexture,arrowTexture, vehicles[i].pos.x, vehicles[i].pos.y, arrowTexture->getWidth() / 2, arrowTexture->getHeight() / 2, atan2f(vehicles[i].vel.y, vehicles[i].vel.x));
 		}
 		batch->end();
 

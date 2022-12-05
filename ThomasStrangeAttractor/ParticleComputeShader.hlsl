@@ -8,7 +8,11 @@ cbuffer DeltaTimes : register(b0)
     float v3;
 };
 
-static const float factor = 0.18;
+cbuffer SimulationParam : register(b1)
+{
+    float factor;
+    float3 padding;
+}
 
 [numthreads(1000, 1, 1)]
 void main(in uint3 DTid : SV_DispatchThreadID)

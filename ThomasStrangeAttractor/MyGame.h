@@ -25,6 +25,8 @@ public:
 
 	RenderTexture* renderTexture;
 
+	Buffer* simulationBuffer;
+
 	BloomEffect bloomEffect;
 
 	OrbitCamera camera;
@@ -35,12 +37,19 @@ public:
 
 	float gamma;
 
+	struct SimulationParam
+	{
+		float factor;
+		DirectX::XMFLOAT3 reserved;
+	} param;
+
 	MyGame() :
 		attractor(2000000),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		depthStencilView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
-		camera({ 4,4,-11 }, { -1,-1,-1 }, 2.f)
+		camera({ 4,4,-11 }, { -1,-1,-1 }, 2.f),
+		simulationBuffer(new Buffer(sizeof(SimulationParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, 0, D3D11_CPU_ACCESS_WRITE))
 	{
 		camera.registerEvent();
 
@@ -55,6 +64,11 @@ public:
 			rotating = !rotating;
 			});
 
+		param.factor = 0.100f;
+
+		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
+		simulationBuffer->unmap(0);
+
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
 	}
 
@@ -62,6 +76,7 @@ public:
 	{
 		delete renderTexture;
 		delete depthStencilView;
+		delete simulationBuffer;
 	}
 
 	void update(const float& dt) override
@@ -97,6 +112,22 @@ public:
 			bloomEffect.setGamma(gamma);
 			bloomEffect.applyChange();
 		}
+
+		if (Keyboard::getKeyDown(Keyboard::Q))
+		{
+			param.factor += dt * 0.5f;
+			memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
+			simulationBuffer->unmap(0);
+		}
+
+		if (Keyboard::getKeyDown(Keyboard::E))
+		{
+			param.factor -= dt * 0.5f;
+			memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
+			simulationBuffer->unmap(0);
+		}
+
+		RenderAPI::get()->CSSetBuffer({ simulationBuffer }, 1);
 
 		attractor.update(dt);
 	}

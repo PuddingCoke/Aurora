@@ -17,12 +17,8 @@ public:
 	float mForce;
 	//float mass;
 
-	float r;
-	float g;
-	float b;
-
-	Vehicle(const Vector& pos, const Vector& vel, const float& mSpeed, const float& mForce, const float& r, const float& g, const float& b) :
-		pos(pos), prePos(pos), vel(vel), acc(Vector(0, 0)), mSpeed(mSpeed), mForce(mForce), r(r), g(g), b(b)
+	Vehicle(const Vector& pos, const Vector& vel, const float& mSpeed, const float& mForce) :
+		pos(pos), prePos(pos), vel(vel), acc(Vector(0, 0)), mSpeed(mSpeed), mForce(mForce)
 	{
 	}
 
