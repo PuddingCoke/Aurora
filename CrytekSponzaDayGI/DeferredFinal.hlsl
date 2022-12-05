@@ -41,7 +41,7 @@ float CalShadow(float3 P)
     shadowPos.y = 1.0 - shadowPos.y;
     
     float shadow = 0.0;
-    const float2 texelSize = 1.0 / float2(4096.0, 4096.0);
+    const float2 texelSize = 1.0 / float2(ShadowTextureRes, ShadowTextureRes);
     
     [unroll]
     for (int x = -1; x < 2; x++)
@@ -80,7 +80,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     outColor += (diffuseColor + specularColor) * CalShadow(position);
     
-    outColor += baseColor.rgb * 0.1;
+    outColor += baseColor * 0.1;
     
     const float ao = ssaoTexture.Sample(linearSampler, texCoord).r;
         

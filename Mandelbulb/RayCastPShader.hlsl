@@ -29,7 +29,7 @@ float4 main(float4 pos : SV_Position) : SV_TARGET
     float4 dst = float4(0.0, 0.0, 0.0, 0.0);
     
     [loop]
-    for (uint i = 0; i < 256; i++)
+    for (uint i = 0; i < 350; i++)
     {
         float4 src = mandelTexture.SampleLevel(borderSampler, v, 0.0);
         

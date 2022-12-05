@@ -35,5 +35,7 @@
     <FxCompile Include="PixelShader.hlsl" />
     <FxCompile Include="BRDFGenPS.hlsl" />
     <FxCompile Include="SkyboxPS.hlsl" />
+    <FxCompile Include="IrradianceCompute.hlsl" />
+    <FxCompile Include="IrradianceEvaluate.hlsl" />
   </ItemGroup>
 </Project>

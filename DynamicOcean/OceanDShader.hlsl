@@ -26,6 +26,8 @@ cbuffer ViewMatrix : register(b1)
 {
     matrix view;    
     float4 viewPos;
+    matrix prevViewProj;
+    matrix viewProj;
 }
 
 float3 getPosition(float3 v0,float3 v1,float3 v2,float3 v3,float2 uv)
@@ -60,6 +62,6 @@ DS_OUTPUT main(
     Output.position = position;
     Output.texCoord = uv;
     position += displacementXYZ.SampleLevel(linearSampler, uv, 0.0).xyz;
-    Output.vPosition = mul(mul(float4(position, 1.0), view), proj);
+    Output.vPosition = mul(float4(position, 1.0), viewProj);
 	return Output;
 }

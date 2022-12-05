@@ -36,6 +36,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
     uint flag = 1;
     
+    [loop]
     for (uint i = 0; i < MAXITERATION; i++)
     {
         c = iteration(c, pos);

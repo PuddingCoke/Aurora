@@ -20,12 +20,14 @@ cbuffer ViewMatrix : register(b1)
 {
     matrix view;
     float4 viewPos;
+    matrix prevViewProj;
+    matrix viewProj;
 }
 
 VertexOutput main( VertexInput input )
 {
     VertexOutput output;
-    output.pos = mul(mul(input.pos, view), proj);
+    output.pos = mul(input.pos, viewProj);
     output.uv = input.uv;
     output.eyeToPixelVector = input.pos.xyz;
     return output;

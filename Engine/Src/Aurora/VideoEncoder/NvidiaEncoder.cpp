@@ -4,7 +4,7 @@ bool NvidiaEncoder::encode()
 {
 	timeStart = timer.now();
 
-	D3D11_VIDEO_PROCESSOR_STREAM processorStream = { TRUE,0,0,0,0,NULL,inputView.Get(),NULL };
+	const D3D11_VIDEO_PROCESSOR_STREAM processorStream = { TRUE,0,0,0,0,NULL,inputView.Get(),NULL };
 
 	videoContext->VideoProcessorBlt(videoProcessor.Get(), outputView.Get(), 0, 1, &processorStream);
 
@@ -66,19 +66,22 @@ bool NvidiaEncoder::encode()
 
 		picParams.outputBitstream = bitstream.bitstreamBuffer;
 
-		nvencAPI.nvEncEncodePicture(encoder, &picParams);
+		const NVENCSTATUS status = nvencAPI.nvEncEncodePicture(encoder, &picParams);
 
-		NV_ENC_LOCK_BITSTREAM lockBitstream = { NV_ENC_LOCK_BITSTREAM_VER };
+		if (status == NV_ENC_SUCCESS)
+		{
+			NV_ENC_LOCK_BITSTREAM lockBitstream = { NV_ENC_LOCK_BITSTREAM_VER };
 
-		lockBitstream.outputBitstream = bitstream.bitstreamBuffer;
+			lockBitstream.outputBitstream = bitstream.bitstreamBuffer;
 
-		lockBitstream.doNotWait = 0;
+			lockBitstream.doNotWait = 0;
 
-		nvencAPI.nvEncLockBitstream(encoder, &lockBitstream);
+			nvencAPI.nvEncLockBitstream(encoder, &lockBitstream);
 
-		fwrite(lockBitstream.bitstreamBufferPtr, lockBitstream.bitstreamSizeInBytes, 1, stream);
+			fwrite(lockBitstream.bitstreamBufferPtr, lockBitstream.bitstreamSizeInBytes, 1, stream);
 
-		nvencAPI.nvEncUnlockBitstream(encoder, lockBitstream.outputBitstream);
+			nvencAPI.nvEncUnlockBitstream(encoder, lockBitstream.outputBitstream);
+		}
 	}
 
 	nvencAPI.nvEncUnmapInputResource(encoder, mapResource.mappedResource);
@@ -150,11 +153,12 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	config.version = NV_ENC_CONFIG_VER;
 	config.profileGUID = profile;
 	config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_VBR;
-	config.rcParams.averageBitRate = 8000000U;
+	config.rcParams.averageBitRate = 8500000U;
 	config.rcParams.maxBitRate = 9000000U;
+
+	//高质量编码
 	config.gopLength = 120;
 	config.frameIntervalP = 1;
-
 	config.encodeCodecConfig.hevcConfig.idrPeriod = config.gopLength;
 	config.rcParams.multiPass = NV_ENC_TWO_PASS_FULL_RESOLUTION;
 	config.rcParams.vbvBufferSize = config.rcParams.maxBitRate * 4;
@@ -213,6 +217,14 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 
 	stream = _popen("ffmpeg -y -f hevc -i pipe: -c copy output.mp4", "wb");
 
+	/*NV_ENC_CAPS_PARAM param = { NV_ENC_CAPS_PARAM_VER };
+	param.capsToQuery = NV_ENC_CAPS_SUPPORT_LOOKAHEAD;
+
+	int num;
+
+	nvencAPI.nvEncGetEncodeCaps(encoder, codec, &param, &num);
+
+	std::cout<<"max b frames " << num << "\n";*/
 }
 
 NvidiaEncoder::~NvidiaEncoder()

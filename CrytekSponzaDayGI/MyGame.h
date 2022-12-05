@@ -88,7 +88,7 @@ public:
 		exposure = 1.0f;
 		gamma = 1.25f;
 		bloomEffect.setThreshold(0.6f);
-		bloomEffect.setIntensity(0.92f);
+		bloomEffect.setIntensity(0.90f);
 		bloomEffect.setExposure(exposure);
 		bloomEffect.setGamma(gamma);
 		bloomEffect.applyChange();
@@ -142,18 +142,19 @@ public:
 
 	void updateShadow()
 	{
-		const float xSize = 200;
+		const float xSize = 183;
 		const float ySize = 130;
 		const float distance = 260.f;
+		const DirectX::XMVECTOR offset = { 6.5f,0.f,0.f };
 
 		light.lightDir = { 0.f,sinf(sunAngle),cosf(sunAngle),0.f };
 		light.lightColor = DirectX::Colors::White;
 
 		light.lightDir = DirectX::XMVector3Normalize(light.lightDir);
 
-		const DirectX::XMVECTOR lightCamPos = DirectX::XMVectorScale(light.lightDir, distance);
-		const DirectX::XMMATRIX lightProjMat = DirectX::XMMatrixOrthographicOffCenterLH(-xSize / 2.f, xSize / 2.f, -ySize / 2.f, ySize / 2.f, 1.f, 512.f);
-		const DirectX::XMMATRIX lightViewMat = DirectX::XMMatrixLookAtLH(lightCamPos, { 0.f,0.f,0.f }, { 0.f,1.f,0.f });
+		const DirectX::XMVECTOR lightCamPos = DirectX::XMVectorAdd(DirectX::XMVectorScale(light.lightDir, distance), offset);
+		const DirectX::XMMATRIX lightProjMat = DirectX::XMMatrixOrthographicLH(xSize, ySize, 1.f, 512.f);
+		const DirectX::XMMATRIX lightViewMat = DirectX::XMMatrixLookAtLH(lightCamPos, offset, { 0.f,1.f,0.f });
 		const DirectX::XMMATRIX lightMat = DirectX::XMMatrixTranspose(lightViewMat * lightProjMat);
 
 		memcpy(lightBuffer->map(0).pData, &light, sizeof(Light));

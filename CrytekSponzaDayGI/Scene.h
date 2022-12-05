@@ -110,20 +110,6 @@ public:
 		}
 	}
 
-	void drawVoxel(Shader* const vertexShader, Shader* const geometryShader, Shader* const pixelShader)
-	{
-		vertexShader->use();
-		geometryShader->use();
-		pixelShader->use();
-
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		for (unsigned int i = 0; i < models.size(); i++)
-		{
-			materials[models[i]->materialIndex]->use();
-			models[i]->draw();
-		}
-	}
-
 	std::vector<Material*> materials;
 
 	std::vector<Model*> models;

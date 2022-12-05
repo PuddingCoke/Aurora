@@ -37,6 +37,11 @@ float getPhillip(float2 k)
         
     float l2 = L2 * damping * damping;
     
+    //if (kDotw < 0.0)
+    //{
+    //    return amplitude * exp(-1.0f / (len2 * L2)) / len4 * kDotw6 * exp(-len2 * l2) * 0.07;
+    //}
+    
     return amplitude * exp(-1.0f / (len2 * L2)) / len4 * kDotw6 * exp(-len2 * l2);
 }
 
