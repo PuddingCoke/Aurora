@@ -41,5 +41,6 @@
     <FxCompile Include="DebugPS.hlsl" />
     <FxCompile Include="DeferredFinal.hlsl" />
     <FxCompile Include="SkyboxPS.hlsl" />
+    <FxCompile Include="SSR.hlsl" />
   </ItemGroup>
 </Project>

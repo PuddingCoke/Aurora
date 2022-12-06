@@ -24,7 +24,7 @@ public:
 
 	Scene* mainScene;
 
-	Scene* curtainScene;
+	//Scene* curtainScene;
 
 	RenderTexture* gBaseColor;
 
@@ -35,6 +35,8 @@ public:
 	RenderTexture* gRoughnessMetallic;
 
 	RenderTexture* originTexture;
+
+	RenderTexture* reflectTexture;
 
 	Shader* deferredVS;
 
@@ -53,6 +55,8 @@ public:
 
 	Shader* skyboxPS;
 
+	Shader* screenSpaceReflection;
+
 	TextureCube* skybox;
 
 	BloomEffect bloomEffect;
@@ -67,12 +71,13 @@ public:
 		camera({ 0,10,0 }, { 1,0,0 }, { 0,1,0 }, 10),
 		depthView(new ShadowMap(Graphics::getWidth(), Graphics::getHeight())),
 		mainScene(new Scene("D:\\Assets\\SuperSponza\\NewSponza_Main_glTF_002.gltf")),
-		curtainScene(new Scene("D:\\Assets\\SuperSponza\\NewSponza_Curtains_glTF.gltf")),
+		//curtainScene(new Scene("D:\\Assets\\SuperSponza\\NewSponza_Curtains_glTF.gltf")),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM)),
 		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
 		gNormal(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
 		gRoughnessMetallic(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		reflectTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		deferredVS(new Shader("DeferredVShader.hlsl", ShaderType::Vertex)),
 		deferredPSHasTex(new Shader("DeferredPSHasTex.hlsl", ShaderType::Pixel)),
 		deferredPSNoTex(new Shader("DeferredPSNoTex.hlsl", ShaderType::Pixel)),
@@ -82,7 +87,8 @@ public:
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		skybox(new TextureCube("D:/Assets/SpaceShip/360-Space-Panorama-III.hdr", 2048)),
-		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel))
+		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
+		screenSpaceReflection(new Shader("SSR.hlsl", ShaderType::Pixel))
 	{
 		exposure = bloomEffect.getExposure();
 		gamma = bloomEffect.getGamma();
@@ -104,13 +110,13 @@ public:
 
 		camera.registerEvent();
 
-		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 40.f);
+		Camera::setProj(Math::pi / 3.f, Graphics::getAspectRatio(), 0.1f, 35.f);
 	}
 
 	~MyGame()
 	{
 		delete mainScene;
-		delete curtainScene;
+		//delete curtainScene;
 
 		delete depthView;
 
@@ -129,6 +135,8 @@ public:
 		delete debugPS;
 		delete deferredFinal;
 		delete skyboxPS;
+		delete screenSpaceReflection;
+		delete reflectTexture;
 	}
 
 	void update(const float& dt) override
@@ -176,11 +184,9 @@ public:
 
 		mainScene->draw(deferredVS, deferredPSHasTex, deferredPSNoTex, deferredPSTrans);
 
-		RenderAPI::get()->RSSetState(States::rasterCullNone);
-
-		curtainScene->draw(deferredVS, deferredPSHasTex, deferredPSNoTex, deferredPSTrans);
-
-		RenderAPI::get()->RSSetState(States::rasterCullBack);
+		//RenderAPI::get()->RSSetState(States::rasterCullNone);
+		//curtainScene->draw(deferredVS, deferredPSHasTex, deferredPSNoTex, deferredPSTrans);
+		//RenderAPI::get()->RSSetState(States::rasterCullBack);
 
 		ShaderResourceView* hbaoSRV = hbaoEffect.process(depthView->getSRV(), gNormal->getSRV());
 
@@ -195,7 +201,20 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
-		ShaderResourceView* bloomSRV = bloomEffect.process(originTexture);
+		reflectTexture->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetRTV({ reflectTexture }, nullptr);
+		RenderAPI::get()->OMSetBlendState(nullptr);
+
+		RenderAPI::get()->PSSetSRV({ originTexture,gPosition,gNormal,depthView }, 0);
+		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
+		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
+
+		RenderAPI::fullScreenVS->use();
+		screenSpaceReflection->use();
+
+		RenderAPI::get()->DrawQuad();
+
+		ShaderResourceView* bloomSRV = bloomEffect.process(reflectTexture);
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 
