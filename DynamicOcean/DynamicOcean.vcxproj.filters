@@ -35,10 +35,10 @@
     <FxCompile Include="OceanHShader.hlsl" />
     <FxCompile Include="OceanVShader.hlsl" />
     <FxCompile Include="OceanPShader.hlsl" />
-    <FxCompile Include="OceanGenNormalCS.hlsl" />
     <FxCompile Include="IFFT.hlsl" />
     <FxCompile Include="SkyUpdatePS.hlsl" />
     <FxCompile Include="SkyVS.hlsl" />
     <FxCompile Include="SkyPS.hlsl" />
+    <FxCompile Include="OceanGenNormalCS.hlsl" />
   </ItemGroup>
 </Project>

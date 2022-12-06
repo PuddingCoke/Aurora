@@ -1,4 +1,5 @@
 Texture2D<float4> displacementXYZ : register(t0);
+
 RWTexture2D<float4> normalTexture : register(u0);
 
 cbuffer OceanParam : register(b1)
@@ -11,6 +12,11 @@ cbuffer OceanParam : register(b1)
     float2 v1;
 };
 
+int ClampCoord(int coord)
+{
+    return clamp(coord, 0, int(mapResolution - 1));
+}
+
 [numthreads(32, 32, 1)]
 void main(uint3 DTid : SV_DispatchThreadID)
 {
@@ -18,16 +24,22 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
     float dist = mapLength / float(mapResolution);
     
-    float3 center = displacementXYZ[coord].xyz;
-    float3 right = float3(dist, 0.0, 0.0) + displacementXYZ[int2(clamp(coord.x + 1, 0, int(mapResolution - 1)), coord.y)].xyz - center;
-    float3 left = float3(-dist, 0.0, 0.0) + displacementXYZ[int2(clamp(coord.x - 1, 0, int(mapResolution - 1)), coord.y)].xyz - center;
-    float3 top = float3(0.0, 0.0, -dist) + displacementXYZ[int2(coord.x, clamp(coord.y - 1, 0, int(mapResolution - 1)))].xyz - center;
-    float3 bottom = float3(0.0, 0.0, dist) + displacementXYZ[int2(coord.x, clamp(coord.y + 1, 0, int(mapResolution - 1)))].xyz - center;
+    float3 right = displacementXYZ[int2(ClampCoord(coord.x + 1), coord.y)].xyz;
+    float3 left = displacementXYZ[int2(ClampCoord(coord.x - 1), coord.y)].xyz;
+    float3 top = displacementXYZ[int2(coord.x, ClampCoord(coord.y + 1))].xyz;
+    float3 bottom = displacementXYZ[int2(coord.x, ClampCoord(coord.y - 1))].xyz;
     
-    float3 top_right = cross(right, top);
-    float3 top_left = cross(top, left);
-    float3 bottom_left = cross(left, bottom);
-    float3 bottom_right = cross(bottom, right);
+    float patchSize = 32.0;
     
-    normalTexture[coord] = float4(normalize(top_right + top_left + bottom_right + bottom_left), 1.0);
+    float tileSize = patchSize * 2.0 / float(mapResolution);
+    float invTileSize = float(mapResolution) / patchSize;
+    
+    float2 gradient = float2(left.y - right.y, bottom.y - top.y);
+    
+    float2 dDx = (right.xz - left.xz) * invTileSize;
+    float2 dDy = (top.xz - bottom.xz) * invTileSize;
+    
+    float J = (1.0 + dDx.x) * (1.0 + dDy.y) - dDx.y * dDy.x;
+    
+    normalTexture[coord] = float4(gradient.x, tileSize, gradient.y, J);
 }

@@ -1,19 +1,19 @@
 #define TWO_PI 6.283185307179586476925286766559
 
-float2 ComplexMul(float2 z, float2 w)
-{
-    return float2(z.x * w.x - z.y * w.y, z.y * w.x + z.x * w.y);
-}
-
 Texture2D<float2> input : register(t0);
 RWTexture2D<float2> output : register(u0);
 
 groupshared float2 pingpong[2][1024];
 
+float2 ComplexMul(float2 z, float2 w)
+{
+    return float2(z.x * w.x - z.y * w.y, z.y * w.x + z.x * w.y);
+}
+
 [numthreads(1024, 1, 1)]
 void main(uint3 groupThreadID : SV_GroupThreadID, uint3 groupID : SV_GroupID)
 {
-    const float N = float(1024);
+    const float N = 1024.0;
     
     uint z = groupID.x;
     uint x = groupThreadID.x;
