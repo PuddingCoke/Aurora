@@ -104,7 +104,7 @@ public:
 
 		camera.registerEvent();
 
-		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 50.f);
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 40.f);
 	}
 
 	~MyGame()

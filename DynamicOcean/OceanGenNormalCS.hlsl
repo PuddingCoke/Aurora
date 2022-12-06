@@ -29,7 +29,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
     float3 top = displacementXYZ[int2(coord.x, ClampCoord(coord.y + 1))].xyz;
     float3 bottom = displacementXYZ[int2(coord.x, ClampCoord(coord.y - 1))].xyz;
     
-    float patchSize = 32.0;
+    float patchSize = 20.0;
     
     float tileSize = patchSize * 2.0 / float(mapResolution);
     float invTileSize = float(mapResolution) / patchSize;

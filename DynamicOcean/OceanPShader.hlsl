@@ -30,9 +30,7 @@ float4 main(PixelInput input) : SV_TARGET
     float F0 = 0.020018673;
     float F = F0 + (1.0 - F0) * pow(1.0 - dot(N, R), 5.0);
     
-    F = saturate(F);
-    
-    float3 R2 = normalize(float3(R.x, 1.0, N.z));
+    float3 R2 = normalize(float3(R.x, 0.2, N.z));
     
     float3 refl = skyTexture.Sample(linearSampler, R2).rgb;
     
