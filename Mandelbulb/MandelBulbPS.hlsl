@@ -49,12 +49,13 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float3 cameraPos = float3(sin(phi) * sin(theta), sin(phi) * cos(theta), cos(phi)) * RADIUS;
     
-    float3 helper = float3(1.0, 0.0, 0.0);
-    
-    float3 yVec = normalize(cross(cameraPos, helper));
-    float3 xVec = normalize(cross(cameraPos, yVec));
-    
     float3 cameraNormal = normalize(cameraPos);
+    
+    float3 helper = abs(cameraNormal.x) > 0.99 ? float3(0, 0, 1) : float3(1, 0, 0);
+    
+    float3 yVec = normalize(cross(cameraNormal, helper));
+    float3 xVec = normalize(cross(cameraNormal, yVec));
+    
     float3 rayDir = normalize(xVec * planePos.x + yVec * planePos.y - cameraNormal);
     float3 curPos = cameraPos;
     
