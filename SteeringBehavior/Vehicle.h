@@ -45,7 +45,7 @@ void Vehicle::flock(vector<Vehicle>& Vehicles)
 	Vector sep = separate(Vehicles);
 	Vector ali = align(Vehicles);
 	Vector coh = cohesion(Vehicles);
-	sep.mul(1.5f);
+	sep.mul(2.f);
 	ali.mul(1.f);
 	coh.mul(1.f);
 	apply(sep);

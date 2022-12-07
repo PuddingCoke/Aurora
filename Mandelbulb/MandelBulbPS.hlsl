@@ -1,5 +1,6 @@
 #define MAXITERATION 150
 #define RAYMARCHITERATION 150
+#define RADIUS 1.65
 
 cbuffer DeltaTime : register(b0)
 {
@@ -9,7 +10,6 @@ cbuffer DeltaTime : register(b0)
     float floatSeed;
 }
 
-//v = v^8 + c
 float SDF(const float3 pos)
 {
     float3 z = pos;
@@ -44,15 +44,24 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     float2 planePos = texCoord * 2.0 - 1.0;
     planePos.x *= 16.0 / 9.0;
     
-    float3 cameraPos = float3(0.0, sin(0.5 * sTime) * 1.65, cos(0.5 * sTime) * 1.65);
+    float theta = 0.25 * sTime;
+    float phi = 0.5 * sTime;
+    
+    float3 cameraPos = float3(sin(phi) * sin(theta), sin(phi) * cos(theta), cos(phi)) * RADIUS;
+    
+    float3 helper = float3(1.0, 0.0, 0.0);
+    
+    float3 yVec = normalize(cross(cameraPos, helper));
+    float3 xVec = normalize(cross(cameraPos, yVec));
+    
     float3 cameraNormal = normalize(cameraPos);
-    float3 rayDir = normalize(float3(0.0, -cameraNormal.z, cameraNormal.y) * planePos.x + float3(planePos.y, 0.0, 0.0) - cameraNormal);
+    float3 rayDir = normalize(xVec * planePos.x + yVec * planePos.y - cameraNormal);
     float3 curPos = cameraPos;
     
     float3 color = float3(1.0, 1.0, 1.0);
     
     [loop]
-    for (uint march_iteration = 0; march_iteration < RAYMARCHITERATION; march_iteration++)
+    for (uint marchIteration = 0; marchIteration < RAYMARCHITERATION; marchIteration++)
     {
         float distance = SDF(curPos);
         curPos += rayDir * distance;
