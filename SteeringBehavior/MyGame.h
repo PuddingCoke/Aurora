@@ -56,7 +56,7 @@ public:
 		exposure = bloomEffect.getExposure();
 		gamma = bloomEffect.getGamma();
 
-		for (size_t i = 0; i < 1000; i++)
+		for (size_t i = 0; i < 700; i++)
 		{
 			float angle = Random::Float() * Math::two_pi;
 			float xSpeed = 3.f * cosf(angle);
