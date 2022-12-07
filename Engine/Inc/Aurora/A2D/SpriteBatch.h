@@ -104,4 +104,6 @@ private:
 	std::vector<BitmapFont*> fontPool;
 };
 
+#define TEXTURE(t) t,t
+
 #endif // !_SPRITEBATCH_H_

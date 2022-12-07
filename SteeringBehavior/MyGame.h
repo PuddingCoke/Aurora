@@ -134,7 +134,7 @@ public:
 		batch->begin();
 		for (size_t i = 0; i < vehicles.size(); i++)
 		{
-			batch->draw(arrowTexture,arrowTexture, vehicles[i].pos.x, vehicles[i].pos.y, arrowTexture->getWidth() / 2, arrowTexture->getHeight() / 2, atan2f(vehicles[i].vel.y, vehicles[i].vel.x));
+			batch->draw(TEXTURE(arrowTexture), vehicles[i].pos.x, vehicles[i].pos.y, arrowTexture->getWidth() / 2, arrowTexture->getHeight() / 2, atan2f(vehicles[i].vel.y, vehicles[i].vel.x));
 		}
 		batch->end();
 
