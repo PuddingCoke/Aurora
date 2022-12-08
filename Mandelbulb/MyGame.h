@@ -12,14 +12,34 @@ public:
 
 	Shader* mandelBulbPS;
 
+	Shader* sdfSphere;
+
+	Shader* curShader;
+
 	MyGame() :
-		mandelBulbPS(new Shader("MandelBulbPS.hlsl",ShaderType::Pixel))
+		mandelBulbPS(new Shader("MandelBulbPS.hlsl", ShaderType::Pixel)),
+		sdfSphere(new Shader("SDFSphere.hlsl", ShaderType::Pixel))
 	{
+		curShader = mandelBulbPS;
+
+		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
+			{
+				if (curShader == mandelBulbPS)
+				{
+					curShader = sdfSphere;
+				}
+				else
+				{
+					curShader = mandelBulbPS;
+				}
+			});
+
 	}
 
 	~MyGame()
 	{
 		delete mandelBulbPS;
+		delete sdfSphere;
 	}
 
 	void update(const float& dt) override
@@ -33,9 +53,9 @@ public:
 
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
-		
+
 		RenderAPI::fullScreenVS->use();
-		mandelBulbPS->use();
+		curShader->use();
 
 		RenderAPI::get()->DrawQuad();
 	}

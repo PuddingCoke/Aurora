@@ -26,6 +26,7 @@ cbuffer Light : register(b3)
 Texture2D<float2> brdfLookup : register(t0);
 TextureCube irradianceCube : register(t1);
 TextureCube prefilterCube : register(t2);
+Texture2D<float3> irradianceCoeff : register(t3);
 
 SamplerState linearSampler : register(s0);
 
@@ -121,6 +122,15 @@ float4 main(PixelInput input) : SV_TARGET
     kD = float3(1.0, 1.0, 1.0) - kS;
     kD *= 1.0 - metallic;
     
+    const float x = N.x;
+    const float y = N.y;
+    const float z = N.z;
+    
+    const float c1 = 0.42904276540489171563379376569857;
+    const float c2 = 0.51166335397324424423977581244463;
+    const float c3 = 0.24770795610037568833406429782001;
+    const float c4 = 0.88622692545275801364908374167057;
+    
     float3 irradiance = irradianceCube.Sample(linearSampler, N).rgb;
     float3 diffuse = irradiance * albedo;
     
@@ -138,5 +148,5 @@ float4 main(PixelInput input) : SV_TARGET
     
     color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
     
-    return float4(color, 1.0);
+    return float4(irradiance, 1.0);
 }

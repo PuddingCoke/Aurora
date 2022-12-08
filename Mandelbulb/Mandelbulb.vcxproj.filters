@@ -26,5 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="MandelBulbPS.hlsl" />
+    <FxCompile Include="SDFSphere.hlsl" />
   </ItemGroup>
 </Project>

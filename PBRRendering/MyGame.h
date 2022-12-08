@@ -196,7 +196,7 @@ public:
 
 	double SH(int l, int m, double theta, double phi) {
 		const double sqrt2 = sqrt(2.0);
-		if (m == 0)        return K(l, 0) * P(l, m, cos(theta));
+		if (m == 0)        return K(l, 0) * P(l, 0, cos(theta));
 		else if (m > 0)    return sqrt2 * K(l, m) * cos(m * phi) * P(l, m, cos(theta));
 		else                return sqrt2 * K(l, -m) * sin(-m * phi) * P(l, -m, cos(theta));
 	}
@@ -230,14 +230,14 @@ public:
 
 		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
 		RenderAPI::get()->PSSetBuffer({ lightBuffer }, 3);
-		RenderAPI::get()->PSSetSRV({ brdfTex,irradianceCube,prefilterCube }, 0);
+		RenderAPI::get()->PSSetSRV({ brdfTex,irradianceCube,prefilterCube,irradianceCoeff }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		scene.draw();
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->PSSetSRV({ irradianceCoeff }, 0);
-		
+
 		RenderAPI::skyboxVS->use();
 		irradianceEvaluate->use();
 
