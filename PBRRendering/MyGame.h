@@ -234,21 +234,21 @@ public:
 
 		scene.draw();
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		/*RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->PSSetSRV({ irradianceCoeff }, 0);
 
 		RenderAPI::skyboxVS->use();
 		irradianceEvaluate->use();
 
-		RenderAPI::get()->DrawCube();
+		RenderAPI::get()->DrawCube();*/
 
-		/*RenderAPI::get()->PSSetSRV({ irradianceCube }, 0);
+		RenderAPI::get()->PSSetSRV({ envCube }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		RenderAPI::skyboxVS->use();
 		skyboxPS->use();
 
-		RenderAPI::get()->DrawCube();*/
+		RenderAPI::get()->DrawCube();
 	}
 
 

@@ -1,6 +1,7 @@
 #define MAXITERATION 150
+#define LEVELOFDETAIL 0.0001
+
 #define RAYMARCHITERATION 150
-#define RADIUS 1.65
 
 cbuffer DeltaTime : register(b0)
 {
@@ -10,14 +11,20 @@ cbuffer DeltaTime : register(b0)
     float floatSeed;
 }
 
+cbuffer SimulationParam : register(b1)
+{
+    float phi;
+    float theta;
+    float RADIUS;
+    float POWER;
+}
+
 float SDF(const float3 pos)
 {
     float3 z = pos;
     
     float r;
     float dr = 1.0;
-    
-    float POWER = 6.0 + 2.0 * sin(0.25 * sTime);
     
     [loop]
     for (uint i = 0; i < MAXITERATION; i++)
@@ -44,17 +51,14 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     float2 planePos = texCoord * 2.0 - 1.0;
     planePos.x *= 16.0 / 9.0;
     
-    float theta = 0.25 * sTime;
-    float phi = 0.5 * sTime;
-    
-    float3 cameraPos = float3(sin(phi) * sin(theta), sin(phi) * cos(theta), cos(phi)) * RADIUS;
+    float3 cameraPos = float3(cos(phi) * sin(theta), cos(phi) * cos(theta), sin(phi)) * RADIUS;
     
     float3 cameraNormal = normalize(cameraPos);
     
-    float3 helper = abs(cameraNormal.x) > 0.99 ? float3(0, 0, 1) : float3(1, 0, 0);
+    float3 helper = float3(0, 0, 1);
     
-    float3 yVec = normalize(cross(cameraNormal, helper));
-    float3 xVec = normalize(cross(cameraNormal, yVec));
+    float3 xVec = normalize(cross(cameraNormal, helper));
+    float3 yVec = normalize(cross(cameraNormal, xVec));
     
     float3 rayDir = normalize(xVec * planePos.x + yVec * planePos.y - cameraNormal);
     float3 curPos = cameraPos;
@@ -67,7 +71,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         float distance = SDF(curPos);
         curPos += rayDir * distance;
         color -= float3(0.008, 0.008, 0.005);
-        if (distance < 0.0001)
+        if (distance < LEVELOFDETAIL)
             return float4(color, 1.0);
     }
     

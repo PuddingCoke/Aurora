@@ -144,6 +144,7 @@
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
     <ClInclude Include="Inc\Aurora\ComputeBuffer.h" />
     <ClInclude Include="Inc\Aurora\ComputeTexture3D.h" />
+    <ClInclude Include="Inc\Aurora\ConstantBuffer.h" />
     <ClInclude Include="Inc\Aurora\DX\Resource\Buffer.h" />
     <ClInclude Include="Inc\Aurora\Camera.h" />
     <ClInclude Include="Inc\Aurora\Color.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Inc\Aurora\RenderAPI.h" />
     <ClInclude Include="Inc\Aurora\ResManager.h" />
     <ClInclude Include="Inc\Aurora\ResourceTexture.h" />
+    <ClInclude Include="Inc\Aurora\StructuredBuffer.h" />
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h" />
     <ClInclude Include="Inc\Aurora\ParticleSystem.h" />
     <ClInclude Include="Inc\Aurora\A2D\PrimitiveBatch.h" />

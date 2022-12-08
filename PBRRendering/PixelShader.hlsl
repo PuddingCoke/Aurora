@@ -139,5 +139,5 @@ float4 main(PixelInput input) : SV_TARGET
     
     color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
     
-    return float4(irradiance, 1.0);
+    return float4(color, 1.0);
 }
