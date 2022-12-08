@@ -122,15 +122,6 @@ float4 main(PixelInput input) : SV_TARGET
     kD = float3(1.0, 1.0, 1.0) - kS;
     kD *= 1.0 - metallic;
     
-    const float x = N.x;
-    const float y = N.y;
-    const float z = N.z;
-    
-    const float c1 = 0.42904276540489171563379376569857;
-    const float c2 = 0.51166335397324424423977581244463;
-    const float c3 = 0.24770795610037568833406429782001;
-    const float c4 = 0.88622692545275801364908374167057;
-    
     float3 irradiance = irradianceCube.Sample(linearSampler, N).rgb;
     float3 diffuse = irradiance * albedo;
     

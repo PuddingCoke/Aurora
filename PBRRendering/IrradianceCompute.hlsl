@@ -3,7 +3,7 @@
 struct Sample
 {
     float4 direction;
-    float Ylm[36];
+    float Ylm[9];
 };
 
 //NUMCOEFF x 1 r11g11b10
@@ -15,7 +15,7 @@ StructuredBuffer<Sample> samples : register(t1);
 
 SamplerState linearSampler : register(s0);
 
-[numthreads(36, 1, 1)]
+[numthreads(9, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID)
 {
     float3 result = float3(0.0, 0.0, 0.0);

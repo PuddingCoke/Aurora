@@ -63,7 +63,7 @@ public:
 		prefilterCube(new TextureCube(assetPath + "ParkinglotSpecularHDR.dds")),
 		irradianceCompute(new Shader("IrradianceCompute.hlsl", ShaderType::Compute)),
 		irradianceEvaluate(new Shader("IrradianceEvaluate.hlsl", ShaderType::Pixel)),
-		irradianceCoeff(new ComputeTexture(36, 1, DXGI_FORMAT_R11G11B10_FLOAT))
+		irradianceCoeff(new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT))
 	{
 		light.lightColor = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 
@@ -79,16 +79,15 @@ public:
 
 		camera.registerEvent();
 
-
 		{
 			struct Sample
 			{
 				DirectX::XMFLOAT4 direction;
-				float Ylm[36];
+				float Ylm[9];
 			};
 
-			const unsigned int sampleCount = 1024;
-			const unsigned int sampleCountSqrt = 32;
+			const unsigned int sampleCount = 256;
+			const unsigned int sampleCountSqrt = 16;
 			const double oneoverN = 1.0 / (float)sampleCountSqrt;
 
 			unsigned int i = 0;
@@ -106,7 +105,7 @@ public:
 
 					samples[i].direction = DirectX::XMFLOAT4(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta), 1.0);
 
-					for (int l = 0; l < 6; l++)
+					for (int l = 0; l < 3; l++)
 					{
 						for (int m = -l; m <= l; m++)
 						{
