@@ -29,7 +29,7 @@ public:
 	MyGame() :
 		mandelBulbPS(new Shader("MandelBulbPS.hlsl", ShaderType::Pixel)),
 		sdfSphere(new Shader("SDFSphere.hlsl", ShaderType::Pixel)),
-		param{ 0.f,0.f,1.65f,8.f }
+		param{ 0.f,0.f,3.0f,8.f }
 	{
 		targetRadius = param.radius;
 

@@ -1,5 +1,6 @@
 #define MAXITERATION 150
-#define LEVELOFDETAIL 0.0001
+#define LEVELOFDETAIL 0.0001 
+#define FOVANGLEY 0.78539816339744
 
 #define RAYMARCHITERATION 150
 
@@ -60,7 +61,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     float3 xVec = normalize(cross(cameraNormal, helper));
     float3 yVec = normalize(cross(cameraNormal, xVec));
     
-    float3 rayDir = normalize(xVec * planePos.x + yVec * planePos.y - cameraNormal);
+    float3 rayDir = normalize(xVec * planePos.x + yVec * planePos.y - cameraNormal / tan(FOVANGLEY / 2.0));
     float3 curPos = cameraPos;
     
     float3 color = float3(1.0, 1.0, 1.0);
