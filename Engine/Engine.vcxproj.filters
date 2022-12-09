@@ -174,9 +174,6 @@
     <ClInclude Include="Inc\Aurora\StructuredBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\ConstantBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -333,6 +330,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\PostProcessing\MotionBlurEffect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\StructuredBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

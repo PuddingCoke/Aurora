@@ -4,6 +4,7 @@
 #include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/A3D/OrbitCamera.h>
 #include<Aurora/ComputeTexture.h>
+#include<Aurora/StructuredBuffer.h>
 
 #include"Scene.h"
 
@@ -34,9 +35,7 @@ public:
 
 	TextureCube* prefilterCube;
 
-	Buffer* sampleBuffer;
-
-	ShaderResourceView* sampleSRV;
+	StructuredBuffer* irradianceSamples;
 
 	Shader* irradianceCompute;
 
@@ -118,15 +117,7 @@ public:
 				}
 			}
 
-			sampleBuffer = new Buffer(sizeof(Sample) * samples.size(), D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE, samples.data(), 0, D3D11_RESOURCE_MISC_BUFFER_STRUCTURED, sizeof(Sample));
-
-			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-			srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-			srvDesc.Buffer.FirstElement = 0;
-			srvDesc.Buffer.NumElements = sampleCount;
-
-			sampleSRV = new ShaderResourceView(sampleBuffer->getBuffer(), srvDesc);
+			irradianceSamples = new StructuredBuffer(sizeof(Sample) * samples.size(), sizeof(Sample), D3D11_USAGE_IMMUTABLE, samples.data(), 0);
 		}
 
 	}
@@ -141,8 +132,7 @@ public:
 		delete envCube;
 		delete irradianceCube;
 		delete prefilterCube;
-		delete sampleBuffer;
-		delete sampleSRV;
+		delete irradianceSamples;
 		delete irradianceCompute;
 		delete irradianceEvaluate;
 		delete irradianceCoeff;
@@ -216,7 +206,7 @@ public:
 	void render()
 	{
 		RenderAPI::get()->CSSetUAV({ irradianceCoeff }, 0);
-		RenderAPI::get()->CSSetSRV({ envCube,sampleSRV }, 0);
+		RenderAPI::get()->CSSetSRV({ envCube,irradianceSamples }, 0);
 		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
 		irradianceCompute->use();
@@ -227,28 +217,28 @@ public:
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::CadetBlue);
 		RenderAPI::get()->OMSetDefRTV(depthView);
 
-		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
-		RenderAPI::get()->PSSetBuffer({ lightBuffer }, 3);
+		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
+		RenderAPI::get()->PSSetConstantBuffer({ lightBuffer }, 3);
 		RenderAPI::get()->PSSetSRV({ brdfTex,irradianceCube,prefilterCube,irradianceCoeff }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		scene.draw();
 
-		/*RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->PSSetSRV({ irradianceCoeff }, 0);
 
 		RenderAPI::skyboxVS->use();
 		irradianceEvaluate->use();
 
-		RenderAPI::get()->DrawCube();*/
+		RenderAPI::get()->DrawCube();
 
-		RenderAPI::get()->PSSetSRV({ envCube }, 0);
+		/*RenderAPI::get()->PSSetSRV({ envCube }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		RenderAPI::skyboxVS->use();
 		skyboxPS->use();
 
-		RenderAPI::get()->DrawCube();
+		RenderAPI::get()->DrawCube();*/
 	}
 
 

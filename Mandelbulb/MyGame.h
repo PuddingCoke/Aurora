@@ -1,9 +1,7 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/ComputeTexture3D.h>
 #include<Aurora/RenderAPI.h>
-#include<Aurora/A3D/OrbitCamera.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game
@@ -11,8 +9,6 @@ class MyGame :public Game
 public:
 
 	Shader* mandelBulbPS;
-
-	Shader* sdfSphere;
 
 	Buffer* simulationBuffer;
 
@@ -28,7 +24,6 @@ public:
 
 	MyGame() :
 		mandelBulbPS(new Shader("MandelBulbPS.hlsl", ShaderType::Pixel)),
-		sdfSphere(new Shader("SDFSphere.hlsl", ShaderType::Pixel)),
 		param{ 0.f,0.f,3.0f,8.f }
 	{
 		targetRadius = param.radius;
@@ -39,7 +34,7 @@ public:
 				{
 					param.phi -= Mouse::getDY() * Graphics::getDeltaTime();
 					param.theta -= Mouse::getDX() * Graphics::getDeltaTime();
-					param.phi = Math::clamp(param.phi, -Math::half_pi + 0.05f, Math::half_pi - 0.05f);
+					param.phi = Math::clamp(param.phi, -Math::half_pi + 0.01f, Math::half_pi - 0.01f);
 				}
 			});
 
@@ -58,15 +53,15 @@ public:
 	~MyGame()
 	{
 		delete mandelBulbPS;
-		delete sdfSphere;
 		delete simulationBuffer;
 	}
 
 	void update(const float& dt) override
 	{
-		/*param.theta += dt;
-		param.phi = (Math::half_pi - 0.05) * sinf(Graphics::getSTime());
-		param.POWER = 5.5 + 2.5f * sinf(Graphics::getSTime());*/
+		param.theta += dt;
+		param.phi = (Math::half_pi - 0.1f) * sinf(0.15f * Graphics::getSTime());
+		param.POWER = 5.5 + 2.5f * sinf(0.25f * Graphics::getSTime());
+		param.phi = Math::clamp(param.phi, -Math::half_pi + 0.01f, Math::half_pi - 0.01f);
 
 		if (Keyboard::getKeyDown(Keyboard::Q))
 		{
@@ -88,7 +83,7 @@ public:
 	void render()
 	{
 		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetBuffer({ simulationBuffer }, 1);
+		RenderAPI::get()->PSSetConstantBuffer({ simulationBuffer }, 1);
 
 		RenderAPI::fullScreenVS->use();
 		mandelBulbPS->use();

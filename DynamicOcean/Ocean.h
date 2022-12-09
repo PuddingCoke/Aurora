@@ -183,7 +183,7 @@ inline void Ocean::calculatePhillipTexture() const
 
 	ResourceTexture* gaussTexture = new ResourceTexture(param.mapResolution, param.mapResolution, Texture2D::TextureType::Gauss);
 
-	RenderAPI::get()->CSSetBuffer({ oceanParamBuffer }, 1);
+	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 	RenderAPI::get()->CSSetSRV({ gaussTexture }, 0);
 	RenderAPI::get()->CSSetUAV({ tildeh0k,tildeh0mkconj }, 0);
 
@@ -211,7 +211,7 @@ inline void Ocean::IFFT(ComputeTexture* const cTexture) const
 
 inline void Ocean::update() const
 {
-	RenderAPI::get()->CSSetBuffer({ oceanParamBuffer }, 1);
+	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 
 	RenderAPI::get()->CSSetSRV({ tildeh0k,tildeh0mkconj }, 0);
 	RenderAPI::get()->CSSetUAV({ displacementY,displacementX,displacementZ}, 0);
@@ -254,7 +254,7 @@ inline void Ocean::render() const
 	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 	RenderAPI::get()->DSSetSampler({ States::linearClampSampler }, 0);
 
-	RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
+	RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 
 	RenderAPI::get()->Draw(4 * (patchSize - 1u) * (patchSize - 1u), 0u);
 

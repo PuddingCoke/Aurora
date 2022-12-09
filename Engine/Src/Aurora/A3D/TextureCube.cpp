@@ -102,7 +102,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	RenderAPI::get()->PSSetSRV({ equirectangularMap }, 0);
 	RenderAPI::get()->OMSetBlendState(nullptr);
 	RenderAPI::get()->RSSetViewport(skyboxResolution, skyboxResolution);
-	RenderAPI::get()->VSSetBuffer({ buffer }, 2);
+	RenderAPI::get()->VSSetConstantBuffer({ buffer }, 2);
 
 	equirectangularVS->use();
 	equirectangularPS->use();

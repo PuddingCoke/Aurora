@@ -144,7 +144,6 @@
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
     <ClInclude Include="Inc\Aurora\ComputeBuffer.h" />
     <ClInclude Include="Inc\Aurora\ComputeTexture3D.h" />
-    <ClInclude Include="Inc\Aurora\ConstantBuffer.h" />
     <ClInclude Include="Inc\Aurora\DX\Resource\Buffer.h" />
     <ClInclude Include="Inc\Aurora\Camera.h" />
     <ClInclude Include="Inc\Aurora\Color.h" />
@@ -233,6 +232,7 @@
     <ClCompile Include="Src\Aurora\RCTexture.cpp" />
     <ClCompile Include="Src\Aurora\ResourceTexture.cpp" />
     <ClCompile Include="Src\Aurora\stb_image.cpp" />
+    <ClCompile Include="Src\Aurora\StructuredBuffer.cpp" />
     <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp" />
     <ClCompile Include="Src\Aurora\A2D\PrimitiveBatch.cpp" />
     <ClCompile Include="Src\Aurora\Random.cpp" />

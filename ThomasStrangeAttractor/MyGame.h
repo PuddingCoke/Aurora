@@ -127,7 +127,7 @@ public:
 			simulationBuffer->unmap(0);
 		}
 
-		RenderAPI::get()->CSSetBuffer({ simulationBuffer }, 1);
+		RenderAPI::get()->CSSetConstantBuffer({ simulationBuffer }, 1);
 
 		attractor.update(dt);
 	}

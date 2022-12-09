@@ -63,7 +63,7 @@ public:
 
 	void draw()
 	{
-		RenderAPI::get()->PSSetBuffer({ materialBuffer }, 2);
+		RenderAPI::get()->PSSetConstantBuffer({ materialBuffer }, 2);
 		RenderAPI::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(Vertex) }, { 0 });
 		RenderAPI::get()->Draw(vertexNum, 0);
 	}

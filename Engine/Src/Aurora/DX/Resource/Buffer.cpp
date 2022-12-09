@@ -16,14 +16,14 @@ void Buffer::updateSubresource(const void* const data, const size_t& size, const
 	Renderer::getContext()->UpdateSubresource(buffer.Get(), subresource, nullptr, data, 0, 0);
 }
 
-Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage, const void* const data, const UINT& cpuaccessFlags, const UINT& miscFlags, const UINT& structureByteStride) :
+Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage, const void* const data, const UINT& CPUAccessFlags, const UINT& miscFlags, const UINT& structureByteStride) :
 	IASlot(-1)
 {
 	D3D11_BUFFER_DESC bd = {};
 	bd.ByteWidth = byteWidth;
 	bd.BindFlags = bindFlags;
 	bd.Usage = usage;
-	bd.CPUAccessFlags = cpuaccessFlags;
+	bd.CPUAccessFlags = CPUAccessFlags;
 	bd.MiscFlags = miscFlags;
 	bd.StructureByteStride = structureByteStride;
 

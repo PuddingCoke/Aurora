@@ -194,8 +194,8 @@ public:
 			voxelTextureNormal->clear(color);
 			RenderAPI::get()->OMSetUAV({ voxelTextureColor,voxelTextureNormal });
 
-			RenderAPI::get()->VSSetBuffer({ voxelProjBuffer }, 2);
-			RenderAPI::get()->PSSetBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer }, 1);
+			RenderAPI::get()->VSSetConstantBuffer({ voxelProjBuffer }, 2);
+			RenderAPI::get()->PSSetConstantBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer }, 1);
 			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler }, 0);
 
 			RenderAPI::get()->RSSetState(States::rasterConserve);
@@ -211,7 +211,7 @@ public:
 
 			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
-			RenderAPI::get()->CSSetBuffer({ voxelParamBuffer }, 1);
+			RenderAPI::get()->CSSetConstantBuffer({ voxelParamBuffer }, 1);
 			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
 			RenderAPI::get()->Dispatch(voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8, voxelParam.voxelGridRes / 8);
@@ -311,7 +311,7 @@ public:
 			RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);
 
 			RenderAPI::get()->GSSetSRV({ voxelTextureColorFinal }, 0);
-			RenderAPI::get()->GSSetBuffer({ voxelParamBuffer }, 2);
+			RenderAPI::get()->GSSetConstantBuffer({ voxelParamBuffer }, 2);
 			RenderAPI::get()->GSSetSampler({ States::pointClampSampler }, 0);
 			RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
@@ -340,7 +340,7 @@ public:
 			originTexture->clearRTV(DirectX::Colors::Black);
 			RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
 			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
-			RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);
+			RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);
 
 			RenderAPI::fullScreenVS->use();
 			deferredFinal->use();

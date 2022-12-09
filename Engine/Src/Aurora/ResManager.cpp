@@ -338,76 +338,76 @@ void ResManager::IASetVertexBuffer(const unsigned int& slot, const std::initiali
 	Renderer::context->IASetVertexBuffers(slot, (unsigned int)buffers.size(), tempBuffer, tempStrides, tempOffsets);
 }
 
-void ResManager::VSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
+void ResManager::VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = buffers.begin();
+	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)buffers.size(); i++, it++)
+	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 	}
 
-	Renderer::context->VSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
+	Renderer::context->VSSetConstantBuffers(slot, (unsigned int)constantBuffers.size(), tempBuffer);
 }
 
-void ResManager::HSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
+void ResManager::HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = buffers.begin();
+	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)buffers.size(); i++, it++)
+	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 	}
 
-	Renderer::context->HSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
+	Renderer::context->HSSetConstantBuffers(slot, (unsigned int)constantBuffers.size(), tempBuffer);
 }
 
-void ResManager::DSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
+void ResManager::DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = buffers.begin();
+	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)buffers.size(); i++, it++)
+	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 	}
 
-	Renderer::context->DSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
+	Renderer::context->DSSetConstantBuffers(slot, (unsigned int)constantBuffers.size(), tempBuffer);
 }
 
-void ResManager::GSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
+void ResManager::GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = buffers.begin();
+	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)buffers.size(); i++, it++)
+	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 	}
 
-	Renderer::context->GSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
+	Renderer::context->GSSetConstantBuffers(slot, (unsigned int)constantBuffers.size(), tempBuffer);
 }
 
-void ResManager::PSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
+void ResManager::PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = buffers.begin();
+	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)buffers.size(); i++, it++)
+	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 	}
 
-	Renderer::context->PSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
+	Renderer::context->PSSetConstantBuffers(slot, (unsigned int)constantBuffers.size(), tempBuffer);
 }
 
-void ResManager::CSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot)
+void ResManager::CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = buffers.begin();
+	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)buffers.size(); i++, it++)
+	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 	}
 
-	Renderer::context->CSSetConstantBuffers(slot, (unsigned int)buffers.size(), tempBuffer);
+	Renderer::context->CSSetConstantBuffers(slot, (unsigned int)constantBuffers.size(), tempBuffer);
 }
 
 void ResManager::VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)

@@ -19,7 +19,7 @@ ShaderResourceView* MotionBlurEffect::process(ShaderResourceView* const gPositio
 	RenderAPI::get()->OMSetRTV({ outputRTV }, nullptr);
 
 	RenderAPI::get()->PSSetSRV({ gPosition,colorTexture }, 0);
-	RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
+	RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 	RenderAPI::fullScreenVS->use();

@@ -96,7 +96,7 @@ void PrimitiveBatch::begin()
 
 void PrimitiveBatch::end()
 {
-	RenderAPI::get()->GSSetBuffer({ lineBuffer }, 2);
+	RenderAPI::get()->GSSetConstantBuffer({ lineBuffer }, 2);
 
 	RenderAPI::get()->IASetInputLayout(primitiveInputLayout.Get());
 

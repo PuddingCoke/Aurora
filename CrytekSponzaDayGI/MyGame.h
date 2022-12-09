@@ -172,7 +172,7 @@ public:
 		shadowTexture->clear();
 
 		RenderAPI::get()->OMSetRTV({}, shadowTexture);
-		RenderAPI::get()->VSSetBuffer({ lightProjBuffer }, 2);
+		RenderAPI::get()->VSSetConstantBuffer({ lightProjBuffer }, 2);
 
 		scene->drawGeometry(RenderAPI::shadowVS);
 
@@ -242,7 +242,7 @@ public:
 		originTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
 		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()),shadowTexture }, 0);
-		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),lightBuffer,lightProjBuffer }, 1);
+		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,lightProjBuffer }, 1);
 
 		RenderAPI::fullScreenVS->use();
 		deferredFinal->use();

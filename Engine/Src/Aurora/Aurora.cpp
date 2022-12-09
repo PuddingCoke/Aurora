@@ -102,14 +102,14 @@ int Aurora::iniEngine(const Configuration& config)
 	RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 
 	//pixel compute shader占用第一个槽位来获取跟时间相关的变量
-	RenderAPI::get()->PSSetBuffer({ Graphics::instance->deltaTimeBuffer }, 0);
-	RenderAPI::get()->CSSetBuffer({ Graphics::instance->deltaTimeBuffer }, 0);
+	RenderAPI::get()->PSSetConstantBuffer({ Graphics::instance->deltaTimeBuffer }, 0);
+	RenderAPI::get()->CSSetConstantBuffer({ Graphics::instance->deltaTimeBuffer }, 0);
 
 	//vertex geometry hull domain shader占用前两个槽位来获取矩阵信息或者摄像头的信息
-	RenderAPI::get()->VSSetBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
-	RenderAPI::get()->HSSetBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
-	RenderAPI::get()->DSSetBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
-	RenderAPI::get()->GSSetBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
+	RenderAPI::get()->VSSetConstantBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
+	RenderAPI::get()->HSSetConstantBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
+	RenderAPI::get()->DSSetConstantBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
+	RenderAPI::get()->GSSetConstantBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
 
 	return 0;
 }

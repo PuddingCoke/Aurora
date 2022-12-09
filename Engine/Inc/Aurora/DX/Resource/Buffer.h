@@ -17,7 +17,7 @@ public:
 	void operator=(const Buffer&) = delete;
 
 	Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage,
-		const void* const data = nullptr, const UINT& cpuaccessFlags = 0, const UINT& miscFlags = 0, const UINT& structureByteStride = 0);
+		const void* const data = nullptr, const UINT& CPUAccessFlags = 0, const UINT& miscFlags = 0, const UINT& structureByteStride = 0);
 
 	virtual ~Buffer();
 

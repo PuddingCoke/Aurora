@@ -47,17 +47,17 @@ private:
 
 	void CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const unsigned int& slot);
 
-	void VSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot);
+	void VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void HSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot);
+	void HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void DSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot);
+	void DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void GSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot);
+	void GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void PSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot);
+	void PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void CSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot);
+	void CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
 	void VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
 

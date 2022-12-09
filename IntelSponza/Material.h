@@ -123,7 +123,7 @@ public:
 
 	void use()
 	{
-		RenderAPI::get()->PSSetBuffer({ materialBuffer }, 1);
+		RenderAPI::get()->PSSetConstantBuffer({ materialBuffer }, 1);
 
 		switch (type)
 		{

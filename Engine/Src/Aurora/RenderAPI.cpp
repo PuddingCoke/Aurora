@@ -110,34 +110,34 @@ void RenderAPI::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs
 	ResManager::get()->CSSetUAV(uavs, slot);
 }
 
-void RenderAPI::VSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot) const
+void RenderAPI::VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const
 {
-	ResManager::get()->VSSetBuffer(buffers, slot);
+	ResManager::get()->VSSetConstantBuffer(constantBuffers, slot);
 }
 
-void RenderAPI::HSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot) const
+void RenderAPI::HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const
 {
-	ResManager::get()->HSSetBuffer(buffers, slot);
+	ResManager::get()->HSSetConstantBuffer(constantBuffers, slot);
 }
 
-void RenderAPI::DSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot) const
+void RenderAPI::DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const
 {
-	ResManager::get()->DSSetBuffer(buffers, slot);
+	ResManager::get()->DSSetConstantBuffer(constantBuffers, slot);
 }
 
-void RenderAPI::GSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot) const
+void RenderAPI::GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const
 {
-	ResManager::get()->GSSetBuffer(buffers, slot);
+	ResManager::get()->GSSetConstantBuffer(constantBuffers, slot);
 }
 
-void RenderAPI::PSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot) const
+void RenderAPI::PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const
 {
-	ResManager::get()->PSSetBuffer(buffers, slot);
+	ResManager::get()->PSSetConstantBuffer(constantBuffers, slot);
 }
 
-void RenderAPI::CSSetBuffer(const std::initializer_list<Buffer*>& buffers, const unsigned int& slot) const
+void RenderAPI::CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const
 {
-	ResManager::get()->CSSetBuffer(buffers, slot);
+	ResManager::get()->CSSetConstantBuffer(constantBuffers, slot);
 }
 
 void RenderAPI::VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const

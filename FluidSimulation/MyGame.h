@@ -162,8 +162,8 @@ public:
 			}
 		}
 
-		RenderAPI::get()->VSSetBuffer({ simulationParamBuffer }, 1);
-		RenderAPI::get()->PSSetBuffer({ simulationParamBuffer,splatParamBuffer }, 1);
+		RenderAPI::get()->VSSetConstantBuffer({ simulationParamBuffer }, 1);
+		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,splatParamBuffer }, 1);
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

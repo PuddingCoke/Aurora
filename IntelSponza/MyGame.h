@@ -194,7 +194,7 @@ public:
 		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
 
 		RenderAPI::get()->PSSetSRV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic,hbaoSRV }, 0);
-		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer(),mainScene->lightBuffer }, 1);
+		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),mainScene->lightBuffer }, 1);
 
 		RenderAPI::fullScreenVS->use();
 		deferredFinal->use();
@@ -207,7 +207,7 @@ public:
 
 		RenderAPI::get()->PSSetSRV({ originTexture,gPosition,gNormal,depthView }, 0);
 		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
-		RenderAPI::get()->PSSetBuffer({ Camera::getViewBuffer() }, 1);
+		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 
 		RenderAPI::fullScreenVS->use();
 		screenSpaceReflection->use();

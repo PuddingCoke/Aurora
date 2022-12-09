@@ -54,15 +54,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 			blurParam.texelSize = DirectX::XMFLOAT2(1.f / resolutions[i].x, 1.f / resolutions[i].y);
 			blurParam.iteration = iterations[i];
 
-			blurParamBuffer[i] = new Buffer(sizeof(BlurParam), D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE, &blurParam, 0, D3D11_RESOURCE_MISC_BUFFER_STRUCTURED, sizeof(BlurParam));
-
-			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-			srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-			srvDesc.Buffer.FirstElement = 0;
-			srvDesc.Buffer.NumElements = 1;
-
-			blurParamSRV[i] = new ShaderResourceView(blurParamBuffer[i]->getBuffer(), srvDesc);
+			blurParamBuffer[i] = new StructuredBuffer(sizeof(BlurParam), sizeof(BlurParam), D3D11_USAGE_IMMUTABLE, &blurParam, 0);
 		}
 	}
 
@@ -83,7 +75,6 @@ BloomEffect::~BloomEffect()
 		delete rcTextures[i * 2u];
 		delete rcTextures[i * 2u + 1u];
 		delete blurParamBuffer[i];
-		delete blurParamSRV[i];
 	}
 
 	delete bloomParamBuffer;
@@ -104,8 +95,8 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 	RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
-	RenderAPI::get()->PSSetBuffer({ bloomParamBuffer }, 1);
-	RenderAPI::get()->CSSetBuffer({ bloomParamBuffer }, 1);
+	RenderAPI::get()->PSSetConstantBuffer({ bloomParamBuffer }, 1);
+	RenderAPI::get()->CSSetConstantBuffer({ bloomParamBuffer }, 1);
 	RenderAPI::get()->HSSetShader(nullptr);
 	RenderAPI::get()->DSSetShader(nullptr);
 	RenderAPI::fullScreenVS->use();
@@ -124,7 +115,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		RenderAPI::get()->CSSetSRV({ blurParamSRV[i] }, 1);
+		RenderAPI::get()->CSSetSRV({ blurParamBuffer[i] }, 1);
 
 		bloomHBlurShader->use();
 		RenderAPI::get()->CSSetUAV({ rcTextures[i * 2 + 1] }, 0);
@@ -144,7 +135,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->DrawQuad();
 	}
 
-	RenderAPI::get()->CSSetSRV({ blurParamSRV[blurSteps - 1] }, 1);
+	RenderAPI::get()->CSSetSRV({ blurParamBuffer[blurSteps - 1] }, 1);
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -164,7 +155,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
 		RenderAPI::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
-		RenderAPI::get()->CSSetSRV({ blurParamSRV[blurSteps - 2 - i] }, 1);
+		RenderAPI::get()->CSSetSRV({ blurParamBuffer[blurSteps - 2 - i] }, 1);
 
 		bloomHBlurShader->use();
 		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
