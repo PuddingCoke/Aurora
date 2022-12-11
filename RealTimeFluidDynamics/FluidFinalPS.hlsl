@@ -35,15 +35,10 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
     float3 color = colorTex.Sample(linearSampler, texCoord).rgb;
     
-    const float2 vL = texCoord - float2(screenTexelSize.x, 0.0);
-    const float2 vR = texCoord + float2(screenTexelSize.x, 0.0);
-    const float2 vT = texCoord + float2(0.0, screenTexelSize.y);
-    const float2 vB = texCoord - float2(0.0, screenTexelSize.y);
-    
-    float3 lc = colorTex.Sample(linearSampler, vL).rgb;
-    float3 rc = colorTex.Sample(linearSampler, vR).rgb;
-    float3 tc = colorTex.Sample(linearSampler, vT).rgb;
-    float3 bc = colorTex.Sample(linearSampler, vB).rgb;
+    float3 lc = colorTex.Sample(linearSampler, texCoord - float2(screenTexelSize.x, 0.0)).rgb;
+    float3 rc = colorTex.Sample(linearSampler, texCoord + float2(screenTexelSize.x, 0.0)).rgb;
+    float3 tc = colorTex.Sample(linearSampler, texCoord + float2(0.0, screenTexelSize.y)).rgb;
+    float3 bc = colorTex.Sample(linearSampler, texCoord - float2(0.0, screenTexelSize.y)).rgb;
     
     float dx = length(rc) - length(lc);
     float dy = length(tc) - length(bc);

@@ -4,6 +4,7 @@
 #include<Aurora/DoubleRTV.h>
 #include<Aurora/Color.h>
 #include<Aurora/Timer.h>
+#include<Aurora/PostProcessing/BloomEffect.h>
 
 //基本思想
 //https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-38-fast-fluid-dynamics-simulation-gpu
@@ -21,12 +22,12 @@ public:
 		float colorDissipationSpeed = 1.f;//颜色消散速度
 		float velocityDissipationSpeed = 0.2f;//速度消散速度
 		float pressureDissipationSpeed = 1.25f;//压力消散速度
-		float curlIntensity = 100.f;//旋度强度
+		float curlIntensity = 80.f;//旋度强度
 		float splatRadius = 0.25f;//施加颜色的半径
 		float splatForce = 6000.f;//施加速度的大小
 		unsigned int pressureIteraion = 40;//雅可比迭代次数 这个值越高物理模拟越不容易出错 NVIDIA的文章有提到通常20-50次就够了
-		unsigned int colorRes = 1080;//颜色分辨率
-		unsigned int simRes = 1080;//物理模拟分辨率
+		unsigned int colorRes = Graphics::getHeight();//颜色分辨率
+		unsigned int simRes = Graphics::getHeight() / 3;//物理模拟分辨率
 	}config;
 
 	struct SplatPoint
@@ -90,6 +91,10 @@ public:
 
 	ComPtr<ID3D11BlendState> blendState;
 
+	RenderTexture* originTexture;
+
+	BloomEffect bloomEffect;
+
 	Shader* fluidFinalPS;
 	Shader* splatColorPS;
 	Shader* splatVelocityPS;
@@ -102,20 +107,30 @@ public:
 	Shader* viscousDiffusionPS;
 	Shader* vorticityPS;
 
+	float exposure = 0.6f;
+	float gamma = 1.4f;
+
 	MyGame() :
 		colorUpdateTimer(1.f),
 		fluidFinalPS(new Shader("FluidFinalPS.hlsl", ShaderType::Pixel)),
 		splatColorPS(new Shader("SplatColorPS.hlsl", ShaderType::Pixel)),
 		splatVelocityPS(new Shader("SplatVelocityPS.hlsl", ShaderType::Pixel)),
-		colorAdvectionDissipationPS(new Shader("ColorAdvectionDissipation.hlsl",ShaderType::Pixel)),
+		colorAdvectionDissipationPS(new Shader("ColorAdvectionDissipation.hlsl", ShaderType::Pixel)),
 		velocityAdvectionDissipationPS(new Shader("VelocityAdvectionDissipation.hlsl", ShaderType::Pixel)),
 		pressureDissipationPS(new Shader("PressureDissipationPS.hlsl", ShaderType::Pixel)),
 		curlPS(new Shader("CurlPS.hlsl", ShaderType::Pixel)),
 		divergencePS(new Shader("DivergencePS.hlsl", ShaderType::Pixel)),
 		pressureGradientSubtractPS(new Shader("PressureGradientSubtractPS.hlsl", ShaderType::Pixel)),
 		viscousDiffusionPS(new Shader("ViscousDiffusionPS.hlsl", ShaderType::Pixel)),
-		vorticityPS(new Shader("VorticityPS.hlsl", ShaderType::Pixel))
+		vorticityPS(new Shader("VorticityPS.hlsl", ShaderType::Pixel)),
+		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
 	{
+		bloomEffect.setExposure(exposure);
+		bloomEffect.setGamma(gamma);
+		bloomEffect.setThreshold(0.f);
+		bloomEffect.applyChange();
+
 		{
 			D3D11_BLEND_DESC blendStateDesc = {};
 			blendStateDesc.IndependentBlendEnable = false;
@@ -168,11 +183,6 @@ public:
 				updatePointMoveData(Mouse::getX(), Graphics::getHeight() - Mouse::getY());
 			}
 			});
-
-		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
-		RenderAPI::fullScreenVS->use();
 	}
 
 	void updatePointDownData(const float& posX, const float& posY)
@@ -218,6 +228,7 @@ public:
 		delete pressureGradientSubtractPS;
 		delete viscousDiffusionPS;
 		delete vorticityPS;
+		delete originTexture;
 	}
 
 	void updateColor(const float& dt)
@@ -236,6 +247,12 @@ public:
 
 		memcpy(simulationDeltaBuffer->map(0).pData, &simulationDelta, sizeof(SimulationDelta));
 		simulationDeltaBuffer->unmap(0);
+
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
+		RenderAPI::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
+		RenderAPI::get()->OMSetBlendState(blendState.Get());
+		RenderAPI::fullScreenVS->use();
 
 		//施加颜色和速度
 
@@ -267,8 +284,12 @@ public:
 
 	void step()
 	{
-		RenderAPI::get()->OMSetBlendState(nullptr);
 		RenderAPI::get()->RSSetViewport(velocityTex->width, velocityTex->height);
+		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
+		RenderAPI::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->OMSetBlendState(nullptr);
+		RenderAPI::fullScreenVS->use();
 
 		//求旋度
 		RenderAPI::get()->OMSetRTV({ curlTex }, nullptr);
@@ -331,6 +352,36 @@ public:
 
 	void update(const float& dt) override
 	{
+		if (Keyboard::getKeyDown(Keyboard::A))
+		{
+			exposure += 0.01f;
+			bloomEffect.setExposure(exposure);
+			bloomEffect.applyChange();
+
+			std::cout << "e " << exposure << "\n";
+		}
+		else if (Keyboard::getKeyDown(Keyboard::S))
+		{
+			exposure -= 0.01f;
+			bloomEffect.setExposure(exposure);
+			bloomEffect.applyChange();
+			std::cout << "e " << exposure << "\n";
+		}
+		else if (Keyboard::getKeyDown(Keyboard::H))
+		{
+			gamma += 0.01f;
+			bloomEffect.setGamma(gamma);
+			bloomEffect.applyChange();
+			std::cout << "g " << gamma << "\n";
+		}
+		else if (Keyboard::getKeyDown(Keyboard::J))
+		{
+			gamma -= 0.01f;
+			bloomEffect.setGamma(gamma);
+			bloomEffect.applyChange();
+			std::cout << "g " << gamma << "\n";
+		}
+
 		//物理模拟
 		updateColor(dt);
 		applyInput();
@@ -342,10 +393,24 @@ public:
 		//最后进行简单的渲染
 		RenderAPI::get()->OMSetBlendState(blendState.Get());
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		originTexture->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
 		fluidFinalPS->use();
 		RenderAPI::get()->PSSetSRV({ colorTex->read() }, 0);
+		RenderAPI::get()->DrawQuad();
+
+		ShaderResourceView* const bloomSRV = bloomEffect.process(originTexture);
+
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
+		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
+		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
+		RenderAPI::fullScreenVS->use();
+		RenderAPI::fullScreenPS->use();
+
 		RenderAPI::get()->DrawQuad();
 	}
 
