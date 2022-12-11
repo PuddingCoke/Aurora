@@ -44,7 +44,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     float B = velocityTex.Sample(linearSampler, texCoord - float2(0.0, simTexelSize.y)).y;
     float2 C = velocityTex.Sample(linearSampler, texCoord).xy;
     
-    //boundary
+   //进行边界处理，NVIDIA的文章里讲了边界条件的散度必须为0
     if (vL.x < 0.0)
     {
         L = -C.x;

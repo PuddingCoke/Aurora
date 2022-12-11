@@ -7,7 +7,7 @@
 
 //基本思想
 //https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-38-fast-fluid-dynamics-simulation-gpu
-//http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf
+//如果上面的网址里的有些公式看不懂可以看这个 http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf
 //旋度的具体实现在这里
 //https://softologyblog.wordpress.com/2019/03/13/vorticity-confinement-for-eulerian-fluid-simulations/
 
@@ -17,16 +17,16 @@ public:
 
 	struct Config
 	{
-		float colorChangeSpeed = 10.f;
-		float colorDissipationSpeed = 1.f;
-		float velocityDissipationSpeed = 0.2f;
-		float pressureDissipationSpeed = 1.25f;
-		float curlIntensity = 100.f;
-		float splatRadius = 0.25f;
-		float splatForce = 6000.f;
-		unsigned int pressureIteraion = 20;
-		unsigned int colorRes = 1024;
-		unsigned int simRes = 256;
+		float colorChangeSpeed = 10.f;//颜色改变速度
+		float colorDissipationSpeed = 1.f;//颜色消散速度
+		float velocityDissipationSpeed = 0.2f;//速度消散速度
+		float pressureDissipationSpeed = 1.25f;//压力消散速度
+		float curlIntensity = 100.f;//旋度强度
+		float splatRadius = 0.25f;//施加颜色的半径
+		float splatForce = 6000.f;//施加速度的大小
+		unsigned int pressureIteraion = 40;//雅可比迭代次数 这个值越高物理模拟越不容易出错 NVIDIA的文章有提到通常20-50次就够了
+		unsigned int colorRes = 1080;//颜色分辨率
+		unsigned int simRes = 1080;//物理模拟分辨率
 	}config;
 
 	struct SplatPoint
@@ -57,7 +57,7 @@ public:
 		DirectX::XMFLOAT2 pos = { 0,0 };
 		DirectX::XMFLOAT2 posDelta = { 0,0 };
 		DirectX::XMFLOAT4 splatColor = { 0,0,0,1 };
-	}simulationDelta;//变化的值如 位置颜色
+	}simulationDelta;//变化的值如 位置 颜色
 
 	struct SimulationParam
 	{
@@ -99,7 +99,7 @@ public:
 	Shader* curlPS;
 	Shader* divergencePS;
 	Shader* pressureGradientSubtractPS;
-	Shader* pressurePS;
+	Shader* viscousDiffusionPS;
 	Shader* vorticityPS;
 
 	MyGame() :
@@ -113,7 +113,7 @@ public:
 		curlPS(new Shader("CurlPS.hlsl", ShaderType::Pixel)),
 		divergencePS(new Shader("DivergencePS.hlsl", ShaderType::Pixel)),
 		pressureGradientSubtractPS(new Shader("PressureGradientSubtractPS.hlsl", ShaderType::Pixel)),
-		pressurePS(new Shader("PressurePS.hlsl", ShaderType::Pixel)),
+		viscousDiffusionPS(new Shader("ViscousDiffusionPS.hlsl", ShaderType::Pixel)),
 		vorticityPS(new Shader("VorticityPS.hlsl", ShaderType::Pixel))
 	{
 		{
@@ -216,7 +216,7 @@ public:
 		delete curlPS;
 		delete divergencePS;
 		delete pressureGradientSubtractPS;
-		delete pressurePS;
+		delete viscousDiffusionPS;
 		delete vorticityPS;
 	}
 
@@ -236,6 +236,8 @@ public:
 
 		memcpy(simulationDeltaBuffer->map(0).pData, &simulationDelta, sizeof(SimulationDelta));
 		simulationDeltaBuffer->unmap(0);
+
+		//施加颜色和速度
 
 		RenderAPI::get()->RSSetViewport(velocityTex->width, velocityTex->height);
 		RenderAPI::get()->OMSetRTV({ velocityTex->write() }, nullptr);
@@ -268,29 +270,34 @@ public:
 		RenderAPI::get()->OMSetBlendState(nullptr);
 		RenderAPI::get()->RSSetViewport(velocityTex->width, velocityTex->height);
 
+		//求旋度
 		RenderAPI::get()->OMSetRTV({ curlTex }, nullptr);
 		curlPS->use();
 		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 
+		//通过已经求得的散度对速度图施加漩涡
 		RenderAPI::get()->OMSetRTV({ velocityTex->write() }, nullptr);
 		vorticityPS->use();
 		RenderAPI::get()->PSSetSRV({ velocityTex->read(),curlTex }, 0);
 		RenderAPI::get()->DrawQuad();
 		velocityTex->swap();
 
+		//求散度
 		RenderAPI::get()->OMSetRTV({ divergenceTex }, nullptr);
 		divergencePS->use();
 		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 
+		//对压力图进行消散处理
 		RenderAPI::get()->OMSetRTV({ pressureTex->write() }, nullptr);
 		pressureDissipationPS->use();
 		RenderAPI::get()->PSSetSRV({ pressureTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 		pressureTex->swap();
 
-		pressurePS->use();
+		//进行雅可比迭代
+		viscousDiffusionPS->use();
 		for (unsigned int i = 0; i < config.pressureIteraion; i++)
 		{
 			RenderAPI::get()->OMSetRTV({ pressureTex->write() }, nullptr);
@@ -299,20 +306,22 @@ public:
 			pressureTex->swap();
 		}
 
+		//速度图减去它的散度来求得没有散度的速度图
 		RenderAPI::get()->OMSetRTV({ velocityTex->write() }, nullptr);
 		pressureGradientSubtractPS->use();
 		RenderAPI::get()->PSSetSRV({ pressureTex->read(),velocityTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 		velocityTex->swap();
 
+		//速度移动并进行消散处理
 		RenderAPI::get()->OMSetRTV({ velocityTex->write() }, nullptr);
 		velocityAdvectionDissipationPS->use();
 		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 		velocityTex->swap();
 
+		//颜色移动并进行消散处理
 		RenderAPI::get()->RSSetViewport(colorTex->width, colorTex->height);
-
 		RenderAPI::get()->OMSetRTV({ colorTex->write() }, nullptr);
 		colorAdvectionDissipationPS->use();
 		RenderAPI::get()->PSSetSRV({ velocityTex->read(),colorTex->read() }, 0);
@@ -322,6 +331,7 @@ public:
 
 	void update(const float& dt) override
 	{
+		//物理模拟
 		updateColor(dt);
 		applyInput();
 		step();
@@ -329,6 +339,7 @@ public:
 
 	void render()
 	{
+		//最后进行简单的渲染
 		RenderAPI::get()->OMSetBlendState(blendState.Get());
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
