@@ -15,16 +15,26 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="MyGame.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="GargantuaPShader.hlsl" />
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="SplatColorPS.hlsl" />
+    <FxCompile Include="SplatVelocityPS.hlsl" />
+    <FxCompile Include="FluidFinalPS.hlsl" />
+    <FxCompile Include="CurlPS.hlsl" />
+    <FxCompile Include="DivergencePS.hlsl" />
+    <FxCompile Include="PressureDissipationPS.hlsl" />
+    <FxCompile Include="ColorAdvectionDissipation.hlsl" />
+    <FxCompile Include="VelocityAdvectionDissipation.hlsl" />
+    <FxCompile Include="PressureGradientSubtractPS.hlsl" />
+    <FxCompile Include="VorticityPS.hlsl" />
+    <FxCompile Include="PressurePS.hlsl" />
   </ItemGroup>
 </Project>

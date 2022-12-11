@@ -41,9 +41,8 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     float C = tCurl.Sample(pointSampler, texCoord).x;
     
     float2 force = 0.5 * float2(abs(T) - abs(B), abs(R) - abs(L));
-    force /= length(force) + 0.0001;
-    force *= curl * C;
-    force.y *= -1.0;
+    force *= 1.0 / (length(force) + 0.0001) * curl * C;
+    force.y = -force.y;
     
     float2 vel = tVelocity.Sample(linearSampler, texCoord).xy;
     

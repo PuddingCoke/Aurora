@@ -1,28 +1,23 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/A2D/SpriteBatch.h>
-#include<PerlinNoise/PerlinNoise.hpp>
+#include<Aurora/ComputeTexture.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game
 {
 public:
 
-	ResourceTexture* texture;
-
-	SpriteBatch* batch;
+	ComputeTexture* noiseTexture;
 
 	MyGame() :
-		texture(new ResourceTexture(1024, 1024, Texture2D::TextureType::Noise)),
-		batch(SpriteBatch::create())
+		noiseTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM))
 	{
 	}
 
 	~MyGame()
 	{
-		delete batch;
-		delete texture;
+		delete noiseTexture;
 	}
 
 	void update(const float& dt) override
@@ -32,12 +27,8 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::CadetBlue);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
-
-		batch->begin();
-		batch->draw(texture, texture, 0, 0);
-		batch->end();
+		RenderAPI::get()->GenNoise(noiseTexture, Graphics::getWidth(), Graphics::getHeight());
+		RenderAPI::get()->DebugDraw(noiseTexture);
 	}
 
 

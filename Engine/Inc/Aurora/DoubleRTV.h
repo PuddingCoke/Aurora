@@ -15,7 +15,7 @@ public:
 
 	void operator=(const DoubleRTV&) = delete;
 
-	static DoubleRTV* create(const UINT& width, const UINT& height, const DXGI_FORMAT& format);
+	DoubleRTV(const UINT& width, const UINT& height, const DXGI_FORMAT& format);
 
 	~DoubleRTV();
 
@@ -30,8 +30,6 @@ public:
 	void swap();
 
 private:
-
-	DoubleRTV(const UINT& width, const UINT& height, const DXGI_FORMAT& format);
 
 	RenderTexture* renderTexture1;
 

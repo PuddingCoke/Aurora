@@ -24,7 +24,6 @@ public:
 		float prevTexcoordY = 0;
 		float deltaX = 0;
 		float deltaY = 0;
-		bool down = false;
 		bool moved = false;
 		float r = 30;
 		float g = 0;
@@ -122,9 +121,9 @@ public:
 			const DirectX::XMINT2 dyeRes = getResolution(SimulationConfig::DYE_RESOLUTION);
 			const DirectX::XMINT2 sunRes = getResolution(SimulationConfig::SUNRAYS_RESOLUTION);
 
-			dye = DoubleRTV::create(dyeRes.x, dyeRes.y, DXGI_FORMAT::DXGI_FORMAT_R16G16B16A16_FLOAT);
-			velocity = DoubleRTV::create(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16G16_FLOAT);
-			pressure = DoubleRTV::create(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT);
+			dye = new DoubleRTV(dyeRes.x, dyeRes.y, DXGI_FORMAT::DXGI_FORMAT_R16G16B16A16_FLOAT);
+			velocity = new DoubleRTV(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16G16_FLOAT);
+			pressure = new DoubleRTV(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT);
 			divergence = new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
 			curl = new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
 			sunrays = new RenderTexture(sunRes.x, sunRes.y, DXGI_FORMAT::DXGI_FORMAT_R16_FLOAT, DirectX::Colors::Transparent);
@@ -162,27 +161,21 @@ public:
 			}
 		}
 
-		RenderAPI::get()->VSSetConstantBuffer({ simulationParamBuffer }, 1);
 		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,splatParamBuffer }, 1);
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		Mouse::addLeftDownEvent([this]()
 			{
-				updatePointerDownData(-1, Mouse::getX(), Graphics::getHeight() - Mouse::getY());
+				updatePointerDownData(Mouse::getX(), Graphics::getHeight() - Mouse::getY());
 			});
 
 		Mouse::addMoveEvent([this]()
 			{
-				if (pointer.down)
+				if (Mouse::getLeftDown())
 				{
 					updatePointerMoveData(Mouse::getX(), Graphics::getHeight() - Mouse::getY());
 				}
-			});
-
-		Mouse::addLeftUpEvent([this]()
-			{
-				pointer.down = false;
 			});
 
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler,States::pointClampSampler }, 0);
@@ -378,9 +371,8 @@ public:
 		RenderAPI::get()->DrawQuad();
 	}
 
-	void updatePointerDownData(const int& id, const float& posX, const float& posY)
+	void updatePointerDownData(const float& posX, const float& posY)
 	{
-		pointer.down = true;
 		pointer.moved = false;
 		pointer.texcoordX = posX / Graphics::getWidth();
 		pointer.texcoordY = posY / Graphics::getHeight();

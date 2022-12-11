@@ -8,7 +8,7 @@
 struct SimulationConfig
 {
 	static constexpr float COLOR_UPDATE_SPEED = 10;
-	static constexpr float CURL = 30;
+	static constexpr float CURL = 100;
 	static constexpr float DENSITY_DISSIPATION = 1;
 	static constexpr float DYE_RESOLUTION = 1024;
 	static constexpr float PRESSURE = 0.8f;
