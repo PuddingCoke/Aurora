@@ -33,5 +33,6 @@ Texture2D pressureTex : register(t0);
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    return pressureTex.Sample(pointSampler, texCoord) / pressureDissipationSpeed;
+    float decay = 1.0 + pressureDissipationSpeed;
+    return pressureTex.Sample(pointSampler, texCoord) / decay;
 }

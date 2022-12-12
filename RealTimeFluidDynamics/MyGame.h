@@ -6,11 +6,9 @@
 #include<Aurora/Timer.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
 
-//基本思想
-//https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-38-fast-fluid-dynamics-simulation-gpu
-//如果上面的网址里的有些公式看不懂可以看这个 http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf
-//旋度的具体实现在这里
-//https://softologyblog.wordpress.com/2019/03/13/vorticity-confinement-for-eulerian-fluid-simulations/
+//基本思想 https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-38-fast-fluid-dynamics-simulation-gpu
+//有些公式看不懂可以看这个 http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf
+//涡流的具体实现在这里 https://softologyblog.wordpress.com/2019/03/13/vorticity-confinement-for-eulerian-fluid-simulations/
 
 class MyGame :public Game
 {
@@ -21,13 +19,13 @@ public:
 		float colorChangeSpeed = 10.f;//颜色改变速度
 		float colorDissipationSpeed = 1.f;//颜色消散速度
 		float velocityDissipationSpeed = 0.2f;//速度消散速度
-		float pressureDissipationSpeed = 1.25f;//压力消散速度
+		float pressureDissipationSpeed = 0.25f;//压力消散速度
 		float curlIntensity = 80.f;//旋度强度
 		float splatRadius = 0.25f;//施加颜色的半径
 		float splatForce = 6000.f;//施加速度的大小
-		unsigned int pressureIteraion = 40;//雅可比迭代次数 这个值越高物理模拟越不容易出错 NVIDIA的文章有提到通常20-50次就够了
-		unsigned int colorRes = Graphics::getHeight();//颜色分辨率
-		unsigned int simRes = Graphics::getHeight() / 3;//物理模拟分辨率
+		const unsigned int pressureIteraion = 50;//雅可比迭代次数 这个值越高物理模拟越不容易出错 NVIDIA的文章有提到通常20-50次就够了
+		const unsigned int colorRes = Graphics::getHeight();//颜色分辨率
+		const unsigned int simRes = Graphics::getHeight() / 3;//物理模拟分辨率
 	}config;
 
 	struct SplatPoint
