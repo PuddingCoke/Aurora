@@ -34,10 +34,10 @@ Texture2D<float2> velocityTex : register(t1);
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float L = pressureTex.Sample(pointSampler, texCoord - float2(simTexelSize.x, 0.0));
-    float R = pressureTex.Sample(pointSampler, texCoord + float2(simTexelSize.x, 0.0));
-    float T = pressureTex.Sample(pointSampler, texCoord + float2(0.0, simTexelSize.y));
-    float B = pressureTex.Sample(pointSampler, texCoord - float2(0.0, simTexelSize.y));
+    const float L = pressureTex.Sample(pointSampler, texCoord - float2(simTexelSize.x, 0.0));
+    const float R = pressureTex.Sample(pointSampler, texCoord + float2(simTexelSize.x, 0.0));
+    const float T = pressureTex.Sample(pointSampler, texCoord + float2(0.0, simTexelSize.y));
+    const float B = pressureTex.Sample(pointSampler, texCoord - float2(0.0, simTexelSize.y));
     float2 velocity = velocityTex.Sample(linearSampler, texCoord);
     velocity.xy -= float2(R - L, T - B);
     return float4(velocity, 0.0, 1.0);

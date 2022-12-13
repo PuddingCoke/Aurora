@@ -33,8 +33,8 @@ Texture2D<float2> velocityTex : register(t0);
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float2 coord = texCoord - dt * velocityTex.Sample(linearSampler, texCoord) * simTexelSize;
-    float2 result = velocityTex.Sample(linearSampler, coord);
-    float decay = 1.0 + velocityDissipationSpeed * dt;
+    const float2 coord = texCoord - dt * velocityTex.Sample(linearSampler, texCoord) * simTexelSize;
+    const float2 result = velocityTex.Sample(linearSampler, coord);
+    const float decay = 1.0 + velocityDissipationSpeed * dt;
     return float4(result / decay, 0.0, 1.0);
 }
