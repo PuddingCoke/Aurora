@@ -29,13 +29,13 @@ cbuffer SimulationDelta : register(b2)
 SamplerState pointSampler : register(s0);
 SamplerState linearSampler : register(s1);
 
-Texture2D velocityTex : register(t0);
+Texture2D<float2> velocityTex : register(t0);
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
     float2 p = texCoord - pos;
     p.x *= aspectRatio;
     float2 velocity = exp(-dot(p, p) / splatRadius) * posDelta;
-    float2 curVelocity = velocityTex.Sample(linearSampler, texCoord).xy;
+    float2 curVelocity = velocityTex.Sample(linearSampler, texCoord);
     return float4(curVelocity + velocity, 0.0, 1.0);
 }

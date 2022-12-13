@@ -29,12 +29,12 @@ cbuffer SimulationDelta : register(b2)
 SamplerState pointSampler : register(s0);
 SamplerState linearSampler : register(s1);
 
-Texture2D velocityTex : register(t0);
+Texture2D<float2> velocityTex : register(t0);
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float2 coord = texCoord - dt * velocityTex.Sample(linearSampler, texCoord).xy * simTexelSize;
-    float4 result = velocityTex.Sample(linearSampler, coord);
+    float2 coord = texCoord - dt * velocityTex.Sample(linearSampler, texCoord) * simTexelSize;
+    float2 result = velocityTex.Sample(linearSampler, coord);
     float decay = 1.0 + velocityDissipationSpeed * dt;
-    return result / decay;
+    return float4(result / decay, 0.0, 1.0);
 }

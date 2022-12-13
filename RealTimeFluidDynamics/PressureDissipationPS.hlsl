@@ -29,10 +29,10 @@ cbuffer SimulationDelta : register(b2)
 SamplerState pointSampler : register(s0);
 SamplerState linearSampler : register(s1);
 
-Texture2D pressureTex : register(t0);
+Texture2D<float> pressureTex : register(t0);
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
     float decay = 1.0 + pressureDissipationSpeed;
-    return pressureTex.Sample(pointSampler, texCoord) / decay;
+    return float4(pressureTex.Sample(pointSampler, texCoord) / decay, 0.0, 0.0, 1.0);
 }

@@ -29,7 +29,7 @@ cbuffer SimulationDelta : register(b2)
 SamplerState pointSampler : register(s0);
 SamplerState linearSampler : register(s1);
 
-Texture2D colorTex : register(t0);
+Texture2D<float4> colorTex : register(t0);
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {

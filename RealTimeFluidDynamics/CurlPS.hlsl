@@ -29,16 +29,14 @@ cbuffer SimulationDelta : register(b2)
 SamplerState pointSampler : register(s0);
 SamplerState linearSampler : register(s1);
 
-Texture2D velocityTex : register(t0);
+Texture2D<float2> velocityTex : register(t0);
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float L = velocityTex.Sample(linearSampler, texCoord - float2(simTexelSize.x, 0.0)).y;
-    float R = velocityTex.Sample(linearSampler, texCoord + float2(simTexelSize.x, 0.0)).y;
-    float T = velocityTex.Sample(linearSampler, texCoord + float2(0.0, simTexelSize.y)).x;
-    float B = velocityTex.Sample(linearSampler, texCoord - float2(0.0, simTexelSize.y)).x;
-    
-    float vorticity = 0.5 * (R - L - T + B);
-    
+    const float L = velocityTex.Sample(linearSampler, texCoord - float2(simTexelSize.x, 0.0)).y;
+    const float R = velocityTex.Sample(linearSampler, texCoord + float2(simTexelSize.x, 0.0)).y;
+    const float T = velocityTex.Sample(linearSampler, texCoord + float2(0.0, simTexelSize.y)).x;
+    const float B = velocityTex.Sample(linearSampler, texCoord - float2(0.0, simTexelSize.y)).x;
+    const float vorticity = 0.5 * (T - B + L - R);
     return float4(vorticity, 0.0, 0.0, 1.0);
 }
