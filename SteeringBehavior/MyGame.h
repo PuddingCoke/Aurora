@@ -41,7 +41,7 @@ public:
 		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
 		arrowTexture(new ResourceTexture("arrow.png")),
 		batch(SpriteBatch::create()),
-		doubleRTV(DoubleRTV::create(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		doubleRTV(new DoubleRTV(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		fadeEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
 	{

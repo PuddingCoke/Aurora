@@ -21,8 +21,6 @@ public:
 
 	virtual ~Buffer();
 
-	static void unbindVertexBuffer();
-
 	ID3D11Buffer* getBuffer() const;
 
 	void updateSubresource(const void* const data, const size_t& size, const unsigned int& subresource) const;

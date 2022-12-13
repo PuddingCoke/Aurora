@@ -18,7 +18,7 @@
 // Name                 Index   Mask Register SysValue  Format   Used
 // -------------------- ----- ------ -------- -------- ------- ------
 // SV_Position              0   xyzw        0      POS   float   xyzw
-// POSITION                 1   x           1     NONE   float   x   
+// POSITION                 0   x           1     NONE   float   x   
 // COLOR                    0   xyzw        2     NONE   float   xyzw
 //
 vs_5_0
@@ -39,10 +39,10 @@ ret
 
 const BYTE g_PrimitiveBatchRCLineVSBytes[] =
 {
-     68,  88,  66,  67, 117, 239, 
-    231, 222, 157,  58,  17,  80, 
-    112,  47, 175,  52, 153,  10, 
-     52,  15,   1,   0,   0,   0, 
+     68,  88,  66,  67, 116,  47, 
+    227,  20,  94, 118,   3,  10, 
+    114, 101, 230, 162, 200, 137, 
+     71, 150,   1,   0,   0,   0, 
     216,   2,   0,   0,   5,   0, 
       0,   0,  52,   0,   0,   0, 
     160,   0,   0,   0,   8,   1, 
@@ -90,7 +90,7 @@ const BYTE g_PrimitiveBatchRCLineVSBytes[] =
       1,   0,   0,   0,   3,   0, 
       0,   0,   0,   0,   0,   0, 
      15,   0,   0,   0,  92,   0, 
-      0,   0,   1,   0,   0,   0, 
+      0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   3,   0, 
       0,   0,   1,   0,   0,   0, 
       1,  14,   0,   0, 101,   0, 

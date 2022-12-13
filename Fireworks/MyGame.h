@@ -31,7 +31,7 @@ public:
 		currentSkyColor{ 0.0f,0.0f,0.0f,1.0f },
 		texture(new RenderTexture(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
 		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
-		doubleRTV(DoubleRTV::create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM)),
+		doubleRTV(new DoubleRTV(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM)),
 		effect(1920, 1080)
 	{
 		Star::active = &starActive;

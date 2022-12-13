@@ -304,8 +304,6 @@ public:
 		{
 			RenderAPI::get()->RSSetState(States::rasterCullNone);
 
-			RenderAPI::get()->UnbindVertexBuffer();
-
 			shadowMap->clear();
 			RenderAPI::get()->OMSetDefRTV(shadowMap);
 			RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);

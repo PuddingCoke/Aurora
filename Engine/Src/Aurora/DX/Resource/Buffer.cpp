@@ -44,19 +44,6 @@ Buffer::~Buffer()
 	unbindFromVertexBuffer();
 }
 
-void Buffer::unbindVertexBuffer()
-{
-	for (unsigned int i = 0; i < D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT; i++)
-	{
-		if (curBuffer[i])
-		{
-			curBuffer[i]->IASlot = -1;
-			curBuffer[i] = nullptr;
-		}
-	}
-	Renderer::getContext()->IASetVertexBuffers(0, D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT, nullBuffer, nullStrides, nullStrides);
-}
-
 D3D11_MAPPED_SUBRESOURCE Buffer::map(const unsigned int& subresource, const D3D11_MAP& mapType, const unsigned int& mapFlags) const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData;

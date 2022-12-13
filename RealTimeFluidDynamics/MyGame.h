@@ -20,11 +20,11 @@ public:
 		float colorDissipationSpeed = 1.f;//颜色消散速度
 		float velocityDissipationSpeed = 0.2f;//速度消散速度
 		float pressureDissipationSpeed = 0.25f;//压力消散速度
-		float curlIntensity = 80.f;//旋度强度
+		float curlIntensity = 80.f;//涡流强度
 		float splatRadius = 0.25f;//施加颜色的半径
-		float splatForce = 6000.f;//施加速度的大小
+		float splatForce = 6000.f;//施加速度的强度
 		const unsigned int pressureIteraion = 50;//雅可比迭代次数 这个值越高物理模拟越不容易出错 NVIDIA的文章有提到通常20-50次就够了
-		const unsigned int colorRes = Graphics::getHeight();//颜色分辨率
+		const unsigned int colorRes = Graphics::getHeight();//颜色模拟分辨率
 		const unsigned int simRes = Graphics::getHeight() / 3;//物理模拟分辨率
 	}config;
 

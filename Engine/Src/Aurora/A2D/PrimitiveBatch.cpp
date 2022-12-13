@@ -137,7 +137,7 @@ void PrimitiveBatch::drawRoundCapLine(const float& x1, const float& y1, const fl
 
 void PrimitiveBatch::setLineWidth(const float& width)
 {
-	lineParam.lineWidth = width;
+	lineParam.lineWidth = width / 2.f;
 }
 
 void PrimitiveBatch::applyChange() const
@@ -282,14 +282,14 @@ void PrimitiveBatch::RCLineRenderer::addRoundCapLine(const float& x1, const floa
 {
 	vertices[idx] = x1;
 	vertices[idx + 1] = y1;
-	vertices[idx + 2] = width;
+	vertices[idx + 2] = width / 2.f;
 	vertices[idx + 3] = r;
 	vertices[idx + 4] = g;
 	vertices[idx + 5] = b;
 	vertices[idx + 6] = a;
 	vertices[idx + 7] = x2;
 	vertices[idx + 8] = y2;
-	vertices[idx + 9] = width;
+	vertices[idx + 9] = width / 2.f;
 	vertices[idx + 10] = r;
 	vertices[idx + 11] = g;
 	vertices[idx + 12] = b;

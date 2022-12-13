@@ -170,6 +170,7 @@ States::States()
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+		rasterizerDesc.DepthClipEnable = TRUE;
 		rasterizerDesc.DepthBias = 16;
 		rasterizerDesc.SlopeScaledDepthBias = 4.f;
 
@@ -181,6 +182,7 @@ States::States()
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_BACK;
+		rasterizerDesc.DepthClipEnable = TRUE;
 
 		Renderer::device->CreateRasterizerState(&rasterizerDesc, &rasterCullBack);
 	}
@@ -190,6 +192,7 @@ States::States()
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+		rasterizerDesc.DepthClipEnable = TRUE;
 
 		Renderer::device->CreateRasterizerState(&rasterizerDesc, &rasterCullFront);
 	}
@@ -199,7 +202,8 @@ States::States()
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
-		
+		rasterizerDesc.DepthClipEnable = TRUE;
+
 		Renderer::device->CreateRasterizerState(&rasterizerDesc, &rasterCullNone);
 	}
 
@@ -208,6 +212,7 @@ States::States()
 		D3D11_RASTERIZER_DESC2 rasterizerDesc = {};
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.DepthClipEnable = TRUE;
 		rasterizerDesc.ForcedSampleCount = 8;
 		rasterizerDesc.ConservativeRaster = D3D11_CONSERVATIVE_RASTERIZATION_MODE_ON;
 
