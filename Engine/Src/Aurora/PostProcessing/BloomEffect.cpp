@@ -27,7 +27,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 			{0.f,1.465619079056f, 3.420335624271f, 5.f}
 		};
 
-		const int iterations[blurSteps] = { 2,2,3,3,4 };
+		const unsigned int iterations[blurSteps] = { 2,2,3,3,4 };
 
 		for (unsigned int i = 0; i < blurSteps; i++)
 		{
@@ -41,7 +41,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 				float weight[4];
 				float offset[4];
 				DirectX::XMFLOAT2 texelSize;
-				int iteration;
+				unsigned int iteration;
 				float v0;
 			}blurParam{};
 

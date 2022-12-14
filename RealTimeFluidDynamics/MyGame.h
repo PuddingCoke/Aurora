@@ -25,31 +25,8 @@ public:
 		float splatForce = 6000.f;//施加速度的强度
 		const unsigned int pressureIteraion = 50;//雅可比迭代次数 这个值越高物理模拟越不容易出错 NVIDIA的文章有提到通常20-50次就够了
 		const unsigned int colorRes = Graphics::getHeight();//颜色模拟分辨率
-		const unsigned int simRes = Graphics::getHeight() / 3;//物理模拟分辨率
+		const unsigned int simRes = Graphics::getHeight() / 2;//物理模拟分辨率
 	}config;
-
-	struct SplatPoint
-	{
-		float texCoordX = 0;
-		float texCoordY = 0;
-		float prevTexCoordX = 0;
-		float prevTexCoordY = 0;
-		float deltaX = 0;
-		float deltaY = 0;
-		bool moved = false;
-		float r = 30.f;
-		float g = 0.f;
-		float b = 300.f;
-
-		void makeColorRandom()
-		{
-			const Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
-			r = c.r * 0.15f;
-			g = c.g * 0.15f;
-			b = c.b * 0.15f;
-		}
-
-	}splatPoint;
 
 	struct SimulationDelta
 	{
@@ -171,39 +148,36 @@ public:
 			simulationDeltaBuffer = new Buffer(sizeof(SimulationDelta), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &simulationDelta, D3D11_CPU_ACCESS_WRITE);
 		}
 
-		Mouse::addLeftDownEvent([this]() {
-			updatePointDownData(Mouse::getX(), Graphics::getHeight() - Mouse::getY());
+		Mouse::addLeftDownEvent([this]()
+			{
+				simulationDelta.pos = { (float)Mouse::getX() / Graphics::getWidth(), (float)(Graphics::getHeight() - Mouse::getY()) / Graphics::getHeight() };
+				Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
+				c.r *= 0.15f;
+				c.g *= 0.15f;
+				c.b *= 0.15f;
+				simulationDelta.splatColor = { c.r,c.g,c.b,1.f };
 			});
 
 		Mouse::addMoveEvent([this]() {
 			if (Mouse::getLeftDown())
 			{
-				updatePointMoveData(Mouse::getX(), Graphics::getHeight() - Mouse::getY());
+				const DirectX::XMFLOAT2 pos =
+				{
+					(float)Mouse::getX() / Graphics::getWidth(),
+					(float)(Graphics::getHeight() - Mouse::getY()) / Graphics::getHeight()
+				};
+
+				const DirectX::XMFLOAT2 posDelta =
+				{
+					(pos.x - simulationDelta.pos.x)* config.splatForce,
+					((pos.y - simulationDelta.pos.y) / Graphics::getAspectRatio())* config.splatForce
+				};
+
+				simulationDelta.pos = pos;
+				simulationDelta.posDelta = posDelta;
+				splat();
 			}
 			});
-	}
-
-	void updatePointDownData(const float& posX, const float& posY)
-	{
-		splatPoint.moved = false;
-		splatPoint.texCoordX = posX / Graphics::getWidth();
-		splatPoint.texCoordY = posY / Graphics::getHeight();
-		splatPoint.prevTexCoordX = splatPoint.texCoordX;
-		splatPoint.prevTexCoordY = splatPoint.texCoordY;
-		splatPoint.deltaX = 0;
-		splatPoint.deltaY = 0;
-		splatPoint.makeColorRandom();
-	}
-
-	void updatePointMoveData(const float& posX, const float& posY)
-	{
-		splatPoint.prevTexCoordX = splatPoint.texCoordX;
-		splatPoint.prevTexCoordY = splatPoint.texCoordY;
-		splatPoint.texCoordX = posX / Graphics::getWidth();
-		splatPoint.texCoordY = posY / Graphics::getHeight();
-		splatPoint.deltaX = splatPoint.texCoordX - splatPoint.prevTexCoordX;
-		splatPoint.deltaY = (splatPoint.texCoordY - splatPoint.prevTexCoordY) / Graphics::getAspectRatio();
-		splatPoint.moved = fabsf(splatPoint.deltaX) > 0 || fabsf(splatPoint.deltaY) > 0;
 	}
 
 	~MyGame()
@@ -233,16 +207,16 @@ public:
 	{
 		if (colorUpdateTimer.update(dt * config.colorChangeSpeed))
 		{
-			splatPoint.makeColorRandom();
+			Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
+			c.r *= 0.15f;
+			c.g *= 0.15f;
+			c.b *= 0.15f;
+			simulationDelta.splatColor = { c.r,c.g,c.b,1.f };
 		}
 	}
 
-	void splat(const float& x, const float& y, const float& dx, const float& dy, const float& r, const float& g, const float& b)
+	void splat()
 	{
-		simulationDelta.pos = DirectX::XMFLOAT2(x, y);
-		simulationDelta.posDelta = DirectX::XMFLOAT2(dx, dy);
-		simulationDelta.splatColor = DirectX::XMFLOAT4(r, g, b, 1.0);
-
 		memcpy(simulationDeltaBuffer->map(0).pData, &simulationDelta, sizeof(SimulationDelta));
 		simulationDeltaBuffer->unmap(0);
 
@@ -267,17 +241,6 @@ public:
 		RenderAPI::get()->PSSetSRV({ colorTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 		colorTex->swap();
-	}
-
-	void applyInput()
-	{
-		if (splatPoint.moved)
-		{
-			splatPoint.moved = false;
-			const float dx = splatPoint.deltaX * config.splatForce;
-			const float dy = splatPoint.deltaY * config.splatForce;
-			splat(splatPoint.texCoordX, splatPoint.texCoordY, dx, dy, splatPoint.r, splatPoint.g, splatPoint.b);
-		}
 	}
 
 	void step()
@@ -382,7 +345,6 @@ public:
 
 		//物理模拟
 		updateColor(dt);
-		applyInput();
 		step();
 	}
 

@@ -164,7 +164,6 @@ public:
 		RenderAPI::get()->DSSetShader(nullptr);
 
 		RenderAPI::get()->Draw(skyDomeSliceCount * (skyDomeSliceCount + 2) * 2, 0);
-		RenderAPI::get()->UnbindVertexBuffer();
 
 		RenderAPI::get()->RSSetState(States::rasterCullBack);
 

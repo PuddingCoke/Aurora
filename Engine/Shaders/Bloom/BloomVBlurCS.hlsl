@@ -11,7 +11,7 @@ struct BlurParams
     float weight[4];
     float offset[4];
     float2 texelSize;
-    int iteration;
+    uint iteration;
     float v0;
 };
 
@@ -32,7 +32,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
     float3 result = sourceTexture.SampleLevel(linearSampler, texCoord, 0.0).rgb * param.weight[0];
     
     [unroll]
-    for (int i = 1; i < param.iteration; ++i)
+    for (uint i = 1; i < param.iteration; ++i)
     {
         result += sourceTexture.SampleLevel(linearSampler, texCoord + float2(0.0, param.texelSize.y * param.offset[i]), 0.0).rgb * param.weight[i];
         result += sourceTexture.SampleLevel(linearSampler, texCoord - float2(0.0, param.texelSize.y * param.offset[i]), 0.0).rgb * param.weight[i];

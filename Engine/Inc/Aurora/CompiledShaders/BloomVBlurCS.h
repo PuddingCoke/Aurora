@@ -24,7 +24,7 @@
 //       float weight[4];               // Offset:    0
 //       float offset[4];               // Offset:   16
 //       float2 texelSize;              // Offset:   32
-//       int iteration;                 // Offset:   40
+//       uint iteration;                // Offset:   40
 //       float v0;                      // Offset:   44
 //
 //   } $Element;                        // Offset:    0 Size:    48
@@ -73,7 +73,7 @@ add r3.xy, r3.xyxx, l(0.500000, 0.500000, 0.000000, 0.000000)
 mul r3.zw, r2.xxxy, r3.xxxy
 sample_l_indexable(texture2d)(float,float,float,float) r4.xyz, r3.zwzz, t0.xyzw, s0, l(0.000000)
 mul r4.xyz, r0.xxxx, r4.xyzx
-ilt r0.x, l(1), r2.z
+ult r0.x, l(1), r2.z
 if_nz r0.x
   mul r5.y, r1.x, r2.y
   mov r5.x, l(0)
@@ -87,7 +87,7 @@ if_nz r0.x
 else 
   mov r0.x, l(1)
 endif 
-ilt r0.y, r0.x, r2.z
+ult r0.y, r0.x, r2.z
 if_nz r0.y
   mul r1.y, r1.y, r2.y
   mov r1.x, l(0)
@@ -99,7 +99,7 @@ if_nz r0.y
   mad r4.xyz, r1.xywx, r0.zzzz, r5.xyzx
   mov r0.x, l(3)
 endif 
-ilt r0.x, r0.x, r2.z
+ult r0.x, r0.x, r2.z
 and r0.x, r0.x, r0.y
 if_nz r0.x
   mul r0.y, r1.z, r2.y
@@ -120,10 +120,10 @@ ret
 
 const BYTE g_BloomVBlurCSBytes[] =
 {
-     68,  88,  66,  67, 207,  55, 
-    235, 150,  35,  59,  85,  82, 
-    250, 117,  89, 245,  87, 244, 
-    211, 208,   1,   0,   0,   0, 
+     68,  88,  66,  67, 102, 199, 
+     16, 236, 135, 203,  12, 155, 
+     72, 130,  77, 216, 119,  78, 
+      2,  65,   1,   0,   0,   0, 
      64,  11,   0,   0,   5,   0, 
       0,   0,  52,   0,   0,   0, 
      40,   4,   0,   0,  56,   4, 
@@ -261,8 +261,8 @@ const BYTE g_BloomVBlurCSBytes[] =
       0,   0,   0,   0, 218,   2, 
       0,   0, 105, 116, 101, 114, 
      97, 116, 105, 111, 110,   0, 
-    105, 110, 116,   0, 171, 171, 
-      0,   0,   2,   0,   1,   0, 
+    100, 119, 111, 114, 100,   0, 
+      0,   0,  19,   0,   1,   0, 
       1,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
@@ -373,7 +373,7 @@ const BYTE g_BloomVBlurCSBytes[] =
       4,   0,   0,   0,   6,   0, 
      16,   0,   0,   0,   0,   0, 
      70,   2,  16,   0,   4,   0, 
-      0,   0,  34,   0,   0,   7, 
+      0,   0,  79,   0,   0,   7, 
      18,   0,  16,   0,   0,   0, 
       0,   0,   1,  64,   0,   0, 
       1,   0,   0,   0,  42,   0, 
@@ -438,7 +438,7 @@ const BYTE g_BloomVBlurCSBytes[] =
      16,   0,   0,   0,   0,   0, 
       1,  64,   0,   0,   1,   0, 
       0,   0,  21,   0,   0,   1, 
-     34,   0,   0,   7,  34,   0, 
+     79,   0,   0,   7,  34,   0, 
      16,   0,   0,   0,   0,   0, 
      10,   0,  16,   0,   0,   0, 
       0,   0,  42,   0,  16,   0, 
@@ -498,7 +498,7 @@ const BYTE g_BloomVBlurCSBytes[] =
       0,   5,  18,   0,  16,   0, 
       0,   0,   0,   0,   1,  64, 
       0,   0,   3,   0,   0,   0, 
-     21,   0,   0,   1,  34,   0, 
+     21,   0,   0,   1,  79,   0, 
       0,   7,  18,   0,  16,   0, 
       0,   0,   0,   0,  10,   0, 
      16,   0,   0,   0,   0,   0, 
@@ -578,8 +578,8 @@ const BYTE g_BloomVBlurCSBytes[] =
       0,   0,  50,   0,   0,   0, 
       7,   0,   0,   0,   0,   0, 
       0,   0,   1,   0,   0,   0, 
-     19,   0,   0,   0,   3,   0, 
-      0,   0,   1,   0,   0,   0, 
+     19,   0,   0,   0,   0,   0, 
+      0,   0,   4,   0,   0,   0, 
       2,   0,   0,   0,   3,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
