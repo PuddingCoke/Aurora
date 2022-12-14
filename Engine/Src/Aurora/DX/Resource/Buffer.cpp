@@ -11,7 +11,7 @@ ID3D11Buffer* Buffer::getBuffer() const
 	return buffer.Get();
 }
 
-void Buffer::updateSubresource(const void* const data, const size_t& size, const unsigned int& subresource) const
+void Buffer::updateSubresource(const void* const data, const unsigned int& subresource) const
 {
 	Renderer::getContext()->UpdateSubresource(buffer.Get(), subresource, nullptr, data, 0, 0);
 }

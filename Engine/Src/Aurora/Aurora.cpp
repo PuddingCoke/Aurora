@@ -60,11 +60,11 @@ int Aurora::iniEngine(const Configuration& config)
 
 		Renderer::device->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
 
-		RenderAPI::instance = new RenderAPI(screenWidth, screenHeight, Graphics::instance->msaaLevel, encodeTexture.Get());
+		RenderAPI::instance = new RenderAPI(Graphics::instance->msaaLevel, encodeTexture.Get());
 	}
 	else
 	{
-		RenderAPI::instance = new RenderAPI(screenWidth, screenHeight, Graphics::instance->msaaLevel, Renderer::instance->backBuffer.Get());
+		RenderAPI::instance = new RenderAPI(Graphics::instance->msaaLevel, Renderer::instance->backBuffer.Get());
 	}
 
 	TextureCube::iniShader();
@@ -262,20 +262,16 @@ LRESULT Aurora::WallpaperProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	return 0;
 }
 
-HRESULT Aurora::iniWindow(const HINSTANCE& hInstance,const std::wstring& title, const UINT& width, const UINT& height)
+HRESULT Aurora::iniWindow(const HINSTANCE& hInstance, const std::wstring& title, const UINT& width, const UINT& height)
 {
 	WNDCLASSEX wcex = {};
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
-
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-
 	wcex.hIcon = LoadIcon(0, IDI_APPLICATION);
 	wcex.hIconSm = LoadIcon(0, IDI_APPLICATION);
-
 	wcex.lpszClassName = L"MyWindowClass";
-
 	wcex.hInstance = hInstance;
 
 	LRESULT(*wndProc)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = nullptr;
@@ -317,7 +313,7 @@ HRESULT Aurora::iniWindow(const HINSTANCE& hInstance,const std::wstring& title, 
 
 	RegisterClassEx(&wcex);
 
-	RECT rect = { 0,0,width,height };
+	RECT rect = { 0,0,(LONG)width,(LONG)height };
 
 	AdjustWindowRect(&rect, wndStyle, false);
 
@@ -427,7 +423,7 @@ void Aurora::allocateConsole()
 }
 
 Aurora::Aurora() :
-	hwnd(0), game(nullptr)
+	hwnd(0), game(nullptr), enableDebug(false)
 {
 
 }

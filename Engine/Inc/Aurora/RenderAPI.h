@@ -146,7 +146,7 @@ private:
 
 	static RenderAPI* instance;
 
-	RenderAPI(const unsigned int& width, const unsigned int& height, const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture);
+	RenderAPI(const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture);
 
 	~RenderAPI();
 

@@ -8,7 +8,7 @@ Shader* RenderAPI::skyboxVS;
 Shader* RenderAPI::shadowVS;
 Shader* RenderAPI::randNoiseCS;
 
-RenderAPI::RenderAPI(const unsigned int& width, const unsigned int& height, const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture)
+RenderAPI::RenderAPI(const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture)
 {
 	if (msaaLevel == 1)
 	{

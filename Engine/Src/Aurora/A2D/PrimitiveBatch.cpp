@@ -63,7 +63,6 @@ PrimitiveBatch* PrimitiveBatch::create()
 	if (instance)
 	{
 		throw "[class PrimitiveBatch] Already have an instance!";
-		return instance;
 	}
 
 	instance = new PrimitiveBatch();

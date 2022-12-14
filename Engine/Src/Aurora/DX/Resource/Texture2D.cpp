@@ -10,7 +10,7 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 
 	for (char& c : fileExtension)
 	{
-		c = std::tolower(c);
+		c = (char)std::tolower(c);
 	}
 
 	if (fileExtension == "jpg" || fileExtension == "jpeg" || fileExtension == "png")

@@ -9,7 +9,6 @@ SpriteBatch* SpriteBatch::create()
 	if (instance)
 	{
 		throw "[class SpriteBatch] already have an instance!";
-		return instance;
 	}
 
 	instance = new SpriteBatch();

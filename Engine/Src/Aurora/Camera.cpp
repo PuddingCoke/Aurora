@@ -43,7 +43,7 @@ void Camera::setProj(const DirectX::XMMATRIX& proj)
 {
 	instance->projMatrix = proj;
 	const DirectX::XMMATRIX projTrans = DirectX::XMMatrixTranspose(proj);
-	instance->projBuffer->updateSubresource(&projTrans, sizeof(DirectX::XMMATRIX), 0);
+	instance->projBuffer->updateSubresource(&projTrans, 0);
 }
 
 void Camera::setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar)

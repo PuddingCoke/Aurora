@@ -39,7 +39,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = textures[0]->getFormat();
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-		srvDesc.TextureCube.MipLevels = -1;
+		srvDesc.TextureCube.MipLevels = 1;
 		srvDesc.TextureCube.MostDetailedMip = 0;
 
 		createSRV(cubeTexture.Get(), srvDesc);
