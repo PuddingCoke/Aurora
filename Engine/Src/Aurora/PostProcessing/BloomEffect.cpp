@@ -112,11 +112,6 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
 		RenderAPI::get()->CSSetSRV({ blurParamBuffer[blurSteps - 2 - i] }, 1);
 
-		RenderAPI::fullScreenPS->use();
-		RenderAPI::get()->OMSetRTV({ rcTextures[(blurSteps - 2 - i) * 2] }, nullptr);
-		RenderAPI::get()->PSSetSRV({ rcTextures[(blurSteps - 1 - i) * 2] }, 0);
-		RenderAPI::get()->DrawQuad();
-
 		bloomHBlur->use();
 		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
 		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
@@ -126,6 +121,11 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
 		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
 		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
+
+		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->OMSetRTV({ rcTextures[(blurSteps - 2 - i) * 2] }, nullptr);
+		RenderAPI::get()->PSSetSRV({ rcTextures[(blurSteps - 1 - i) * 2] }, 0);
+		RenderAPI::get()->DrawQuad();
 	}
 
 	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);

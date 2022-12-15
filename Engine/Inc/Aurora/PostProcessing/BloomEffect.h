@@ -21,6 +21,9 @@
 //https://www.intel.com/content/www/us/en/developer/articles/technical/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms.html
 //https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
 
+//首先根据Threshold剔除非明亮像素（如果采用PBR着色模型的话Threshold应该为0）
+//然后进行降采样（Kawase Blur）、升采样（Gaussian Blur）
+//最后根据Exposure还有Gamma来校色
 class BloomEffect :public EffectBase
 {
 public:
@@ -29,6 +32,8 @@ public:
 	static constexpr unsigned int blurSteps = 5;
 
 	//随着分辨率的降低模糊半径逐渐增大
+	//使用优化后的高斯模糊算法，Kernel大小分别为
+	//5x5 9x9 13x13 17x17 21x21
 	static constexpr unsigned int iteration[blurSteps] = { 2,3,4,5,6 };
 
 	static constexpr DirectX::XMUINT2 workGroupSize = { 60,16 };
