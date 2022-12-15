@@ -22,8 +22,6 @@ public:
 
 	static const float& getSTime();
 
-	static float getFPS();
-
 	static void setRecordConfig(const unsigned int& frameToEncode, const unsigned int& frameRate);
 
 	static const int& getWidth();
@@ -61,12 +59,6 @@ private:
 		unsigned int uintSeed = 0;
 		float floatSeed = 0;
 	} deltaTime;
-
-	struct FPSCalculator
-	{
-		float frameTime[20];
-		int frameTimeIndex;
-	} fpsCalculator;
 
 	const int width;
 

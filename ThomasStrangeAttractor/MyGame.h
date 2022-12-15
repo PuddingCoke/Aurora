@@ -33,10 +33,6 @@ public:
 
 	bool rotating = true;
 
-	float exposure;
-
-	float gamma;
-
 	struct SimulationParam
 	{
 		float factor;
@@ -53,11 +49,7 @@ public:
 	{
 		camera.registerEvent();
 
-		gamma = bloomEffect.getGamma();
-		exposure = bloomEffect.getExposure();
-
 		bloomEffect.setThreshold(0);
-
 		bloomEffect.applyChange();
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
@@ -81,9 +73,8 @@ public:
 
 	void imGUICall() override
 	{
+		bloomEffect.imGUIBloomEffectModifier();
 		ImGui::SliderFloat("Dissipative Factor", &param.factor, 0.f, 0.2f);
-		ImGui::SliderFloat("Gamma", &gamma, 0.f, 2.f);
-		ImGui::SliderFloat("Exposure", &exposure, 0.f, 2.f);
 	}
 
 	void update(const float& dt) override
@@ -91,16 +82,11 @@ public:
 		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
 		simulationBuffer->unmap(0);
 
-		bloomEffect.setGamma(gamma);
-		bloomEffect.setExposure(exposure);
-		bloomEffect.applyChange();
-
 		if (rotating)
 		{
+			camera.applyInput(dt);
 			camera.rotateX(dt);
 		}
-
-		camera.applyInput(dt);
 
 		RenderAPI::get()->CSSetConstantBuffer({ simulationBuffer }, 1);
 

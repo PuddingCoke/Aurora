@@ -63,10 +63,6 @@ public:
 
 	HBAOEffect hbaoEffect;
 
-	float exposure;
-
-	float gamma;
-
 	MyGame() :
 		camera({ 0,10,0 }, { 1,0,0 }, { 0,1,0 }, 10),
 		depthView(new ShadowMap(Graphics::getWidth(), Graphics::getHeight())),
@@ -90,9 +86,8 @@ public:
 		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
 		screenSpaceReflection(new Shader("SSR.hlsl", ShaderType::Pixel))
 	{
-		exposure = bloomEffect.getExposure();
-		gamma = bloomEffect.getGamma();
-		bloomEffect.setIntensity(0.7f);
+		bloomEffect.setThreshold(0.f);
+		bloomEffect.setIntensity(0.6f);
 		bloomEffect.applyChange();
 
 		{
@@ -139,34 +134,14 @@ public:
 		delete reflectTexture;
 	}
 
+	void imGUICall() override
+	{
+		bloomEffect.imGUIBloomEffectModifier();
+	}
+
 	void update(const float& dt) override
 	{
 		camera.applyInput(dt);
-
-		if (Keyboard::getKeyDown(Keyboard::Z))
-		{
-			exposure += 0.01f;
-			bloomEffect.setExposure(exposure);
-			bloomEffect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::X))
-		{
-			exposure -= 0.01f;
-			bloomEffect.setExposure(exposure);
-			bloomEffect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::N))
-		{
-			gamma += 0.01f;
-			bloomEffect.setGamma(gamma);
-			bloomEffect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::M))
-		{
-			gamma -= 0.01f;
-			bloomEffect.setGamma(gamma);
-			bloomEffect.applyChange();
-		}
 	}
 
 	void render()
@@ -201,7 +176,7 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
-		reflectTexture->clearRTV(DirectX::Colors::Black);
+		/*reflectTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ reflectTexture }, nullptr);
 		RenderAPI::get()->OMSetBlendState(nullptr);
 
@@ -212,9 +187,9 @@ public:
 		RenderAPI::fullScreenVS->use();
 		screenSpaceReflection->use();
 
-		RenderAPI::get()->DrawQuad();
+		RenderAPI::get()->DrawQuad();*/
 
-		ShaderResourceView* bloomSRV = bloomEffect.process(reflectTexture);
+		ShaderResourceView* bloomSRV = bloomEffect.process(originTexture);
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 

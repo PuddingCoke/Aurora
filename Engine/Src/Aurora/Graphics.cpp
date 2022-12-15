@@ -17,22 +17,6 @@ const float& Graphics::getSTime()
 	return instance->deltaTime.sTime;
 }
 
-float Graphics::getFPS()
-{
-	instance->fpsCalculator.frameTime[instance->fpsCalculator.frameTimeIndex] = instance->deltaTime.deltaTime;
-
-	instance->fpsCalculator.frameTimeIndex = (instance->fpsCalculator.frameTimeIndex + 1) % 20;
-
-	float sumTime = 0;
-
-	for (int i = 0; i < 20; i++)
-	{
-		sumTime += instance->fpsCalculator.frameTime[i];
-	}
-
-	return 20.f / sumTime;
-}
-
 void Graphics::setRecordConfig(const unsigned int& frameToEncode, const unsigned int& frameRate)
 {
 	instance->recordConfig.frameToEncode = frameToEncode;
@@ -60,7 +44,7 @@ const unsigned int& Graphics::getMSAALevel()
 }
 
 Graphics::Graphics(const int& width, const int& height, const unsigned int& msaaLevel) :
-	width(width), height(height), msaaLevel(msaaLevel), aspectRatio((float)width / (float)height), fpsCalculator{}, deltaTime{ 0,0,0,0 }, recordConfig{ 1800,60 },
+	width(width), height(height), msaaLevel(msaaLevel), aspectRatio((float)width / (float)height), deltaTime{ 0,0,0,0 }, recordConfig{ 1800,60 },
 	deltaTimeBuffer(new Buffer(sizeof(DeltaTime),D3D11_BIND_CONSTANT_BUFFER,D3D11_USAGE_DYNAMIC,nullptr,D3D11_CPU_ACCESS_WRITE))
 {
 	std::cout << "[class Graphics] resolution:" << width << " " << height << "\n";

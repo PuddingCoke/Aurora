@@ -8,11 +8,11 @@ cbuffer BloomParam : register(b1)
 
 struct BlurParams
 {
-    float weight[4];
-    float offset[4];
+    float weight[8];
+    float offset[8];
     float2 texelSize;
     uint iteration;
-    float v0;
+    float sigma;
 };
 
 Texture2D<float4> sourceTexture : register(t0);

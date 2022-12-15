@@ -18,6 +18,8 @@ namespace Math
 
 	float clamp(const float& value, const float& min, const float& max);
 
+	float gauss(const float& sigma, const float& x);
+
 }
 
 #endif // !_MATH_H_

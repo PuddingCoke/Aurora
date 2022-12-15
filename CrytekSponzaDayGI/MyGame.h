@@ -180,6 +180,11 @@ public:
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 	}
 
+	void imGUICall() override
+	{
+		bloomEffect.imGUIBloomEffectModifier();
+	}
+
 	void update(const float& dt) override
 	{
 		camera.applyInput(dt);

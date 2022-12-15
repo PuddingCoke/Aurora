@@ -12,6 +12,9 @@
 #include<Aurora/CompiledShaders/BloomDownSamplePS.h>
 
 #include<Aurora/StructuredBuffer.h>
+#include<Aurora/Math.h>
+
+#include<ImGUI/imgui.h>
 
 // 关于如何实现的
 //https://de45xmedrsdbp.cloudfront.net/Resources/files/The_Technology_Behind_the_Elemental_Demo_16x9-1248544805.pdf p60
@@ -24,6 +27,9 @@ public:
 
 	//这个参数是写死的
 	static constexpr unsigned int blurSteps = 5;
+
+	//随着分辨率的降低模糊半径逐渐增大
+	static constexpr unsigned int iteration[blurSteps] = { 2,3,4,5,6 };
 
 	static constexpr DirectX::XMUINT2 workGroupSize = { 60,16 };
 
@@ -41,6 +47,9 @@ public:
 
 	void setIntensity(const float& intensity);
 
+	//在class Game的imGUICall中调用此函数
+	void imGUIBloomEffectModifier();
+
 	const float& getExposure() const;
 
 	const float& getGamma() const;
@@ -55,6 +64,9 @@ public:
 private:
 
 	void compileShaders() override;
+
+	//修改模糊曲线
+	void updateCurve(const unsigned int& index);
 
 	Shader* bloomExtract;
 
@@ -79,11 +91,6 @@ private:
 
 	const unsigned int bloomHeight;
 
-	//float weight[4]
-	//float offset[4]
-	//float2 texelSize
-	//int iteration
-	//float v0
 	StructuredBuffer* blurParamBuffer[blurSteps];
 
 	Buffer* bloomParamBuffer;
@@ -94,7 +101,16 @@ private:
 		float gamma;
 		float threshold;
 		float intensity;
-	} bloomParam;
+	}bloomParam;
+
+	struct BlurParam
+	{
+		float weight[8];
+		float offset[8];
+		DirectX::XMFLOAT2 texelSize;
+		unsigned int iteration;
+		float sigma;
+	}blurParam[blurSteps]{};
 
 };
 

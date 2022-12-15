@@ -9,25 +9,8 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 
 	{
 
-		const float weights[blurSteps][4] =
-		{
-			{0.72534960073f, 0.138900963246f,0.f,0.f},
-			{0.474931286192f, 0.2617225420475f,0.f,0.f},
-			{0.346906330784f, 0.3141537038687f, 0.0115467995181f,0.f},
-			{0.209969621264f, 0.30346840141f, 0.0832604581063f,0.f},
-			{0.120891600122f, 0.21607529918f, 0.1379618423591f, 0.0383614182091f}
-		};
-
-		const float offsets[blurSteps][4] =
-		{
-			{0.f,1.f,0.f,0.f},
-			{0.f,1.10660957707432f,0.f,0.f},
-			{0.f,1.243383984400f, 3.f,0.f},
-			{0.f,1.397591074854f, 3.274974375335f,0.f},
-			{0.f,1.465619079056f, 3.420335624271f, 5.f}
-		};
-
-		const unsigned int iterations[blurSteps] = { 2,2,3,3,4 };
+		//const float sigma[blurSteps] = { 0.55f,0.84f,1.15f,1.9f,3.3f };
+		const float sigma[blurSteps] = { 0.44f,0.57f,0.8f,1.32f,3.3f };
 
 		for (unsigned int i = 0; i < blurSteps; i++)
 		{
@@ -36,25 +19,13 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 			rcTextures[i * 2u] = new RCTexture(resolutions[i].x, resolutions[i].y, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black);
 			rcTextures[i * 2u + 1u] = new RCTexture(resolutions[i].x, resolutions[i].y, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black);
 
-			struct BlurParam
-			{
-				float weight[4];
-				float offset[4];
-				DirectX::XMFLOAT2 texelSize;
-				unsigned int iteration;
-				float v0;
-			}blurParam{};
+			blurParam[i].texelSize = DirectX::XMFLOAT2(1.f / resolutions[i].x, 1.f / resolutions[i].y);
+			blurParam[i].iteration = iteration[i];
+			blurParam[i].sigma = sigma[i];
 
-			for (int j = 0; j < 4; j++)
-			{
-				blurParam.weight[j] = weights[i][j];
-				blurParam.offset[j] = offsets[i][j];
-			}
+			blurParamBuffer[i] = new StructuredBuffer(sizeof(BlurParam), sizeof(BlurParam), D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
 
-			blurParam.texelSize = DirectX::XMFLOAT2(1.f / resolutions[i].x, 1.f / resolutions[i].y);
-			blurParam.iteration = iterations[i];
-
-			blurParamBuffer[i] = new StructuredBuffer(sizeof(BlurParam), sizeof(BlurParam), D3D11_USAGE_IMMUTABLE, &blurParam, 0);
+			updateCurve(i);
 		}
 	}
 
@@ -124,7 +95,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 
-	RenderAPI::get()->CSSetSRV({blurParamBuffer[blurSteps - 1]}, 1);
+	RenderAPI::get()->CSSetSRV({ blurParamBuffer[blurSteps - 1] }, 1);
 
 	bloomHBlur->use();
 	RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
@@ -189,6 +160,45 @@ void BloomEffect::setThreshold(const float& threshold)
 void BloomEffect::setIntensity(const float& intensity)
 {
 	bloomParam.intensity = intensity;
+}
+
+void BloomEffect::imGUIBloomEffectModifier()
+{
+	ImGui::Text("BloomEffect Modifier");
+	ImGui::SliderFloat("Gaussain Curve0", &blurParam[0].sigma, 0.4f, 4.f);
+	ImGui::SliderFloat("Gaussain Curve1", &blurParam[1].sigma, 0.4f, 4.f);
+	ImGui::SliderFloat("Gaussain Curve2", &blurParam[2].sigma, 0.4f, 4.f);
+	ImGui::SliderFloat("Gaussain Curve3", &blurParam[3].sigma, 0.4f, 4.f);
+	ImGui::SliderFloat("Gaussain Curve4", &blurParam[4].sigma, 0.4f, 4.f);
+	ImGui::SliderFloat("exposure", &bloomParam.exposure, 0.0f, 4.f);
+	ImGui::SliderFloat("gamma", &bloomParam.gamma, 0.0f, 4.f);
+	ImGui::SliderFloat("threshold", &bloomParam.threshold, 0.0f, 4.f);
+	ImGui::SliderFloat("intensity", &bloomParam.intensity, 0.0f, 4.f);
+
+
+	updateCurve(0);
+	updateCurve(1);
+	updateCurve(2);
+	updateCurve(3);
+	updateCurve(4);
+
+	applyChange();
+}
+
+void BloomEffect::updateCurve(const unsigned int& index)
+{
+	blurParam[index].weight[0] = Math::gauss(blurParam[index].sigma, 0.f);
+
+	for (unsigned int i = 1; i < (iteration[index] - 1) * 2 + 1; i += 2)
+	{
+		const float g1 = Math::gauss(blurParam[index].sigma, (float)i);
+		const float g2 = Math::gauss(blurParam[index].sigma, (float)(i + 1));
+		blurParam[index].weight[(i + 1) / 2] = g1 + g2;
+		blurParam[index].offset[(i + 1) / 2] = (g1 * i + g2 * (i + 1)) / (g1 + g2);
+	}
+
+	memcpy(blurParamBuffer[index]->map(0).pData, &blurParam[index], sizeof(BlurParam));
+	blurParamBuffer[index]->unmap(0);
 }
 
 const float& BloomEffect::getExposure() const

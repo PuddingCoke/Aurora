@@ -318,6 +318,7 @@ public:
 		ImGui::SliderFloat("Pressure dissipation speed", &simulationParam.pressureDissipationSpeed, 0.f, 1.f);
 		ImGui::SliderFloat("Curl intensity", &simulationParam.curlIntensity, 0.f, 100.f);
 		ImGui::SliderFloat("Splat radius", &simulationParam.splatRadius, 0.f, 0.1f);
+		bloomEffect.imGUIBloomEffectModifier();
 	}
 
 	void update(const float& dt) override

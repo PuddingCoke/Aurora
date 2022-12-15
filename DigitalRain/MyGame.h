@@ -125,9 +125,5 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
-		batch->begin();
-		batch->draw(font, "FPS:" + std::to_string(Graphics::getFPS()), 0, Graphics::getHeight(), 1.f, 1.f, 1.f, 1.f);
-		batch->end();
-
 	}
 };
