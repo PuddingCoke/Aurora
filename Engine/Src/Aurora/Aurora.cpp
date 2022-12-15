@@ -11,8 +11,14 @@ int Aurora::iniEngine(const Configuration& config)
 {
 	usage = config.usage;
 	enableDebug = config.enableDebug;
+	enableImGui = (config.usage == Configuration::EngineUsage::Normal && config.enableImGui);
 
 	allocateConsole();
+
+	if (enableImGui)
+	{
+		std::cout << "[class Aurora] enable ImGUI\n";
+	}
 
 	Keyboard::ini();
 
@@ -91,6 +97,14 @@ int Aurora::iniEngine(const Configuration& config)
 		break;
 	}
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(hwnd);
+	ImGui_ImplDX11_Init(Renderer::device, Renderer::context);
+
 	RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
 	RenderAPI::get()->OMSetBlendState(States::defBlendState);
@@ -147,6 +161,10 @@ void Aurora::iniGame(Game* const game)
 
 	TextureCube::releaseShader();
 
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
 	if (enableDebug)
 	{
 		std::cout << "[class Aurora] debug mode press any key to exit\n";
@@ -167,6 +185,9 @@ void Aurora::iniGame(Game* const game)
 
 LRESULT Aurora::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+		return true;
+
 	switch (uMsg)
 	{
 	case WM_PAINT:
@@ -361,13 +382,33 @@ void Aurora::runGame()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::Begin("Debug Window");
+		ImGui::Text("FrameTime %.8f", ImGui::GetIO().DeltaTime * 1000.f);
+		ImGui::Text("FrameRate %.1f", ImGui::GetIO().Framerate);
+
 		const std::chrono::steady_clock::time_point timeStart = timer.now();
 		game->update(Graphics::getDeltaTime());
 		game->render();
+
+		ImGui::End();
+		ImGui::Render();
+
+		if (enableImGui)
+		{
+			RenderAPI::get()->OMSetDefRTV(nullptr);
+			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		}
+
 		if (Graphics::instance->msaaLevel != 1)
 		{
 			Renderer::context->ResolveSubresource(Renderer::instance->backBuffer.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
+
 		Renderer::instance->swapChain->Present(1, 0);
 		const std::chrono::steady_clock::time_point timeEnd = timer.now();
 		Graphics::instance->deltaTime.deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;

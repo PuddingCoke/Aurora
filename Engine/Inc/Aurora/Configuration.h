@@ -36,8 +36,10 @@ public:
 	const unsigned int msaaLevel;
 
 	const bool enableDebug;
+
+	const bool enableImGui;
 	
-	Configuration(const HINSTANCE& hInstance, const int& width, const int& height, const std::wstring& title, const CameraType& cameraType, const unsigned int& msaaLevel = 1, const EngineUsage& usage = EngineUsage::Normal, const bool& enableDebug = false);
+	Configuration(const HINSTANCE& hInstance, const int& width, const int& height, const std::wstring& title, const CameraType& cameraType, const unsigned int& msaaLevel = 1, const EngineUsage& usage = EngineUsage::Normal, const bool& enableDebug = false, const bool& enableImGui = true);
 
 };
 

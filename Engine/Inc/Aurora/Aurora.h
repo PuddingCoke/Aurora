@@ -11,6 +11,10 @@
 #include<iostream>
 #include<windowsx.h>
 
+#include<ImGUI/imgui.h>
+#include<ImGUI/imgui_impl_win32.h>
+#include<ImGUI/imgui_impl_dx11.h>
+
 #include"Camera.h"
 #include"Graphics.h"
 #include"Configuration.h"
@@ -24,6 +28,8 @@
 
 #include"VideoEncoder/NvidiaEncoder.h"
 #include"Wallpaper/WallpaperHelper.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 class Aurora
 {
@@ -54,6 +60,8 @@ private:
 	Configuration::EngineUsage usage;
 
 	bool enableDebug;
+
+	bool enableImGui;
 
 	ComPtr<ID3D11Texture2D> encodeTexture;
 
