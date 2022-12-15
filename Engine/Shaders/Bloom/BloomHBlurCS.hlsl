@@ -15,7 +15,7 @@ struct BlurParams
     float v0;
 };
 
-Texture2D sourceTexture : register(t0);
+Texture2D<float4> sourceTexture : register(t0);
 StructuredBuffer<BlurParams> blurParams : register(t1);
 
 RWTexture2D<float4> destTexture : register(u0);

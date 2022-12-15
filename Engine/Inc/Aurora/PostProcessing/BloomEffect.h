@@ -9,6 +9,7 @@
 #include<Aurora/CompiledShaders/BloomFinalPS.h>
 #include<Aurora/CompiledShaders/BloomVBlurCS.h>
 #include<Aurora/CompiledShaders/BloomHBlurCS.h>
+#include<Aurora/CompiledShaders/BloomDownSamplePS.h>
 
 #include<Aurora/StructuredBuffer.h>
 
@@ -57,11 +58,13 @@ private:
 
 	Shader* bloomExtract;
 
-	Shader* bloomHBlurShader;
+	Shader* bloomHBlur;
 
-	Shader* bloomVBlurShader;
+	Shader* bloomVBlur;
 
 	Shader* bloomFinal;
+
+	Shader* bloomDownSample;
 
 	DirectX::XMUINT2 resolutions[blurSteps];
 
@@ -69,7 +72,7 @@ private:
 
 	RenderTexture* originTexture;
 
-	//明亮的像素会被提取到这个贴图上
+	//明亮的像素会被提取到这个材质上
 	RenderTexture* bloomTexture;
 
 	const unsigned int bloomWidth;

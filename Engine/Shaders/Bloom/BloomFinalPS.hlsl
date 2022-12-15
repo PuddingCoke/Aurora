@@ -1,4 +1,4 @@
-Texture2D tTexture : register(t0);
+Texture2D<float4> tTexture : register(t0);
 SamplerState samplerState : register(s0);
 
 cbuffer BloomParam : register(b1)

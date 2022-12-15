@@ -85,8 +85,9 @@ BloomEffect::~BloomEffect()
 	delete bloomExtract;
 	delete bloomFinal;
 
-	delete bloomHBlurShader;
-	delete bloomVBlurShader;
+	delete bloomHBlur;
+	delete bloomVBlur;
+	delete bloomDownSample;
 }
 
 ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) const
@@ -107,7 +108,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
 	RenderAPI::get()->DrawQuad();
 
-	RenderAPI::fullScreenPS->use();
+	bloomDownSample->use();
 	RenderAPI::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
 	RenderAPI::get()->OMSetRTV({ rcTextures[0] }, nullptr);
 	RenderAPI::get()->PSSetSRV({ bloomTexture }, 0);
@@ -115,62 +116,45 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		RenderAPI::get()->CSSetSRV({ blurParamBuffer[i] }, 1);
-
-		bloomHBlurShader->use();
-		RenderAPI::get()->CSSetUAV({ rcTextures[i * 2 + 1] }, 0);
-		RenderAPI::get()->CSSetSRV({ rcTextures[i * 2] }, 0);
-		RenderAPI::get()->Dispatch(rcTextures[i * 2]->getWidth() / workGroupSize.x, rcTextures[i * 2]->getHeight() / workGroupSize.y + 1, 1);
-
-		bloomVBlurShader->use();
-		RenderAPI::get()->CSSetUAV({ rcTextures[i * 2] }, 0);
-		RenderAPI::get()->CSSetSRV({ rcTextures[i * 2 + 1] }, 0);
-		RenderAPI::get()->Dispatch(rcTextures[i * 2]->getWidth() / workGroupSize.x, rcTextures[i * 2]->getHeight() / workGroupSize.y + 1, 1);
-
 		RenderAPI::get()->RSSetViewport(resolutions[i + 1].x, resolutions[i + 1].y);
-
-		RenderAPI::fullScreenPS->use();
-		RenderAPI::get()->OMSetRTV({ rcTextures[i * 2 + 2] }, nullptr);
+		RenderAPI::get()->OMSetRTV({ rcTextures[(i + 1) * 2] }, nullptr);
 		RenderAPI::get()->PSSetSRV({ rcTextures[i * 2] }, 0);
 		RenderAPI::get()->DrawQuad();
 	}
 
-	RenderAPI::get()->CSSetSRV({ blurParamBuffer[blurSteps - 1] }, 1);
-
-	for (int i = 0; i < 2; i++)
-	{
-		bloomHBlurShader->use();
-		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
-		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 1) * 2] }, 0);
-		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
-
-		bloomVBlurShader->use();
-		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2] }, 0);
-		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
-		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
-	}
-
 	RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
+
+	RenderAPI::get()->CSSetSRV({blurParamBuffer[blurSteps - 1]}, 1);
+
+	bloomHBlur->use();
+	RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
+	RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 1) * 2] }, 0);
+	RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
+
+	bloomVBlur->use();
+	RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 1) * 2] }, 0);
+	RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 1) * 2 + 1] }, 0);
+	RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 1) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 1) * 2]->getHeight() / workGroupSize.y + 1, 1);
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
 		RenderAPI::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
 		RenderAPI::get()->CSSetSRV({ blurParamBuffer[blurSteps - 2 - i] }, 1);
 
-		bloomHBlurShader->use();
-		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
-		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
-		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
-
-		bloomVBlurShader->use();
-		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
-		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
-		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
-
 		RenderAPI::fullScreenPS->use();
 		RenderAPI::get()->OMSetRTV({ rcTextures[(blurSteps - 2 - i) * 2] }, nullptr);
 		RenderAPI::get()->PSSetSRV({ rcTextures[(blurSteps - 1 - i) * 2] }, 0);
 		RenderAPI::get()->DrawQuad();
+
+		bloomHBlur->use();
+		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
+		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
+		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
+
+		bloomVBlur->use();
+		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
+		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
+		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
 	}
 
 	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
@@ -237,6 +221,7 @@ void BloomEffect::compileShaders()
 {
 	bloomExtract = new Shader(g_BloomExtractPSBytes, sizeof(g_BloomExtractPSBytes), ShaderType::Pixel);
 	bloomFinal = new Shader(g_BloomFinalPSBytes, sizeof(g_BloomFinalPSBytes), ShaderType::Pixel);
-	bloomVBlurShader = new Shader(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes), ShaderType::Compute);
-	bloomHBlurShader = new Shader(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes), ShaderType::Compute);
+	bloomVBlur = new Shader(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes), ShaderType::Compute);
+	bloomHBlur = new Shader(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes), ShaderType::Compute);
+	bloomDownSample = new Shader(g_BloomDownSamplePSBytes, sizeof(g_BloomDownSamplePSBytes), ShaderType::Pixel);
 }
