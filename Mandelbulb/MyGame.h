@@ -56,24 +56,18 @@ public:
 		delete simulationBuffer;
 	}
 
+	void imGUICall() override
+	{
+		ImGui::SliderFloat("POWER", &param.POWER, 3.f, 8.f);
+	}
+
 	void update(const float& dt) override
 	{
-		param.theta += dt;
+		/*param.theta += dt;
 		param.phi = (Math::half_pi - 0.1f) * sinf(0.15f * Graphics::getSTime());
 		param.POWER = 5.5 + 2.5f * sinf(0.25f * Graphics::getSTime());
-		param.phi = Math::clamp(param.phi, -Math::half_pi + 0.01f, Math::half_pi - 0.01f);
+		param.phi = Math::clamp(param.phi, -Math::half_pi + 0.01f, Math::half_pi - 0.01f);*/
 
-		if (Keyboard::getKeyDown(Keyboard::Q))
-		{
-			param.POWER -= dt * 5.f;
-		}
-
-		if (Keyboard::getKeyDown(Keyboard::E))
-		{
-			param.POWER += dt * 5.f;
-		}
-
-		param.POWER = Math::clamp(param.POWER, 3.f, 8.f);
 		param.radius = Math::lerp(param.radius, targetRadius, 10.f * dt);
 
 		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));

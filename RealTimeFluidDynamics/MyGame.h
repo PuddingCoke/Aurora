@@ -311,8 +311,20 @@ public:
 		colorTex->swap();
 	}
 
+	void imGUICall() override
+	{
+		ImGui::SliderFloat("Color dissipation speed", &simulationParam.colorDissipationSpeed, 0.f, 10.f);
+		ImGui::SliderFloat("Velocity dissipation speed", &simulationParam.velocityDissipationSpeed, 0.f, 1.f);
+		ImGui::SliderFloat("Pressure dissipation speed", &simulationParam.pressureDissipationSpeed, 0.f, 1.f);
+		ImGui::SliderFloat("Curl intensity", &simulationParam.curlIntensity, 0.f, 100.f);
+		ImGui::SliderFloat("Splat radius", &simulationParam.splatRadius, 0.f, 0.1f);
+	}
+
 	void update(const float& dt) override
 	{
+		memcpy(simulationParamBuffer->map(0).pData, &simulationParam, sizeof(SimulationParam));
+		simulationParamBuffer->unmap(0);
+
 		if (Keyboard::getKeyDown(Keyboard::A))
 		{
 			exposure += 0.01f;

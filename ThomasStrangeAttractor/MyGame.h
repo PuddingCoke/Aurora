@@ -79,53 +79,28 @@ public:
 		delete simulationBuffer;
 	}
 
+	void imGUICall() override
+	{
+		ImGui::SliderFloat("Dissipative Factor", &param.factor, 0.f, 0.2f);
+		ImGui::SliderFloat("Gamma", &gamma, 0.f, 2.f);
+		ImGui::SliderFloat("Exposure", &exposure, 0.f, 2.f);
+	}
+
 	void update(const float& dt) override
 	{
+		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
+		simulationBuffer->unmap(0);
+
+		bloomEffect.setGamma(gamma);
+		bloomEffect.setExposure(exposure);
+		bloomEffect.applyChange();
+
 		if (rotating)
 		{
 			camera.rotateX(dt);
 		}
 
 		camera.applyInput(dt);
-
-		if (Keyboard::getKeyDown(Keyboard::A))
-		{
-			exposure += 0.01f;
-			bloomEffect.setExposure(exposure);
-			bloomEffect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::S))
-		{
-			exposure -= 0.01f;
-			bloomEffect.setExposure(exposure);
-			bloomEffect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::H))
-		{
-			gamma += 0.01f;
-			bloomEffect.setGamma(gamma);
-			bloomEffect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::J))
-		{
-			gamma -= 0.01f;
-			bloomEffect.setGamma(gamma);
-			bloomEffect.applyChange();
-		}
-
-		if (Keyboard::getKeyDown(Keyboard::Q))
-		{
-			param.factor += dt * 0.5f;
-			memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
-			simulationBuffer->unmap(0);
-		}
-
-		if (Keyboard::getKeyDown(Keyboard::E))
-		{
-			param.factor -= dt * 0.5f;
-			memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
-			simulationBuffer->unmap(0);
-		}
 
 		RenderAPI::get()->CSSetConstantBuffer({ simulationBuffer }, 1);
 

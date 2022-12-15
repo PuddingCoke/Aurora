@@ -393,6 +393,7 @@ void Aurora::runGame()
 
 		const std::chrono::steady_clock::time_point timeStart = timer.now();
 		game->update(Graphics::getDeltaTime());
+		game->imGUICall();
 		game->render();
 
 		ImGui::End();
@@ -464,7 +465,7 @@ void Aurora::allocateConsole()
 }
 
 Aurora::Aurora() :
-	hwnd(0), game(nullptr), enableDebug(false)
+	hwnd(0), game(nullptr), enableDebug(false), enableImGui(false), usage(Configuration::EngineUsage::Normal)
 {
 
 }
