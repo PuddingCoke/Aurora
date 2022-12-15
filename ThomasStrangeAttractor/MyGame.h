@@ -79,6 +79,8 @@ public:
 
 	void update(const float& dt) override
 	{
+		param.factor = 0.100 + 0.01f * sinf(Graphics::getSTime());
+
 		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
 		simulationBuffer->unmap(0);
 
