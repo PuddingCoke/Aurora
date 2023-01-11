@@ -66,8 +66,8 @@ public:
 	MyGame() :
 		camera({ 0,10,0 }, { 1,0,0 }, { 0,1,0 }, 10),
 		depthView(new ShadowMap(Graphics::getWidth(), Graphics::getHeight())),
-		mainScene(new Scene("D:\\Assets\\SuperSponza\\NewSponza_Main_glTF_002.gltf")),
-		//curtainScene(new Scene("D:\\Assets\\SuperSponza\\NewSponza_Curtains_glTF.gltf")),
+		mainScene(new Scene("E:/Assets/SuperSponza/NewSponza_Main_glTF_002.gltf")),
+		//curtainScene(new Scene("E:/Assets/SuperSponza/NewSponza_Curtains_glTF.gltf")),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM)),
 		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
 		gNormal(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
@@ -82,7 +82,7 @@ public:
 		deferredFinal(new Shader("DeferredFinal.hlsl", ShaderType::Pixel)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
-		skybox(new TextureCube("D:/Assets/SpaceShip/360-Space-Panorama-III.hdr", 2048)),
+		skybox(new TextureCube("E:/Assets/SpaceShip/360-Space-Panorama-III.hdr", 2048)),
 		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
 		screenSpaceReflection(new Shader("SSR.hlsl", ShaderType::Pixel))
 	{

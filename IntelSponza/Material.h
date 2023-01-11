@@ -7,7 +7,7 @@
 #include<assimp/scene.h>
 #include<assimp/postprocess.h>
 
-const std::string materialBasePath = "D:/Assets/SuperSponza/";
+const std::string materialBasePath = "E:/Assets/SuperSponza/";
 
 class Material
 {
