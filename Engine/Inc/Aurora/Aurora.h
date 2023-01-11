@@ -24,6 +24,7 @@
 #include"Math.h"
 #include"ResManager.h"
 #include"RenderAPI.h"
+#include"Utils.h"
 #include"A3D/TextureCube.h"
 
 #include"VideoEncoder/NvidiaEncoder.h"
@@ -65,7 +66,7 @@ private:
 
 	ComPtr<ID3D11Texture2D> encodeTexture;
 
-	HRESULT iniWindow(const HINSTANCE& hInstance,const std::wstring& title, const UINT& width, const UINT& height);
+	HRESULT iniWindow(const HINSTANCE& hInstance, const std::wstring& title, const UINT& width, const UINT& height);
 
 	void runGame();
 

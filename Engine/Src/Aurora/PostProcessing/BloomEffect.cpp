@@ -3,7 +3,8 @@
 BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) :
 	EffectBase(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT), bloomWidth(width), bloomHeight(height), bloomParam{},
 	originTexture(new RenderTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
-	bloomTexture(new RenderTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black))
+	bloomTexture(new RenderTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
+	lensDirtTexture(new ResourceTexture(Utils::getRootFolder() + "bloom_dirt_mask.png"))
 {
 	compileShaders();
 
@@ -56,6 +57,8 @@ BloomEffect::~BloomEffect()
 	delete bloomExtract;
 	delete bloomFinal;
 
+	delete lensDirtTexture;
+
 	delete bloomHBlur;
 	delete bloomVBlur;
 	delete bloomDownSample;
@@ -65,7 +68,6 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 {
 	RenderAPI::get()->OMSetBlendState(nullptr);
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 	RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 	RenderAPI::get()->PSSetConstantBuffer({ bloomParamBuffer }, 1);
 	RenderAPI::get()->CSSetConstantBuffer({ bloomParamBuffer }, 1);
@@ -73,11 +75,15 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->DSSetShader(nullptr);
 	RenderAPI::fullScreenVS->use();
 
+	RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
+
 	bloomExtract->use();
 	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
 	RenderAPI::get()->OMSetRTV({ originTexture,bloomTexture }, nullptr);
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
 	RenderAPI::get()->DrawQuad();
+
+	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 	bloomDownSample->use();
 	RenderAPI::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
@@ -109,7 +115,6 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		RenderAPI::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
 		RenderAPI::get()->CSSetSRV({ blurParamBuffer[blurSteps - 2 - i] }, 1);
 
 		bloomHBlur->use();
@@ -121,6 +126,8 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->CSSetUAV({ rcTextures[(blurSteps - 2 - i) * 2] }, 0);
 		RenderAPI::get()->CSSetSRV({ rcTextures[(blurSteps - 2 - i) * 2 + 1] }, 0);
 		RenderAPI::get()->Dispatch(rcTextures[(blurSteps - 2 - i) * 2]->getWidth() / workGroupSize.x, rcTextures[(blurSteps - 2 - i) * 2]->getHeight() / workGroupSize.y + 1, 1);
+
+		RenderAPI::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
 
 		RenderAPI::fullScreenPS->use();
 		RenderAPI::get()->OMSetRTV({ rcTextures[(blurSteps - 2 - i) * 2] }, nullptr);
@@ -136,7 +143,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	bloomFinal->use();
 	outputRTV->clearRTV(DirectX::Colors::Black);
 	RenderAPI::get()->OMSetRTV({ outputRTV }, nullptr);
-	RenderAPI::get()->PSSetSRV({ originTexture }, 0);
+	RenderAPI::get()->PSSetSRV({ originTexture,lensDirtTexture }, 0);
 	RenderAPI::get()->DrawQuad();
 
 	return outputRTV;
@@ -162,7 +169,7 @@ void BloomEffect::setIntensity(const float& intensity)
 	bloomParam.intensity = intensity;
 }
 
-void BloomEffect::imGUIBloomEffectModifier()
+void BloomEffect::imGUIEffectModifier()
 {
 	ImGui::Text("BloomEffect Modifier");
 	ImGui::SliderFloat("Gaussain Curve0", &blurParam[0].sigma, 0.4f, 4.f);
@@ -170,10 +177,10 @@ void BloomEffect::imGUIBloomEffectModifier()
 	ImGui::SliderFloat("Gaussain Curve2", &blurParam[2].sigma, 0.4f, 4.f);
 	ImGui::SliderFloat("Gaussain Curve3", &blurParam[3].sigma, 0.4f, 4.f);
 	ImGui::SliderFloat("Gaussain Curve4", &blurParam[4].sigma, 0.4f, 4.f);
-	ImGui::SliderFloat("exposure", &bloomParam.exposure, 0.0f, 4.f);
-	ImGui::SliderFloat("gamma", &bloomParam.gamma, 0.0f, 4.f);
-	ImGui::SliderFloat("threshold", &bloomParam.threshold, 0.0f, 4.f);
-	ImGui::SliderFloat("intensity", &bloomParam.intensity, 0.0f, 4.f);
+	ImGui::SliderFloat("Exposure", &bloomParam.exposure, 0.0f, 4.f);
+	ImGui::SliderFloat("Gamma", &bloomParam.gamma, 0.0f, 4.f);
+	ImGui::SliderFloat("Threshold", &bloomParam.threshold, 0.0f, 4.f);
+	ImGui::SliderFloat("Intensity", &bloomParam.intensity, 0.0f, 4.f);
 
 
 	updateCurve(0);

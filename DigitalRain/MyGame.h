@@ -96,6 +96,11 @@ public:
 		}
 	}
 
+	void imGUICall() override
+	{
+		effect.imGUIEffectModifier();
+	}
+
 	void render() override
 	{
 		renderTexture->clearRTV(DirectX::Colors::Black);

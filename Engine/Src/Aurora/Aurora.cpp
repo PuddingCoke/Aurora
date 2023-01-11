@@ -20,6 +20,8 @@ int Aurora::iniEngine(const Configuration& config)
 		std::cout << "[class Aurora] enable ImGUI\n";
 	}
 
+	Utils::ini();
+
 	Keyboard::ini();
 
 	UINT screenWidth, screenHeight;

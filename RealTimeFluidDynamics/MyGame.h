@@ -82,9 +82,6 @@ public:
 	Shader* viscousDiffusionPS;
 	Shader* vorticityPS;
 
-	float exposure = 0.6f;
-	float gamma = 1.4f;
-
 	MyGame() :
 		colorUpdateTimer(1.f),
 		fluidFinalPS(new Shader("FluidFinalPS.hlsl", ShaderType::Pixel)),
@@ -101,8 +98,6 @@ public:
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
 	{
-		bloomEffect.setExposure(exposure);
-		bloomEffect.setGamma(gamma);
 		bloomEffect.setThreshold(0.f);
 		bloomEffect.applyChange();
 
@@ -203,18 +198,6 @@ public:
 		delete originTexture;
 	}
 
-	void updateColor(const float& dt)
-	{
-		if (colorUpdateTimer.update(dt * config.colorChangeSpeed))
-		{
-			Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
-			c.r *= 0.15f;
-			c.g *= 0.15f;
-			c.b *= 0.15f;
-			simulationDelta.splatColor = { c.r,c.g,c.b,1.f };
-		}
-	}
-
 	void splat()
 	{
 		memcpy(simulationDeltaBuffer->map(0).pData, &simulationDelta, sizeof(SimulationDelta));
@@ -313,12 +296,14 @@ public:
 
 	void imGUICall() override
 	{
+		ImGui::SliderFloat("Color change speed", &config.colorChangeSpeed, 0.f, 50.f);
 		ImGui::SliderFloat("Color dissipation speed", &simulationParam.colorDissipationSpeed, 0.f, 10.f);
 		ImGui::SliderFloat("Velocity dissipation speed", &simulationParam.velocityDissipationSpeed, 0.f, 1.f);
 		ImGui::SliderFloat("Pressure dissipation speed", &simulationParam.pressureDissipationSpeed, 0.f, 1.f);
 		ImGui::SliderFloat("Curl intensity", &simulationParam.curlIntensity, 0.f, 100.f);
 		ImGui::SliderFloat("Splat radius", &simulationParam.splatRadius, 0.f, 0.1f);
-		bloomEffect.imGUIBloomEffectModifier();
+		ImGui::SliderFloat("Splat force", &config.splatForce, 1000.f, 10000.f);
+		bloomEffect.imGUIEffectModifier();
 	}
 
 	void update(const float& dt) override
@@ -326,38 +311,17 @@ public:
 		memcpy(simulationParamBuffer->map(0).pData, &simulationParam, sizeof(SimulationParam));
 		simulationParamBuffer->unmap(0);
 
-		if (Keyboard::getKeyDown(Keyboard::A))
-		{
-			exposure += 0.01f;
-			bloomEffect.setExposure(exposure);
-			bloomEffect.applyChange();
-
-			std::cout << "e " << exposure << "\n";
-		}
-		else if (Keyboard::getKeyDown(Keyboard::S))
-		{
-			exposure -= 0.01f;
-			bloomEffect.setExposure(exposure);
-			bloomEffect.applyChange();
-			std::cout << "e " << exposure << "\n";
-		}
-		else if (Keyboard::getKeyDown(Keyboard::H))
-		{
-			gamma += 0.01f;
-			bloomEffect.setGamma(gamma);
-			bloomEffect.applyChange();
-			std::cout << "g " << gamma << "\n";
-		}
-		else if (Keyboard::getKeyDown(Keyboard::J))
-		{
-			gamma -= 0.01f;
-			bloomEffect.setGamma(gamma);
-			bloomEffect.applyChange();
-			std::cout << "g " << gamma << "\n";
-		}
-
 		//物理模拟
-		updateColor(dt);
+
+		if (colorUpdateTimer.update(dt * config.colorChangeSpeed))
+		{
+			Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
+			c.r *= 0.15f;
+			c.g *= 0.15f;
+			c.b *= 0.15f;
+			simulationDelta.splatColor = { c.r,c.g,c.b,1.f };
+		}
+
 		step();
 	}
 

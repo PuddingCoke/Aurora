@@ -17,7 +17,7 @@ cbuffer DeltaTimes : register(b0)
 
 cbuffer ViewMatrix : register(b1)
 {
-    matrix view;    
+    matrix view;
     float4 viewPos;
 }
 
@@ -32,13 +32,41 @@ cbuffer LightMatrix : register(b3)
     matrix lightViewProj;
 }
 
+cbuffer ProbeField : register(b4)
+{
+    float3 fieldSize;
+    float probeSpacing;
+    uint3 probeCount;
+    float padding;
+}
+
+uint ProbeLocationToProbeIndex(uint3 location)
+{
+    return location.x + location.z * probeCount.x + location.y * probeCount.x * probeCount.z;
+}
+
+//这个函数求出来的是位于左前下方的探针
+//index0 0 0 0
+//index1 1 0 0
+//index2 0 1 0
+//index3 0 0 1
+//index4 1 1 0
+//index5 1 0 1
+//index6 0 1 1
+//index7 1 1 1
+uint3 PositionToProbeLocation(float3 pos)
+{
+    pos += fieldSize / 2.0;
+    pos /= probeSpacing;
+    return uint3(pos);
+}
+
 static const float ShadowTextureRes = 4096.0;
 
 float CalShadow(float3 P)
 {
     float4 shadowPos = mul(float4(P, 1.0), lightViewProj);
-    shadowPos.xy = shadowPos.xy * 0.5 + 0.5;
-    shadowPos.y = 1.0 - shadowPos.y;
+    shadowPos.xy = shadowPos.xy * float2(0.5, -0.5) + 0.5;
     
     float shadow = 0.0;
     const float2 texelSize = 1.0 / float2(ShadowTextureRes, ShadowTextureRes);

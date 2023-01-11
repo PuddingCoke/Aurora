@@ -73,7 +73,7 @@ public:
 
 	void imGUICall() override
 	{
-		bloomEffect.imGUIBloomEffectModifier();
+		bloomEffect.imGUIEffectModifier();
 		ImGui::SliderFloat("Dissipative Factor", &param.factor, 0.f, 0.2f);
 	}
 

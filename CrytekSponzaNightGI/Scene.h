@@ -6,7 +6,7 @@
 #include"Material.h"
 #include"Model.h"
 
-const std::string assetPath = "D:/Assets/Sponza";
+const std::string assetPath = "E:/Assets/Sponza";
 
 class Scene
 {

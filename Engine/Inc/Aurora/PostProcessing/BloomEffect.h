@@ -53,7 +53,7 @@ public:
 	void setIntensity(const float& intensity);
 
 	//在class Game的imGUICall中调用此函数
-	void imGUIBloomEffectModifier();
+	void imGUIEffectModifier();
 
 	const float& getExposure() const;
 
@@ -84,6 +84,8 @@ private:
 	Shader* bloomDownSample;
 
 	DirectX::XMUINT2 resolutions[blurSteps];
+
+	ResourceTexture* lensDirtTexture;
 
 	RCTexture* rcTextures[blurSteps * 2];
 

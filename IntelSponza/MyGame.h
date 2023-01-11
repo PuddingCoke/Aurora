@@ -136,7 +136,7 @@ public:
 
 	void imGUICall() override
 	{
-		bloomEffect.imGUIBloomEffectModifier();
+		bloomEffect.imGUIEffectModifier();
 	}
 
 	void update(const float& dt) override
