@@ -15,7 +15,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     float3 hdrColor = tTexture.Sample(samplerState, texCoord).rgb;
     float3 dirtColor = lensDirtTexture.Sample(samplerState, texCoord).rgb;
     hdrColor += hdrColor * dirtColor;
-    float3 result = float3(1.0, 1.0, 1.0) - exp(-hdrColor * exposure);
-    result = pow(result, float3(1.0 / gamma, 1.0 / gamma, 1.0 / gamma));
+    float3 result = 1.0 - exp(-hdrColor * exposure);
+    result = pow(result, 1.0 / gamma);
     return float4(result, 1.0);
 }
