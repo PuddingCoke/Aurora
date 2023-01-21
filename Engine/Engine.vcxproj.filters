@@ -412,5 +412,6 @@
     <FxCompile Include="Shaders\MotionBlur\MotionBlurPS.hlsl" />
     <FxCompile Include="Shaders\Noise\RandNoiseCS.hlsl" />
     <FxCompile Include="Shaders\Bloom\BloomDownSamplePS.hlsl" />
+    <FxCompile Include="Shaders\Bloom\BloomKarisAveragePS.hlsl" />
   </ItemGroup>
 </Project>

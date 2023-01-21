@@ -10,6 +10,7 @@
 #include<Aurora/CompiledShaders/BloomVBlurCS.h>
 #include<Aurora/CompiledShaders/BloomHBlurCS.h>
 #include<Aurora/CompiledShaders/BloomDownSamplePS.h>
+#include<Aurora/CompiledShaders/BloomKarisAveragePS.h>
 
 #include<Aurora/StructuredBuffer.h>
 #include<Aurora/Math.h>
@@ -82,6 +83,8 @@ private:
 	Shader* bloomFinal;
 
 	Shader* bloomDownSample;
+
+	Shader* bloomKarisAverage;
 
 	DirectX::XMUINT2 resolutions[blurSteps];
 

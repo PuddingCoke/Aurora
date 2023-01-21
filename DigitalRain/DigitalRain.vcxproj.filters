@@ -26,5 +26,13 @@
     <ClInclude Include="Rain.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TextBatch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="SpriteGShader.hlsl" />
+    <FxCompile Include="SpritePShader.hlsl" />
+    <FxCompile Include="SpriteVShader.hlsl" />
   </ItemGroup>
 </Project>

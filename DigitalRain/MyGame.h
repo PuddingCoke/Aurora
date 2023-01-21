@@ -2,97 +2,69 @@
 #include<iostream>
 
 #include<Aurora/Game.h>
-#include<Aurora/Mouse.h>
-#include<Aurora/A2D/SpriteBatch.h>
-#include<Aurora/A2D/PrimitiveBatch.h>
-#include<Aurora/Event.h>
-#include<Aurora/States.h>
-#include<Aurora/RenderTexture.h>
+#include<Aurora/A3D/OrbitCamera.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
 
+#include"TextBatch.h"
 #include"Rain.h"
 
 class MyGame :public Game
 {
 public:
 
-	SpriteBatch* batch;
+	OrbitCamera camera;
 
-	BitmapFont* font;
+	TextBatch* textBatch;
 
-	BloomEffect effect;
+	RenderTexture* originTexture;
+
+	DepthStencilView* depthView;
 
 	std::vector<Rain> rains;
 
-	RenderTexture* renderTexture;
+	BloomEffect effect;
 
-	float exposure;
-
-	float gamma;
-
-	static constexpr float colorFactor = 4.5f;
+	static constexpr float bloomIntensity = 2.f;
 
 	MyGame() :
-		batch(SpriteBatch::create()),
-		font(BitmapFont::create("Game_0.png", "Game.fnt", 24)),
-		effect(Graphics::getWidth(), Graphics::getHeight()),
-		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black))
+		textBatch(new TextBatch("Game_0.png", "Game.fnt", 1)),
+		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		depthView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
+		camera({ 50,0,0 }, { 0,1,0 }, 20.f),
+		effect(Graphics::getWidth(), Graphics::getHeight())
 	{
-		exposure = 0.64f;
-		gamma = 0.56f;
-		effect.setExposure(exposure);
-		effect.setGamma(gamma);
+		effect.setExposure(1.f);
+		effect.setGamma(1.f);
+		effect.setThreshold(0.f);
+		effect.setIntensity(1.5f);
 		effect.applyChange();
 
-		Rain::stride = font->getFontSize();
+		camera.registerEvent();
 
-		for (size_t i = 0; i < Graphics::getWidth() / Rain::stride; i++)
+		Rain::stride = textBatch->fontSize;
+
+		for (size_t i = 0; i < 100; i++)
 		{
-			rains.push_back(Rain((Graphics::getWidth() - Graphics::getWidth() / Rain::stride * Rain::stride) / 2 + i * Rain::stride, Random::Int() % 6 + 8));
+			rains.push_back(Rain());
 		}
+
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 200.f);
 	}
 
 	~MyGame()
 	{
-		delete batch;
-		delete font;
-		delete renderTexture;
+		delete textBatch;
+		delete originTexture;
+		delete depthView;
 	}
 
 	void update(const float& dt) override
 	{
-		if (Keyboard::getKeyDown(Keyboard::A))
-		{
-			exposure += 0.01f;
-			effect.setExposure(exposure);
-			effect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::S))
-		{
-			exposure -= 0.01f;
-			effect.setExposure(exposure);
-			effect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::H))
-		{
-			gamma += 0.01f;
-			effect.setGamma(gamma);
-			effect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::J))
-		{
-			gamma -= 0.01f;
-			effect.setGamma(gamma);
-			effect.applyChange();
-		}
+		camera.applyInput(dt);
 
 		for (int i = 0; i < rains.size(); i++)
 		{
 			rains[i].update(dt);
-			if (rains[i].y + Rain::stride * rains[i].len < 0)
-			{
-				rains[i].re();
-			}
 		}
 	}
 
@@ -103,32 +75,40 @@ public:
 
 	void render() override
 	{
-		renderTexture->clearRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
+		depthView->clear(D3D11_CLEAR_DEPTH);
+		originTexture->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetRTV({ originTexture }, depthView);
+
 		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 
-		batch->begin();
+		RenderAPI::get()->RSSetState(States::rasterCullNone);
+
 		for (int i = 0; i < rains.size(); i++)
 		{
-			batch->draw(font, rains[i].character[0], rains[i].x, rains[i].y, colorFactor, colorFactor, colorFactor);
+			textBatch->drawText(rains[i].character[0], rains[i].x, rains[i].y, rains[i].z, bloomIntensity, bloomIntensity, bloomIntensity, 1);
 			for (int j = 1; j < rains[i].character.size(); j++)
 			{
-				batch->draw(font, rains[i].character[j], rains[i].x, rains[i].y + Rain::stride * j, 0.f, colorFactor * (1.f - (float)j / rains[i].character.size()), 0.f, 1.0f);
+				textBatch->drawText(rains[i].character[j], rains[i].x, rains[i].y + Rain::stride * j, rains[i].z, 0.f, bloomIntensity * (1.f - (float)j / rains[i].character.size()), 0.f, 1.0f);
 			}
 		}
-		batch->end();
 
-		ShaderResourceView* bloomTextureSRV = effect.process(renderTexture);
+		textBatch->render();
+
+		RenderAPI::get()->RSSetState(States::rasterCullBack);
+
+		ShaderResourceView* bloomSRV = effect.process(originTexture);
 
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->OMSetBlendState(States::defBlendState);
-		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 
-		RenderAPI::get()->DrawQuad();
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+
+		RenderAPI::get()->DrawQuad();
 	}
 };

@@ -15,33 +15,41 @@ public:
 
 	int len;
 
-	int x, y;
+	float x;
+
+	float z;
+
+	int y;
 
 	static float speedFactor;
 
 	static int stride;
 
-	//Speed = 165/timeLimit per sec
-
 	Timer time;
 
-	Rain(int _x, int _len) :time(_len / speedFactor), len(_len), character(_len)
+	static constexpr float maxRadius = 50.f;
+
+	Rain()
 	{
-		x = _x;
-		y = Graphics::getHeight() + Random::Int() % (Graphics::getHeight() / stride) * stride;
-		for (size_t i = 0; i < _len; i++)
-		{
-			character[i] = Random::Int() % 94 + 33;
-		}
+		re();
 	}
 
 	void re()
 	{
-		y = Graphics::getHeight() + Random::Int() % (Graphics::getHeight() / stride) * stride;
-		len = Random::Int() % 6 + 8;
+		const float radius = Random::Float() * maxRadius;
+		const float theta = Random::Float() * Math::two_pi;
+
+		x = radius * cosf(theta);
+		z = radius * sinf(theta);
+		y = 30 + Random::Float() * 50;
+
+		len = Random::Int() % 8 + 8;
+
 		time.restart();
 		time.setTimeLimit(len / speedFactor);
+
 		character = std::vector<char>(len);
+
 		for (size_t i = 0; i < len; i++)
 		{
 			character[i] = Random::Int() % 94 + 33;
@@ -50,7 +58,8 @@ public:
 
 	void update(const float& dt)
 	{
-		while (time.update(dt)) {
+		while (time.update(dt))
+		{
 			for (size_t i = len - 1ULL; i > 0; i--)
 			{
 				character[i] = character[i - 1ULL];
@@ -58,9 +67,15 @@ public:
 			character[0] = Random::Int() % 94 + 33;
 			y -= stride;
 		}
+
+		if (y + Rain::stride * len < -30)
+		{
+			re();
+		}
+
 	}
 
 };
 
-float Rain::speedFactor = 300.f;
+float Rain::speedFactor = 400.f;
 int Rain::stride;

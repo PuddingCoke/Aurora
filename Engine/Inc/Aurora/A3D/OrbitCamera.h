@@ -37,8 +37,6 @@ private:
 
 	const DirectX::XMVECTOR up;
 
-	const DirectX::XMVECTOR focus = { 0,0,0 };
-
 };
 
 #endif // !_ORBITCAMERA_H_

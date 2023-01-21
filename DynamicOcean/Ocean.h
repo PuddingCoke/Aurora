@@ -109,7 +109,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	oceanHShader(new Shader("OceanHShader.hlsl", ShaderType::Hull)),
 	oceanDShader(new Shader("OceanDShader.hlsl", ShaderType::Domain)),
 	oceanPShader(new Shader("OceanPShader.hlsl", ShaderType::Pixel)),
-	oceanGenNormal(new Shader("OceanGenNormalCS.hlsl",ShaderType::Compute))
+	oceanGenNormal(new Shader("OceanGenNormalCS.hlsl", ShaderType::Compute))
 {
 
 	{
@@ -127,8 +127,8 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 
 		auto getVertexAt = [this](const unsigned int& x, const unsigned int& z)
 		{
-			const float xPos = ((float)x - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
-			const float zPos = ((float)z - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
+			const float xPos = 1.5f*((float)x - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
+			const float zPos = 1.5f*((float)z - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
 			const float u = (float)x / (float)patchSize;
 			const float v = (float)z / (float)patchSize;
 			return Vertex{ {xPos,0.f,zPos},{u,v} };
@@ -214,7 +214,7 @@ inline void Ocean::update() const
 	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 
 	RenderAPI::get()->CSSetSRV({ tildeh0k,tildeh0mkconj }, 0);
-	RenderAPI::get()->CSSetUAV({ displacementY,displacementX,displacementZ}, 0);
+	RenderAPI::get()->CSSetUAV({ displacementY,displacementX,displacementZ }, 0);
 
 	displacementShader->use();
 

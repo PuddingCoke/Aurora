@@ -1,11 +1,3 @@
-cbuffer BloomParam : register(b1)
-{
-    float exposure;
-    float gamma;
-    float threshold;
-    float intensity;
-};
-
 struct BlurParams
 {
     float weight[8];
@@ -38,5 +30,5 @@ void main(uint3 DTid : SV_DispatchThreadID)
         result += sourceTexture.SampleLevel(linearSampler, texCoord - float2(0.0, param.texelSize.y * param.offset[i]), 0.0).rgb * param.weight[i];
     }
     
-    destTexture[DTid.xy] = float4(intensity * result, 1.0);
+    destTexture[DTid.xy] = float4(result, 1.0);
 }

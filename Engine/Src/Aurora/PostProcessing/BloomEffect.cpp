@@ -62,6 +62,7 @@ BloomEffect::~BloomEffect()
 	delete bloomHBlur;
 	delete bloomVBlur;
 	delete bloomDownSample;
+	delete bloomKarisAverage;
 }
 
 ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) const
@@ -85,7 +86,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-	bloomDownSample->use();
+	bloomKarisAverage->use();
 	RenderAPI::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
 	RenderAPI::get()->OMSetRTV({ rcTextures[0] }, nullptr);
 	RenderAPI::get()->PSSetSRV({ bloomTexture }, 0);
@@ -143,7 +144,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	bloomFinal->use();
 	outputRTV->clearRTV(DirectX::Colors::Black);
 	RenderAPI::get()->OMSetRTV({ outputRTV }, nullptr);
-	RenderAPI::get()->PSSetSRV({ originTexture,lensDirtTexture }, 0);
+	RenderAPI::get()->PSSetSRV({ texture2D,originTexture,lensDirtTexture }, 0);
 	RenderAPI::get()->DrawQuad();
 
 	return outputRTV;
@@ -241,4 +242,5 @@ void BloomEffect::compileShaders()
 	bloomVBlur = new Shader(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes), ShaderType::Compute);
 	bloomHBlur = new Shader(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes), ShaderType::Compute);
 	bloomDownSample = new Shader(g_BloomDownSamplePSBytes, sizeof(g_BloomDownSamplePSBytes), ShaderType::Pixel);
+	bloomKarisAverage = new Shader(g_BloomKarisAveragePSBytes, sizeof(g_BloomKarisAveragePSBytes), ShaderType::Pixel);
 }

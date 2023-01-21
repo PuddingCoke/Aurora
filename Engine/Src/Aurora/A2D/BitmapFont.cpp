@@ -132,10 +132,8 @@ BitmapFont::BitmapFont(const std::string& bitmapPath, const std::string& configF
 		int xoffset;
 		int yoffset;
 		int xadvance;
-
 		float width;
 		float height;
-
 		float leftTexCoord;
 		float rightTexCoord;
 		float bottomTexCoord;
@@ -145,10 +143,8 @@ BitmapFont::BitmapFont(const std::string& bitmapPath, const std::string& configF
 			xoffset,
 			-yoffset - height,
 			xadvance,
-
 			(float)width,
 			(float)height,
-
 			startX / (float)bitmapWidth,
 			(startX + width) / (float)bitmapWidth,
 			(startY + height) / (float)(bitmapHeight),
