@@ -68,7 +68,7 @@ public:
 			y -= stride;
 		}
 
-		if (y + Rain::stride * len < -30)
+		if (y + Rain::stride * len < -80)
 		{
 			re();
 		}

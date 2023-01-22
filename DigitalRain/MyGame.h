@@ -30,7 +30,7 @@ public:
 		textBatch(new TextBatch("Game_0.png", "Game.fnt", 1)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		depthView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
-		camera({ 50,0,0 }, { 0,1,0 }, 20.f),
+		camera({ 50,20,0 }, { 0,1,0 }, 20.f),
 		effect(Graphics::getWidth(), Graphics::getHeight())
 	{
 		effect.setExposure(1.f);
@@ -60,6 +60,8 @@ public:
 
 	void update(const float& dt) override
 	{
+		camera.rotateX(-dt);
+
 		camera.applyInput(dt);
 
 		for (int i = 0; i < rains.size(); i++)
