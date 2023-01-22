@@ -43,7 +43,7 @@ public:
 
 		Rain::stride = textBatch->fontSize;
 
-		for (size_t i = 0; i < 100; i++)
+		for (size_t i = 0; i < 150; i++)
 		{
 			rains.push_back(Rain());
 		}

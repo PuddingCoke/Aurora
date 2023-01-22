@@ -41,7 +41,7 @@ public:
 
 		x = radius * cosf(theta);
 		z = radius * sinf(theta);
-		y = 30 + Random::Float() * 50;
+		y = 30 + Random::Float() * 60;
 
 		len = Random::Int() % 8 + 8;
 
