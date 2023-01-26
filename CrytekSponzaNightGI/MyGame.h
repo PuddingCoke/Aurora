@@ -125,7 +125,7 @@ public:
 		gamma = 1.25f;
 		bloomEffect.setExposure(exposure);
 		bloomEffect.setGamma(gamma);
-		bloomEffect.setThreshold(1.f);
+		bloomEffect.setThreshold(0.5f);
 		bloomEffect.applyChange();
 
 		{

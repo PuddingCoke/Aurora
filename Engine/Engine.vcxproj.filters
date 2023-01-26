@@ -388,7 +388,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\Bloom\BloomExtractPS.hlsl" />
+    <FxCompile Include="Shaders\Bloom\BloomFilterPS.hlsl" />
     <FxCompile Include="Shaders\Bloom\BloomFinalPS.hlsl" />
     <FxCompile Include="Shaders\Bloom\BloomHBlurCS.hlsl" />
     <FxCompile Include="Shaders\Bloom\BloomVBlurCS.hlsl" />

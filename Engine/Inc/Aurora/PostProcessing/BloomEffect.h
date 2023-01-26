@@ -5,7 +5,7 @@
 
 #include"EffectBase.h"
 
-#include<Aurora/CompiledShaders/BloomExtractPS.h>
+#include<Aurora/CompiledShaders/BloomFilterPS.h>
 #include<Aurora/CompiledShaders/BloomFinalPS.h>
 #include<Aurora/CompiledShaders/BloomVBlurCS.h>
 #include<Aurora/CompiledShaders/BloomHBlurCS.h>
@@ -53,6 +53,8 @@ public:
 
 	void setIntensity(const float& intensity);
 
+	void setSoftThreshold(const float& softThreshold);
+
 	//在class Game的imGUICall中调用此函数
 	void imGUIEffectModifier();
 
@@ -74,7 +76,7 @@ private:
 	//修改模糊曲线
 	void updateCurve(const unsigned int& index);
 
-	Shader* bloomExtract;
+	Shader* bloomFilter;
 
 	Shader* bloomHBlur;
 
@@ -109,6 +111,8 @@ private:
 		float gamma;
 		float threshold;
 		float intensity;
+		float softThreshold;
+		DirectX::XMFLOAT3 padding;
 	}bloomParam;
 
 	struct BlurParam

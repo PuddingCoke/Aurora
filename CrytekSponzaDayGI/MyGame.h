@@ -87,7 +87,7 @@ public:
 	{
 		exposure = 1.0f;
 		gamma = 1.25f;
-		bloomEffect.setThreshold(0.6f);
+		bloomEffect.setThreshold(0.35f);
 		bloomEffect.setIntensity(0.90f);
 		bloomEffect.setExposure(exposure);
 		bloomEffect.setGamma(gamma);

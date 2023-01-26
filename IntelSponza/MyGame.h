@@ -86,8 +86,8 @@ public:
 		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
 		screenSpaceReflection(new Shader("SSR.hlsl", ShaderType::Pixel))
 	{
-		bloomEffect.setThreshold(0.f);
-		bloomEffect.setIntensity(0.6f);
+		bloomEffect.setThreshold(1.f);
+		bloomEffect.setIntensity(1.f);
 		bloomEffect.applyChange();
 
 		{
@@ -105,7 +105,7 @@ public:
 
 		camera.registerEvent();
 
-		Camera::setProj(Math::pi / 3.f, Graphics::getAspectRatio(), 0.1f, 35.f);
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 35.f);
 	}
 
 	~MyGame()

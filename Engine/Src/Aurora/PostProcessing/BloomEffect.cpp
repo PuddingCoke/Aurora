@@ -35,6 +35,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 	bloomParam.gamma = 1.0f;
 	bloomParam.threshold = 1.0f;
 	bloomParam.intensity = 1.0f;
+	bloomParam.softThreshold = 1.0f;
 
 	applyChange();
 }
@@ -52,7 +53,7 @@ BloomEffect::~BloomEffect()
 
 	delete filterTexture;
 
-	delete bloomExtract;
+	delete bloomFilter;
 	delete bloomFinal;
 
 	delete lensDirtTexture;
@@ -76,7 +77,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
 
-	bloomExtract->use();
+	bloomFilter->use();
 	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
 	RenderAPI::get()->OMSetRTV({ filterTexture }, nullptr);
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
@@ -164,6 +165,11 @@ void BloomEffect::setIntensity(const float& intensity)
 	bloomParam.intensity = intensity;
 }
 
+void BloomEffect::setSoftThreshold(const float& softThreshold)
+{
+	bloomParam.softThreshold = softThreshold;
+}
+
 void BloomEffect::imGUIEffectModifier()
 {
 	ImGui::Text("BloomEffect Modifier");
@@ -174,7 +180,8 @@ void BloomEffect::imGUIEffectModifier()
 	ImGui::SliderFloat("Gaussain Curve4", &blurParam[4].sigma, 0.4f, 4.f);
 	ImGui::SliderFloat("Exposure", &bloomParam.exposure, 0.0f, 4.f);
 	ImGui::SliderFloat("Gamma", &bloomParam.gamma, 0.0f, 4.f);
-	ImGui::SliderFloat("Threshold", &bloomParam.threshold, 0.0f, 4.f);
+	ImGui::SliderFloat("Threshold", &bloomParam.threshold, 0.0f, 1.f);
+	ImGui::SliderFloat("SoftThreshold", &bloomParam.softThreshold, 0.0f, 1.f);
 	ImGui::SliderFloat("Intensity", &bloomParam.intensity, 0.0f, 4.f);
 
 
@@ -231,7 +238,7 @@ void BloomEffect::applyChange() const
 
 void BloomEffect::compileShaders()
 {
-	bloomExtract = new Shader(g_BloomExtractPSBytes, sizeof(g_BloomExtractPSBytes), ShaderType::Pixel);
+	bloomFilter = new Shader(g_BloomFilterPSBytes, sizeof(g_BloomFilterPSBytes), ShaderType::Pixel);
 	bloomFinal = new Shader(g_BloomFinalPSBytes, sizeof(g_BloomFinalPSBytes), ShaderType::Pixel);
 	bloomVBlur = new Shader(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes), ShaderType::Compute);
 	bloomHBlur = new Shader(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes), ShaderType::Compute);
