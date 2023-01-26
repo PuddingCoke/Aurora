@@ -38,5 +38,6 @@
     <FxCompile Include="DeferredPShader.hlsl" />
     <FxCompile Include="DeferredVShader.hlsl" />
     <FxCompile Include="SkyboxPShader.hlsl" />
+    <FxCompile Include="CubeRenderVS.hlsl" />
   </ItemGroup>
 </Project>

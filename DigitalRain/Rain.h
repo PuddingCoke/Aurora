@@ -17,15 +17,15 @@ public:
 
 	float x;
 
+	float y;
+
 	float z;
 
-	int y;
-
-	static float speedFactor;
-
-	static int stride;
-
 	Timer time;
+
+	static float stride;
+
+	static constexpr float speedFactor = 400.f;
 
 	static constexpr float maxRadius = 50.f;
 
@@ -77,5 +77,4 @@ public:
 
 };
 
-float Rain::speedFactor = 400.f;
-int Rain::stride;
+float Rain::stride;

@@ -3,8 +3,8 @@ struct PixelInput
     float3 pos : POSITION;
     float2 uv : TEXCOORD;
     float3 normal : NORMAL;
-    float3 tangent : TANGENT0;
-    float3 bitangent : TANGENT1;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
 };
 
 struct PixelOutput
@@ -31,7 +31,7 @@ PixelOutput main(PixelInput input)
     }
     
     float3 N = normalize(input.normal);
-    float3 B = normalize(input.bitangent);
+    float3 B = normalize(input.binormal);
     float3 T = normalize(input.tangent);
     float3x3 TBN = float3x3(T, B, N);
     

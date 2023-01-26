@@ -15,9 +15,9 @@ public:
 
 	Shader* spritePShader;
 
-	int fontSize;
+	float fontSize;
 
-	int originFontSize;
+	float originFontSize;
 
 	float scale;
 
@@ -57,7 +57,7 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	TextBatch(const std::string& bitmapPath, const std::string& configFilePath, const int& fontSize = -1) :
+	TextBatch(const std::string& bitmapPath, const std::string& configFilePath, const float& fontSize) :
 		fontSize(fontSize), originFontSize(0), scale(1), idx(0),
 		rTexture(new ResourceTexture(bitmapPath)),
 		spriteVShader(new Shader("SpriteVShader.hlsl", ShaderType::Vertex)),
@@ -109,11 +109,7 @@ public:
 			{
 				Parse(temp);
 				originFontSize = std::stoi(value);
-				if (fontSize < 0)
-				{
-					this->fontSize = originFontSize;
-				}
-				scale = (float)this->fontSize / originFontSize;
+				scale = this->fontSize / originFontSize;
 			}
 		}
 
@@ -192,7 +188,7 @@ public:
 	void drawText(const char& context, const float& x, const float& y, const float& z, const float& r, const float& g, const float& b, const float& a)
 	{
 		const Character& character = characterMap[context];
-		textArray[idx].position = DirectX::XMFLOAT3(x, y, z);
+		textArray[idx].position = DirectX::XMFLOAT3(x, y, z); 
 		textArray[idx].size = DirectX::XMFLOAT2(character.width * scale, character.height * scale);
 		textArray[idx].color = DirectX::XMFLOAT4(r, g, b, a);
 		textArray[idx].uvLeft = character.leftTexCoord;

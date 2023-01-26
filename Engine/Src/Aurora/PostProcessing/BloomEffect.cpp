@@ -2,8 +2,7 @@
 
 BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) :
 	EffectBase(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT), bloomWidth(width), bloomHeight(height), bloomParam{},
-	originTexture(new RenderTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
-	bloomTexture(new RenderTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
+	filterTexture(new RenderTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 	lensDirtTexture(new ResourceTexture(Utils::getRootFolder() + "bloom_dirt_mask.png"))
 {
 	compileShaders();
@@ -51,8 +50,7 @@ BloomEffect::~BloomEffect()
 
 	delete bloomParamBuffer;
 
-	delete originTexture;
-	delete bloomTexture;
+	delete filterTexture;
 
 	delete bloomExtract;
 	delete bloomFinal;
@@ -80,7 +78,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	bloomExtract->use();
 	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
-	RenderAPI::get()->OMSetRTV({ originTexture,bloomTexture }, nullptr);
+	RenderAPI::get()->OMSetRTV({ filterTexture }, nullptr);
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
 	RenderAPI::get()->DrawQuad();
 
@@ -89,7 +87,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	bloomKarisAverage->use();
 	RenderAPI::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
 	RenderAPI::get()->OMSetRTV({ rcTextures[0] }, nullptr);
-	RenderAPI::get()->PSSetSRV({ bloomTexture }, 0);
+	RenderAPI::get()->PSSetSRV({ filterTexture }, 0);
 	RenderAPI::get()->DrawQuad();
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
@@ -136,15 +134,11 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		RenderAPI::get()->DrawQuad();
 	}
 
-	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
-	RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
-	RenderAPI::get()->PSSetSRV({ rcTextures[0] }, 0);
-	RenderAPI::get()->DrawQuad();
-
 	bloomFinal->use();
 	outputRTV->clearRTV(DirectX::Colors::Black);
+	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
 	RenderAPI::get()->OMSetRTV({ outputRTV }, nullptr);
-	RenderAPI::get()->PSSetSRV({ texture2D,originTexture,lensDirtTexture }, 0);
+	RenderAPI::get()->PSSetSRV({ texture2D,rcTextures[0],lensDirtTexture }, 0);
 	RenderAPI::get()->DrawQuad();
 
 	return outputRTV;

@@ -125,6 +125,7 @@ public:
 		gamma = 1.25f;
 		bloomEffect.setExposure(exposure);
 		bloomEffect.setGamma(gamma);
+		bloomEffect.setThreshold(1.f);
 		bloomEffect.applyChange();
 
 		{
@@ -265,6 +266,11 @@ public:
 		delete visualPShader;
 
 		delete skyboxPShader;
+	}
+
+	void imGUICall() override
+	{
+		bloomEffect.imGUIEffectModifier();
 	}
 
 

@@ -15,23 +15,15 @@ struct VertexOutput
     float3 tangent : TANGENT;
     float3 binormal : BINORMAL;
     float4 svPosition : SV_Position;
+    uint renderTargetIndex : SV_RenderTargetArrayIndex;
 };
 
-cbuffer ProjMatrix : register(b0)
+cbuffer ProjMatrices : register(b2)
 {
-    matrix proj;
-}
+    matrix viewProj[6];
+};
 
-cbuffer ViewMatrix : register(b1)
-{
-    matrix view;
-    float4 viewPos;
-    matrix prevViewProj;
-    matrix viewProj;
-    matrix normalMatrix;
-}
-
-VertexOutput main(VertexInput input)
+VertexOutput main(VertexInput input, uint instanceID : SV_InstanceID)
 {
     VertexOutput output;
     output.pos = input.pos;
@@ -39,6 +31,7 @@ VertexOutput main(VertexInput input)
     output.normal = input.normal;
     output.tangent = input.tangent;
     output.binormal = input.binormal;
-    output.svPosition = mul(float4(input.pos, 1.0), viewProj);
+    output.svPosition = mul(float4(input.pos, 1.0), viewProj[instanceID]);
+    output.renderTargetIndex = instanceID;
     return output;
 }

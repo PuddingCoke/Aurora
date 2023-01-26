@@ -92,10 +92,8 @@ private:
 
 	RCTexture* rcTextures[blurSteps * 2];
 
-	RenderTexture* originTexture;
-
 	//明亮的像素会被提取到这个材质上
-	RenderTexture* bloomTexture;
+	RenderTexture* filterTexture;
 
 	const unsigned int bloomWidth;
 

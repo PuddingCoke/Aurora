@@ -27,7 +27,7 @@ public:
 	static constexpr float bloomIntensity = 2.f;
 
 	MyGame() :
-		textBatch(new TextBatch("Game_0.png", "Game.fnt", 1)),
+		textBatch(new TextBatch("Game_0.png", "Game.fnt", 0.8f)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		depthView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
 		camera({ 50,20,0 }, { 0,1,0 }, 20.f),
@@ -43,7 +43,7 @@ public:
 
 		Rain::stride = textBatch->fontSize;
 
-		for (size_t i = 0; i < 150; i++)
+		for (size_t i = 0; i < 200; i++)
 		{
 			rains.push_back(Rain());
 		}
@@ -60,7 +60,7 @@ public:
 
 	void update(const float& dt) override
 	{
-		camera.rotateX(-dt);
+		camera.rotateX(-dt * 0.8f);
 
 		camera.applyInput(dt);
 
@@ -90,7 +90,7 @@ public:
 			textBatch->drawText(rains[i].character[0], rains[i].x, rains[i].y, rains[i].z, bloomIntensity, bloomIntensity, bloomIntensity, 1);
 			for (int j = 1; j < rains[i].character.size(); j++)
 			{
-				textBatch->drawText(rains[i].character[j], rains[i].x, rains[i].y + Rain::stride * j, rains[i].z, 0.f, bloomIntensity * (1.f - (float)j / rains[i].character.size()), 0.f, 1.0f);
+				textBatch->drawText(rains[i].character[j], rains[i].x, rains[i].y + Rain::stride * j, rains[i].z, 0.f, bloomIntensity * (1.f - (float)j / rains[i].character.size()), bloomIntensity * (1.f - (float)j / rains[i].character.size()), 1.0f);
 			}
 		}
 

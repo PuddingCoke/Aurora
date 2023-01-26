@@ -1,10 +1,4 @@
-struct PixelOutput
-{
-    float4 color : SV_TARGET0;
-    float4 brightColor : SV_TARGET1;
-};
-
-Texture2D<float4> tTexture : register(t0);
+Texture2D<float4> originTexture : register(t0);
 SamplerState samplerState : register(s0);
 
 cbuffer BloomParam : register(b1)
@@ -15,15 +9,12 @@ cbuffer BloomParam : register(b1)
     float intensity;
 };
 
-PixelOutput main(float2 texCoord : TEXCOORD)
+float4 main(float2 texCoord : TEXCOORD) : SV_Target
 {
-    PixelOutput output;
-    const float4 color = tTexture.Sample(samplerState, texCoord);
-    output.color = color;
-    output.brightColor = float4(0.0, 0.0, 0.0, 1.0);
+    const float4 color = originTexture.Sample(samplerState, texCoord);
     if (dot(color.rgb, float3(0.2126, 0.7152, 0.0722)) > threshold)
     {
-        output.brightColor = color;
+        return color;
     }
-    return output;
+    return float4(0.0, 0.0, 0.0, 1.0);
 }
