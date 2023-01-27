@@ -92,7 +92,27 @@ private:
 
 	ResourceTexture* lensDirtTexture;
 
-	RCTexture* rcTextures[blurSteps * 2];
+	class SwapRCTexture
+	{
+	public:
+
+		SwapRCTexture(const UINT& width, const UINT& height);
+
+		~SwapRCTexture();
+
+		RCTexture* read() const;
+
+		RCTexture* write() const;
+
+		void swap();
+
+	private:
+
+		RCTexture* rcTexture1;
+
+		RCTexture* rcTexture2;
+
+	} *swapTexture[blurSteps];
 
 	//明亮的像素会被提取到这个材质上
 	RenderTexture* filterTexture;
