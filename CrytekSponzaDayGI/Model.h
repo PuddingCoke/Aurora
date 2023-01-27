@@ -84,6 +84,12 @@ public:
 		RenderAPI::get()->Draw(vertexCount, 0);
 	}
 
+	void drawInstance()
+	{
+		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
+		RenderAPI::get()->DrawInstanced(vertexCount, 6, 0, 0);
+	}
+
 };
 
 #endif // !_MODEL_H_

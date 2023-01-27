@@ -13,7 +13,7 @@ public:
 
 	void operator=(const DepthStencilView&) = delete;
 
-	DepthStencilView(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA = false);
+	DepthStencilView(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA = false, const UINT& arraySize = 1);
 
 	void clear(const UINT& clearFlag, const float& depth = 1.0f, const UINT8& stencil = 0) const;
 

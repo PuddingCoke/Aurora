@@ -3,6 +3,7 @@
 #include<Aurora/Game.h>
 
 #include<Aurora/A3D/FPSCamera.h>
+#include<Aurora/A3D/RenderCube.h>
 #include<Aurora/A3D/ShadowMap.h>
 
 #include<Aurora/PostProcessing/HBAOEffect.h>
@@ -35,6 +36,8 @@ public:
 
 	Buffer* lightProjBuffer;
 
+	Buffer* cubeProjBuffer;
+
 	Shader* deferredVShader;
 
 	Shader* deferredPShader;
@@ -43,7 +46,13 @@ public:
 
 	Shader* skyboxPShader;
 
+	Shader* cubeRenderVS;
+
+	Shader* cubeRenderPS;
+
 	TextureCube* skybox;
+
+	RenderCube* renderCube;
 
 	FPSCamera camera;
 
@@ -58,6 +67,12 @@ public:
 		DirectX::XMVECTOR lightDir;
 		DirectX::XMVECTOR lightColor;
 	} light{};
+
+	struct CubeProj
+	{
+		DirectX::XMMATRIX viewProj[6];
+		DirectX::XMVECTOR probeLocation;
+	} cubeProj;
 
 	float exposure;
 
@@ -77,13 +92,17 @@ public:
 		deferredPShader(new Shader("DeferredPShader.hlsl", ShaderType::Pixel)),
 		deferredFinal(new Shader("DeferredFinal.hlsl", ShaderType::Pixel)),
 		skyboxPShader(new Shader("SkyboxPShader.hlsl", ShaderType::Pixel)),
+		cubeRenderVS(new Shader("CubeRenderVS.hlsl", ShaderType::Vertex)),
+		cubeRenderPS(new Shader("CubeRenderPS.hlsl", ShaderType::Pixel)),
 		skybox(new TextureCube(assetPath + "/sky/kloppenheim_05_4k.hdr", 2048)),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		camera({ 180.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f),
+		camera({ 0.f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f),
 		sunAngle(Math::half_pi - 0.02f),
 		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
-		lightProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
+		lightProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
+		cubeProjBuffer(new Buffer(sizeof(CubeProj), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
+		renderCube(new RenderCube(64, DXGI_FORMAT_R16G16B16A16_FLOAT))
 	{
 		exposure = 1.0f;
 		gamma = 1.25f;
@@ -130,6 +149,7 @@ public:
 
 		delete scene;
 		delete skybox;
+		delete renderCube;
 
 		delete lightBuffer;
 		delete lightProjBuffer;
@@ -137,7 +157,16 @@ public:
 		delete deferredPShader;
 		delete deferredFinal;
 
+		delete cubeRenderVS;
+		delete cubeRenderPS;
+		delete cubeProjBuffer;
+
 		delete skyboxPShader;
+	}
+
+	void imGUICall() override
+	{
+		bloomEffect.imGUIEffectModifier();
 	}
 
 	void updateShadow()
@@ -174,15 +203,54 @@ public:
 		RenderAPI::get()->OMSetRTV({}, shadowTexture);
 		RenderAPI::get()->VSSetConstantBuffer({ lightProjBuffer }, 2);
 
-		scene->drawGeometry(RenderAPI::shadowVS);
-
+		scene->renderGeometry(RenderAPI::shadowVS);
 		RenderAPI::get()->RSSetState(States::rasterCullBack);
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 	}
 
-	void imGUICall() override
+	void renderCubeAt(const float& x, const float& y, const float& z)
 	{
-		bloomEffect.imGUIEffectModifier();
+		const DirectX::XMVECTOR focusPoints[6] =
+		{
+			{1.0f,  0.0f,  0.0f},
+			{-1.0f,  0.0f,  0.0f},
+			{0.0f,  1.0f,  0.0f},
+			{0.0f, -1.0f,  0.0f},
+			{0.0f,  0.0f,  1.0f},
+			{0.0f,  0.0f, -1.0f}
+		};
+		const DirectX::XMVECTOR upVectors[6] =
+		{
+			{0.0f, 1.0f,  0.0f},
+			{0.0f, 1.0f,  0.0f},
+			{0.0f,  0.0f,  -1.0f},
+			{0.0f,  0.0f, 1.0f},
+			{0.0f, 1.0f,  0.0f},
+			{0.0f, 1.0f,  0.0f}
+		};
+
+		const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 512.f);
+
+		for (int i = 0; i < 6; i++)
+		{
+			const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH({ x,y,z }, DirectX::XMVectorAdd(focusPoints[i], { x,y,z }), upVectors[i]);
+			cubeProj.viewProj[i] = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
+		}
+
+		cubeProj.probeLocation = { x,y,z };
+
+		memcpy(cubeProjBuffer->map(0).pData, &cubeProj, sizeof(CubeProj));
+		cubeProjBuffer->unmap(0);
+
+		renderCube->clearRTV(DirectX::Colors::Black);
+		renderCube->clearDepth();
+		RenderAPI::get()->RSSetViewport(renderCube->resolution, renderCube->resolution);
+		RenderAPI::get()->OMSetRTV({ renderCube }, renderCube->getDSV());
+		RenderAPI::get()->VSSetConstantBuffer({ cubeProjBuffer }, 2);
+		RenderAPI::get()->PSSetSRV({ shadowTexture }, 2);
+		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,lightProjBuffer,cubeProjBuffer }, 1);
+
+		scene->renderCube(cubeRenderVS, cubeRenderPS);
 	}
 
 	void update(const float& dt) override
@@ -235,14 +303,19 @@ public:
 		RenderAPI::get()->GSSetShader(nullptr);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
-		gBaseColor->clearRTV(DirectX::Colors::Black);
+		shadowMap->clear(D3D11_CLEAR_DEPTH);
+
+		renderCubeAt(0.f, 20.f, 0.f);
+
+		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+
+		/*gBaseColor->clearRTV(DirectX::Colors::Black);
 		gPosition->clearRTV(DirectX::Colors::Black);
 		gNormalSpecular->clearRTV(DirectX::Colors::Black);
-		shadowMap->clear(D3D11_CLEAR_DEPTH);
 
 		RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, shadowMap);
 
-		scene->draw(deferredVShader, deferredPShader);
+		scene->render(deferredVShader, deferredPShader);
 
 		originTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
@@ -254,25 +327,23 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
-		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
+		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);*/
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
+		/*RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
-
-		RenderAPI::get()->DrawQuad();
+		RenderAPI::get()->DrawQuad();*/
 
 		RenderAPI::get()->OMSetDefRTV(shadowMap);
-		RenderAPI::get()->PSSetSRV({ skybox }, 0);
+		RenderAPI::get()->PSSetSRV({ renderCube }, 0);
 
 		RenderAPI::skyboxVS->use();
 		skyboxPShader->use();
 
 		RenderAPI::get()->DrawCube();
-
 	}
 
 

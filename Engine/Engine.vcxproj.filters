@@ -204,6 +204,9 @@
     <ClInclude Include="Inc\DDSTextureLoader\DDSTextureLoader11.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\A3D\RenderCube.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -384,6 +387,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader11.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\A3D\RenderCube.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

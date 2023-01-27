@@ -23,7 +23,6 @@ public:
 
 		const aiScene* scene = importer.ReadFile(filePath, aiProcess_FlipUVs | aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
 
-		//œ»‘ÿ»Îmaterial
 		for (unsigned int i = 0; i < scene->mNumMaterials; i++)
 		{
 			aiString texturePath;
@@ -83,7 +82,7 @@ public:
 		}
 	}
 
-	void draw(Shader* const vertexShader, Shader* const pixelShader)
+	void render(Shader* const vertexShader, Shader* const pixelShader)
 	{
 		vertexShader->use();
 		RenderAPI::get()->GSSetShader(nullptr);
@@ -92,12 +91,28 @@ public:
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
-			materials[models[i]->materialIndex]->use();
+			const Material* const mat = materials[models[i]->materialIndex];
+			RenderAPI::get()->PSSetSRV({ mat->diffuse,mat->specular,mat->normal }, 0);
 			models[i]->draw();
 		}
 	}
 
-	void drawGeometry(Shader* const vertexShader)
+	void renderCube(Shader* const vertexShader, Shader* const pixelShader)
+	{
+		vertexShader->use();
+		RenderAPI::get()->GSSetShader(nullptr);
+		pixelShader->use();
+
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		for (unsigned int i = 0; i < models.size(); i++)
+		{
+			const Material* const mat = materials[models[i]->materialIndex];
+			RenderAPI::get()->PSSetSRV({ mat->diffuse,mat->specular }, 0);
+			models[i]->drawInstance();
+		}
+	}
+
+	void renderGeometry(Shader* const vertexShader)
 	{
 		vertexShader->use();
 		RenderAPI::get()->GSSetShader(nullptr);

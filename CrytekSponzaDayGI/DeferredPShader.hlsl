@@ -18,11 +18,11 @@ Texture2D tDiffuse : register(t0);
 Texture2D tSpecular : register(t1);
 Texture2D tNormal : register(t2);
 
-SamplerState samplerState : register(s0);
+SamplerState wrapSampler : register(s0);
 
 PixelOutput main(PixelInput input)
 {
-    float4 baseColor = tDiffuse.Sample(samplerState, input.uv);
+    float4 baseColor = tDiffuse.Sample(wrapSampler, input.uv);
     
     [branch]
     if (baseColor.a < 0.5)
@@ -35,14 +35,11 @@ PixelOutput main(PixelInput input)
     float3 T = normalize(input.tangent);
     float3x3 TBN = float3x3(T, B, N);
     
-    float3 nm = tNormal.Sample(samplerState, input.uv).xyz * 2.0 - 1.0;
-    nm = mul(normalize(nm), TBN);
-    
-    float specular = tSpecular.Sample(samplerState, input.uv).r;
+    float specular = tSpecular.Sample(wrapSampler, input.uv).r;
     
     PixelOutput output;
     output.position = float4(input.pos, 1.0);
-    output.normalSpecular = float4(nm, specular);
+    output.normalSpecular = float4(mul(normalize(tNormal.Sample(wrapSampler, input.uv).xyz * 2.0 - 1.0), TBN), specular);
     output.baseColor = baseColor;
     
     return output;

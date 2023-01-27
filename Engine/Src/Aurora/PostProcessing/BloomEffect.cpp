@@ -90,7 +90,6 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->OMSetRTV({ swapTexture[0]->write() }, nullptr);
 	RenderAPI::get()->PSSetSRV({ filterTexture }, 0);
 	RenderAPI::get()->DrawQuad();
-
 	swapTexture[0]->swap();
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)

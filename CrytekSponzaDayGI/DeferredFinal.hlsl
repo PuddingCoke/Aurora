@@ -5,7 +5,7 @@ Texture2D ssaoTexture : register(t3);
 Texture2D<float> shadowTexture : register(t4);
 
 SamplerState wrapSampler : register(s0);
-SamplerState linearSampler : register(s1);
+SamplerState clampSampler : register(s1);
 SamplerComparisonState shadowSampler : register(s2);
 
 cbuffer DeltaTimes : register(b0)
@@ -88,9 +88,9 @@ float CalShadow(float3 P)
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    const float3 position = gPosition.Sample(linearSampler, texCoord).xyz;
-    const float4 normalSpecular = gNormalSpecular.Sample(linearSampler, texCoord);
-    const float3 baseColor = gBaseColor.Sample(linearSampler, texCoord).rgb;
+    const float3 position = gPosition.Sample(clampSampler, texCoord).xyz;
+    const float4 normalSpecular = gNormalSpecular.Sample(clampSampler, texCoord);
+    const float3 baseColor = gBaseColor.Sample(clampSampler, texCoord).rgb;
     
     float3 outColor = float3(0.0, 0.0, 0.0);
     
@@ -110,7 +110,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     outColor += baseColor * 0.1;
     
-    const float ao = ssaoTexture.Sample(linearSampler, texCoord).r;
+    const float ao = ssaoTexture.Sample(clampSampler, texCoord).r;
         
     outColor *= ao;
     
