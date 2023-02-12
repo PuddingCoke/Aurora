@@ -207,6 +207,12 @@
     <ClInclude Include="Inc\Aurora\ResDepthTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\DepthCubeArray.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\ComputeTextureArray.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -390,6 +396,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\ResDepthTexture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\ComputeTextureArray.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\DepthCubeArray.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

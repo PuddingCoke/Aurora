@@ -77,6 +77,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)Libs\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -127,7 +128,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>Default</LanguageStandard>
       <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -148,6 +149,8 @@
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
     <ClInclude Include="Inc\Aurora\ComputeBuffer.h" />
     <ClInclude Include="Inc\Aurora\ComputeTexture3D.h" />
+    <ClInclude Include="Inc\Aurora\ComputeTextureArray.h" />
+    <ClInclude Include="Inc\Aurora\DepthCubeArray.h" />
     <ClInclude Include="Inc\Aurora\DepthTexture.h" />
     <ClInclude Include="Inc\Aurora\DX\Resource\Buffer.h" />
     <ClInclude Include="Inc\Aurora\Camera.h" />
@@ -221,6 +224,8 @@
     <ClCompile Include="Src\Aurora\A3D\FPSCamera.cpp" />
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp" />
     <ClCompile Include="Src\Aurora\ComputeTexture3D.cpp" />
+    <ClCompile Include="Src\Aurora\ComputeTextureArray.cpp" />
+    <ClCompile Include="Src\Aurora\DepthCubeArray.cpp" />
     <ClCompile Include="Src\Aurora\DepthTexture.cpp" />
     <ClCompile Include="Src\Aurora\DX\Resource\Buffer.cpp" />
     <ClCompile Include="Src\Aurora\ComputeTexture.cpp" />
@@ -276,6 +281,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\Bloom\BloomFinalPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -283,6 +290,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\Bloom\BloomHBlurCS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
@@ -290,6 +299,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\Bloom\BloomKarisAveragePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -300,6 +311,8 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\Bloom\BloomVBlurCS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
@@ -307,6 +320,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\Bloom\BloomDownSamplePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -317,6 +332,8 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\Fade\FadePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -327,6 +344,8 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\FullScreen\FullScreenPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -337,6 +356,8 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\FullScreen\FullScreenVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -347,6 +368,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\MotionBlur\MotionBlurPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -357,6 +380,8 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\Noise\RandNoiseCS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
@@ -370,6 +395,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchCircleVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -380,6 +407,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchLineGS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
@@ -393,6 +422,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchLineVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -403,6 +434,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -413,6 +446,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchRCLineGS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
@@ -426,6 +461,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\PrimitiveBatch\PrimitiveBatchRCLineVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -436,6 +473,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\Shadow\ShadowVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -446,6 +485,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\SpriteBatch\SpriteBatchSpritePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -456,6 +497,8 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\SpriteBatch\SpriteBatchSpriteVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -466,6 +509,8 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\SpriteBatch\SpriteBatchTextPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -476,6 +521,8 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\SpriteBatch\SpriteBatchTextVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -486,6 +533,8 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\TextureCube\EquirectangularPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -496,6 +545,8 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\TextureCube\EquirectangularVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -506,6 +557,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\TextureCube\SkyboxVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
@@ -516,6 +569,8 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/O3 %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

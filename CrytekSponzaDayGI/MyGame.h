@@ -2,10 +2,11 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/ComputeTexture.h>
+#include<Aurora/ResDepthTexture.h>
+#include<Aurora/DepthCubeArray.h>
 
 #include<Aurora/A3D/FPSCamera.h>
 #include<Aurora/A3D/RenderCube.h>
-#include<Aurora/A3D/ShadowMap.h>
 
 #include<Aurora/PostProcessing/HBAOEffect.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
@@ -19,9 +20,9 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	ShadowMap* shadowTexture;
+	ResDepthTexture* globalShadowTexture;
 
-	ShadowMap* shadowMap;
+	ResDepthTexture* depthTexture;
 
 	RenderTexture* gPosition;
 
@@ -63,6 +64,8 @@ public:
 
 	StructuredBuffer* irradianceSamples;
 
+	DepthCubeArray* depthCubeArray;
+
 	FPSCamera camera;
 
 	HBAOEffect hbaoEffect;
@@ -80,7 +83,8 @@ public:
 	struct CubeProj
 	{
 		DirectX::XMMATRIX viewProj[6];
-		DirectX::XMVECTOR probeLocation;
+		DirectX::XMFLOAT3 probeLocation;
+		unsigned int probeIndex;
 	} cubeProj;
 
 	float exposure;
@@ -96,8 +100,8 @@ public:
 		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_SNORM, DirectX::Colors::Black)),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
-		shadowMap(new ShadowMap(Graphics::getWidth(), Graphics::getHeight())),
-		shadowTexture(new ShadowMap(shadowMapRes, shadowMapRes)),
+		depthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
+		globalShadowTexture(new ResDepthTexture(shadowMapRes, shadowMapRes)),
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		deferredVShader(new Shader("DeferredVShader.hlsl", ShaderType::Vertex)),
 		deferredPShader(new Shader("DeferredPShader.hlsl", ShaderType::Pixel)),
@@ -116,7 +120,8 @@ public:
 		lightProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		cubeProjBuffer(new Buffer(sizeof(CubeProj), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		renderCube(new RenderCube(128, DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		irradianceCoeff(new ComputeTexture(9, 1, DXGI_FORMAT_R16G16B16A16_FLOAT))
+		irradianceCoeff(new ComputeTexture(9, 1, DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		depthCubeArray(new DepthCubeArray(128, 1024))
 	{
 		exposure = 1.0f;
 		gamma = 1.25f;
@@ -246,8 +251,8 @@ public:
 
 	~MyGame()
 	{
-		delete shadowMap;
-		delete shadowTexture;
+		delete depthTexture;
+		delete globalShadowTexture;
 
 		delete gPosition;
 		delete gNormalSpecular;
@@ -274,6 +279,8 @@ public:
 		delete irradianceEvaluate;
 		delete irradianceCoeff;
 		delete irradianceSamples;
+
+		delete depthCubeArray;
 	}
 
 	void imGUICall() override
@@ -310,9 +317,9 @@ public:
 		RenderAPI::get()->RSSetState(States::rasterShadow);
 		RenderAPI::get()->RSSetViewport(shadowMapRes, shadowMapRes);
 
-		shadowTexture->clear();
+		globalShadowTexture->clear(D3D11_CLEAR_DEPTH);
 
-		RenderAPI::get()->OMSetRTV({}, shadowTexture);
+		RenderAPI::get()->OMSetRTV({}, globalShadowTexture);
 		RenderAPI::get()->VSSetConstantBuffer({ lightProjBuffer }, 2);
 
 		scene->renderGeometry(RenderAPI::shadowVS);
@@ -320,7 +327,7 @@ public:
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 	}
 
-	void renderCubeAt(const DirectX::XMVECTOR& location)
+	void renderCubeAt(const DirectX::XMFLOAT3& location)
 	{
 		const DirectX::XMVECTOR focusPoints[6] =
 		{
@@ -345,7 +352,7 @@ public:
 
 		for (int i = 0; i < 6; i++)
 		{
-			const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(location, DirectX::XMVectorAdd(focusPoints[i], location), upVectors[i]);
+			const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&location), DirectX::XMVectorAdd(focusPoints[i], DirectX::XMLoadFloat3(&location)), upVectors[i]);
 			cubeProj.viewProj[i] = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
 		}
 
@@ -355,11 +362,14 @@ public:
 		cubeProjBuffer->unmap(0);
 
 		renderCube->clearRTV(DirectX::Colors::Black);
-		renderCube->clearDepth();
+		
+		DepthStencilView* const dsv = depthCubeArray->getCubeDSV(0);
+		dsv->clear(D3D11_CLEAR_DEPTH);
+
 		RenderAPI::get()->RSSetViewport(renderCube->resolution, renderCube->resolution);
-		RenderAPI::get()->OMSetRTV({ renderCube }, renderCube->getDSV());
+		RenderAPI::get()->OMSetRTV({ renderCube }, dsv);
 		RenderAPI::get()->VSSetConstantBuffer({ cubeProjBuffer }, 2);
-		RenderAPI::get()->PSSetSRV({ shadowTexture }, 2);
+		RenderAPI::get()->PSSetSRV({ globalShadowTexture }, 2);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,lightProjBuffer,cubeProjBuffer }, 1);
 
 		scene->renderCube(cubeRenderVS, cubeRenderPS);
@@ -415,9 +425,12 @@ public:
 		RenderAPI::get()->GSSetShader(nullptr);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
-		shadowMap->clear(D3D11_CLEAR_DEPTH);
+		depthTexture->clear(D3D11_CLEAR_DEPTH);
 
-		renderCubeAt(Camera::getEye());
+		DirectX::XMFLOAT3 location;
+		DirectX::XMStoreFloat3(&location, Camera::getEye());
+
+		renderCubeAt(location);
 
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
@@ -449,7 +462,7 @@ public:
 		RenderAPI::fullScreenPS->use();
 		RenderAPI::get()->DrawQuad();*/
 
-		RenderAPI::get()->OMSetDefRTV(shadowMap);
+		RenderAPI::get()->OMSetDefRTV(depthTexture);
 
 		if (showRadiance)
 		{
