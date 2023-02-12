@@ -5,6 +5,7 @@
 #include<Aurora/A3D/OrbitCamera.h>
 #include<Aurora/ComputeTexture.h>
 #include<Aurora/StructuredBuffer.h>
+#include<Aurora/DepthTexture.h>
 
 #include"Scene.h"
 
@@ -19,7 +20,7 @@ public:
 
 	OrbitCamera camera;
 
-	DepthStencilView* depthView;
+	DepthTexture* depthTexture;
 
 	Buffer* lightBuffer;
 
@@ -51,7 +52,7 @@ public:
 
 	MyGame() :
 		scene(assetPath + "DNA.obj"),
-		depthView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
+		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
 		camera({ 2,0,0 }, { 0,1,0 }),
 		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		brdfGenPS(new Shader("BRDFGenPS.hlsl", ShaderType::Pixel)),
@@ -62,7 +63,7 @@ public:
 		prefilterCube(new TextureCube(assetPath + "ParkinglotSpecularHDR.dds")),
 		irradianceCompute(new Shader("IrradianceCompute.hlsl", ShaderType::Compute)),
 		irradianceEvaluate(new Shader("IrradianceEvaluate.hlsl", ShaderType::Pixel)),
-		irradianceCoeff(new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT))
+		irradianceCoeff(new ComputeTexture(9, 1, DXGI_FORMAT_R16G16B16A16_FLOAT))
 	{
 		light.lightColor = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 
@@ -85,8 +86,8 @@ public:
 				float Ylm[9];
 			};
 
-			const unsigned int sampleCount = 256;
-			const unsigned int sampleCountSqrt = 16;
+			const unsigned int sampleCount = 400;
+			const unsigned int sampleCountSqrt = 20;
 			const double oneoverN = 1.0 / (float)sampleCountSqrt;
 
 			unsigned int i = 0;
@@ -125,7 +126,7 @@ public:
 	~MyGame()
 	{
 		delete lightBuffer;
-		delete depthView;
+		delete depthTexture;
 		delete brdfGenPS;
 		delete skyboxPS;
 		delete brdfTex;
@@ -213,9 +214,9 @@ public:
 
 		RenderAPI::get()->Dispatch(1, 1, 1);
 
-		depthView->clear(D3D11_CLEAR_DEPTH);
+		depthTexture->clear(D3D11_CLEAR_DEPTH);
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::CadetBlue);
-		RenderAPI::get()->OMSetDefRTV(depthView);
+		RenderAPI::get()->OMSetDefRTV(depthTexture);
 
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 		RenderAPI::get()->PSSetConstantBuffer({ lightBuffer }, 3);

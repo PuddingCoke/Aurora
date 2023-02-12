@@ -32,15 +32,13 @@ cbuffer ProjMatrices : register(b4)
     float4 probeLocation;
 };
 
-static const float ShadowTextureRes = 4096.0;
-
 float CalShadow(float3 P)
 {
     float4 shadowPos = mul(float4(P, 1.0), lightViewProj);
     shadowPos.xy = shadowPos.xy * float2(0.5, -0.5) + 0.5;
     
     float shadow = 0.0;
-    const float2 texelSize = 1.0 / float2(ShadowTextureRes, ShadowTextureRes);
+    const float2 texelSize = 1.0 / float2(4096.0, 4096.0);
     
     [unroll]
     for (int x = -1; x < 2; x++)

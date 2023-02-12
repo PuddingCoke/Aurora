@@ -2,6 +2,8 @@
 #include<iostream>
 
 #include<Aurora/Game.h>
+#include<Aurora/DepthTexture.h>
+
 #include<Aurora/A3D/OrbitCamera.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
 
@@ -18,7 +20,7 @@ public:
 
 	RenderTexture* originTexture;
 
-	DepthStencilView* depthView;
+	DepthTexture* depthTexture;
 
 	std::vector<Rain> rains;
 
@@ -27,9 +29,9 @@ public:
 	static constexpr float bloomIntensity = 2.f;
 
 	MyGame() :
-		textBatch(new TextBatch("Game_0.png", "Game.fnt", 0.8f)),
+		textBatch(new TextBatch("Game_0.png", "Game.fnt", 0.7f)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		depthView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
+		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
 		camera({ 50,20,0 }, { 0,1,0 }, 20.f),
 		effect(Graphics::getWidth(), Graphics::getHeight())
 	{
@@ -48,14 +50,14 @@ public:
 			rains.push_back(Rain());
 		}
 
-		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 200.f);
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 512.f);
 	}
 
 	~MyGame()
 	{
 		delete textBatch;
 		delete originTexture;
-		delete depthView;
+		delete depthTexture;
 	}
 
 	void update(const float& dt) override
@@ -77,9 +79,9 @@ public:
 
 	void render() override
 	{
-		depthView->clear(D3D11_CLEAR_DEPTH);
+		depthTexture->clear(D3D11_CLEAR_DEPTH);
 		originTexture->clearRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ originTexture }, depthView);
+		RenderAPI::get()->OMSetRTV({ originTexture }, depthTexture);
 
 		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 

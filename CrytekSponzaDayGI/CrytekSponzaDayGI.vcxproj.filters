@@ -40,5 +40,7 @@
     <FxCompile Include="SkyboxPShader.hlsl" />
     <FxCompile Include="CubeRenderVS.hlsl" />
     <FxCompile Include="CubeRenderPS.hlsl" />
+    <FxCompile Include="IrradianceCompute.hlsl" />
+    <FxCompile Include="IrradianceEvaluate.hlsl" />
   </ItemGroup>
 </Project>

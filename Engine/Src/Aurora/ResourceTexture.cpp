@@ -1,7 +1,7 @@
 #include<Aurora/ResourceTexture.h>
 
-ResourceTexture::ResourceTexture(const std::string& filePath, const D3D11_USAGE& usage, const UINT& extraBindFlags, const UINT& cpuAccessFlag) :
-	Texture2D(filePath, usage, D3D11_BIND_SHADER_RESOURCE | extraBindFlags, cpuAccessFlag)
+ResourceTexture::ResourceTexture(const std::string& filePath) :
+	Texture2D(filePath)
 {
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = format;
@@ -24,8 +24,8 @@ ResourceTexture::ResourceTexture(const unsigned int& width, const unsigned int& 
 	createSRV(texture.Get(), srvDesc);
 }
 
-ResourceTexture::ResourceTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& extraBindFlags, const bool& enableMSAA, const UINT& cpuAccessFlag) :
-	Texture2D(width, height, format, usage, D3D11_BIND_SHADER_RESOURCE | extraBindFlags, enableMSAA, cpuAccessFlag)
+ResourceTexture::ResourceTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA) :
+	Texture2D(width, height, format, D3D11_BIND_SHADER_RESOURCE, enableMSAA)
 {
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = format;

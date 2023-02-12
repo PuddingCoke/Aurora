@@ -4,30 +4,29 @@
 #define _DEPTHSTENCILVIEW_H_
 
 #include<Aurora/Graphics.h>
+#include<Aurora/DX/Resource/Texture2D.h>
 
 class DepthStencilView
 {
 public:
 
+	DepthStencilView();
+
+	virtual ~DepthStencilView();
+
 	DepthStencilView(const DepthStencilView&) = delete;
 
 	void operator=(const DepthStencilView&) = delete;
 
-	DepthStencilView(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA = false, const UINT& arraySize = 1);
-
 	void clear(const UINT& clearFlag, const float& depth = 1.0f, const UINT8& stencil = 0) const;
 
-	ID3D11DepthStencilView* get() const;
-
-	~DepthStencilView();
+	ID3D11DepthStencilView* getDSV() const;
 
 	virtual void bindDSV();
 
 protected:
 
-	DepthStencilView();
-
-	ComPtr<ID3D11Texture2D> depthStencilTexture;
+	void createDSV(ID3D11Resource* const resource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc);
 
 	ComPtr<ID3D11DepthStencilView> depthStencilView;
 

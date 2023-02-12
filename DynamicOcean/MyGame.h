@@ -1,9 +1,9 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
+#include<Aurora/DepthTexture.h>
 #include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/A3D/FPSCamera.h>
-#include<Aurora/DX/View/DepthStencilView.h>
 
 #include"Ocean.h"
 
@@ -31,7 +31,7 @@ public:
 
 	Buffer* skyVertexBuffer;
 
-	DepthStencilView* depthView;
+	DepthTexture* depthTexture;
 
 	RenderTexture* skyTexture;
 
@@ -42,7 +42,7 @@ public:
 	MyGame() :
 		camera({ -200,30,0 }, { 1,-0.07f,0 }, { 0,1,0 }, 50),
 		ocean(1024, 512, { 20.f,0.f }, 0.000004f),
-		depthView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
+		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
 		skyVS(new Shader("SkyVS.hlsl", ShaderType::Vertex)),
 		skyPS(new Shader("SkyPS.hlsl", ShaderType::Pixel)),
 		skyUpdatePS(new Shader("SkyUpdatePS.hlsl", ShaderType::Pixel)),
@@ -130,7 +130,7 @@ public:
 
 	~MyGame()
 	{
-		delete depthView;
+		delete depthTexture;
 		delete skyUpdatePS;
 		delete skyTexture;
 		delete skyVS;
@@ -167,8 +167,8 @@ public:
 
 		RenderAPI::get()->RSSetState(States::rasterCullBack);
 
-		depthView->clear(D3D11_CLEAR_DEPTH);
-		RenderAPI::get()->OMSetDefRTV(depthView);
+		depthTexture->clear(D3D11_CLEAR_DEPTH);
+		RenderAPI::get()->OMSetDefRTV(depthTexture);
 
 		RenderAPI::get()->PSSetSRV({ textureCube }, 1);
 

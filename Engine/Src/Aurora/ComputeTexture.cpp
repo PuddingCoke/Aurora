@@ -1,7 +1,7 @@
 #include<Aurora/ComputeTexture.h>
 
-ComputeTexture::ComputeTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const unsigned int& extraBindFlags) :
-	Texture2D(width, height, format, D3D11_USAGE_DEFAULT, D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE | extraBindFlags)
+ComputeTexture::ComputeTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format) :
+	Texture2D(width, height, format, D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE)
 {
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};

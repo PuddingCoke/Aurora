@@ -11,8 +11,6 @@ public:
 
 	ShaderResourceView();
 
-	ShaderResourceView(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
-
 	virtual ~ShaderResourceView();
 
 	ShaderResourceView(const ShaderResourceView&) = delete;

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
+#include<Aurora/ComputeTexture.h>
 
 #include<Aurora/A3D/FPSCamera.h>
 #include<Aurora/A3D/RenderCube.h>
@@ -54,6 +55,14 @@ public:
 
 	RenderCube* renderCube;
 
+	Shader* irradianceCompute;
+
+	Shader* irradianceEvaluate;
+
+	ComputeTexture* irradianceCoeff;
+
+	StructuredBuffer* irradianceSamples;
+
 	FPSCamera camera;
 
 	HBAOEffect hbaoEffect;
@@ -80,6 +89,8 @@ public:
 
 	float sunAngle;
 
+	bool showRadiance = true;
+
 	MyGame() :
 		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_SNORM, DirectX::Colors::Black)),
@@ -94,6 +105,8 @@ public:
 		skyboxPShader(new Shader("SkyboxPShader.hlsl", ShaderType::Pixel)),
 		cubeRenderVS(new Shader("CubeRenderVS.hlsl", ShaderType::Vertex)),
 		cubeRenderPS(new Shader("CubeRenderPS.hlsl", ShaderType::Pixel)),
+		irradianceCompute(new Shader("IrradianceCompute.hlsl", ShaderType::Compute)),
+		irradianceEvaluate(new Shader("IrradianceEvaluate.hlsl", ShaderType::Pixel)),
 		skybox(new TextureCube(assetPath + "/sky/kloppenheim_05_4k.hdr", 2048)),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
@@ -102,7 +115,8 @@ public:
 		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		lightProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		cubeProjBuffer(new Buffer(sizeof(CubeProj), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
-		renderCube(new RenderCube(64, DXGI_FORMAT_R16G16B16A16_FLOAT))
+		renderCube(new RenderCube(128, DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		irradianceCoeff(new ComputeTexture(9, 1, DXGI_FORMAT_R16G16B16A16_FLOAT))
 	{
 		exposure = 1.0f;
 		gamma = 1.25f;
@@ -127,14 +141,107 @@ public:
 
 		camera.registerEvent();
 
-		Camera::setProj(45 * Math::degToRad, Graphics::getAspectRatio(), 1.f, 512.f);
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
 			{
-				std::cout << sunAngle << "\n";
-			});
+				showRadiance = !showRadiance;
+			}
+		);
+
+		//预计算采样点
+		{
+			struct Sample
+			{
+				DirectX::XMFLOAT4 direction;
+				float Ylm[9];
+			};
+
+			const unsigned int sampleCount = 400;
+			const unsigned int sampleCountSqrt = 20;
+			const double oneoverN = 1.0 / (double)sampleCountSqrt;
+
+			unsigned int i = 0;
+
+			std::vector<Sample> samples(sampleCount);
+
+			for (unsigned int a = 0; a < sampleCountSqrt; a++)
+			{
+				for (unsigned int b = 0; b < sampleCountSqrt; b++)
+				{
+					const double x = (a + Random::Double()) * oneoverN;
+					const double y = (b + Random::Double()) * oneoverN;
+					const double theta = 2.0 * acos(sqrt(1.0 - x));
+					const double phi = 2.0 * 3.141592653589793238 * y;
+
+					samples[i].direction = DirectX::XMFLOAT4(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta), 1.0);
+
+					for (int l = 0; l < 3; l++)
+					{
+						for (int m = -l; m <= l; m++)
+						{
+							int index = l * (l + 1) + m;
+							samples[i].Ylm[index] = SH(l, m, theta, phi);
+						}
+					}
+					++i;
+				}
+			}
+
+			irradianceSamples = new StructuredBuffer(sizeof(Sample) * samples.size(), sizeof(Sample), D3D11_USAGE_IMMUTABLE, samples.data(), 0);
+		}
 
 		updateShadow();
+	}
+
+	int factorial(int n)
+	{
+		const int results[13] = { 1,1,2,6,24,120,720,5040,40320,362880,3628800,39916800,479001600 };
+		return results[n];
+	}
+
+	double K(int l, int m)
+	{
+		double temp = ((2.0 * l + 1.0) * factorial(l - m)) / (4.0 * 3.141592653589793238 * factorial(l + m));
+		return sqrt(temp);
+	}
+
+	double P(int l, int m, double x)
+	{
+		double pmm = 1.0;
+		if (m > 0)
+		{
+			double somx2 = sqrt((1.0 - x) * (1.0 + x));
+			double fact = 1.0;
+			for (int i = 1; i <= m; i++) {
+				pmm *= (-fact) * somx2;
+				fact += 2.0;
+			}
+		}
+		if (l == m)
+			return pmm;
+
+		double pmmp1 = x * (2.0 * m + 1.0) * pmm;
+		if (l == m + 1)
+			return pmmp1;
+
+		double pll = 0.0;
+		for (int ll = m + 2; ll <= l; ++ll)
+		{
+			pll = ((2.0 * ll - 1.0) * x * pmmp1 - (ll + m - 1.0) * pmm) / (ll - m);
+			pmm = pmmp1;
+			pmmp1 = pll;
+		}
+
+		return pll;
+	}
+
+	double SH(int l, int m, double theta, double phi)
+	{
+		const double sqrt2 = sqrt(2.0);
+		if (m == 0)        return K(l, 0) * P(l, 0, cos(theta));
+		else if (m > 0)    return sqrt2 * K(l, m) * cos(m * phi) * P(l, m, cos(theta));
+		else                return sqrt2 * K(l, -m) * sin(-m * phi) * P(l, -m, cos(theta));
 	}
 
 	~MyGame()
@@ -162,6 +269,11 @@ public:
 		delete cubeProjBuffer;
 
 		delete skyboxPShader;
+
+		delete irradianceCompute;
+		delete irradianceEvaluate;
+		delete irradianceCoeff;
+		delete irradianceSamples;
 	}
 
 	void imGUICall() override
@@ -208,7 +320,7 @@ public:
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 	}
 
-	void renderCubeAt(const float& x, const float& y, const float& z)
+	void renderCubeAt(const DirectX::XMVECTOR& location)
 	{
 		const DirectX::XMVECTOR focusPoints[6] =
 		{
@@ -233,11 +345,11 @@ public:
 
 		for (int i = 0; i < 6; i++)
 		{
-			const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH({ x,y,z }, DirectX::XMVectorAdd(focusPoints[i], { x,y,z }), upVectors[i]);
+			const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(location, DirectX::XMVectorAdd(focusPoints[i], location), upVectors[i]);
 			cubeProj.viewProj[i] = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
 		}
 
-		cubeProj.probeLocation = { x,y,z };
+		cubeProj.probeLocation = location;
 
 		memcpy(cubeProjBuffer->map(0).pData, &cubeProj, sizeof(CubeProj));
 		cubeProjBuffer->unmap(0);
@@ -305,7 +417,7 @@ public:
 
 		shadowMap->clear(D3D11_CLEAR_DEPTH);
 
-		renderCubeAt(0.f, 20.f, 0.f);
+		renderCubeAt(Camera::getEye());
 
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
@@ -327,23 +439,45 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
-		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);*/
+		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 
-		/*RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 		RenderAPI::get()->DrawQuad();*/
 
 		RenderAPI::get()->OMSetDefRTV(shadowMap);
-		RenderAPI::get()->PSSetSRV({ renderCube }, 0);
 
-		RenderAPI::skyboxVS->use();
-		skyboxPShader->use();
+		if (showRadiance)
+		{
+			RenderAPI::get()->PSSetSRV({ renderCube }, 0);
 
-		RenderAPI::get()->DrawCube();
+			RenderAPI::skyboxVS->use();
+			skyboxPShader->use();
+
+			RenderAPI::get()->DrawCube();
+		}
+		else
+		{
+			RenderAPI::get()->CSSetUAV({ irradianceCoeff }, 0);
+			RenderAPI::get()->CSSetSRV({ renderCube,irradianceSamples }, 0);
+			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
+
+			irradianceCompute->use();
+
+			RenderAPI::get()->Dispatch(1, 1, 1);
+
+			RenderAPI::get()->PSSetSRV({ irradianceCoeff }, 0);
+
+			RenderAPI::skyboxVS->use();
+			irradianceEvaluate->use();
+
+			RenderAPI::get()->DrawCube();
+		}
+
 	}
 
 

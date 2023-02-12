@@ -2,9 +2,9 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/ComputeTexture3D.h>
+#include<Aurora/ResDepthTexture.h>
 
 #include<Aurora/A3D/FPSCamera.h>
-#include<Aurora/A3D/ShadowMap.h>
 
 #include<Aurora/PostProcessing/HBAOEffect.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
@@ -18,7 +18,7 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	ShadowMap* shadowMap;
+	ResDepthTexture* resDepthTexture;
 
 	RenderTexture* gPosition;
 
@@ -102,7 +102,7 @@ public:
 		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
-		shadowMap(new ShadowMap(Graphics::getWidth(), Graphics::getHeight())),
+		resDepthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		voxelVShader(new Shader("VoxelizationVShader.hlsl", ShaderType::Vertex)),
 		voxelGShader(new Shader("VoxelizationGShader.hlsl", ShaderType::Geometry)),
@@ -121,8 +121,8 @@ public:
 		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f),
 		displayMode(false)
 	{
-		exposure = 0.40f;
-		gamma = 1.25f;
+		exposure = 1.f;
+		gamma = 1.f;
 		bloomEffect.setExposure(exposure);
 		bloomEffect.setGamma(gamma);
 		bloomEffect.setThreshold(0.5f);
@@ -235,7 +235,7 @@ public:
 
 	~MyGame()
 	{
-		delete shadowMap;
+		delete resDepthTexture;
 
 		delete gPosition;
 		delete gNormalSpecular;
@@ -310,8 +310,8 @@ public:
 		{
 			RenderAPI::get()->RSSetState(States::rasterCullNone);
 
-			shadowMap->clear();
-			RenderAPI::get()->OMSetDefRTV(shadowMap);
+			resDepthTexture->clear(D3D11_CLEAR_DEPTH);
+			RenderAPI::get()->OMSetDefRTV(resDepthTexture);
 			RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);
 
 			RenderAPI::get()->GSSetSRV({ voxelTextureColorFinal }, 0);
@@ -335,15 +335,15 @@ public:
 			gBaseColor->clearRTV(DirectX::Colors::Black);
 			gPosition->clearRTV(DirectX::Colors::Black);
 			gNormalSpecular->clearRTV(DirectX::Colors::Black);
-			shadowMap->clear(D3D11_CLEAR_DEPTH);
+			resDepthTexture->clear(D3D11_CLEAR_DEPTH);
 
-			RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, shadowMap);
+			RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, resDepthTexture);
 
 			scene->draw(deferredVShader, deferredPShader);
 
 			originTexture->clearRTV(DirectX::Colors::Black);
 			RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
-			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
+			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(resDepthTexture->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
 			RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);
 
 			RenderAPI::fullScreenVS->use();
@@ -351,7 +351,7 @@ public:
 
 			RenderAPI::get()->DrawQuad();
 
-			RenderAPI::get()->OMSetRTV({ originTexture }, shadowMap);
+			RenderAPI::get()->OMSetRTV({ originTexture }, resDepthTexture);
 			RenderAPI::get()->PSSetSRV({ skybox }, 0);
 
 			RenderAPI::skyboxVS->use();

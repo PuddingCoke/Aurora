@@ -22,7 +22,7 @@
 //https://www.intel.com/content/www/us/en/developer/articles/technical/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms.html
 //https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
 
-//首先根据Threshold剔除非明亮像素（如果采用PBR着色模型的话Threshold应该为0）
+//首先根据Threshold剔除非明亮像素（如果采用PBR着色模型的话Threshold应该为1）
 //然后进行降采样（Kawase Blur）、升采样（Gaussian Blur）
 //最后根据Exposure还有Gamma来校色
 class BloomEffect :public EffectBase
@@ -121,7 +121,7 @@ private:
 
 	const unsigned int bloomHeight;
 
-	StructuredBuffer* blurParamBuffer[blurSteps];
+	Buffer* blurParamBuffer[blurSteps];
 
 	Buffer* bloomParamBuffer;
 

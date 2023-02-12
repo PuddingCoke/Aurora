@@ -6,8 +6,8 @@ Texture2D<float4> irradianceCoeff : register(t0);
 #define A2 0.785398163397448
 
 float3 GetIrradiance(const in float3 N)
-{
-    return max(float3(0.0, 0.0, 0.0),
+{   
+    return max(float3(0.0, 0.0, 0.0), 
         A0 * irradianceCoeff[uint2(0, 0)].rgb * (1.0 / (2.0 * SQRT_PI))
     + A1 * irradianceCoeff[uint2(1, 0)].rgb * ((-sqrt(3.0) * N.y) / (2.0 * SQRT_PI))
     + A1 * irradianceCoeff[uint2(2, 0)].rgb * ((sqrt(3.0) * N.z) / (2.0 * SQRT_PI))

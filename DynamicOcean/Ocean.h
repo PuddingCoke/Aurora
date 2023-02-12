@@ -127,8 +127,8 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 
 		auto getVertexAt = [this](const unsigned int& x, const unsigned int& z)
 		{
-			const float xPos = 1.5f*((float)x - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
-			const float zPos = 1.5f*((float)z - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
+			const float xPos = ((float)x - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
+			const float zPos = ((float)z - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
 			const float u = (float)x / (float)patchSize;
 			const float v = (float)z / (float)patchSize;
 			return Vertex{ {xPos,0.f,zPos},{u,v} };

@@ -25,7 +25,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
     samples.GetDimensions(numSamples, stride);
     
-    for (uint i = 0; i < numSamples + 1; i++)
+    for (uint i = 0; i < numSamples+1; i++)
     {
         result += envCube.SampleLevel(linearSampler, samples[i].direction.xyz, 0.0).rgb * samples[i].Ylm[DTid.x];
     }

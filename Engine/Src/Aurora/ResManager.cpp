@@ -43,7 +43,7 @@ void ResManager::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, 
 		if (dsv)
 		{
 			dsv->bindDSV();
-			Renderer::context->OMSetRenderTargets((unsigned int)rtvs.size(), tempRTV, dsv->get());
+			Renderer::context->OMSetRenderTargets((unsigned int)rtvs.size(), tempRTV, dsv->getDSV());
 		}
 		else
 		{
@@ -53,7 +53,7 @@ void ResManager::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, 
 	else
 	{
 		dsv->bindDSV();
-		Renderer::context->OMSetRenderTargets(0, nullptr, dsv->get());
+		Renderer::context->OMSetRenderTargets(0, nullptr, dsv->getDSV());
 	}
 
 }

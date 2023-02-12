@@ -102,9 +102,6 @@
     <ClInclude Include="Inc\Aurora\A3D\OrbitCamera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\A3D\ShadowMap.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\DX\Resource\Buffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -112,9 +109,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\A2D\GameSceneManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Aurora\A3D\CascadedShadowMap.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\ComputeTexture.h">
@@ -207,6 +201,12 @@
     <ClInclude Include="Inc\Aurora\A3D\RenderCube.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\DepthTexture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\ResDepthTexture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -293,9 +293,6 @@
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\A3D\ShadowMap.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Aurora\DX\Resource\Buffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -303,9 +300,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\A2D\GameSceneManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\A3D\CascadedShadowMap.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\ComputeTexture.cpp">
@@ -390,6 +384,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\A3D\RenderCube.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\DepthTexture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\ResDepthTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,7 +1,6 @@
 #include<Aurora/A3D/RenderCube.h>
 
 RenderCube::RenderCube(const UINT& resolution, const DXGI_FORMAT& format, const float color[4]) :
-	depthStencilView(new DepthStencilView(resolution, resolution, DXGI_FORMAT_D32_FLOAT, false, 6)),
 	resolution(resolution)
 {
 	{
@@ -42,15 +41,5 @@ RenderCube::RenderCube(const UINT& resolution, const DXGI_FORMAT& format, const 
 
 RenderCube::~RenderCube()
 {
-	delete depthStencilView;
-}
-
-DepthStencilView* RenderCube::getDSV() const
-{
-	return depthStencilView;
-}
-
-void RenderCube::clearDepth(const float& depth) const
-{
-	depthStencilView->clear(D3D11_CLEAR_DEPTH, depth);
+	
 }

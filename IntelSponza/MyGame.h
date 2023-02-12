@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
+#include<Aurora/ResDepthTexture.h>
 #include<Aurora/A3D/FPSCamera.h>
-#include<Aurora/A3D/ShadowMap.h>
 #include<Aurora/A3D/TextureCube.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
 #include<Aurora/PostProcessing/HBAOEffect.h>
@@ -20,7 +20,7 @@ public:
 
 	FPSCamera camera;
 
-	ShadowMap* depthView;
+	ResDepthTexture* resDepthTexture;
 
 	Scene* mainScene;
 
@@ -65,7 +65,7 @@ public:
 
 	MyGame() :
 		camera({ 0,10,0 }, { 1,0,0 }, { 0,1,0 }, 10),
-		depthView(new ShadowMap(Graphics::getWidth(), Graphics::getHeight())),
+		resDepthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
 		mainScene(new Scene("E:/Assets/SuperSponza/NewSponza_Main_glTF_002.gltf")),
 		//curtainScene(new Scene("E:/Assets/SuperSponza/NewSponza_Curtains_glTF.gltf")),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM)),
@@ -113,7 +113,7 @@ public:
 		delete mainScene;
 		//delete curtainScene;
 
-		delete depthView;
+		delete resDepthTexture;
 
 		delete gBaseColor;
 		delete gPosition;
@@ -149,13 +149,13 @@ public:
 		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 		RenderAPI::get()->PSSetSampler({ States::anisotropicWrapSampler,States::linearClampSampler }, 0);
 
-		depthView->clear();
+		resDepthTexture->clear(D3D11_CLEAR_DEPTH);
 		gBaseColor->clearRTV(DirectX::Colors::Black);
 		gPosition->clearRTV(DirectX::Colors::Black);
 		gNormal->clearRTV(DirectX::Colors::Black);
 		gRoughnessMetallic->clearRTV(DirectX::Colors::Black);
 
-		RenderAPI::get()->OMSetRTV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic }, depthView);
+		RenderAPI::get()->OMSetRTV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic }, resDepthTexture);
 
 		mainScene->draw(deferredVS, deferredPSHasTex, deferredPSNoTex, deferredPSTrans);
 
@@ -163,7 +163,7 @@ public:
 		//curtainScene->draw(deferredVS, deferredPSHasTex, deferredPSNoTex, deferredPSTrans);
 		//RenderAPI::get()->RSSetState(States::rasterCullBack);
 
-		ShaderResourceView* hbaoSRV = hbaoEffect.process(depthView->getSRV(), gNormal->getSRV());
+		ShaderResourceView* hbaoSRV = hbaoEffect.process(resDepthTexture->getSRV(), gNormal->getSRV());
 
 		originTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
@@ -203,7 +203,7 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
-		RenderAPI::get()->OMSetDefRTV(depthView);
+		RenderAPI::get()->OMSetDefRTV(resDepthTexture);
 		RenderAPI::get()->PSSetSRV({ skybox }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 

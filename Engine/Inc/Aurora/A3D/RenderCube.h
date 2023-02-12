@@ -22,17 +22,11 @@ public:
 
 	~RenderCube();
 
-	DepthStencilView* getDSV() const;
-
-	void clearDepth(const float& depth = 1.f) const;
-
 	const UINT resolution;
 
 private:
 
 	ComPtr<ID3D11Texture2D> cubeTexture;
-
-	DepthStencilView* depthStencilView;
 
 };
 

@@ -8,7 +8,6 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 	compileShaders();
 
 	{
-
 		//const float sigma[blurSteps] = { 0.55f,0.84f,1.15f,1.9f,3.3f };
 		const float sigma[blurSteps] = { 0.44f,0.57f,0.8f,1.32f,3.3f };
 
@@ -22,7 +21,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 			blurParam[i].iteration = iteration[i];
 			blurParam[i].sigma = sigma[i];
 
-			blurParamBuffer[i] = new StructuredBuffer(sizeof(BlurParam), sizeof(BlurParam), D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
+			blurParamBuffer[i] = new Buffer(sizeof(BlurParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
 
 			updateCurve(i);
 		}
@@ -30,11 +29,11 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 
 	bloomParamBuffer = new Buffer(sizeof(BloomParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
 
-	bloomParam.exposure = 0.36f;
-	bloomParam.gamma = 1.0f;
-	bloomParam.threshold = 1.0f;
-	bloomParam.intensity = 1.0f;
-	bloomParam.softThreshold = 1.0f;
+	bloomParam.exposure = 1.f;
+	bloomParam.gamma = 1.f;
+	bloomParam.threshold = 1.f;
+	bloomParam.intensity = 1.f;
+	bloomParam.softThreshold = 1.f;
 
 	applyChange();
 }
@@ -103,7 +102,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 
-	RenderAPI::get()->CSSetSRV({ blurParamBuffer[blurSteps - 1] }, 1);
+	RenderAPI::get()->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 1] }, 1);
 
 	bloomHBlur->use();
 	RenderAPI::get()->CSSetUAV({ swapTexture[blurSteps - 1]->write() }, 0);
@@ -119,7 +118,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		RenderAPI::get()->CSSetSRV({ blurParamBuffer[blurSteps - 2 - i] }, 1);
+		RenderAPI::get()->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 2 - i] }, 1);
 
 		bloomHBlur->use();
 		RenderAPI::get()->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write() }, 0);

@@ -32,7 +32,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 
 	for (unsigned int i = 0; i < 6; i++)
 	{
-		RenderAPI::get()->CopySubresourceRegion(cubeTexture.Get(), D3D11CalcSubresource(0, i, 1), 0, 0, 0, textures[i]->getTexture2D(), 0, nullptr);
+		RenderAPI::get()->CopySubresourceRegion(cubeTexture.Get(), D3D11CalcSubresource(0, i, 1), 0, 0, 0, textures[i]->get(), 0, nullptr);
 	}
 
 	{

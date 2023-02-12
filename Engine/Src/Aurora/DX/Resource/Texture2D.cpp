@@ -1,6 +1,7 @@
 ﻿#include<Aurora/DX/Resource/Texture2D.h>
 
-Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UINT& bindFlags, const UINT& cpuAccessFlag)
+Texture2D::Texture2D(const std::string& path) :
+	width(0), height(0), format(DXGI_FORMAT_UNKNOWN), mipLevels(0), arraySize(0)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 
@@ -23,19 +24,19 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 		height = textureHeight;
 		format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		mipLevels = 1;
+		arraySize = 1;
 
 		if (pixels)
 		{
 			tDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 			tDesc.ArraySize = 1;
 			tDesc.MipLevels = 1;
-			tDesc.BindFlags = bindFlags;
+			tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 			tDesc.Width = (UINT)textureWidth;
 			tDesc.Height = (UINT)textureHeight;
 			tDesc.SampleDesc.Count = 1;
 			tDesc.SampleDesc.Quality = 0;
-			tDesc.Usage = usage;
-			tDesc.CPUAccessFlags = cpuAccessFlag;
+			tDesc.Usage = D3D11_USAGE_IMMUTABLE;
 
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 4u;
@@ -55,19 +56,19 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 		height = textureHeight;
 		format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		mipLevels = 1;
+		arraySize = 1;
 
 		if (pixels)
 		{
 			tDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			tDesc.ArraySize = 1;
 			tDesc.MipLevels = 1;
-			tDesc.BindFlags = bindFlags;
+			tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 			tDesc.Width = (UINT)textureWidth;
 			tDesc.Height = (UINT)textureHeight;
 			tDesc.SampleDesc.Count = 1;
 			tDesc.SampleDesc.Quality = 0;
-			tDesc.Usage = usage;
-			tDesc.CPUAccessFlags = cpuAccessFlag;
+			tDesc.Usage = D3D11_USAGE_IMMUTABLE;
 
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 16u;
@@ -83,13 +84,13 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 
 		DirectX::CreateDDSTextureFromFile(Renderer::device, wFilePath.c_str(), (ID3D11Resource**)texture.GetAddressOf(), nullptr);
 
-		D3D11_TEXTURE2D_DESC desc;
-		texture->GetDesc(&desc);
+		texture->GetDesc(&tDesc);
 
-		width = desc.Width;
-		height = desc.Height;
-		format = desc.Format;
-		mipLevels = desc.MipLevels;
+		width = tDesc.Width;
+		height = tDesc.Height;
+		format = tDesc.Format;
+		mipLevels = tDesc.MipLevels;
+		arraySize = tDesc.ArraySize;
 	}
 	else
 	{
@@ -99,26 +100,8 @@ Texture2D::Texture2D(const std::string& path, const D3D11_USAGE& usage, const UI
 	std::cout << "[class Texture2D] " << path << " create successfully!\n";
 }
 
-Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const bool& enableMSAA, const UINT& cpuAccessFlag) :
-	width(width), height(height), format(format), mipLevels(1)
-{
-	D3D11_TEXTURE2D_DESC tDesc = {};
-	tDesc.Width = width;
-	tDesc.Height = height;
-	tDesc.MipLevels = 1;
-	tDesc.ArraySize = 1;
-	tDesc.Format = format;
-	tDesc.SampleDesc.Count = enableMSAA ? Graphics::getMSAALevel() : 1;
-	tDesc.SampleDesc.Quality = 0;
-	tDesc.Usage = usage;
-	tDesc.BindFlags = bindFlags;
-	tDesc.CPUAccessFlags = cpuAccessFlag;
-
-	Renderer::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
-}
-
-Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, const TextureType& type) :
-	width(width), height(height), format(DXGI_FORMAT_R32G32B32A32_FLOAT), mipLevels(1)
+Texture2D::Texture2D(const UINT& width, const UINT& height, const TextureType& type) :
+	width(width), height(height), format(DXGI_FORMAT_R32G32B32A32_FLOAT), mipLevels(1), arraySize(1)
 {
 	std::vector<DirectX::XMFLOAT4> colors(width * height);
 
@@ -155,8 +138,6 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 	tDesc.SampleDesc.Quality = 0;
 	tDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	tDesc.CPUAccessFlags = 0;
-	tDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA subresource = {};
 	subresource.pSysMem = colors.data();
@@ -165,16 +146,51 @@ Texture2D::Texture2D(const unsigned int& width, const unsigned int& height, cons
 	Renderer::device->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 }
 
+Texture2D::Texture2D(const UINT& width, const UINT& height, const DXGI_FORMAT& format, const UINT& bindFlags, const bool& enableMSAA) :
+	width(width), height(height), format(format), mipLevels(1), arraySize(1)
+{
+	D3D11_TEXTURE2D_DESC tDesc = {};
+	tDesc.Width = width;
+	tDesc.Height = height;
+	tDesc.MipLevels = 1;
+	tDesc.ArraySize = 1;
+	tDesc.Format = format;
+	tDesc.SampleDesc.Count = enableMSAA ? Graphics::getMSAALevel() : 1;
+	tDesc.SampleDesc.Quality = 0;
+	tDesc.Usage = D3D11_USAGE_DEFAULT;
+	tDesc.BindFlags = bindFlags;
+
+	Renderer::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+}
+
+Texture2D::Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const DXGI_FORMAT& format, const UINT& bindFlags, const UINT& miscFlags) :
+	width(width), height(height), format(format), mipLevels(mipLevels), arraySize(arraySize)
+{
+	D3D11_TEXTURE2D_DESC tDesc = {};
+	tDesc.Width = width;
+	tDesc.Height = height;
+	tDesc.MipLevels = mipLevels;
+	tDesc.ArraySize = arraySize;
+	tDesc.Format = format;
+	tDesc.SampleDesc.Count = 1;
+	tDesc.SampleDesc.Quality = 0;
+	tDesc.Usage = D3D11_USAGE_DEFAULT;
+	tDesc.BindFlags = bindFlags;
+	tDesc.MiscFlags = miscFlags;
+
+	Renderer::device->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+}
+
 Texture2D::~Texture2D()
 {
 }
 
-const unsigned int& Texture2D::getWidth() const
+const UINT& Texture2D::getWidth() const
 {
 	return width;
 }
 
-const unsigned int& Texture2D::getHeight() const
+const UINT& Texture2D::getHeight() const
 {
 	return height;
 }
@@ -184,7 +200,17 @@ const DXGI_FORMAT& Texture2D::getFormat() const
 	return format;
 }
 
-ID3D11Texture2D* Texture2D::getTexture2D() const
+const UINT& Texture2D::getMipLevels() const
+{
+	return mipLevels;
+}
+
+const UINT& Texture2D::getArraySize() const
+{
+	return arraySize;
+}
+
+ID3D11Texture2D* Texture2D::get() const
 {
 	return texture.Get();
 }

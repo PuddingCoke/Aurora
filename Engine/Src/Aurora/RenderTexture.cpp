@@ -6,11 +6,11 @@ RenderTexture::~RenderTexture()
 
 void RenderTexture::resolve(Texture2D* const texture2d) const
 {
-	RenderAPI::get()->ResolveSubresource(texture2d->getTexture2D(), 0, texture.Get(), 0, format);
+	RenderAPI::get()->ResolveSubresource(texture2d->get(), 0, texture.Get(), 0, format);
 }
 
 RenderTexture::RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4], const bool& enableMSAA) :
-	Texture2D(width, height, format, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET, enableMSAA)
+	Texture2D(width, height, format, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET, enableMSAA)
 {
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};

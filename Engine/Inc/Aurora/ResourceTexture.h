@@ -16,11 +16,11 @@ public:
 
 	void operator=(const ResourceTexture&) = delete;
 
-	ResourceTexture(const std::string& filePath, const D3D11_USAGE& usage = D3D11_USAGE_IMMUTABLE, const UINT& extraBindFlags = 0, const UINT& cpuAccessFlag = 0);
+	ResourceTexture(const std::string& filePath);
 
 	ResourceTexture(const unsigned int& width, const unsigned int& height, const TextureType& type);
 
-	ResourceTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& extraBindFlags = 0, const bool& enableMSAA = false, const UINT& cpuAccessFlag = 0);
+	ResourceTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA = false);
 
 	virtual ~ResourceTexture();
 

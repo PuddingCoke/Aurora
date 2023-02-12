@@ -10,7 +10,7 @@ class ComputeTexture :public Texture2D, public USView
 {
 public:
 
-	ComputeTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const unsigned int& extraBindFlags = 0);
+	ComputeTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format);
 
 	virtual ~ComputeTexture();
 

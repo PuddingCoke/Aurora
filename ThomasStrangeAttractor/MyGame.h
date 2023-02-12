@@ -6,7 +6,7 @@
 #include<Aurora/Event.h>
 #include<Aurora/States.h>
 #include<Aurora/RenderTexture.h>
-#include<Aurora/DX/View/DepthStencilView.h>
+#include<Aurora/DepthTexture.h>
 #include<Aurora/A3D/OrbitCamera.h>
 
 #include"StrangeAttractor.h"
@@ -21,7 +21,7 @@ public:
 
 	StrangeAttractor attractor;
 
-	DepthStencilView* depthStencilView;
+	DepthTexture* depthTexture;
 
 	RenderTexture* renderTexture;
 
@@ -43,7 +43,7 @@ public:
 		attractor(2000000),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		depthStencilView(new DepthStencilView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
+		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
 		camera({ 4,4,-11 }, { -1,-1,-1 }, 2.f),
 		simulationBuffer(new Buffer(sizeof(SimulationParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, 0, D3D11_CPU_ACCESS_WRITE))
 	{
@@ -67,7 +67,7 @@ public:
 	~MyGame()
 	{
 		delete renderTexture;
-		delete depthStencilView;
+		delete depthTexture;
 		delete simulationBuffer;
 	}
 
@@ -97,9 +97,9 @@ public:
 
 	void render() override
 	{
-		depthStencilView->clear(D3D11_CLEAR_DEPTH);
+		depthTexture->clear(D3D11_CLEAR_DEPTH);
 		renderTexture->clearRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ renderTexture }, depthStencilView);
+		RenderAPI::get()->OMSetRTV({ renderTexture }, depthTexture);
 
 		attractor.render();
 

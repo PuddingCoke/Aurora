@@ -32,31 +32,39 @@ public:
 
 	void operator=(const Texture2D&) = delete;
 
-	Texture2D(const std::string& filePath, const D3D11_USAGE& usage = D3D11_USAGE_IMMUTABLE, const UINT& bindFlags = D3D11_BIND_SHADER_RESOURCE, const UINT& cpuAccessFlag = 0);
+	Texture2D(const std::string& filePath);
 
-	Texture2D(const unsigned int& width, const unsigned int& height, const TextureType& type);
+	Texture2D(const UINT& width, const UINT& height, const TextureType& type);
 
-	Texture2D(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const D3D11_USAGE& usage, const UINT& bindFlags, const bool& enableMSAA = false, const UINT& cpuAccessFlag = 0);
+	Texture2D(const UINT& width, const UINT& height, const DXGI_FORMAT& format, const UINT& bindFlags, const bool& enableMSAA = false);
+
+	Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const DXGI_FORMAT& format, const UINT& bindFlags, const UINT& miscFlags);
 
 	virtual ~Texture2D();
 
-	const unsigned int& getWidth() const;
+	const UINT& getWidth() const;
 
-	const unsigned int& getHeight() const;
+	const UINT& getHeight() const;
 
 	const DXGI_FORMAT& getFormat() const;
 
-	ID3D11Texture2D* getTexture2D() const;
+	const UINT& getMipLevels() const;
+
+	const UINT& getArraySize() const;
+
+	ID3D11Texture2D* get() const;
 
 protected:
 
-	unsigned int width;
+	UINT width;
 
-	unsigned int height;
+	UINT height;
 
 	DXGI_FORMAT format;
 
-	unsigned int mipLevels;
+	UINT mipLevels;
+
+	UINT arraySize;
 
 	ComPtr<ID3D11Texture2D> texture;
 };

@@ -75,7 +75,7 @@
     <IncludePath>$(ProjectDir)Inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)Inc;$(SolutionDir)ImageLoader\Inc;$(SolutionDir)Tools;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -130,6 +130,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,13 +142,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Aurora\A2D\GameSceneManager.h" />
-    <ClInclude Include="Inc\Aurora\A3D\CascadedShadowMap.h" />
     <ClInclude Include="Inc\Aurora\A3D\OrbitCamera.h" />
     <ClInclude Include="Inc\Aurora\A3D\RenderCube.h" />
     <ClInclude Include="Inc\Aurora\Aurora.h" />
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
     <ClInclude Include="Inc\Aurora\ComputeBuffer.h" />
     <ClInclude Include="Inc\Aurora\ComputeTexture3D.h" />
+    <ClInclude Include="Inc\Aurora\DepthTexture.h" />
     <ClInclude Include="Inc\Aurora\DX\Resource\Buffer.h" />
     <ClInclude Include="Inc\Aurora\Camera.h" />
     <ClInclude Include="Inc\Aurora\Color.h" />
@@ -169,7 +170,6 @@
     <ClInclude Include="Inc\Aurora\Keyboard.h" />
     <ClInclude Include="Inc\Aurora\Math.h" />
     <ClInclude Include="Inc\Aurora\Mouse.h" />
-    <ClInclude Include="Inc\Aurora\A3D\ShadowMap.h" />
     <ClInclude Include="Inc\Aurora\A3D\TextureCube.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h" />
@@ -179,6 +179,7 @@
     <ClInclude Include="Inc\Aurora\RCTexture.h" />
     <ClInclude Include="Inc\Aurora\RenderAPI.h" />
     <ClInclude Include="Inc\Aurora\ResManager.h" />
+    <ClInclude Include="Inc\Aurora\ResDepthTexture.h" />
     <ClInclude Include="Inc\Aurora\ResourceTexture.h" />
     <ClInclude Include="Inc\Aurora\StructuredBuffer.h" />
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h" />
@@ -217,10 +218,10 @@
     <ClCompile Include="Src\Aurora\A3D\RenderCube.cpp" />
     <ClCompile Include="Src\Aurora\ComputeBuffer.cpp" />
     <ClCompile Include="Src\Aurora\A2D\GameSceneManager.cpp" />
-    <ClCompile Include="Src\Aurora\A3D\CascadedShadowMap.cpp" />
     <ClCompile Include="Src\Aurora\A3D\FPSCamera.cpp" />
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp" />
     <ClCompile Include="Src\Aurora\ComputeTexture3D.cpp" />
+    <ClCompile Include="Src\Aurora\DepthTexture.cpp" />
     <ClCompile Include="Src\Aurora\DX\Resource\Buffer.cpp" />
     <ClCompile Include="Src\Aurora\ComputeTexture.cpp" />
     <ClCompile Include="Src\Aurora\DX\Resource\Texture3D.cpp" />
@@ -238,7 +239,6 @@
     <ClCompile Include="Src\Aurora\DX\View\ShaderResourceView.cpp" />
     <ClCompile Include="Src\Aurora\DX\View\UnorderedAccessView.cpp" />
     <ClCompile Include="Src\Aurora\Renderer.cpp" />
-    <ClCompile Include="Src\Aurora\A3D\ShadowMap.cpp" />
     <ClCompile Include="Src\Aurora\A3D\TextureCube.cpp" />
     <ClCompile Include="Src\Aurora\Camera.cpp" />
     <ClCompile Include="Src\Aurora\Color.cpp" />
@@ -252,6 +252,7 @@
     <ClCompile Include="Src\Aurora\Keyboard.cpp" />
     <ClCompile Include="Src\Aurora\Mouse.cpp" />
     <ClCompile Include="Src\Aurora\RCTexture.cpp" />
+    <ClCompile Include="Src\Aurora\ResDepthTexture.cpp" />
     <ClCompile Include="Src\Aurora\ResourceTexture.cpp" />
     <ClCompile Include="Inc\stb_image\stb_image.cpp" />
     <ClCompile Include="Src\Aurora\StructuredBuffer.cpp" />
