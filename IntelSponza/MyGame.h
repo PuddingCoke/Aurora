@@ -149,7 +149,7 @@ public:
 		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 		RenderAPI::get()->PSSetSampler({ States::anisotropicWrapSampler,States::linearClampSampler }, 0);
 
-		resDepthTexture->clear(D3D11_CLEAR_DEPTH);
+		resDepthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 		gBaseColor->clearRTV(DirectX::Colors::Black);
 		gPosition->clearRTV(DirectX::Colors::Black);
 		gNormal->clearRTV(DirectX::Colors::Black);

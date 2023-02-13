@@ -6,8 +6,15 @@ struct Sample
     float Ylm[9];
 };
 
+cbuffer ProjMatrices : register(b1)
+{
+    matrix viewProj[6];
+    float3 probeLocation;
+    uint probeIndex;
+};
+
 //必须使用 r16g16b16a16，r11g11b10精度太低
-RWTexture2D<float4> irradianceCoeff : register(u0);
+RWTexture2DArray<float4> irradianceCoeff : register(u0);
 
 TextureCube envCube : register(t0);
 
@@ -32,5 +39,5 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
     result *= 4.0 * PI / float(numSamples);
     
-    irradianceCoeff[DTid.xy] = float4(result, 1.0);
+    irradianceCoeff[uint3(DTid.xy, probeIndex)] = float4(result, 1.0);
 }

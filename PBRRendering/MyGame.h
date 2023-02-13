@@ -214,7 +214,7 @@ public:
 
 		RenderAPI::get()->Dispatch(1, 1, 1);
 
-		depthTexture->clear(D3D11_CLEAR_DEPTH);
+		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::CadetBlue);
 		RenderAPI::get()->OMSetDefRTV(depthTexture);
 

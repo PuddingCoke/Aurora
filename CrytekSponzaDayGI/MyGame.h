@@ -3,8 +3,8 @@
 #include<Aurora/Game.h>
 #include<Aurora/ComputeTexture.h>
 #include<Aurora/ResDepthTexture.h>
-#include<Aurora/DepthCubeArray.h>
 
+#include<Aurora/A3D/DepthCube.h>
 #include<Aurora/A3D/FPSCamera.h>
 #include<Aurora/A3D/RenderCube.h>
 
@@ -62,9 +62,11 @@ public:
 
 	ComputeTexture* irradianceCoeff;
 
+	ComputeTexture* depthOctahedralMap;
+
 	StructuredBuffer* irradianceSamples;
 
-	DepthCubeArray* depthCubeArray;
+	DepthCube* depthCube;
 
 	FPSCamera camera;
 
@@ -120,8 +122,9 @@ public:
 		lightProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		cubeProjBuffer(new Buffer(sizeof(CubeProj), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		renderCube(new RenderCube(128, DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		irradianceCoeff(new ComputeTexture(9, 1, DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		depthCubeArray(new DepthCubeArray(128, 1024))
+		depthCube(new DepthCube(128)),
+		irradianceCoeff(new ComputeTexture(9, 1, DXGI_FORMAT_R16G16B16A16_FLOAT, 1024)),
+		depthOctahedralMap(new ComputeTexture(16, 16, DXGI_FORMAT_R16G16_FLOAT, 1024))
 	{
 		exposure = 1.0f;
 		gamma = 1.25f;
@@ -261,7 +264,6 @@ public:
 
 		delete scene;
 		delete skybox;
-		delete renderCube;
 
 		delete lightBuffer;
 		delete lightProjBuffer;
@@ -277,10 +279,13 @@ public:
 
 		delete irradianceCompute;
 		delete irradianceEvaluate;
-		delete irradianceCoeff;
 		delete irradianceSamples;
 
-		delete depthCubeArray;
+		delete renderCube;
+		delete depthCube;
+
+		delete irradianceCoeff;
+		delete depthOctahedralMap;
 	}
 
 	void imGUICall() override
@@ -317,7 +322,7 @@ public:
 		RenderAPI::get()->RSSetState(States::rasterShadow);
 		RenderAPI::get()->RSSetViewport(shadowMapRes, shadowMapRes);
 
-		globalShadowTexture->clear(D3D11_CLEAR_DEPTH);
+		globalShadowTexture->clearDSV(D3D11_CLEAR_DEPTH);
 
 		RenderAPI::get()->OMSetRTV({}, globalShadowTexture);
 		RenderAPI::get()->VSSetConstantBuffer({ lightProjBuffer }, 2);
@@ -327,7 +332,7 @@ public:
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 	}
 
-	void renderCubeAt(const DirectX::XMFLOAT3& location)
+	void renderCubeAt(const DirectX::XMFLOAT3& location, const unsigned int& probeIndex)
 	{
 		const DirectX::XMVECTOR focusPoints[6] =
 		{
@@ -357,17 +362,17 @@ public:
 		}
 
 		cubeProj.probeLocation = location;
+		cubeProj.probeIndex = probeIndex;
 
 		memcpy(cubeProjBuffer->map(0).pData, &cubeProj, sizeof(CubeProj));
 		cubeProjBuffer->unmap(0);
 
 		renderCube->clearRTV(DirectX::Colors::Black);
-		
-		DepthStencilView* const dsv = depthCubeArray->getCubeDSV(0);
-		dsv->clear(D3D11_CLEAR_DEPTH);
+		depthCube->clearDSV(D3D11_CLEAR_DEPTH);
 
-		RenderAPI::get()->RSSetViewport(renderCube->resolution, renderCube->resolution);
-		RenderAPI::get()->OMSetRTV({ renderCube }, dsv);
+
+		RenderAPI::get()->RSSetViewport(renderCube->getWidth(), renderCube->getHeight());
+		RenderAPI::get()->OMSetRTV({ renderCube }, depthCube);
 		RenderAPI::get()->VSSetConstantBuffer({ cubeProjBuffer }, 2);
 		RenderAPI::get()->PSSetSRV({ globalShadowTexture }, 2);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,lightProjBuffer,cubeProjBuffer }, 1);
@@ -425,12 +430,12 @@ public:
 		RenderAPI::get()->GSSetShader(nullptr);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
-		depthTexture->clear(D3D11_CLEAR_DEPTH);
+		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 
 		DirectX::XMFLOAT3 location;
 		DirectX::XMStoreFloat3(&location, Camera::getEye());
 
-		renderCubeAt(location);
+		renderCubeAt(location, 0);
 
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
@@ -477,6 +482,7 @@ public:
 		{
 			RenderAPI::get()->CSSetUAV({ irradianceCoeff }, 0);
 			RenderAPI::get()->CSSetSRV({ renderCube,irradianceSamples }, 0);
+			RenderAPI::get()->CSSetConstantBuffer({ cubeProjBuffer }, 1);
 			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
 			irradianceCompute->use();

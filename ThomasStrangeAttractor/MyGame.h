@@ -97,7 +97,7 @@ public:
 
 	void render() override
 	{
-		depthTexture->clear(D3D11_CLEAR_DEPTH);
+		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 		renderTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ renderTexture }, depthTexture);
 

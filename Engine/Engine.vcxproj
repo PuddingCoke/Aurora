@@ -149,8 +149,7 @@
     <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h" />
     <ClInclude Include="Inc\Aurora\ComputeBuffer.h" />
     <ClInclude Include="Inc\Aurora\ComputeTexture3D.h" />
-    <ClInclude Include="Inc\Aurora\ComputeTextureArray.h" />
-    <ClInclude Include="Inc\Aurora\DepthCubeArray.h" />
+    <ClInclude Include="Inc\Aurora\A3D\DepthCube.h" />
     <ClInclude Include="Inc\Aurora\DepthTexture.h" />
     <ClInclude Include="Inc\Aurora\DX\Resource\Buffer.h" />
     <ClInclude Include="Inc\Aurora\Camera.h" />
@@ -224,8 +223,7 @@
     <ClCompile Include="Src\Aurora\A3D\FPSCamera.cpp" />
     <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp" />
     <ClCompile Include="Src\Aurora\ComputeTexture3D.cpp" />
-    <ClCompile Include="Src\Aurora\ComputeTextureArray.cpp" />
-    <ClCompile Include="Src\Aurora\DepthCubeArray.cpp" />
+    <ClCompile Include="Src\Aurora\A3D\DepthCube.cpp" />
     <ClCompile Include="Src\Aurora\DepthTexture.cpp" />
     <ClCompile Include="Src\Aurora\DX\Resource\Buffer.cpp" />
     <ClCompile Include="Src\Aurora\ComputeTexture.cpp" />

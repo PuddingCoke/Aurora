@@ -20,7 +20,7 @@ public:
 
 	void operator=(const DepthStencilView&) = delete;
 
-	void clear(const UINT& clearFlag, const float& depth = 1.0f, const UINT8& stencil = 0) const;
+	void clearDSV(const UINT& clearFlag, const float& depth = 1.0f, const UINT8& stencil = 0) const;
 
 	ID3D11DepthStencilView* getDSV() const;
 

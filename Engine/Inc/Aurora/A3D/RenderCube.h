@@ -5,10 +5,10 @@
 
 #include<DirectxColors.h>
 
-#include<Aurora/DX/View/DepthStencilView.h>
+#include<Aurora/DX/Resource/Texture2D.h>
 #include<Aurora/DX/View/RSView.h>
 
-class RenderCube :public RSView
+class RenderCube :public Texture2D, public RSView
 {
 public:
 
@@ -22,11 +22,7 @@ public:
 
 	~RenderCube();
 
-	const UINT resolution;
-
 private:
-
-	ComPtr<ID3D11Texture2D> cubeTexture;
 
 };
 

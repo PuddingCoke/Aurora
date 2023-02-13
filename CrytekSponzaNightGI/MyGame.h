@@ -310,7 +310,7 @@ public:
 		{
 			RenderAPI::get()->RSSetState(States::rasterCullNone);
 
-			resDepthTexture->clear(D3D11_CLEAR_DEPTH);
+			resDepthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 			RenderAPI::get()->OMSetDefRTV(resDepthTexture);
 			RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);
 
@@ -335,7 +335,7 @@ public:
 			gBaseColor->clearRTV(DirectX::Colors::Black);
 			gPosition->clearRTV(DirectX::Colors::Black);
 			gNormalSpecular->clearRTV(DirectX::Colors::Black);
-			resDepthTexture->clear(D3D11_CLEAR_DEPTH);
+			resDepthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 
 			RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, resDepthTexture);
 

@@ -167,7 +167,7 @@ public:
 
 		RenderAPI::get()->RSSetState(States::rasterCullBack);
 
-		depthTexture->clear(D3D11_CLEAR_DEPTH);
+		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 		RenderAPI::get()->OMSetDefRTV(depthTexture);
 
 		RenderAPI::get()->PSSetSRV({ textureCube }, 1);

@@ -29,7 +29,8 @@ cbuffer LightMatrix : register(b3)
 cbuffer ProjMatrices : register(b4)
 {
     matrix viewProj[6];
-    float4 probeLocation;
+    float3 probeLocation;
+    uint probeIndex;
 };
 
 float CalShadow(float3 P)
@@ -66,7 +67,7 @@ float4 main(PixelInput input) : SV_TARGET
     
     const float specular = tSpecular.Sample(wrapSampler, input.uv).r;
     
-    const float3 V = normalize(probeLocation.xyz - input.pos);
+    const float3 V = normalize(probeLocation - input.pos);
     
     const float NdotL = max(0.0, dot(input.normal, lightDir.xyz));
     const float3 diffuseColor = lightColor.rgb * baseColor.rgb * NdotL;
