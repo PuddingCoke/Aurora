@@ -56,9 +56,15 @@ public:
 
 	RenderCube* renderCube;
 
+	RenderCube* distanceCube;
+
 	Shader* irradianceCompute;
 
 	Shader* irradianceEvaluate;
+
+	Shader* octahedralMapping;
+
+	Shader* octahedralDecode;
 
 	ComputeTexture* irradianceCoeff;
 
@@ -97,6 +103,8 @@ public:
 
 	bool showRadiance = true;
 
+	constexpr static UINT cubeResolution = 128;
+
 	MyGame() :
 		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_SNORM, DirectX::Colors::Black)),
@@ -113,6 +121,8 @@ public:
 		cubeRenderPS(new Shader("CubeRenderPS.hlsl", ShaderType::Pixel)),
 		irradianceCompute(new Shader("IrradianceCompute.hlsl", ShaderType::Compute)),
 		irradianceEvaluate(new Shader("IrradianceEvaluate.hlsl", ShaderType::Pixel)),
+		octahedralMapping(new Shader("OctahedralMapping.hlsl", ShaderType::Compute)),
+		octahedralDecode(new Shader("OctahedralDecode.hlsl", ShaderType::Pixel)),
 		skybox(new TextureCube(assetPath + "/sky/kloppenheim_05_4k.hdr", 2048)),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
@@ -121,8 +131,9 @@ public:
 		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		lightProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		cubeProjBuffer(new Buffer(sizeof(CubeProj), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
-		renderCube(new RenderCube(128, DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		depthCube(new DepthCube(128)),
+		renderCube(new RenderCube(cubeResolution, DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		distanceCube(new RenderCube(cubeResolution, DXGI_FORMAT_R32_FLOAT)),
+		depthCube(new DepthCube(cubeResolution)),
 		irradianceCoeff(new ComputeTexture(9, 1, DXGI_FORMAT_R16G16B16A16_FLOAT, 1024)),
 		depthOctahedralMap(new ComputeTexture(16, 16, DXGI_FORMAT_R16G16_FLOAT, 1024))
 	{
@@ -165,8 +176,8 @@ public:
 				float Ylm[9];
 			};
 
-			const unsigned int sampleCount = 400;
-			const unsigned int sampleCountSqrt = 20;
+			const unsigned int sampleCount = 256;
+			const unsigned int sampleCountSqrt = 16;
 			const double oneoverN = 1.0 / (double)sampleCountSqrt;
 
 			unsigned int i = 0;
@@ -281,7 +292,11 @@ public:
 		delete irradianceEvaluate;
 		delete irradianceSamples;
 
+		delete octahedralMapping;
+		delete octahedralDecode;
+
 		delete renderCube;
+		delete distanceCube;
 		delete depthCube;
 
 		delete irradianceCoeff;
@@ -332,7 +347,7 @@ public:
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 	}
 
-	void renderCubeAt(const DirectX::XMFLOAT3& location, const unsigned int& probeIndex)
+	void RenderCubeAt(const DirectX::XMFLOAT3& location, const unsigned int& probeIndex)
 	{
 		const DirectX::XMVECTOR focusPoints[6] =
 		{
@@ -368,16 +383,33 @@ public:
 		cubeProjBuffer->unmap(0);
 
 		renderCube->clearRTV(DirectX::Colors::Black);
+		distanceCube->clearRTV(DirectX::Colors::Black);
 		depthCube->clearDSV(D3D11_CLEAR_DEPTH);
 
+		RenderAPI::get()->OMSetBlendState(nullptr);
+		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 
-		RenderAPI::get()->RSSetViewport(renderCube->getWidth(), renderCube->getHeight());
-		RenderAPI::get()->OMSetRTV({ renderCube }, depthCube);
+		RenderAPI::get()->RSSetViewport(cubeResolution, cubeResolution);
+		RenderAPI::get()->OMSetRTV({ renderCube,distanceCube }, depthCube);
 		RenderAPI::get()->VSSetConstantBuffer({ cubeProjBuffer }, 2);
 		RenderAPI::get()->PSSetSRV({ globalShadowTexture }, 2);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,lightProjBuffer,cubeProjBuffer }, 1);
 
 		scene->renderCube(cubeRenderVS, cubeRenderPS);
+
+		RenderAPI::get()->CSSetUAV({ irradianceCoeff }, 0);
+		RenderAPI::get()->CSSetSRV({ renderCube,irradianceSamples }, 0);
+		RenderAPI::get()->CSSetConstantBuffer({ cubeProjBuffer }, 1);
+		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
+		irradianceCompute->use();
+		RenderAPI::get()->Dispatch(1, 1, 1);
+
+		RenderAPI::get()->CSSetUAV({ depthOctahedralMap }, 0);
+		RenderAPI::get()->CSSetSRV({ distanceCube }, 0);
+		RenderAPI::get()->CSSetConstantBuffer({ cubeProjBuffer }, 1);
+		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
+		octahedralMapping->use();
+		RenderAPI::get()->Dispatch(1, 1, 1);
 	}
 
 	void update(const float& dt) override
@@ -435,7 +467,7 @@ public:
 		DirectX::XMFLOAT3 location;
 		DirectX::XMStoreFloat3(&location, Camera::getEye());
 
-		renderCubeAt(location, 0);
+		RenderCubeAt(location, 0);
 
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
@@ -471,7 +503,7 @@ public:
 
 		if (showRadiance)
 		{
-			RenderAPI::get()->PSSetSRV({ renderCube }, 0);
+			RenderAPI::get()->PSSetSRV({ distanceCube }, 0);
 
 			RenderAPI::skyboxVS->use();
 			skyboxPShader->use();
@@ -480,19 +512,20 @@ public:
 		}
 		else
 		{
-			RenderAPI::get()->CSSetUAV({ irradianceCoeff }, 0);
-			RenderAPI::get()->CSSetSRV({ renderCube,irradianceSamples }, 0);
-			RenderAPI::get()->CSSetConstantBuffer({ cubeProjBuffer }, 1);
-			RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
-
-			irradianceCompute->use();
-
-			RenderAPI::get()->Dispatch(1, 1, 1);
-
-			RenderAPI::get()->PSSetSRV({ irradianceCoeff }, 0);
+			RenderAPI::get()->PSSetSRV({ depthOctahedralMap }, 0);
 
 			RenderAPI::skyboxVS->use();
-			irradianceEvaluate->use();
+			octahedralDecode->use();
+
+			/*RenderAPI::get()->PSSetSRV({ distanceCube }, 0);
+
+			RenderAPI::skyboxVS->use();
+			skyboxPShader->use();*/
+
+			/*RenderAPI::get()->PSSetSRV({ irradianceCoeff }, 0);
+
+			RenderAPI::skyboxVS->use();
+			irradianceEvaluate->use();*/
 
 			RenderAPI::get()->DrawCube();
 		}

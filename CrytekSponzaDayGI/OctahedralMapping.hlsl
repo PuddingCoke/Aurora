@@ -1,7 +1,6 @@
 RWTexture2DArray<float2> depthOctahedralMap : register(u0);
 
 TextureCube<float> depthCube : register(t0);
-
 SamplerState linearClampSampler : register(s0);
 
 cbuffer ProjMatrices : register(b1)

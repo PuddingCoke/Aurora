@@ -42,10 +42,10 @@ float CalShadow(float3 P)
     const float2 texelSize = 1.0 / float2(4096.0, 4096.0);
     
     [unroll]
-    for (int x = -1; x < 2; x++)
+    for (int x = -1; x <= 1; x++)
     {
         [unroll]
-        for (int y = -1; y < 2; y++)
+        for (int y = -1; y <= 1; y++)
         {
             shadow += shadowTexture.SampleCmpLevelZero(shadowSampler, shadowPos.xy + float2(x, y) * texelSize, shadowPos.z);
         }
@@ -56,7 +56,13 @@ float CalShadow(float3 P)
     return 1.0 - shadow;
 }
 
-float4 main(PixelInput input) : SV_TARGET
+struct PixelOuput
+{
+    float4 color : SV_Target0;
+    float dist : SV_Target1;
+};
+
+PixelOuput main(PixelInput input)
 {
     const float4 baseColor = tDiffuse.Sample(wrapSampler, input.uv);
     
@@ -69,7 +75,7 @@ float4 main(PixelInput input) : SV_TARGET
     
     const float3 V = normalize(probeLocation - input.pos);
     
-    const float NdotL = max(0.0, dot(input.normal, lightDir.xyz));
+    const float NdotL = max(dot(input.normal, lightDir.xyz), 0.0);
     const float3 diffuseColor = lightColor.rgb * baseColor.rgb * NdotL;
         
     const float3 H = normalize(V + lightDir.xyz);
@@ -78,5 +84,9 @@ float4 main(PixelInput input) : SV_TARGET
    
     float shadow = CalShadow(input.pos);
     
-    return float4((diffuseColor + specularColor) * CalShadow(input.pos), 1.0);
+    PixelOuput output;
+    output.color = float4((diffuseColor + specularColor) * CalShadow(input.pos), 1.0);
+    output.dist = length(probeLocation - input.pos);
+    
+    return output;
 }

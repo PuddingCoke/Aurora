@@ -1,4 +1,33 @@
-float4 main() : SV_TARGET
+Texture2DArray<float2> depthOctahedralMap : register(t0);
+SamplerState linearClampSampler : register(s0);
+
+float signNotZero(float k)
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    return k >= 0.0 ? 1.0 : -1.0;
+}
+
+float2 signNotZero(float2 v)
+{
+    return float2(signNotZero(v.x), signNotZero(v.y));
+}
+
+float2 octEncode(float3 v)
+{
+    float l1norm = abs(v.x) + abs(v.y) + abs(v.z);
+    float2 result = v.xy * (1.0 / l1norm);
+    if (v.z < 0.0)
+    {
+        result = (1.0 - abs(result.yx)) * signNotZero(result.xy);
+    }
+    return (result + 1.0) / 2.0;
+}
+
+float2 GetDepth(const in float3 N, const in uint probeIndex)
+{
+    return depthOctahedralMap.Sample(linearClampSampler, float3(octEncode(N), float(probeIndex))).rg;
+}
+
+float4 main(float3 position : POSITION) : SV_TARGET
+{
+    return float4(GetDepth(normalize(position), 0).rrr / 512.0, 1.0f);
 }

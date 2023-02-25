@@ -43,8 +43,8 @@ ShaderResourceView* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV
 	input.NormalData.WorldToViewMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
 
 	input.DepthData.Viewport.Enable = true;
-	input.DepthData.Viewport.Height = height;
 	input.DepthData.Viewport.Width = width;
+	input.DepthData.Viewport.Height = height;
 	input.DepthData.Viewport.MaxDepth = 1.f;
 	input.DepthData.Viewport.MinDepth = 0.f;
 	input.DepthData.Viewport.TopLeftX = 0;

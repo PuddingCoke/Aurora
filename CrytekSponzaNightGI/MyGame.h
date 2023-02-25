@@ -130,7 +130,7 @@ public:
 
 		{
 			voxelParam.voxelGridRes = 512;
-			voxelParam.voxelGridLength = 300.f;
+			voxelParam.voxelGridLength = 350.f;
 			voxelParam.voxelSize = voxelParam.voxelGridLength / (float)voxelParam.voxelGridRes;
 
 			voxelTextureColor = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT, D3D11_BIND_RENDER_TARGET, D3D11_RESOURCE_MISC_GENERATE_MIPS, 5);

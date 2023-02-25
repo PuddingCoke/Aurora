@@ -40,8 +40,8 @@ public:
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	MyGame() :
-		camera({ -200,30,0 }, { 1,-0.07f,0 }, { 0,1,0 }, 50),
-		ocean(1024, 512, { 20.f,0.f }, 0.000004f),
+		camera({ -200,30,0 }, { 1,-0.07f,0 }, { 0,1,0 }, 100),
+		ocean(1024, 512, { 20.f,0.f }, 0.000003f),
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
 		skyVS(new Shader("SkyVS.hlsl", ShaderType::Vertex)),
 		skyPS(new Shader("SkyPS.hlsl", ShaderType::Pixel)),
@@ -70,15 +70,15 @@ public:
 		{
 			D3D11_INPUT_ELEMENT_DESC layout[2] =
 			{
-				{"POSITION",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-				{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,16,D3D11_INPUT_PER_VERTEX_DATA,0}
+				{"POSITION",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
+				{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 			};
 
 			Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(skyVS), inputLayout.ReleaseAndGetAddressOf());
 
 			uint32_t skydome_vertices_count = skyDomeSliceCount * (skyDomeSliceCount + 2) * 2;
 
-			float skyDomeRadius = cameraFarClip * 0.8f;
+			float skyDomeRadius = cameraFarClip * 0.5f;
 
 			float* skydome_vertexdata = new float[skydome_vertices_count * 6];
 
