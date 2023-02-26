@@ -37,6 +37,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntelSponza", "IntelSponza\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RealTimeFluidDynamics", "RealTimeFluidDynamics\RealTimeFluidDynamics.vcxproj", "{08A91524-2C77-43A2-AAB2-046E4BC8689F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RayTracing", "RayTracing\RayTracing.vcxproj", "{26754381-66AD-44B1-A5F0-2BE6D65D34A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -181,6 +183,14 @@ Global
 		{08A91524-2C77-43A2-AAB2-046E4BC8689F}.Release|x64.Build.0 = Release|x64
 		{08A91524-2C77-43A2-AAB2-046E4BC8689F}.Release|x86.ActiveCfg = Release|Win32
 		{08A91524-2C77-43A2-AAB2-046E4BC8689F}.Release|x86.Build.0 = Release|Win32
+		{26754381-66AD-44B1-A5F0-2BE6D65D34A5}.Debug|x64.ActiveCfg = Debug|x64
+		{26754381-66AD-44B1-A5F0-2BE6D65D34A5}.Debug|x64.Build.0 = Debug|x64
+		{26754381-66AD-44B1-A5F0-2BE6D65D34A5}.Debug|x86.ActiveCfg = Debug|Win32
+		{26754381-66AD-44B1-A5F0-2BE6D65D34A5}.Debug|x86.Build.0 = Debug|Win32
+		{26754381-66AD-44B1-A5F0-2BE6D65D34A5}.Release|x64.ActiveCfg = Release|x64
+		{26754381-66AD-44B1-A5F0-2BE6D65D34A5}.Release|x64.Build.0 = Release|x64
+		{26754381-66AD-44B1-A5F0-2BE6D65D34A5}.Release|x86.ActiveCfg = Release|Win32
+		{26754381-66AD-44B1-A5F0-2BE6D65D34A5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

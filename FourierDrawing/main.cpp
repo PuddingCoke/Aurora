@@ -5,7 +5,7 @@
 using CameraType = Configuration::CameraType;
 using EngineUsage = Configuration::EngineUsage;
 
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, INT nCmdShow)
+int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ INT nCmdShow)
 {
 	Configuration config(hInstance, 1000, 1000, L"Aurora Test", CameraType::Orthogonal, 8, EngineUsage::Normal, false);
 	if (!Aurora::get().iniEngine(config))

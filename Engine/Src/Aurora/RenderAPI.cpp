@@ -318,8 +318,11 @@ void RenderAPI::DebugDraw(ShaderResourceView* const srv)
 {
 	IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	OMSetBlendState(nullptr);
+
 	ClearDefRTV(DirectX::Colors::Black);
 	OMSetDefRTV(nullptr);
+	RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+
 	PSSetSRV({ srv }, 0);
 	PSSetSampler({ States::pointClampSampler }, 0);
 
