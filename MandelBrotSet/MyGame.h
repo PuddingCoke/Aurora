@@ -8,39 +8,44 @@ class MyGame :public Game
 {
 public:
 
-	Shader* rayTracingPS;
+	Shader* mandelBrotPS;
 
 	Buffer* simulationBuffer;
 
-	float targetRadius;
+	float targetSize;
 
 	struct SimulationParam
 	{
-		float phi;
-		float theta;
-		float radius;
-		float POWER;
+		DirectX::XMFLOAT2 pos;
+		float size;
+		float aspectRatio;
 	} param;
 
 	MyGame() :
-		rayTracingPS(new Shader("RayTracingPS.hlsl", ShaderType::Pixel)),
-		param{ 0.25f,0.0f,12.0f,0.1f }
+		mandelBrotPS(new Shader("MandelBrotPS.hlsl", ShaderType::Pixel)),
+		param{ {0.f,0.f},10.f,Graphics::getAspectRatio() },
+		targetSize(10.f)
 	{
-		targetRadius = param.radius;
 
 		Mouse::addMoveEvent([this]()
 			{
 				if (Mouse::getLeftDown())
 				{
-					param.phi -= Mouse::getDY() * Graphics::getDeltaTime();
-					param.theta -= Mouse::getDX() * Graphics::getDeltaTime();
-					param.phi = Math::clamp(param.phi, -Math::half_pi + 0.01f, Math::half_pi - 0.01f);
+					param.pos.x -= Mouse::getDX() * param.size * 0.005f;
+					param.pos.y += Mouse::getDY() * param.size * 0.005f;
 				}
 			});
 
 		Mouse::addScrollEvent([this]()
 			{
-				targetRadius -= Mouse::getWheelDelta() * 1.f;
+				if (Mouse::getWheelDelta() < 0.f)
+				{
+					targetSize *= 1.2f;
+				}
+				else
+				{
+					targetSize *= 0.8f;
+				}
 			});
 
 		simulationBuffer = new Buffer(sizeof(SimulationParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &param, D3D11_CPU_ACCESS_WRITE);
@@ -52,7 +57,7 @@ public:
 
 	~MyGame()
 	{
-		delete rayTracingPS;
+		delete mandelBrotPS;
 		delete simulationBuffer;
 	}
 
@@ -62,8 +67,7 @@ public:
 
 	void update(const float& dt) override
 	{
-		param.radius = Math::lerp(param.radius, targetRadius, 10.f * dt);
-		param.theta += dt * 0.5f;
+		param.size = Math::lerp(param.size, targetSize, 10.f * dt);
 
 		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
 		simulationBuffer->unmap(0);
@@ -75,7 +79,7 @@ public:
 		RenderAPI::get()->PSSetConstantBuffer({ simulationBuffer }, 1);
 
 		RenderAPI::fullScreenVS->use();
-		rayTracingPS->use();
+		mandelBrotPS->use();
 
 		RenderAPI::get()->DrawQuad();
 	}
