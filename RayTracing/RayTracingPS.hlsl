@@ -209,7 +209,7 @@ float3 Radiance(Ray ray)
         }
         else
         {
-            float3 skyColor = float3(1.0, 1.0, 1.0) * pow(max(dot(ray.d, L), 0.0), 16.0);
+            float3 skyColor = float3(1.0, 1.0, 1.0) * pow(max(dot(ray.d, L), 0.0), 32.0);
             color += (ambient + skyColor) * mask;
             break;
         }
