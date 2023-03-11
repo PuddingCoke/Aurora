@@ -75,7 +75,7 @@ private:
 	std::chrono::steady_clock::time_point timeEnd;
 
 	float encodeTime;
-
+	
 };
 
 #endif // !_NVIDIAENCODER_H_

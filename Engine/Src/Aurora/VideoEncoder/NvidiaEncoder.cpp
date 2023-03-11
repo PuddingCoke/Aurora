@@ -82,6 +82,8 @@ bool NvidiaEncoder::encode()
 
 			nvencAPI.nvEncUnlockBitstream(encoder, lockBitstream.outputBitstream);
 		}
+
+		std::cout << "Encoding... " << frameEncoded << "\n";
 	}
 
 	nvencAPI.nvEncUnmapInputResource(encoder, mapResource.mappedResource);
@@ -96,18 +98,16 @@ bool NvidiaEncoder::encode()
 
 	encodeTime += frameTime;
 
-	std::cout << "Encoding... " << frameEncoded << "\n";
-
 	return encoding;
 }
 
 NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate, ID3D11Resource* const inputTexture2D, bool& initializeStatus) :
-	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0), width(width), height(height)
+	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0), width(width), height(height), bitstream{}, encoder(nullptr), stream(nullptr)
 {
 	nvencAPI = { NV_ENCODE_API_FUNCTION_LIST_VER };
 
 	moduleNvEncAPI = LoadLibraryA("nvEncodeAPI64.dll");
-	
+
 	if (moduleNvEncAPI == 0)
 	{
 		std::cout << "[class NvidiaEncoder] load nvEncodeAPI64.dll failed\n";
@@ -217,7 +217,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	std::cout << "[class NvidiaEncoder] frameToEncode " << frameToEncode << "\n";
 	std::cout << "[class NvidiaEncoder] start encoding\n";
 
-	stream = _popen("ffmpeg -y -f hevc -i pipe: -c copy output.mp4", "wb");
+	stream = _popen("ffmpeg -use_wallclock_as_timestamps 1 -y -f hevc -i pipe: -c copy output.mp4", "wb");
 
 	/*NV_ENC_CAPS_PARAM param = { NV_ENC_CAPS_PARAM_VER };
 	param.capsToQuery = NV_ENC_CAPS_SUPPORT_LOOKAHEAD;
