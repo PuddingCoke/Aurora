@@ -228,18 +228,18 @@ void FlipNormalAndIOR(in Ray incoming, inout HitRecord rec)
     rec.n = lerp(-rec.n, rec.n, isFrontFace);
 }
 
-bool RefractPBRT(in float3 V, in float3 N, in float etaRatio, inout float cosThetaI, inout float3 transmitted)
+bool RefractPBRT(in float3 V, in float3 N, in float refractIndex, inout float cosThetaI, inout float3 transmitted)
 {
     transmitted = float3(SMALL_EPSILON, SMALL_EPSILON, SMALL_EPSILON);
     
     cosThetaI = max(0.0, dot(-V, N));
     float sin2ThetaI = 1.0 - cosThetaI * cosThetaI;
-    float cos2ThetaT = 1.0 - etaRatio * etaRatio * sin2ThetaI;
+    float cos2ThetaT = 1.0 - refractIndex * refractIndex * sin2ThetaI;
     
     if (cos2ThetaT < 0.0)
         return false;
     
-    transmitted = etaRatio * V + (etaRatio * cosThetaI - sqrt(cos2ThetaT)) * N;
+    transmitted = refractIndex * V + (refractIndex * cosThetaI - sqrt(cos2ThetaT)) * N;
     
     return true;
 }
