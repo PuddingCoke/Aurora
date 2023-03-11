@@ -26,5 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="RayTracingPS.hlsl" />
+    <FxCompile Include="DisplayPS.hlsl" />
   </ItemGroup>
 </Project>

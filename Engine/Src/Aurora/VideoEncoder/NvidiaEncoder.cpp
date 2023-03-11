@@ -96,6 +96,8 @@ bool NvidiaEncoder::encode()
 
 	encodeTime += frameTime;
 
+	std::cout << "Encoding... " << frameEncoded << "\n";
+
 	return encoding;
 }
 
@@ -105,7 +107,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	nvencAPI = { NV_ENCODE_API_FUNCTION_LIST_VER };
 
 	moduleNvEncAPI = LoadLibraryA("nvEncodeAPI64.dll");
-
+	
 	if (moduleNvEncAPI == 0)
 	{
 		std::cout << "[class NvidiaEncoder] load nvEncodeAPI64.dll failed\n";

@@ -44,7 +44,7 @@ const unsigned int& Graphics::getMSAALevel()
 }
 
 Graphics::Graphics(const int& width, const int& height, const unsigned int& msaaLevel) :
-	width(width), height(height), msaaLevel(msaaLevel), aspectRatio((float)width / (float)height), deltaTime{ 0,0,0,0 }, recordConfig{ 1800,60 },
+	width(width), height(height), msaaLevel(msaaLevel), aspectRatio((float)width / (float)height), deltaTime{ 0,0,0,0 }, recordConfig{ 3600,60 },
 	deltaTimeBuffer(new Buffer(sizeof(DeltaTime),D3D11_BIND_CONSTANT_BUFFER,D3D11_USAGE_DYNAMIC,nullptr,D3D11_CPU_ACCESS_WRITE))
 {
 	std::cout << "[class Graphics] resolution:" << width << " " << height << "\n";

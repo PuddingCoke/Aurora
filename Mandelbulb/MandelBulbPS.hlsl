@@ -54,14 +54,12 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float3 cameraPos = float3(cos(phi) * sin(theta), cos(phi) * cos(theta), sin(phi)) * RADIUS;
     
-    float3 cameraNormal = normalize(cameraPos);
-    
     float3 helper = float3(0, 0, 1);
     
-    float3 xVec = normalize(cross(cameraNormal, helper));
-    float3 yVec = normalize(cross(cameraNormal, xVec));
+    float3 xVec = normalize(cross(helper, cameraPos));
+    float3 yVec = normalize(cross(xVec, cameraPos));
     
-    float3 rayDir = normalize(xVec * planePos.x + yVec * planePos.y - cameraNormal / tan(FOVANGLEY / 2.0));
+    float3 rayDir = normalize(xVec * planePos.x + yVec * planePos.y - normalize(cameraPos) / tan(FOVANGLEY / 2.0));
     float3 curPos = cameraPos;
     
     float3 color = float3(1.0, 1.0, 1.0);

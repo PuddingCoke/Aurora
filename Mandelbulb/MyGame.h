@@ -33,7 +33,7 @@ public:
 				if (Mouse::getLeftDown())
 				{
 					param.phi -= Mouse::getDY() * Graphics::getDeltaTime();
-					param.theta -= Mouse::getDX() * Graphics::getDeltaTime();
+					param.theta += Mouse::getDX() * Graphics::getDeltaTime();
 					param.phi = Math::clamp(param.phi, -Math::half_pi + 0.01f, Math::half_pi - 0.01f);
 				}
 			});

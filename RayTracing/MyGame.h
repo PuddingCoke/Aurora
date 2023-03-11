@@ -2,6 +2,7 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/RenderAPI.h>
+#include<Aurora/DoubleRTV.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game
@@ -10,31 +11,46 @@ public:
 
 	Shader* rayTracingPS;
 
-	Buffer* simulationBuffer;
+	Shader* displayPS;
+
+	Buffer* cameraParamBuffer;
+
+	Buffer* temporalAccumulationBuffer;
 
 	float targetRadius;
 
-	struct SimulationParam
+	DoubleRTV* swapTexture;
+
+	struct CameraParam
 	{
 		float phi;
 		float theta;
 		float radius;
 		float POWER;
-	} param;
+	} cameraParam;
+
+	struct TemporalAccumulationParam
+	{
+		unsigned int frameCount;
+		DirectX::XMFLOAT3 padding;
+	}temporalAccumulationParam;
 
 	MyGame() :
 		rayTracingPS(new Shader("RayTracingPS.hlsl", ShaderType::Pixel)),
-		param{ 0.25f,0.0f,12.0f,0.1f }
+		displayPS(new Shader("DisplayPS.hlsl", ShaderType::Pixel)),
+		swapTexture(new DoubleRTV(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		cameraParam{ 0.25f,0.0f,12.0f,0.1f },
+		temporalAccumulationParam{ 0u,DirectX::XMFLOAT3() }
 	{
-		targetRadius = param.radius;
+		targetRadius = cameraParam.radius;
 
 		Mouse::addMoveEvent([this]()
 			{
 				if (Mouse::getLeftDown())
 				{
-					param.phi -= Mouse::getDY() * Graphics::getDeltaTime();
-					param.theta -= Mouse::getDX() * Graphics::getDeltaTime();
-					param.phi = Math::clamp(param.phi, -Math::half_pi + 0.01f, Math::half_pi - 0.01f);
+					cameraParam.phi -= Mouse::getDY() * Graphics::getDeltaTime();
+					cameraParam.theta += Mouse::getDX() * Graphics::getDeltaTime();
+					cameraParam.phi = Math::clamp(cameraParam.phi, 0.01f, Math::half_pi - 0.01f);
 				}
 			});
 
@@ -43,7 +59,8 @@ public:
 				targetRadius -= Mouse::getWheelDelta() * 1.f;
 			});
 
-		simulationBuffer = new Buffer(sizeof(SimulationParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &param, D3D11_CPU_ACCESS_WRITE);
+		cameraParamBuffer = new Buffer(sizeof(CameraParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &cameraParam, D3D11_CPU_ACCESS_WRITE);
+		temporalAccumulationBuffer = new Buffer(sizeof(TemporalAccumulationParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->OMSetBlendState(nullptr);
@@ -53,7 +70,10 @@ public:
 	~MyGame()
 	{
 		delete rayTracingPS;
-		delete simulationBuffer;
+		delete displayPS;
+		delete cameraParamBuffer;
+		delete temporalAccumulationBuffer;
+		delete swapTexture;
 	}
 
 	void imGUICall() override
@@ -62,20 +82,47 @@ public:
 
 	void update(const float& dt) override
 	{
-		param.radius = Math::lerp(param.radius, targetRadius, 10.f * dt);
-		param.theta += dt * 0.5f;
+		cameraParam.radius = Math::lerp(cameraParam.radius, targetRadius, 10.f * dt);
+		//cameraParam.theta += dt * 0.5f;
 
-		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
-		simulationBuffer->unmap(0);
+		memcpy(cameraParamBuffer->map(0).pData, &cameraParam, sizeof(CameraParam));
+		cameraParamBuffer->unmap(0);
 	}
 
 	void render()
 	{
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+
+		temporalAccumulationParam.frameCount = 0;
+		swapTexture->read()->clearRTV(DirectX::Colors::Black);
+		swapTexture->write()->clearRTV(DirectX::Colors::Black);
+
+		for (unsigned int i = 0; i < 30; i++)
+		{
+			temporalAccumulationParam.frameCount++;
+
+			memcpy(temporalAccumulationBuffer->map(0).pData, &temporalAccumulationParam, sizeof(TemporalAccumulationParam));
+			temporalAccumulationBuffer->unmap(0);
+
+			RenderAPI::get()->OMSetRTV({ swapTexture->write() }, nullptr);
+
+			RenderAPI::get()->PSSetConstantBuffer({ cameraParamBuffer,temporalAccumulationBuffer }, 1);
+			RenderAPI::get()->PSSetSRV({ swapTexture->read() }, 0);
+
+			RenderAPI::fullScreenVS->use();
+			rayTracingPS->use();
+
+			RenderAPI::get()->DrawQuad();
+			swapTexture->swap();
+		}
+
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetConstantBuffer({ simulationBuffer }, 1);
+
+		RenderAPI::get()->PSSetSRV({ swapTexture->read() }, 0);
 
 		RenderAPI::fullScreenVS->use();
-		rayTracingPS->use();
+		displayPS->use();
 
 		RenderAPI::get()->DrawQuad();
 	}

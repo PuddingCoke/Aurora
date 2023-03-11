@@ -1,6 +1,11 @@
 #define FOVANGLEY 0.78539816339744
-#define EPSILON 1e-3
-#define MAXITERATION 32
+#define BIG_EPSILON 1e-3
+#define SMALL_EPSILON 1e-8
+#define PI         3.1415926535
+#define TWO_PI     6.2831853071
+
+Texture2D historyTex : register(t0);
+SamplerState linearSampler : register(s0);
 
 cbuffer DeltaTime : register(b0)
 {
@@ -18,12 +23,63 @@ cbuffer SimulationParam : register(b1)
     float POWER;
 }
 
+cbuffer TemporalAccumulationParam : register(b2)
+{
+    uint frameCount;
+    float3 padding;
+}
+
+static float hashSeed = 0.0;
+
+uint BaseHash(uint2 p)
+{
+    p = 1103515245U * ((p >> 1U) ^ (p.yx));
+    uint h32 = 1103515245U * ((p.x) ^ (p.y >> 3U));
+    return h32 ^ (h32 >> 16);
+}
+
+float Hash1(inout float seed)
+{
+    uint n = BaseHash(asuint(float2(seed += 0.1, seed += 0.1)));
+    return float(n) * (1.0 / float(0xffffffffU));
+}
+
+float2 Hash2(inout float seed)
+{
+    uint n = BaseHash(asuint(float2(seed += 0.1, seed += 0.1)));
+    uint2 rz = uint2(n, n * 48271U);
+    return float2(rz.xy & uint2(0x7fffffffU, 0x7fffffffU)) / float(0x7fffffff);
+}
+
+float3 Hash3(inout float seed)
+{
+    uint n = BaseHash(asuint(float2(seed += 0.1, seed += 0.1)));
+    uint3 rz = uint3(n, n * 16807U, n * 48271U);
+    return float3(rz & uint3(0x7fffffffU, 0x7fffffffU, 0x7fffffffU)) / float(0x7fffffff);
+}
+
+float2 RandomPointInUnitDisk(inout float seed)
+{
+    float2 h = Hash2(seed) * float2(1.0, TWO_PI);
+    return h.x * float2(cos(h.y), sin(h.y));
+}
+
+float3 RandomPointInUnitSphere(inout float seed)
+{
+    float3 h = Hash3(seed) * float3(TWO_PI, 2.0, 1.0) - float3(0.0, 1.0, 0.0);
+    float theta = h.x;
+    float sinPhi = sqrt(1.0 - h.y * h.y);
+    float r = pow(h.z, 0.3333333334);
+    
+    return r * float3(cos(theta) * sinPhi, sin(theta) * sinPhi, h.y);
+}
+
 class Ray
 {
     float3 o;
     float3 d;
     
-    float3 eval(float t)
+    float3 evaluate(in float t)
     {
         return o + t * d;
     }
@@ -39,193 +95,234 @@ Ray CreateRay(float3 o, float3 d)
 
 class Material
 {
-    float3 color;
-    float diffuseFactor;
-    float specularFactor;
+    int materialIndex;
+    float3 baseColor;
+    float fuzz; //metal
+    float refractIndex; //dielectric
 };
 
-Material CreateMaterial(float3 color, float diffuseFactor, float specularFactor)
+#define MATERIAL_LAMBERTIAN 0
+#define MATERIAL_DIELECTRIC 1
+#define MATERIAL_METAL 2
+
+Material CreateMaterial(in int materialIndex,in float3 baseColor,in float fuzz,in float refractIndex)
 {
-    Material mat;
-    mat.color = color;
-    mat.diffuseFactor = diffuseFactor;
-    mat.specularFactor = specularFactor;
-    return mat;
+    Material material;
+    material.materialIndex = materialIndex;
+    material.baseColor = baseColor;
+    material.fuzz = fuzz;
+    material.refractIndex = refractIndex;
+    return material;
 }
 
 class HitRecord
 {
     float t;
     float3 n;
-    Material mat;
+    Material material;
 };
 
 class Sphere
 {
     float3 c;
     float r;
-    Material mat;
+    Material material;
 };
 
-Sphere CreateSphere(float3 c, float r, Material mat)
+Sphere CreateSphere(in float3 c,in float r,in Material material)
 {
     Sphere sphere;
-    sphere.r = r;
     sphere.c = c;
-    sphere.mat = mat;
+    sphere.r = r;
+    sphere.material = material;
     return sphere;
 }
 
-class Plane
+float Schlick(in float cosine, in float refractIndex)
 {
-    float3 n;
-    Material mat;
-};
-
-Plane CreatePlane(float3 n, Material mat)
-{
-    Plane plane;
-    plane.n = n;
-    plane.mat = mat;
-    return plane;
+    float r0 = (1.0 - refractIndex) / (1.0 + refractIndex);
+    r0 = r0 * r0;
+    return r0 + (1.0 - r0) * pow((1.0 - cosine), 5.0);
 }
 
-HitRecord RayIntersect(in Ray ray, in Sphere sphere)
+void RayIntersect(in Ray ray, in Sphere sphere, inout HitRecord rec, inout bool hitObject)
 {
     float3 oc = ray.o - sphere.c;
     float l = dot(ray.d, oc);
     float det = l * l - dot(oc, oc) + sphere.r * sphere.r;
     
-    HitRecord rec;
-    rec.t = -1.0;
-    rec.n = float3(0.0, 0.0, 0.0);
-    rec.mat = CreateMaterial(float3(0.0, 0.0, 0.0), 0.0, 0.0);
-    
     if (det < 0.0)
     {
-        return rec;
+        return;
     }
     
     float t = -l - sqrt(det);
     
-    if (t < 0.0)
+    if (t < BIG_EPSILON || rec.t < t)
     {
-        t = -l + sqrt(det);
+        return;
     }
     
-    if (t < 0.0)
-    {
-        return rec;
-    }
-    
+    hitObject = true;
     rec.t = t;
-    rec.n = (ray.eval(t) - sphere.c) / sphere.r;
-    rec.mat = sphere.mat;
+    rec.n = (ray.evaluate(t) - sphere.c) / sphere.r;
+    rec.material = sphere.material;
 
-    return rec;
+    return;
 }
 
-HitRecord RayIntersect(in Ray ray, in Plane plane)
+static const Sphere spheres[24] =
 {
-    float len = -dot(ray.o, plane.n) / dot(ray.d, plane.n);
-    
-    HitRecord rec;
-    rec.t = -1.0;
-    rec.n = float3(0.0, 0.0, 0.0);
-    rec.mat = CreateMaterial(float3(0.0, 0.0, 0.0), 0.0, 0.0);
-    
-    if (len < 0.0)
-    {
-        return rec;
-    }
-    
-    rec.t = len;
-    rec.n = plane.n;
-    rec.mat = plane.mat;
-    
-    return rec;
-}
-
-HitRecord GetCloseHit(in HitRecord closeHit, in HitRecord hit)
-{
-    if (closeHit.t < 0.0 || (hit.t > 0.0 && hit.t < closeHit.t))
-    {
-        return hit;
-    }
-    
-    return closeHit;
-}
-
-static const float3 ambient = float3(0.6, 0.8, 1.0);
-static const float3 L = normalize(float3(-1.0, 0.75, 1.0));
-static const Sphere spheres[4] =
-{
-    CreateSphere(float3(0.0, 0.0, 1.2), 1.0, CreateMaterial(float3(1.0, 1.0, 0.0), 1.0, 0.5)),
-    CreateSphere(float3(3.0 * cos(sTime), 3.0 * sin(sTime), 1.2), 1.0, CreateMaterial(float3(1.0, 0.0, 0.0), 1.0, 0.1)),
-    CreateSphere(float3(-4.0, -4.0, 2.0 + sin(sTime)), 1.0, CreateMaterial(float3(0.0, 1.0, 0.0), 1.0, 0.2)),
-    CreateSphere(float3(4.0 + cos(sTime), -4.0, 1.5), 1.0, CreateMaterial(float3(0.0, 0.0, 1.0), 1.0, 0.3)),
+    CreateSphere(float3(0.0, -1000., -1.0), 1000.0, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.5, 0.5, 0.5), 0.0, 0.0)),
+    CreateSphere(float3(-4.0, 1.0, 2.0), 1.0, CreateMaterial(MATERIAL_DIELECTRIC, float3(1.0, 1.0, 1.0), 0.0, 1.5)),
+    CreateSphere(float3(0.0, 1.0, 0.0), 1.0, CreateMaterial(MATERIAL_METAL, float3(0.7, 0.6, 0.5), 0.0, 0.0)),
+    CreateSphere(float3(4.0, 1.0, 2.0), 1.0, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.7, 0.3, 0.3), 0.0, 0.0)),
+    CreateSphere(float3(-6.0, 0.2, 2.8), 0.2, CreateMaterial(MATERIAL_DIELECTRIC, float3(1.0, 1.0, 1.0), 0.0, 1.5)),
+    CreateSphere(float3(1.6, 0.2, -0.9), 0.2, CreateMaterial(MATERIAL_DIELECTRIC, float3(1.0, 1.0, 1.0), 0.0, 1.5)),
+    CreateSphere(float3(-5.7, 0.2, -2.7), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.3, 0.3), 0.0, 0.0)),
+    CreateSphere(float3(-3.6, 0.2, -4.4), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.9, 0.3, 0.2), 0.0, 0.0)),
+    CreateSphere(float3(0.8, 0.2, 2.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.2, 0, 0.5), 0.0, 0.0)),
+    CreateSphere(float3(3.8, 0.2, 4.2), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.4, 0.3, 0.7), 0.0, 0.0)),
+    CreateSphere(float3(-0.1, 0.2, -1.9), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.4, 0, 0.4), 0.0, 0.0)),
+    CreateSphere(float3(-2.5, 0.2, 5.4), 0.2, CreateMaterial(MATERIAL_METAL, float3(0.3, 0.7, 0.9), 0.3, 0.0)),
+    CreateSphere(float3(-3.9, 0.2, -0.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.9, 0.8, 0.5), 0.0, 0.0)),
+    CreateSphere(float3(-6.0, 0.2, 4.0), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.9, 0.9, 0.5), 0.0, 0.0)),
+    CreateSphere(float3(4.4, 0.2, -0.5), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.5, 0.4, 0.8), 0.0, 0.0)),
+    CreateSphere(float3(3.4, 0.2, 5.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.1, 0.6, 0.2), 0.0, 0.0)),
+    CreateSphere(float3(4.6, 0.2, -3.8), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.2, 0.2, 0.2), 0.0, 0.0)),
+    CreateSphere(float3(0.7, 0.2, -2.5), 0.2, CreateMaterial(MATERIAL_METAL, float3(0, 0.2, 0.1), 0.0, 0.0)),
+    CreateSphere(float3(2.4, 0.2, -4.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.9, 0), 0.0, 0.0)),
+    CreateSphere(float3(4.4, 0.2, 4.9), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.8, 0), 0.0, 0.0)),
+    CreateSphere(float3(-4.7, 0.2, 4.6), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.8, 0.7), 0.0, 0.0)),
+    CreateSphere(float3(4.2, 0.2, -3.5), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.8, 0.6), 0.0, 0.0)),
+    CreateSphere(float3(-5.2, 0.2, 0.5), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.2, 0.7, 0.9), 0.0, 0.0)),
+    CreateSphere(float3(5.7, 0.2, -0.8), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.3, 0, 0.7), 0.0, 0.0))
 };
 
-//找到最近的t
-HitRecord Trace(Ray ray)
+float3 GetBackgroundColor(in float y)
 {
-    HitRecord closeHit = RayIntersect(ray, CreatePlane(float3(0.0, 0.0, 1.0), CreateMaterial(float3(1.0, 1.0, 1.0), 1.0, 0.0)));
+    return lerp(float3(1.0, 1.0, 1.0), float3(0.5, 0.7, 1.0), y);
+}
+
+bool Trace(in Ray ray, out HitRecord rec)
+{
+    bool hit = false;
+    
+    rec.t = 99999.0;
+    rec.n = float3(0.0, 0.0, 0.0);
+    rec.material = CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.0, 0.0, 0.0), 0.0, 0.0);
     
     [unroll]
-    for (uint i = 0; i < 4; i++)
+    for (uint i = 0; i < 24; i++)
     {
-        HitRecord hit = RayIntersect(ray, spheres[i]);
-        closeHit = GetCloseHit(closeHit, hit);
+        RayIntersect(ray, spheres[i], rec, hit);
     }
     
-    return closeHit;
+    return hit;
+}
+
+void FlipNormalAndIOR(in Ray incoming, inout HitRecord rec)
+{
+    float isFrontFace = float(dot(incoming.d, rec.n) < 0.0);
+    rec.material.refractIndex = lerp(rec.material.refractIndex, 1.0 / rec.material.refractIndex, isFrontFace);
+    rec.n = lerp(-rec.n, rec.n, isFrontFace);
+}
+
+bool RefractPBRT(in float3 V, in float3 N, in float etaRatio, inout float cosThetaI, inout float3 transmitted)
+{
+    transmitted = float3(SMALL_EPSILON, SMALL_EPSILON, SMALL_EPSILON);
+    
+    cosThetaI = max(0.0, dot(-V, N));
+    float sin2ThetaI = 1.0 - cosThetaI * cosThetaI;
+    float cos2ThetaT = 1.0 - etaRatio * etaRatio * sin2ThetaI;
+    
+    if (cos2ThetaT < 0.0)
+        return false;
+    
+    transmitted = etaRatio * V + (etaRatio * cosThetaI - sqrt(cos2ThetaT)) * N;
+    
+    return true;
+}
+
+bool ScatterRay(in Ray incoming, in HitRecord rec, inout float3 attenuation, inout Ray scattered)
+{
+    if (rec.material.materialIndex == MATERIAL_LAMBERTIAN)
+    {
+        scattered = CreateRay(incoming.evaluate(rec.t), normalize(rec.n + RandomPointInUnitSphere(hashSeed)));
+        attenuation = rec.material.baseColor;
+        return true;
+    }
+    else if (rec.material.materialIndex == MATERIAL_METAL)
+    {
+        scattered = CreateRay(incoming.evaluate(rec.t), normalize(reflect(incoming.d, rec.n) + rec.material.fuzz * RandomPointInUnitSphere(hashSeed)));
+        attenuation = rec.material.baseColor;
+        return dot(scattered.d, rec.n) > 0.0;
+    }
+    else if (rec.material.materialIndex == MATERIAL_DIELECTRIC)
+    {
+        FlipNormalAndIOR(incoming, rec);
+        float3 transmitDirection;
+
+        float cosThetaI;
+        bool isRefracted = RefractPBRT(incoming.d, rec.n, rec.material.refractIndex, cosThetaI, transmitDirection);
+        float shouldReflect = lerp(1.0, step(Hash1(hashSeed), Schlick(cosThetaI, rec.material.refractIndex)), float(isRefracted));
+        transmitDirection = lerp(transmitDirection, reflect(incoming.d, rec.n), shouldReflect);
+        
+        scattered = CreateRay(incoming.evaluate(rec.t), normalize(transmitDirection));
+        
+        attenuation = rec.material.baseColor;
+        
+        return true;
+    }
+    
+    
+    scattered = CreateRay(float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0));
+    attenuation = float3(0.0, 0.0, 0.0);
+    return false;
 }
 
 float3 Radiance(Ray ray)
 {
-    float3 color = float3(0.0, 0.0, 0.0);
-    float3 fresnel = float3(0.0, 0.0, 0.0);
-    float3 mask = float3(1.0, 1.0, 1.0);
+    float3 color = float3(1.0, 1.0, 1.0);
     
-    [loop]
-    for (int i = 0; i < MAXITERATION; i++)
+    HitRecord rec;
+    
+    [unroll]
+    for (uint i = 0; i < 8; i++)
     {
-        HitRecord hit = Trace(ray);
-        
-        if (hit.t > 0.0)
+        if (Trace(ray, rec))
         {
-            float3 r0 = hit.mat.color * hit.mat.specularFactor;
-            float hv = saturate(dot(hit.n, -ray.d));
-            fresnel = r0 + (1.0 - r0) * pow(1.0 - hv, 5.0);
-            mask *= fresnel;
-
-            if (Trace(CreateRay(ray.eval(hit.t) + EPSILON * L, L)).t < 0.0)
+            Ray scattered;
+            float3 attenuation;
+            if (ScatterRay(ray, rec, attenuation, scattered))
             {
-                color += max(dot(hit.n, L), 0.0) * hit.mat.color * hit.mat.diffuseFactor * (1.0 - fresnel) * mask / fresnel;
+                color *= attenuation;
+                ray = scattered;
             }
-            
-            float3 reflection = reflect(ray.d, hit.n);
-            ray = CreateRay(ray.eval(hit.t) + EPSILON * reflection, reflection);
+            else
+            {
+                break;
+            }
         }
         else
         {
-            float3 skyColor = float3(1.0, 1.0, 1.0) * pow(max(dot(ray.d, L), 0.0), 32.0);
-            color += (ambient + skyColor) * mask;
-            break;
+            return color * GetBackgroundColor(ray.d.y * 0.5 + 0.5);
         }
     }
     
-    return color;
+    return float3(0.0, 0.0, 0.0);
 }
 
-float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
+float4 main(float2 texCoord : TEXCOORD, float4 pixelCoord : SV_POSITION) : SV_TARGET
 {
-    float2 planePos = texCoord * 2.0 - 1.0;
+    hashSeed = float(BaseHash(asuint(pixelCoord.xy))) / float(0xffffffffU) + float(frameCount) / 60.0;
+    
+    float2 planePos = (floor(pixelCoord.xy) + Hash2(hashSeed)) / float2(1920.0, 1080.0) * 2.0 - 1.0;
     planePos.x *= 16.0 / 9.0;
     
-    float3 cameraPos = float3(cos(phi) * cos(theta), cos(phi) * sin(theta), sin(phi)) * RADIUS;
+    float3 cameraPos = float3(cos(phi) * cos(theta), sin(phi), cos(phi) * sin(theta)) * RADIUS;
     
-    float3 helper = float3(0, 0, 1);
+    float3 helper = float3(0.0, 1.0, 0.0);
     
     float3 xVec = normalize(cross(helper, cameraPos));
     float3 yVec = normalize(cross(xVec, cameraPos));
@@ -235,5 +332,10 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     Ray ray = CreateRay(rayOrigin, rayDir);
     
-    return float4(Radiance(ray), 1.0);
+    float3 currentColor = Radiance(ray);
+    float3 historyColor = historyTex.Sample(linearSampler, texCoord).rgb;
+    
+    float3 outputColor = lerp(historyColor, currentColor, 1.0 / float(frameCount));
+    
+    return float4(outputColor, 1.0);
 }

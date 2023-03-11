@@ -1,4 +1,4 @@
-#define MAXITERATION 1000
+#define MAXITERATION 300
 
 cbuffer SimulationParam : register(b1)
 {
