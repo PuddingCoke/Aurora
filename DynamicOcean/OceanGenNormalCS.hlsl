@@ -24,12 +24,12 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
     float dist = mapLength / float(mapResolution);
     
-    float3 right = displacementXYZ[int2(ClampCoord(coord.x + 1), coord.y)].xyz;
-    float3 left = displacementXYZ[int2(ClampCoord(coord.x - 1), coord.y)].xyz;
-    float3 top = displacementXYZ[int2(coord.x, ClampCoord(coord.y + 1))].xyz;
-    float3 bottom = displacementXYZ[int2(coord.x, ClampCoord(coord.y - 1))].xyz;
+    float3 right = displacementXYZ[(coord + int2(1, 0)) & (int(mapResolution) - 1)].xyz;
+    float3 left = displacementXYZ[(coord - int2(1, 0)) & (int(mapResolution) - 1)].xyz;
+    float3 top = displacementXYZ[(coord + int2(0, 1)) & (int(mapResolution) - 1)].xyz;
+    float3 bottom = displacementXYZ[(coord - int2(0, 1)) & (int(mapResolution) - 1)].xyz;
     
-    float patchSize = 128.0;
+    float patchSize = float(mapResolution) / 2.0;
     
     float tileSize = patchSize * 2.0 / float(mapResolution);
     float invTileSize = float(mapResolution) / patchSize;

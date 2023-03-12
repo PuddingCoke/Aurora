@@ -125,23 +125,23 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	{
 		std::vector<Vertex> vertices;
 
-		auto getVertexAt = [this](const unsigned int& x, const unsigned int& z)
+		auto getVertexAt = [this](const int& x, const int& z)
 		{
-			const float xPos = ((float)x - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
-			const float zPos = ((float)z - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize;
+			const float xPos = ((float)x - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize - (float)param.mapLength / 2.f;
+			const float zPos = ((float)z - (float)patchSize / 2.f) * (float)param.mapLength / (float)patchSize - (float)param.mapLength / 2.f;
 			const float u = (float)x / (float)patchSize;
 			const float v = (float)z / (float)patchSize;
 			return Vertex{ {xPos,0.f,zPos},{u,v} };
 		};
 
-		for (unsigned int z = 0; z < patchSize - 1u; z++)
+		for (int z = 0; z < 64; z++)
 		{
-			for (unsigned int x = 0; x < patchSize - 1u; x++)
+			for (int x = 0; x < 64; x++)
 			{
 				vertices.push_back(getVertexAt(x, z));
-				vertices.push_back(getVertexAt(x, z + 1u));
-				vertices.push_back(getVertexAt(x + 1u, z + 1u));
-				vertices.push_back(getVertexAt(x + 1u, z));
+				vertices.push_back(getVertexAt(x, z + 1));
+				vertices.push_back(getVertexAt(x + 1, z + 1));
+				vertices.push_back(getVertexAt(x + 1, z));
 			}
 		}
 
@@ -251,12 +251,12 @@ inline void Ocean::render() const
 	RenderAPI::get()->DSSetSRV({ displacementXYZ }, 0);
 	RenderAPI::get()->PSSetSRV({ normalTexture }, 0);
 
-	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
-	RenderAPI::get()->DSSetSampler({ States::linearClampSampler }, 0);
+	RenderAPI::get()->PSSetSampler({ States::linearWrapSampler }, 0);
+	RenderAPI::get()->DSSetSampler({ States::linearWrapSampler }, 0);
 
 	RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 
-	RenderAPI::get()->Draw(4 * (patchSize - 1u) * (patchSize - 1u), 0u);
+	RenderAPI::get()->Draw(4 * (64) * (64), 0u);
 
 	RenderAPI::get()->HSSetShader(nullptr);
 	RenderAPI::get()->DSSetShader(nullptr);

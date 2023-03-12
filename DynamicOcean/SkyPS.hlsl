@@ -25,7 +25,7 @@ float4 main(PixelInput input) : SV_TARGET
 {
 	
     float3 V = normalize(input.eyeToPixelVector);
-    float3 L = normalize(float3(1.0, 0.0, 1.0));
+    float3 L = normalize(float3(1.0, 1.0, 1.0));
     float sun_disk = pow(max(0.0, (dot(V, L) - 0.99995) / 0.00005), 1.001); // cos(0.57 deg) = 0.99995: Our sun disk is ~2 times larger than it is in real life
 
 	// Getting sky color

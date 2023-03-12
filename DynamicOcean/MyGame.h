@@ -17,7 +17,7 @@ public:
 
 	static constexpr unsigned int skyDomeSliceCount = 50;
 
-	static constexpr float cameraFarClip = 1000.f;
+	static constexpr float cameraFarClip = 1024.f;
 
 	FPSCamera camera;
 
@@ -40,7 +40,7 @@ public:
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	MyGame() :
-		camera({ -200,30,0 }, { 1,-0.07f,0 }, { 0,1,0 }, 100),
+		camera({ 0,100,500 }, { 0,-0.2f,-1.f }, { 0,1,0 }, 100),
 		ocean(1024, 512, { 20.f,0.f }, 0.000003f),
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
 		skyVS(new Shader("SkyVS.hlsl", ShaderType::Vertex)),
@@ -125,7 +125,7 @@ public:
 			delete[] skydome_vertexdata;
 		}
 
-		Camera::setProj(Math::pi / 5.f, Graphics::getAspectRatio(), 1.f, cameraFarClip);
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, cameraFarClip);
 	}
 
 	~MyGame()

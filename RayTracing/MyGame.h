@@ -98,7 +98,7 @@ public:
 		swapTexture->read()->clearRTV(DirectX::Colors::Black);
 		swapTexture->write()->clearRTV(DirectX::Colors::Black);
 
-		for (unsigned int i = 0; i < 30; i++)
+		for (unsigned int i = 0; i < 1; i++)
 		{
 			temporalAccumulationParam.frameCount++;
 			temporalAccumulationParam.randomSeed = Random::Float() * 30.f;

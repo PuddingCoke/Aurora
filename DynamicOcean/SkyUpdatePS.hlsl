@@ -105,7 +105,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     }
     r = normalize(r);
 
-    float3 L = normalize(float3(1.0, 0.0, 0.45));
+    float3 L = normalize(float3(1.0, 1.0, 1.0));
     float3 color = 25.0 * CalculateAtmosphericScattering(r, L) * SolarRadianceApproximation(L);
 		
     return float4(color, 1.0);
