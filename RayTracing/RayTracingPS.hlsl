@@ -26,7 +26,8 @@ cbuffer SimulationParam : register(b1)
 cbuffer TemporalAccumulationParam : register(b2)
 {
     uint frameCount;
-    float3 padding;
+    float randomSeed;
+    float2 padding;
 }
 
 static float hashSeed = 0.0;
@@ -315,7 +316,7 @@ float3 Radiance(Ray ray)
 
 float4 main(float2 texCoord : TEXCOORD, float4 pixelCoord : SV_POSITION) : SV_TARGET
 {
-    hashSeed = float(BaseHash(asuint(pixelCoord.xy))) / float(0xffffffffU) + float(frameCount) / 60.0;
+    hashSeed = float(BaseHash(asuint(pixelCoord.xy))) / float(0xffffffffU) + randomSeed;
     
     float2 planePos = (floor(pixelCoord.xy) + Hash2(hashSeed)) / float2(1920.0, 1080.0) * 2.0 - 1.0;
     planePos.x *= 16.0 / 9.0;

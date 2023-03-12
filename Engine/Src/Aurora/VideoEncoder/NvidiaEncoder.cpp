@@ -217,7 +217,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	std::cout << "[class NvidiaEncoder] frameToEncode " << frameToEncode << "\n";
 	std::cout << "[class NvidiaEncoder] start encoding\n";
 
-	stream = _popen("ffmpeg -use_wallclock_as_timestamps 1 -y -f hevc -i pipe: -c copy output.mp4", "wb");
+	stream = _popen("ffmpeg -y -f hevc -i pipe: -c copy output.mp4", "wb");
 
 	/*NV_ENC_CAPS_PARAM param = { NV_ENC_CAPS_PARAM_VER };
 	param.capsToQuery = NV_ENC_CAPS_SUPPORT_LOOKAHEAD;

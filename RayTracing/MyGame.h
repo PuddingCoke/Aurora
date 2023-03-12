@@ -32,7 +32,8 @@ public:
 	struct TemporalAccumulationParam
 	{
 		unsigned int frameCount;
-		DirectX::XMFLOAT3 padding;
+		float randomSeed;
+		DirectX::XMFLOAT2 padding;
 	}temporalAccumulationParam;
 
 	MyGame() :
@@ -40,7 +41,7 @@ public:
 		displayPS(new Shader("DisplayPS.hlsl", ShaderType::Pixel)),
 		swapTexture(new DoubleRTV(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		cameraParam{ 0.25f,0.0f,12.0f,0.1f },
-		temporalAccumulationParam{ 0u,DirectX::XMFLOAT3() }
+		temporalAccumulationParam{ 0u,0.f,{} }
 	{
 		targetRadius = cameraParam.radius;
 
@@ -100,6 +101,7 @@ public:
 		for (unsigned int i = 0; i < 30; i++)
 		{
 			temporalAccumulationParam.frameCount++;
+			temporalAccumulationParam.randomSeed = Random::Float() * 30.f;
 
 			memcpy(temporalAccumulationBuffer->map(0).pData, &temporalAccumulationParam, sizeof(TemporalAccumulationParam));
 			temporalAccumulationBuffer->unmap(0);
