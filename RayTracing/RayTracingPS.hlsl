@@ -159,7 +159,16 @@ void RayIntersect(in Ray ray, in Sphere sphere, inout HitRecord rec, inout bool 
     
     float t = -l - sqrt(det);
     
-    if (t < BIG_EPSILON || rec.t < t)
+    if (t < BIG_EPSILON)
+    {
+        t = -l + sqrt(det);
+        if (t < BIG_EPSILON)
+        {
+            return;
+        }
+    }
+    
+    if(rec.t < t)
     {
         return;
     }
