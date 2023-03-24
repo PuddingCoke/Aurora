@@ -96,23 +96,21 @@ Ray CreateRay(float3 o, float3 d)
 
 class Material
 {
-    int materialIndex;
+    int type;
     float3 baseColor;
-    float fuzz; //metal
-    float refractIndex; //dielectric
+    float param;//metal fuzz dielectric refractive index
 };
 
 #define MATERIAL_LAMBERTIAN 0
 #define MATERIAL_DIELECTRIC 1
 #define MATERIAL_METAL 2
 
-Material CreateMaterial(in int materialIndex,in float3 baseColor,in float fuzz,in float refractIndex)
+Material CreateMaterial(in int type, in float3 baseColor, in float param)
 {
     Material material;
-    material.materialIndex = materialIndex;
+    material.type = type;
     material.baseColor = baseColor;
-    material.fuzz = fuzz;
-    material.refractIndex = refractIndex;
+    material.param = param;
     return material;
 }
 
@@ -183,30 +181,30 @@ void RayIntersect(in Ray ray, in Sphere sphere, inout HitRecord rec, inout bool 
 
 static const Sphere spheres[24] =
 {
-    CreateSphere(float3(0.0, -1000., -1.0), 1000.0, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.5, 0.5, 0.5), 0.0, 0.0)),
-    CreateSphere(float3(-4.0, 1.0, 2.0), 1.0, CreateMaterial(MATERIAL_DIELECTRIC, float3(1.0, 1.0, 1.0), 0.0, 1.5)),
-    CreateSphere(float3(0.0, 1.0, 0.0), 1.0, CreateMaterial(MATERIAL_METAL, float3(0.7, 0.6, 0.5), 0.0, 0.0)),
-    CreateSphere(float3(4.0, 1.0, 2.0), 1.0, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.7, 0.3, 0.3), 0.0, 0.0)),
-    CreateSphere(float3(-6.0, 0.2, 2.8), 0.2, CreateMaterial(MATERIAL_DIELECTRIC, float3(1.0, 1.0, 1.0), 0.0, 1.5)),
-    CreateSphere(float3(1.6, 0.2, -0.9), 0.2, CreateMaterial(MATERIAL_DIELECTRIC, float3(1.0, 1.0, 1.0), 0.0, 1.5)),
-    CreateSphere(float3(-5.7, 0.2, -2.7), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.3, 0.3), 0.0, 0.0)),
-    CreateSphere(float3(-3.6, 0.2, -4.4), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.9, 0.3, 0.2), 0.0, 0.0)),
-    CreateSphere(float3(0.8, 0.2, 2.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.2, 0, 0.5), 0.0, 0.0)),
-    CreateSphere(float3(3.8, 0.2, 4.2), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.4, 0.3, 0.7), 0.0, 0.0)),
-    CreateSphere(float3(-0.1, 0.2, -1.9), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.4, 0, 0.4), 0.0, 0.0)),
-    CreateSphere(float3(-2.5, 0.2, 5.4), 0.2, CreateMaterial(MATERIAL_METAL, float3(0.3, 0.7, 0.9), 0.3, 0.0)),
-    CreateSphere(float3(-3.9, 0.2, -0.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.9, 0.8, 0.5), 0.0, 0.0)),
-    CreateSphere(float3(-6.0, 0.2, 4.0), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.9, 0.9, 0.5), 0.0, 0.0)),
-    CreateSphere(float3(4.4, 0.2, -0.5), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.5, 0.4, 0.8), 0.0, 0.0)),
-    CreateSphere(float3(3.4, 0.2, 5.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.1, 0.6, 0.2), 0.0, 0.0)),
-    CreateSphere(float3(4.6, 0.2, -3.8), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.2, 0.2, 0.2), 0.0, 0.0)),
-    CreateSphere(float3(0.7, 0.2, -2.5), 0.2, CreateMaterial(MATERIAL_METAL, float3(0, 0.2, 0.1), 0.0, 0.0)),
-    CreateSphere(float3(2.4, 0.2, -4.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.9, 0), 0.0, 0.0)),
-    CreateSphere(float3(4.4, 0.2, 4.9), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.8, 0), 0.0, 0.0)),
-    CreateSphere(float3(-4.7, 0.2, 4.6), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.8, 0.7), 0.0, 0.0)),
-    CreateSphere(float3(4.2, 0.2, -3.5), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.8, 0.6), 0.0, 0.0)),
-    CreateSphere(float3(-5.2, 0.2, 0.5), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.2, 0.7, 0.9), 0.0, 0.0)),
-    CreateSphere(float3(5.7, 0.2, -0.8), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.3, 0, 0.7), 0.0, 0.0))
+    CreateSphere(float3(0.0, -1000., -1.0), 1000.0, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.5, 0.5, 0.5), 0.0)),
+    CreateSphere(float3(-4.0, 1.0, 2.0), 1.0, CreateMaterial(MATERIAL_DIELECTRIC, float3(1.0, 1.0, 1.0), 1.5)),
+    CreateSphere(float3(0.0, 1.0, 0.0), 1.0, CreateMaterial(MATERIAL_METAL, float3(0.7, 0.6, 0.5), 0.0)),
+    CreateSphere(float3(4.0, 1.0, 2.0), 1.0, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.7, 0.3, 0.3), 0.0)),
+    CreateSphere(float3(-6.0, 0.2, 2.8), 0.2, CreateMaterial(MATERIAL_DIELECTRIC, float3(1.0, 1.0, 1.0), 1.5)),
+    CreateSphere(float3(1.6, 0.2, -0.9), 0.2, CreateMaterial(MATERIAL_DIELECTRIC, float3(1.0, 1.0, 1.0), 1.5)),
+    CreateSphere(float3(-5.7, 0.2, -2.7), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.3, 0.3), 0.0)),
+    CreateSphere(float3(-3.6, 0.2, -4.4), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.9, 0.3, 0.2), 0.0)),
+    CreateSphere(float3(0.8, 0.2, 2.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.2, 0, 0.5), 0.0)),
+    CreateSphere(float3(3.8, 0.2, 4.2), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.4, 0.3, 0.7), 0.0)),
+    CreateSphere(float3(-0.1, 0.2, -1.9), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.4, 0, 0.4), 0.0)),
+    CreateSphere(float3(-2.5, 0.2, 5.4), 0.2, CreateMaterial(MATERIAL_METAL, float3(0.3, 0.7, 0.9), 0.3)),
+    CreateSphere(float3(-3.9, 0.2, -0.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.9, 0.8, 0.5), 0.0)),
+    CreateSphere(float3(-6.0, 0.2, 4.0), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.9, 0.9, 0.5), 0.0)),
+    CreateSphere(float3(4.4, 0.2, -0.5), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.5, 0.4, 0.8), 0.0)),
+    CreateSphere(float3(3.4, 0.2, 5.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.1, 0.6, 0.2), 0.0)),
+    CreateSphere(float3(4.6, 0.2, -3.8), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.2, 0.2, 0.2), 0.0)),
+    CreateSphere(float3(0.7, 0.2, -2.5), 0.2, CreateMaterial(MATERIAL_METAL, float3(0, 0.2, 0.1), 0.0)),
+    CreateSphere(float3(2.4, 0.2, -4.3), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.9, 0), 0.0)),
+    CreateSphere(float3(4.4, 0.2, 4.9), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.8, 0), 0.0)),
+    CreateSphere(float3(-4.7, 0.2, 4.6), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.8, 0.7), 0.0)),
+    CreateSphere(float3(4.2, 0.2, -3.5), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.8, 0.8, 0.6), 0.0)),
+    CreateSphere(float3(-5.2, 0.2, 0.5), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.2, 0.7, 0.9), 0.0)),
+    CreateSphere(float3(5.7, 0.2, -0.8), 0.2, CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.3, 0, 0.7), 0.0))
 };
 
 float3 GetBackgroundColor(in float y)
@@ -220,7 +218,7 @@ bool Trace(in Ray ray, out HitRecord rec)
     
     rec.t = 99999.0;
     rec.n = float3(0.0, 0.0, 0.0);
-    rec.material = CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.0, 0.0, 0.0), 0.0, 0.0);
+    rec.material = CreateMaterial(MATERIAL_LAMBERTIAN, float3(0.0, 0.0, 0.0), 0.0);
     
     [unroll]
     for (uint i = 0; i < 24; i++)
@@ -231,10 +229,10 @@ bool Trace(in Ray ray, out HitRecord rec)
     return hit;
 }
 
-void FlipNormalAndIOR(in Ray incoming, inout HitRecord rec)
+void FlipNormalAndIOR(in Ray ray, inout HitRecord rec)
 {
-    float isFrontFace = float(dot(incoming.d, rec.n) < 0.0);
-    rec.material.refractIndex = lerp(rec.material.refractIndex, 1.0 / rec.material.refractIndex, isFrontFace);
+    float isFrontFace = float(dot(ray.d, rec.n) < 0.0);
+    rec.material.param = lerp(rec.material.param, 1.0 / rec.material.param, isFrontFace);
     rec.n = lerp(-rec.n, rec.n, isFrontFace);
 }
 
@@ -254,37 +252,36 @@ bool RefractPBRT(in float3 V, in float3 N, in float refractIndex, inout float co
     return true;
 }
 
-bool ScatterRay(in Ray incoming, in HitRecord rec, inout float3 attenuation, inout Ray scattered)
+bool ScatterRay(in Ray ray, in HitRecord rec, inout float3 attenuation, inout Ray scattered)
 {
-    if (rec.material.materialIndex == MATERIAL_LAMBERTIAN)
+    if (rec.material.type == MATERIAL_LAMBERTIAN)
     {
-        scattered = CreateRay(incoming.evaluate(rec.t), normalize(rec.n + RandomPointInUnitSphere(hashSeed)));
+        scattered = CreateRay(ray.evaluate(rec.t), normalize(rec.n + RandomPointInUnitSphere(hashSeed)));
         attenuation = rec.material.baseColor;
         return true;
     }
-    else if (rec.material.materialIndex == MATERIAL_METAL)
+    else if (rec.material.type == MATERIAL_DIELECTRIC)
     {
-        scattered = CreateRay(incoming.evaluate(rec.t), normalize(reflect(incoming.d, rec.n) + rec.material.fuzz * RandomPointInUnitSphere(hashSeed)));
-        attenuation = rec.material.baseColor;
-        return dot(scattered.d, rec.n) > 0.0;
-    }
-    else if (rec.material.materialIndex == MATERIAL_DIELECTRIC)
-    {
-        FlipNormalAndIOR(incoming, rec);
+        FlipNormalAndIOR(ray, rec);
         float3 transmitDirection;
 
         float cosThetaI;
-        bool isRefracted = RefractPBRT(incoming.d, rec.n, rec.material.refractIndex, cosThetaI, transmitDirection);
-        float shouldReflect = lerp(1.0, step(Hash1(hashSeed), Schlick(cosThetaI, rec.material.refractIndex)), float(isRefracted));
-        transmitDirection = lerp(transmitDirection, reflect(incoming.d, rec.n), shouldReflect);
+        bool isRefracted = RefractPBRT(ray.d, rec.n, rec.material.param, cosThetaI, transmitDirection);
+        float shouldReflect = lerp(1.0, step(Hash1(hashSeed), Schlick(cosThetaI, rec.material.param)), float(isRefracted));
+        transmitDirection = lerp(transmitDirection, reflect(ray.d, rec.n), shouldReflect);
         
-        scattered = CreateRay(incoming.evaluate(rec.t), normalize(transmitDirection));
+        scattered = CreateRay(ray.evaluate(rec.t), normalize(transmitDirection));
         
         attenuation = rec.material.baseColor;
         
         return true;
     }
-    
+    else if (rec.material.type == MATERIAL_METAL)
+    {
+        scattered = CreateRay(ray.evaluate(rec.t), normalize(reflect(ray.d, rec.n) + rec.material.param * RandomPointInUnitSphere(hashSeed)));
+        attenuation = rec.material.baseColor;
+        return dot(scattered.d, rec.n) > 0.0;
+    }
     
     scattered = CreateRay(float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0));
     attenuation = float3(0.0, 0.0, 0.0);
