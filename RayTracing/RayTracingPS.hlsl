@@ -59,12 +59,6 @@ float3 Hash3(inout float seed)
     return float3(rz & uint3(0x7fffffffU, 0x7fffffffU, 0x7fffffffU)) / float(0x7fffffff);
 }
 
-float2 RandomPointInUnitDisk(inout float seed)
-{
-    float2 h = Hash2(seed) * float2(1.0, TWO_PI);
-    return h.x * float2(cos(h.y), sin(h.y));
-}
-
 float3 RandomPointInUnitSphere(inout float seed)
 {
     float3 h = Hash3(seed) * float3(TWO_PI, 2.0, 1.0) - float3(0.0, 1.0, 0.0);

@@ -55,7 +55,9 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 TextureCube::TextureCube(const std::string& texturePath)
 {
 	const std::wstring wTexturePath(texturePath.begin(), texturePath.end());
-	DirectX::CreateDDSTextureFromFileEx(Renderer::device, Renderer::getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, nullptr, releaseAndGetSRV());
+	DirectX::CreateDDSTextureFromFileEx(Renderer::device, Renderer::getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)cubeTexture.ReleaseAndGetAddressOf(), releaseAndGetSRV());
+
+	std::cout << "[class TextureCube] " << texturePath << " create successfully!\n";
 }
 
 TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels)
@@ -70,7 +72,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	tDesc.SampleDesc.Count = 1;
 	tDesc.SampleDesc.Quality = 0;
 	tDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE | D3D11_RESOURCE_MISC_GENERATE_MIPS;
-	tDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	tDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	tDesc.ArraySize = 6;
 	tDesc.MipLevels = mipLevels;
@@ -110,7 +112,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 10.f);
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-	rtvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
 	rtvDesc.Texture2DArray.ArraySize = 1;
 	rtvDesc.Texture2DArray.MipSlice = 0;
@@ -132,7 +134,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	}
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
 	srvDesc.TextureCube.MipLevels = mipLevels;
 	srvDesc.TextureCube.MostDetailedMip = 0;

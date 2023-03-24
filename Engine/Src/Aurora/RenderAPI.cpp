@@ -2,11 +2,11 @@
 
 RenderAPI* RenderAPI::instance = nullptr;
 
-Shader* RenderAPI::fullScreenVS;
-Shader* RenderAPI::fullScreenPS;
-Shader* RenderAPI::skyboxVS;
-Shader* RenderAPI::shadowVS;
-Shader* RenderAPI::randNoiseCS;
+Shader* RenderAPI::fullScreenVS = nullptr;
+Shader* RenderAPI::fullScreenPS = nullptr;
+Shader* RenderAPI::skyboxVS = nullptr;
+Shader* RenderAPI::shadowVS = nullptr;
+Shader* RenderAPI::randNoiseCS = nullptr;
 
 RenderAPI::RenderAPI(const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture)
 {

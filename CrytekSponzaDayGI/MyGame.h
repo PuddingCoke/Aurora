@@ -471,23 +471,33 @@ public:
 
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-		/*gBaseColor->clearRTV(DirectX::Colors::Black);
+		gBaseColor->clearRTV(DirectX::Colors::Black);
 		gPosition->clearRTV(DirectX::Colors::Black);
 		gNormalSpecular->clearRTV(DirectX::Colors::Black);
 
-		RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, shadowMap);
+		RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, depthTexture);
 
 		scene->render(deferredVShader, deferredPShader);
 
 		originTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
-		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(shadowMap->getSRV(), gNormalSpecular->getSRV()),shadowTexture }, 0);
+		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(depthTexture->getSRV(), gNormalSpecular->getSRV()),globalShadowTexture}, 0);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,lightProjBuffer }, 1);
 
 		RenderAPI::fullScreenVS->use();
 		deferredFinal->use();
 
 		RenderAPI::get()->DrawQuad();
+
+		RenderAPI::get()->OMSetRTV({ originTexture }, depthTexture);
+		
+		RenderAPI::get()->PSSetSRV({ skybox }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+
+		RenderAPI::skyboxVS->use();
+		skyboxPShader->use();
+
+		RenderAPI::get()->DrawCube();
 
 		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
 
@@ -497,38 +507,38 @@ public:
 		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
-		RenderAPI::get()->DrawQuad();*/
+		RenderAPI::get()->DrawQuad();
 
 		RenderAPI::get()->OMSetDefRTV(depthTexture);
 
-		if (showRadiance)
-		{
-			RenderAPI::get()->PSSetSRV({ distanceCube }, 0);
+		//if (showRadiance)
+		//{
+		//	RenderAPI::get()->PSSetSRV({ distanceCube }, 0);
 
-			RenderAPI::skyboxVS->use();
-			skyboxPShader->use();
+		//	RenderAPI::skyboxVS->use();
+		//	skyboxPShader->use();
 
-			RenderAPI::get()->DrawCube();
-		}
-		else
-		{
-			RenderAPI::get()->PSSetSRV({ depthOctahedralMap }, 0);
+		//	RenderAPI::get()->DrawCube();
+		//}
+		//else
+		//{
+		//	RenderAPI::get()->PSSetSRV({ depthOctahedralMap }, 0);
 
-			RenderAPI::skyboxVS->use();
-			octahedralDecode->use();
+		//	RenderAPI::skyboxVS->use();
+		//	octahedralDecode->use();
 
-			/*RenderAPI::get()->PSSetSRV({ distanceCube }, 0);
+		//	/*RenderAPI::get()->PSSetSRV({ distanceCube }, 0);
 
-			RenderAPI::skyboxVS->use();
-			skyboxPShader->use();*/
+		//	RenderAPI::skyboxVS->use();
+		//	skyboxPShader->use();*/
 
-			/*RenderAPI::get()->PSSetSRV({ irradianceCoeff }, 0);
+		//	/*RenderAPI::get()->PSSetSRV({ irradianceCoeff }, 0);
 
-			RenderAPI::skyboxVS->use();
-			irradianceEvaluate->use();*/
+		//	RenderAPI::skyboxVS->use();
+		//	irradianceEvaluate->use();*/
 
-			RenderAPI::get()->DrawCube();
-		}
+		//	RenderAPI::get()->DrawCube();
+		//}
 
 	}
 

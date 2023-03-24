@@ -23,8 +23,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SteeringBehavior", "Steerin
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogoInterpreter", "LogoInterpreter\LogoInterpreter.vcxproj", "{FC282766-7986-4861-87A5-EF4D002ABAED}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicOcean", "DynamicOcean\DynamicOcean.vcxproj", "{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mandelbulb", "Mandelbulb\Mandelbulb.vcxproj", "{B59DBF7D-61F0-43CE-8247-43E88106110E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrytekSponzaNightGI", "CrytekSponzaNightGI\CrytekSponzaNightGI.vcxproj", "{D280E6D7-71D0-4406-8665-F89E78DB2267}"
@@ -40,6 +38,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RayTracing", "RayTracing\RayTracing.vcxproj", "{26754381-66AD-44B1-A5F0-2BE6D65D34A5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MandelBrotSet", "MandelBrotSet\MandelBrotSet.vcxproj", "{F4F04037-3717-42DA-8AA0-336B421C2DBE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameOfLife", "GameOfLife\GameOfLife.vcxproj", "{4066A71D-AC19-4123-BF75-2400F593CF19}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ocean", "Ocean\Ocean.vcxproj", "{BC0213F5-26D2-4DB1-B6A6-3EC755999F46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,14 +131,6 @@ Global
 		{FC282766-7986-4861-87A5-EF4D002ABAED}.Release|x64.Build.0 = Release|x64
 		{FC282766-7986-4861-87A5-EF4D002ABAED}.Release|x86.ActiveCfg = Release|Win32
 		{FC282766-7986-4861-87A5-EF4D002ABAED}.Release|x86.Build.0 = Release|Win32
-		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Debug|x64.ActiveCfg = Debug|x64
-		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Debug|x64.Build.0 = Debug|x64
-		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Debug|x86.ActiveCfg = Debug|Win32
-		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Debug|x86.Build.0 = Debug|Win32
-		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Release|x64.ActiveCfg = Release|x64
-		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Release|x64.Build.0 = Release|x64
-		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Release|x86.ActiveCfg = Release|Win32
-		{2FD073E0-FA0F-418D-9D5C-A3B63B50B6CE}.Release|x86.Build.0 = Release|Win32
 		{B59DBF7D-61F0-43CE-8247-43E88106110E}.Debug|x64.ActiveCfg = Debug|x64
 		{B59DBF7D-61F0-43CE-8247-43E88106110E}.Debug|x64.Build.0 = Debug|x64
 		{B59DBF7D-61F0-43CE-8247-43E88106110E}.Debug|x86.ActiveCfg = Debug|Win32
@@ -201,6 +195,22 @@ Global
 		{F4F04037-3717-42DA-8AA0-336B421C2DBE}.Release|x64.Build.0 = Release|x64
 		{F4F04037-3717-42DA-8AA0-336B421C2DBE}.Release|x86.ActiveCfg = Release|Win32
 		{F4F04037-3717-42DA-8AA0-336B421C2DBE}.Release|x86.Build.0 = Release|Win32
+		{4066A71D-AC19-4123-BF75-2400F593CF19}.Debug|x64.ActiveCfg = Debug|x64
+		{4066A71D-AC19-4123-BF75-2400F593CF19}.Debug|x64.Build.0 = Debug|x64
+		{4066A71D-AC19-4123-BF75-2400F593CF19}.Debug|x86.ActiveCfg = Debug|Win32
+		{4066A71D-AC19-4123-BF75-2400F593CF19}.Debug|x86.Build.0 = Debug|Win32
+		{4066A71D-AC19-4123-BF75-2400F593CF19}.Release|x64.ActiveCfg = Release|x64
+		{4066A71D-AC19-4123-BF75-2400F593CF19}.Release|x64.Build.0 = Release|x64
+		{4066A71D-AC19-4123-BF75-2400F593CF19}.Release|x86.ActiveCfg = Release|Win32
+		{4066A71D-AC19-4123-BF75-2400F593CF19}.Release|x86.Build.0 = Release|Win32
+		{BC0213F5-26D2-4DB1-B6A6-3EC755999F46}.Debug|x64.ActiveCfg = Debug|x64
+		{BC0213F5-26D2-4DB1-B6A6-3EC755999F46}.Debug|x64.Build.0 = Debug|x64
+		{BC0213F5-26D2-4DB1-B6A6-3EC755999F46}.Debug|x86.ActiveCfg = Debug|Win32
+		{BC0213F5-26D2-4DB1-B6A6-3EC755999F46}.Debug|x86.Build.0 = Debug|Win32
+		{BC0213F5-26D2-4DB1-B6A6-3EC755999F46}.Release|x64.ActiveCfg = Release|x64
+		{BC0213F5-26D2-4DB1-B6A6-3EC755999F46}.Release|x64.Build.0 = Release|x64
+		{BC0213F5-26D2-4DB1-B6A6-3EC755999F46}.Release|x86.ActiveCfg = Release|Win32
+		{BC0213F5-26D2-4DB1-B6A6-3EC755999F46}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

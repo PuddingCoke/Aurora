@@ -6,6 +6,6 @@
 
 2.安装并配置好FFMPEG。
 
-3.默认状态是以60帧渲染30秒，你可以通过Graphics::setRecordConfig这个函数来修改。
+3.默认状态是以60帧渲染60秒，你可以通过Graphics::setRecordConfig这个函数来修改。
 
-PS：Intel的QSV还有Amd的AMF应该有相关的API来驱动显卡编码。
+PS：INTEL的QSV还有AMD的AMF应该有相关的API来驱动显卡编码。

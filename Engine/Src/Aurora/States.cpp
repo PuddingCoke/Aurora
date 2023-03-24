@@ -2,22 +2,22 @@
 
 States* States::instance = nullptr;
 
-ID3D11SamplerState* States::anisotropicClampSampler;
-ID3D11SamplerState* States::anisotropicWrapSampler;
-ID3D11SamplerState* States::linearClampSampler;
-ID3D11SamplerState* States::linearWrapSampler;
-ID3D11SamplerState* States::pointClampSampler;
-ID3D11SamplerState* States::pointWrapSampler;
-ID3D11SamplerState* States::shadowSampler;
-ID3D11BlendState* States::defBlendState;
-ID3D11BlendState* States::addtiveBlend;
-ID3D11RasterizerState* States::rasterShadow;
-ID3D11RasterizerState* States::rasterCullBack;
-ID3D11RasterizerState* States::rasterCullFront;
-ID3D11RasterizerState* States::rasterCullNone;
-ID3D11RasterizerState2* States::rasterConserve;
-ID3D11DepthStencilState* States::defDepthStencilState;
-ID3D11DepthStencilState* States::depthStencilDisable;
+ID3D11SamplerState* States::anisotropicClampSampler = nullptr;
+ID3D11SamplerState* States::anisotropicWrapSampler = nullptr;
+ID3D11SamplerState* States::linearClampSampler = nullptr;
+ID3D11SamplerState* States::linearWrapSampler = nullptr;
+ID3D11SamplerState* States::pointClampSampler = nullptr;
+ID3D11SamplerState* States::pointWrapSampler = nullptr;
+ID3D11SamplerState* States::shadowSampler = nullptr;
+ID3D11BlendState* States::defBlendState = nullptr;
+ID3D11BlendState* States::addtiveBlend = nullptr;
+ID3D11RasterizerState* States::rasterShadow = nullptr;
+ID3D11RasterizerState* States::rasterCullBack = nullptr;
+ID3D11RasterizerState* States::rasterCullFront = nullptr;
+ID3D11RasterizerState* States::rasterCullNone = nullptr;
+ID3D11RasterizerState2* States::rasterConserve = nullptr;
+ID3D11DepthStencilState* States::defDepthStencilState = nullptr;
+ID3D11DepthStencilState* States::depthStencilDisable = nullptr;
 
 States* States::get()
 {
