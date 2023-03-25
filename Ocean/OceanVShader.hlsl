@@ -1,29 +1,12 @@
-struct VertexInput
+struct VertexIO
 {
     float3 position : POSITION;
     float2 uv : TEXCOORD;
 };
 
-struct VertexOutput
+VertexIO main(VertexIO input)
 {
-    float3 position : POSITION;
-    float2 uv : TEXCOORD;
-};
-
-cbuffer ProjMatrix : register(b0)
-{
-    matrix proj;
-}
-
-cbuffer ViewMatrix : register(b1)
-{
-    matrix view;
-    float4 viewPos;
-}
-
-VertexOutput main(VertexInput input)
-{
-    VertexOutput output;
+    VertexIO output;
     output.position = input.position;
     output.uv = input.uv;
     return output;

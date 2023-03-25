@@ -1,7 +1,8 @@
 struct DS_OUTPUT
 {
     float3 position : POSITION;
-    float2 texCoord : TEXCOORD;
+    float2 texCoord : TEXCOORD0;
+    float2 patchTexCoord : TEXCOORD1;
 	float4 vPosition  : SV_POSITION;
 };
 
@@ -59,9 +60,10 @@ DS_OUTPUT main(
 	DS_OUTPUT Output;
     float3 position = getPosition(patch[0].position, patch[1].position, patch[2].position, patch[3].position, domain);
     float2 uv = getUV(patch[0].uv, patch[1].uv, patch[2].uv, patch[3].uv, domain);
+    position += displacementXYZ.SampleLevel(linearSampler, uv, 0.0).xyz;
     Output.position = position;
     Output.texCoord = uv;
-    position += displacementXYZ.SampleLevel(linearSampler, uv, 0.0).xyz;
+    Output.patchTexCoord = domain;
     Output.vPosition = mul(float4(position, 1.0), viewProj);
 	return Output;
 }

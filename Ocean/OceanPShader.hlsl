@@ -1,7 +1,8 @@
 struct PixelInput
 {
     float3 position : POSITION;
-    float2 uv : TEXCOORD;
+    float2 texCoord : TEXCOORD0;
+    float2 patchTexCoord : TEXCOORD1;
 };
 
 cbuffer DeltaTime : register(b0)
@@ -38,13 +39,13 @@ float4 main(PixelInput input) : SV_TARGET
     float factor = (2048.0 - dist) / 2048.0;
     float2 perl = float2(0.0, 0.0);
     
-    factor = clamp(factor * factor * factor, 0.0, 1.0);
+    factor = saturate(factor * factor * factor);
     
     float2 perlinOffset = float2(-0.06 * sTime, 0.0);
     
     if (factor < 1.0)
     {
-        float2 ptex = input.uv * 1024.0;
+        float2 ptex = input.texCoord + input.patchTexCoord;
         
         float2 p0 = prelinTexture.Sample(linearSampler, ptex * perlinFrequency.x + perlinOffset).rg;
         float2 p1 = prelinTexture.Sample(linearSampler, ptex * perlinFrequency.y + perlinOffset).rg;
@@ -53,7 +54,7 @@ float4 main(PixelInput input) : SV_TARGET
         perl = (p0 * perlinGradient.x + p1 * perlinGradient.y + p2 * perlinGradient.z);
     }
     
-    float4 NJ = normalTexture.Sample(linearSampler, input.uv);
+    float4 NJ = normalTexture.Sample(linearSampler, input.texCoord);
     
     NJ.xz = lerp(perl, NJ.xz, factor);
     
@@ -64,17 +65,15 @@ float4 main(PixelInput input) : SV_TARGET
     float F0 = 0.020018673;
     float F = F0 + (1.0 - F0) * pow(1.0 - dot(N, R), 5.0);
     
-    R.y = abs(R.y);
-    
     float3 refl = skyTexture.Sample(linearSampler, R).rgb;
     
     float turbulence = max(1.6 - NJ.w, 0.0);
     
     float color_mod = lerp(1.0, 1.0 + 3.0 * smoothstep(1.2, 1.8, turbulence), factor);
     
-    const float rho = 0.3;
-    const float ax = 0.2;
-    const float ay = 0.1;
+    float rho = 0.3;
+    float ax = 0.2;
+    float ay = 0.1;
 
     float3 h = L + V;
     float3 x = cross(L, N);
