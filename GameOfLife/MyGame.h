@@ -5,6 +5,8 @@
 #include<Aurora/RCTexture.h>
 #include<Aurora/Timer.h>
 
+#include<Aurora/PostProcessing/BloomEffect.h>
+
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game
 {
@@ -68,6 +70,8 @@ public:
 
 	Timer timer;
 
+	BloomEffect bloomEffect;
+
 	static constexpr UINT simulationHeight = 270;
 
 	static constexpr UINT simulationWidth = simulationHeight * 16 / 9;
@@ -78,7 +82,8 @@ public:
 		rcTexture(new RCTexture(simulationWidth, simulationHeight, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
 		evolveCS(new Shader("EvolveCS.hlsl", ShaderType::Compute)),
 		randomizeCS(new Shader("RandomizeCS.hlsl", ShaderType::Compute)),
-		visualizeCS(new Shader("VisualizeCS.hlsl", ShaderType::Compute))
+		visualizeCS(new Shader("VisualizeCS.hlsl", ShaderType::Compute)),
+		bloomEffect(simulationWidth,simulationHeight)
 	{
 		randomize();
 
@@ -90,6 +95,9 @@ public:
 		gameParam.mapSize = DirectX::XMUINT2(simulationWidth, simulationHeight);
 
 		gameBuffer = new Buffer(sizeof(GameParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &gameParam);
+
+		bloomEffect.setThreshold(0.f);
+		bloomEffect.applyChange();
 	}
 
 	~MyGame()
@@ -112,7 +120,7 @@ public:
 
 		randomizeCS->use();
 
-		RenderAPI::get()->Dispatch(swapTexture->write()->getWidth() / 32, swapTexture->write()->getHeight() / 18, 1);
+		RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
 		swapTexture->swap();
 	}
 
@@ -127,9 +135,14 @@ public:
 
 			evolveCS->use();
 
-			RenderAPI::get()->Dispatch(swapTexture->write()->getWidth() / 32, swapTexture->write()->getHeight() / 18, 1);
+			RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
 			swapTexture->swap();
 		}
+	}
+
+	void imGUICall() override
+	{
+		bloomEffect.imGUIEffectModifier();
 	}
 
 	void render()
@@ -141,15 +154,18 @@ public:
 
 		visualizeCS->use();
 
-		RenderAPI::get()->Dispatch(rcTexture->getWidth() / 32, rcTexture->getHeight() / 18, 1);
+		RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
+
+		ShaderResourceView* bloomSRV = bloomEffect.process(rcTexture);
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
+		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->PSSetSRV({ rcTexture }, 0);
+		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
 		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
 
 		RenderAPI::fullScreenVS->use();
