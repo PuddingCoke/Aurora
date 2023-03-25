@@ -1,5 +1,5 @@
-Texture2D<uint> preState;
-RWTexture2D<uint> curState;
+Texture2D<uint> preState : register(t0);
+RWTexture2D<uint> curState : register(u0);
 
 cbuffer GameParam : register(b1)
 {

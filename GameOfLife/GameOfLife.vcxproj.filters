@@ -26,5 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="EvolveCS.hlsl" />
+    <FxCompile Include="RandomizeCS.hlsl" />
+    <FxCompile Include="VisualizeCS.hlsl" />
   </ItemGroup>
 </Project>
