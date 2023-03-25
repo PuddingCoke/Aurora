@@ -16,7 +16,7 @@ bool NvidiaEncoder::encode()
 
 	registerResource.resourceType = NV_ENC_INPUT_RESOURCE_TYPE_DIRECTX;
 
-	registerResource.resourceToRegister = nv12Texture.Get();
+	registerResource.resourceToRegister = nv12Texture->getTexture2D();
 
 	registerResource.width = width;
 
@@ -102,10 +102,11 @@ bool NvidiaEncoder::encode()
 }
 
 NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate, ID3D11Resource* const inputTexture2D, bool& initializeStatus) :
-	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0), width(width), height(height), bitstream{}, encoder(nullptr), stream(nullptr)
+	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0), width(width), height(height), encoder(nullptr), stream(nullptr),
+	nv12Texture(new Texture2D(width, height, 1, 1, DXGI_FORMAT_NV12, D3D11_BIND_RENDER_TARGET, 0)),
+	nvencAPI{ NV_ENCODE_API_FUNCTION_LIST_VER },
+	bitstream{ NV_ENC_CREATE_BITSTREAM_BUFFER_VER }
 {
-	nvencAPI = { NV_ENCODE_API_FUNCTION_LIST_VER };
-
 	moduleNvEncAPI = LoadLibraryA("nvEncodeAPI64.dll");
 
 	if (moduleNvEncAPI == 0)
@@ -117,27 +118,9 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 
 	initializeStatus = true;
 
-	{
-		D3D11_TEXTURE2D_DESC tDesc = {};
-		tDesc.Width = width;
-		tDesc.Height = height;
-		tDesc.MipLevels = 1;
-		tDesc.ArraySize = 1;
-		tDesc.Format = DXGI_FORMAT_NV12;
-		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-		tDesc.SampleDesc.Count = 1;
-		tDesc.SampleDesc.Quality = 0;
+	NVENCSTATUS(*ApiCreateInstance)(NV_ENCODE_API_FUNCTION_LIST*) = (NVENCSTATUS(*)(NV_ENCODE_API_FUNCTION_LIST*))GetProcAddress(moduleNvEncAPI, "NvEncodeAPICreateInstance");
 
-		Renderer::device->CreateTexture2D(&tDesc, nullptr, nv12Texture.ReleaseAndGetAddressOf());
-	}
-
-	typedef NVENCSTATUS(*APICreateInstance)(NV_ENCODE_API_FUNCTION_LIST*);
-
-	APICreateInstance apiCreateInstance;
-
-	apiCreateInstance = (APICreateInstance)GetProcAddress(moduleNvEncAPI, "NvEncodeAPICreateInstance");
-
-	std::cout << "[class NvidiaEncoder] api instance create status " << apiCreateInstance(&nvencAPI) << "\n";
+	std::cout << "[class NvidiaEncoder] api instance create status " << ApiCreateInstance(&nvencAPI) << "\n";
 
 	NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS sessionParams = { NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER };
 	sessionParams.device = Renderer::device;
@@ -185,8 +168,6 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 
 	std::cout << "[class NvidiaEncoder] ini encoder status " << nvencAPI.nvEncInitializeEncoder(encoder, &encoderParams) << "\n";
 
-	bitstream = { NV_ENC_CREATE_BITSTREAM_BUFFER_VER };
-
 	std::cout << "[class NvidiaEncoder] create bitstream status " << nvencAPI.nvEncCreateBitstreamBuffer(encoder, &bitstream) << "\n";
 
 	Renderer::device->QueryInterface(IID_ID3D11VideoDevice2, (void**)videoDevice.ReleaseAndGetAddressOf());
@@ -210,7 +191,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 
 	D3D11_VIDEO_PROCESSOR_OUTPUT_VIEW_DESC outputViewDesc = { D3D11_VPOV_DIMENSION_TEXTURE2D };
 
-	videoDevice->CreateVideoProcessorOutputView(nv12Texture.Get(), videoProcessEnumerator.Get(), &outputViewDesc, outputView.ReleaseAndGetAddressOf());
+	videoDevice->CreateVideoProcessorOutputView(nv12Texture->getTexture2D(), videoProcessEnumerator.Get(), &outputViewDesc, outputView.ReleaseAndGetAddressOf());
 
 	std::cout << "[class NvidiaEncoder] render at " << width << " x " << height << "\n";
 	std::cout << "[class NvidiaEncoder] frameRate " << frameRate << "\n";
@@ -218,15 +199,6 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	std::cout << "[class NvidiaEncoder] start encoding\n";
 
 	stream = _popen("ffmpeg -y -f hevc -i pipe: -c copy output.mp4", "wb");
-
-	/*NV_ENC_CAPS_PARAM param = { NV_ENC_CAPS_PARAM_VER };
-	param.capsToQuery = NV_ENC_CAPS_SUPPORT_LOOKAHEAD;
-
-	int num;
-
-	nvencAPI.nvEncGetEncodeCaps(encoder, codec, &param, &num);
-
-	std::cout<<"max b frames " << num << "\n";*/
 }
 
 NvidiaEncoder::~NvidiaEncoder()
@@ -235,6 +207,7 @@ NvidiaEncoder::~NvidiaEncoder()
 	{
 		nvencAPI.nvEncDestroyBitstreamBuffer(encoder, bitstream.bitstreamBuffer);
 		nvencAPI.nvEncDestroyEncoder(encoder);
+		delete nv12Texture;
 		FreeLibrary(moduleNvEncAPI);
 	}
 }

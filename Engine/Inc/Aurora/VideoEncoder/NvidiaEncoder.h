@@ -9,6 +9,7 @@
 
 #include<NvEnc/nvEncodeAPI.h>
 #include<Aurora/Renderer.h>
+#include<Aurora/DX/Resource/Texture2D.h>
 
 class NvidiaEncoder
 {
@@ -20,7 +21,7 @@ public:
 
 	bool encode();
 
-	NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate,ID3D11Resource* const inputTexture2D, bool& initializeStatus);
+	NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate, ID3D11Resource* const inputTexture2D, bool& initializeStatus);
 
 	~NvidiaEncoder();
 
@@ -37,8 +38,6 @@ private:
 	bool encoding;
 
 	void* encoder;
-
-	ComPtr<ID3D11Texture2D> nv12Texture;
 
 	ComPtr<ID3D11VideoDevice2> videoDevice;
 
@@ -58,6 +57,8 @@ private:
 
 	FILE* stream;
 
+	Texture2D* nv12Texture;
+
 	HMODULE moduleNvEncAPI;
 
 	const GUID codec = NV_ENC_CODEC_HEVC_GUID;
@@ -75,7 +76,7 @@ private:
 	std::chrono::steady_clock::time_point timeEnd;
 
 	float encodeTime;
-	
+
 };
 
 #endif // !_NVIDIAENCODER_H_

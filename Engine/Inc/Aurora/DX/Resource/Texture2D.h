@@ -52,7 +52,7 @@ public:
 
 	const UINT& getArraySize() const;
 
-	ID3D11Texture2D* get() const;
+	ID3D11Texture2D* getTexture2D() const;
 
 protected:
 

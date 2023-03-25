@@ -32,7 +32,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 
 	for (unsigned int i = 0; i < 6; i++)
 	{
-		RenderAPI::get()->CopySubresourceRegion(cubeTexture.Get(), D3D11CalcSubresource(0, i, 1), 0, 0, 0, textures[i]->get(), 0, nullptr);
+		RenderAPI::get()->CopySubresourceRegion(cubeTexture.Get(), D3D11CalcSubresource(0, i, 1), 0, 0, 0, textures[i]->getTexture2D(), 0, nullptr);
 	}
 
 	{
@@ -78,8 +78,6 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	tDesc.MipLevels = mipLevels;
 	Renderer::device->CreateTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
 
-	RenderTargetView* rtv;
-
 	const DirectX::XMVECTOR focusPoints[6] =
 	{
 		{1.0f,  0.0f,  0.0f},
@@ -121,7 +119,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	{
 		rtvDesc.Texture2DArray.FirstArraySlice = D3D11CalcSubresource(0, i, mipLevels);
 
-		rtv = new RenderTargetView(cubeTexture.Get(), rtvDesc);
+		RenderTargetView* rtv = new RenderTargetView(cubeTexture.Get(), rtvDesc);
 
 		RenderAPI::get()->OMSetRTV({ rtv }, nullptr);
 		const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH({ 0.f,0.f,0.f }, focusPoints[i], upVectors[i]);

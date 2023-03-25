@@ -210,7 +210,7 @@ const UINT& Texture2D::getArraySize() const
 	return arraySize;
 }
 
-ID3D11Texture2D* Texture2D::get() const
+ID3D11Texture2D* Texture2D::getTexture2D() const
 {
 	return texture.Get();
 }
