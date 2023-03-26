@@ -138,8 +138,8 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	config.version = NV_ENC_CONFIG_VER;
 	config.profileGUID = profile;
 	config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_VBR;
-	config.rcParams.averageBitRate = 8500000U;
-	config.rcParams.maxBitRate = 9000000U;
+	config.rcParams.averageBitRate = 12000000U;
+	config.rcParams.maxBitRate = 14000000U;
 
 	//高质量编码
 	config.gopLength = 120;

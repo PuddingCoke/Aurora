@@ -77,24 +77,24 @@ public:
 	static constexpr UINT simulationWidth = simulationHeight * 16 / 9;
 
 	MyGame() :
-		timer(0.01f),
+		timer(1.f / 60.f),
 		swapTexture(new SwapComputeTexture(simulationWidth, simulationHeight)),
 		rcTexture(new RCTexture(simulationWidth, simulationHeight, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
 		evolveCS(new Shader("EvolveCS.hlsl", ShaderType::Compute)),
 		randomizeCS(new Shader("RandomizeCS.hlsl", ShaderType::Compute)),
 		visualizeCS(new Shader("VisualizeCS.hlsl", ShaderType::Compute)),
-		bloomEffect(simulationWidth,simulationHeight)
+		bloomEffect(simulationWidth, simulationHeight)
 	{
+		gameParam.mapSize = DirectX::XMUINT2(simulationWidth, simulationHeight);
+
+		gameBuffer = new Buffer(sizeof(GameParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &gameParam);
+
 		randomize();
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
 			{
 				randomize();
 			});
-
-		gameParam.mapSize = DirectX::XMUINT2(simulationWidth, simulationHeight);
-
-		gameBuffer = new Buffer(sizeof(GameParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &gameParam);
 
 		bloomEffect.setThreshold(0.f);
 		bloomEffect.applyChange();
@@ -122,21 +122,31 @@ public:
 
 		RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
 		swapTexture->swap();
+
+		for (UINT i = 0; i < 60; i++)
+		{
+			step();
+		}
+	}
+
+	void step()
+	{
+		RenderAPI::get()->CSSetUAV({ swapTexture->write() }, 0);
+		RenderAPI::get()->CSSetSRV({ swapTexture->read() }, 0);
+
+		RenderAPI::get()->CSSetConstantBuffer({ gameBuffer }, 1);
+
+		evolveCS->use();
+
+		RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
+		swapTexture->swap();
 	}
 
 	void update(const float& dt) override
 	{
 		while (timer.update(dt))
 		{
-			RenderAPI::get()->CSSetUAV({ swapTexture->write() }, 0);
-			RenderAPI::get()->CSSetSRV({ swapTexture->read() }, 0);
-
-			RenderAPI::get()->CSSetConstantBuffer({ gameBuffer }, 1);
-
-			evolveCS->use();
-
-			RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
-			swapTexture->swap();
+			step();
 		}
 	}
 

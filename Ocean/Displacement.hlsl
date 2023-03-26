@@ -24,9 +24,9 @@ cbuffer OceanParam : register(b1)
     float2 v1;
 };
 
-float dispersion(float2 k)
+float Dispersion(float2 k)
 {
-    float w_0 =  M_PI / 100.0;
+    float w_0 = M_PI / 100.0;
     return floor(sqrt(gravity * length(k)) / w_0) * w_0;
 }
 
@@ -36,14 +36,14 @@ float2 ComplexMul(float2 a, float2 b)
 }
 
 [numthreads(32, 32, 1)]
-void main( uint3 DTid : SV_DispatchThreadID )
+void main(uint2 DTid : SV_DispatchThreadID)
 {
-    float2 htilde0 = tildeh0k[DTid.xy];
-    float2 htilde0mkconj = tildeh0mkconj[DTid.xy];
+    float2 htilde0 = tildeh0k[DTid];
+    float2 htilde0mkconj = tildeh0mkconj[DTid];
     
     float2 k = float2(M_PI * (2.0 * float(DTid.x) - float(mapResolution)) / float(mapLength), M_PI * (2.0 * float(DTid.y) - float(mapResolution)) / float(mapLength));
     
-    float omegat = dispersion(k) * sTime;
+    float omegat = Dispersion(k) * sTime;
     
     float cos_ = cos(omegat);
     float sin_ = sin(omegat);
@@ -53,18 +53,18 @@ void main( uint3 DTid : SV_DispatchThreadID )
     
     float2 result = ComplexMul(htilde0, c0) + ComplexMul(htilde0mkconj, c1);
     
-    displacementY[DTid.xy] = result;
+    displacementY[DTid] = result;
     
     float len = length(k);
     
-    if(len<0.0000001)
+    if (len < 0.0000001)
     {
-        displacementX[DTid.xy] = ComplexMul(result, float2(0.0, 0.0));
-        displacementZ[DTid.xy] = ComplexMul(result, float2(0.0, 0.0));
+        displacementX[DTid] = ComplexMul(result, float2(0.0, 0.0));
+        displacementZ[DTid] = ComplexMul(result, float2(0.0, 0.0));
     }
     else
     {
-        displacementX[DTid.xy] = ComplexMul(result, float2(0.0, -k.x / len));
-        displacementZ[DTid.xy] = ComplexMul(result, float2(0.0, -k.y / len));
+        displacementX[DTid] = ComplexMul(result, float2(0.0, -k.x / len));
+        displacementZ[DTid] = ComplexMul(result, float2(0.0, -k.y / len));
     }
 }

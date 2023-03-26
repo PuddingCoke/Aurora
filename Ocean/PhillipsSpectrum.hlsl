@@ -19,8 +19,8 @@ float getPhillip(float2 k)
 {
     float len = length(k);
     
-    if (len < 0.000001)
-        return 0.0;
+    if (len < 0.00001)
+        return 0.00001;
         
     float len2 = len * len;
     float len4 = len2 * len2;
