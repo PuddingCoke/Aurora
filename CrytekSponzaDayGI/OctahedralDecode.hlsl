@@ -25,7 +25,7 @@ float2 octEncode(float3 v)
     //[-1,1] -> [0,1]
     result = (result + 1.0) / 2.0;
     
-    //[0,1] -> [1/18,17/18] avoid border sampling
+    //[0,1] -> [1/128,127/128] avoid border sampling
     result = (result * 126.0 + 1.0) / 128.0;
     
     return result;
