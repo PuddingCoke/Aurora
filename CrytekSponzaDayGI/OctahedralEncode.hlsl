@@ -47,9 +47,9 @@ void main(uint2 DTid : SV_DispatchThreadID)
     
         float3 dir = octDecode(coor.x, coor.y);
     
-        float depth = depthCube.SampleLevel(linearClampSampler, dir, 0.0);
+        float radialDepth = depthCube.SampleLevel(linearClampSampler, dir, 0.0);
     
-        depthOctahedralMap[uint3(DTid, probeIndex)] = float2(depth, depth * depth);
+        depthOctahedralMap[uint3(DTid, probeIndex)] = float2(radialDepth, radialDepth * radialDepth);
     }
     
     AllMemoryBarrierWithGroupSync();

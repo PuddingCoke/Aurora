@@ -66,7 +66,7 @@ PixelOuput main(PixelInput input)
 {
     const float4 baseColor = tDiffuse.Sample(wrapSampler, input.uv);
     
-    if (baseColor.a < 0.5)
+    if (baseColor.a < 0.9)
     {
         discard;
     }
