@@ -160,9 +160,9 @@
     <ClInclude Include="Inc\Aurora\DX\View\DepthStencilView.h" />
     <ClInclude Include="Inc\Aurora\DoubleRTV.h" />
     <ClInclude Include="Inc\Aurora\DX\View\RenderTargetView.h" />
-    <ClInclude Include="Inc\Aurora\DX\View\RSView.h" />
-    <ClInclude Include="Inc\Aurora\DX\View\RUSView.h" />
-    <ClInclude Include="Inc\Aurora\DX\View\USView.h" />
+    <ClInclude Include="Inc\Aurora\DX\View\Composition\RSView.h" />
+    <ClInclude Include="Inc\Aurora\DX\View\Composition\RUSView.h" />
+    <ClInclude Include="Inc\Aurora\DX\View\Composition\USView.h" />
     <ClInclude Include="Inc\Aurora\DX\View\ShaderResourceView.h" />
     <ClInclude Include="Inc\Aurora\DX\View\UnorderedAccessView.h" />
     <ClInclude Include="Inc\Aurora\Event.h" />
@@ -229,9 +229,9 @@
     <ClCompile Include="Src\Aurora\ComputeTexture.cpp" />
     <ClCompile Include="Src\Aurora\DX\Resource\Texture3D.cpp" />
     <ClCompile Include="Src\Aurora\DX\View\RenderTargetView.cpp" />
-    <ClCompile Include="Src\Aurora\DX\View\RSView.cpp" />
-    <ClCompile Include="Src\Aurora\DX\View\RUSView.cpp" />
-    <ClCompile Include="Src\Aurora\DX\View\USView.cpp" />
+    <ClCompile Include="Src\Aurora\DX\View\Composition\RSView.cpp" />
+    <ClCompile Include="Src\Aurora\DX\View\Composition\RUSView.cpp" />
+    <ClCompile Include="Src\Aurora\DX\View\Composition\USView.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp" />

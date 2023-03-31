@@ -49,7 +49,6 @@ public:
 	{
 		camera.registerEvent();
 
-		bloomEffect.setThreshold(0);
 		bloomEffect.applyChange();
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {

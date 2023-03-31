@@ -4,7 +4,7 @@
 #define _COMPUTETEXTURE_H_
 
 #include"DX/Resource/Texture2D.h"
-#include"DX/View/USView.h"
+#include"DX/View/Composition/USView.h"
 
 class ComputeTexture :public Texture2D, public USView
 {

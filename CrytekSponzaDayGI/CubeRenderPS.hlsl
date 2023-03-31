@@ -84,9 +84,13 @@ PixelOuput main(PixelInput input)
    
     float shadow = CalShadow(input.pos);
     
+    float dist = length(probeLocation - input.pos);
+    
+    float4 color = float4((diffuseColor + specularColor) * CalShadow(input.pos), 1.0);
+    
     PixelOuput output;
-    output.color = float4((diffuseColor + specularColor) * CalShadow(input.pos), 1.0);
-    output.dist = length(probeLocation - input.pos);
+    output.color = color;
+    output.dist = dist;
     
     return output;
 }

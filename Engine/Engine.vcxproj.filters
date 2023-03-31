@@ -129,13 +129,13 @@
     <ClInclude Include="Inc\Aurora\ComputeBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\View\RSView.h">
+    <ClInclude Include="Inc\Aurora\DX\View\Composition\RSView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\View\USView.h">
+    <ClInclude Include="Inc\Aurora\DX\View\Composition\USView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\View\RUSView.h">
+    <ClInclude Include="Inc\Aurora\DX\View\Composition\RUSView.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\ResManager.h">
@@ -326,13 +326,13 @@
     <ClCompile Include="Src\Aurora\ComputeBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\View\RSView.cpp">
+    <ClCompile Include="Src\Aurora\DX\View\Composition\RSView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\View\USView.cpp">
+    <ClCompile Include="Src\Aurora\DX\View\Composition\USView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\View\RUSView.cpp">
+    <ClCompile Include="Src\Aurora\DX\View\Composition\RUSView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\RenderAPI.cpp">

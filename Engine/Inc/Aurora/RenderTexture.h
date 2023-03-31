@@ -5,7 +5,7 @@
 
 #include"Graphics.h"
 #include"DX/Resource/Texture2D.h"
-#include"DX/View/RSView.h"
+#include"DX/View/Composition/RSView.h"
 #include"RenderAPI.h"
 
 #include<DirectXColors.h>

@@ -4,7 +4,7 @@
 #define _DEPTHCUBE_H_
 
 #include<Aurora/DX/Resource/Texture2D.h>
-#include<Aurora/DX/View/USView.h>
+#include<Aurora/DX/View/Composition/USView.h>
 #include<Aurora/DX/View/DepthStencilView.h>
 
 class DepthCube :public Texture2D, public DepthStencilView, public ShaderResourceView

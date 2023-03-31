@@ -3,9 +3,9 @@
 #ifndef _RUSVIEW_H_
 #define _RUSVIEW_H_
 
-#include"RenderTargetView.h"
-#include"UnorderedAccessView.h"
-#include"ShaderResourceView.h"
+#include"../RenderTargetView.h"
+#include"../UnorderedAccessView.h"
+#include"../ShaderResourceView.h"
 
 class RUSView :public RenderTargetView, public UnorderedAccessView, public ShaderResourceView
 {

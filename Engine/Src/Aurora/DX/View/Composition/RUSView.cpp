@@ -1,4 +1,4 @@
-#include<Aurora/DX/View/RUSView.h>
+#include<Aurora/DX/View/Composition/RUSView.h>
 
 RUSView::RUSView()
 {

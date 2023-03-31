@@ -3,8 +3,8 @@
 #ifndef _RSVIEW_H_
 #define _RSVIEW_H_
 
-#include"RenderTargetView.h"
-#include"ShaderResourceView.h"
+#include"../RenderTargetView.h"
+#include"../ShaderResourceView.h"
 
 class RSView :public RenderTargetView, public ShaderResourceView
 {

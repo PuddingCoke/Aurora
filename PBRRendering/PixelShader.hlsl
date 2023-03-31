@@ -26,7 +26,6 @@ cbuffer Light : register(b3)
 Texture2D<float2> brdfLookup : register(t0);
 TextureCube irradianceCube : register(t1);
 TextureCube prefilterCube : register(t2);
-Texture2D<float3> irradianceCoeff : register(t3);
 
 SamplerState linearSampler : register(s0);
 

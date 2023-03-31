@@ -4,7 +4,7 @@
 #define _COMPUTETEXTURE3D_H_
 
 #include"DX/Resource/Texture3D.h"
-#include"DX/View/USView.h"
+#include"DX/View/Composition/USView.h"
 
 class ComputeTexture3D :public Texture3D, public USView
 {
