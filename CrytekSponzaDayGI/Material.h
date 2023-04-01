@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef _MATERIAL_H_
-#define _MATERIAL_H_
-
 #include<Aurora/RenderAPI.h>
 #include<Aurora/ResourceTexture.h>
 
@@ -37,5 +34,3 @@ public:
 	ResourceTexture* const normal;
 
 };
-
-#endif // !_MATERIAL_H_

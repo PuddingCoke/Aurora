@@ -58,7 +58,7 @@ PixelOuput main(PixelInput input)
         discard;
     }
     
-    const float3 specular = tSpecular.Sample(wrapSampler, input.uv).rgb;
+    const float specular = tSpecular.Sample(wrapSampler, input.uv).r;
     
     const float3 V = normalize(probeLocation - input.pos);
     

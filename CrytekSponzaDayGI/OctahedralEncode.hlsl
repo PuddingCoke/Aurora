@@ -33,7 +33,7 @@ float3 octDecode(float x, float y)
     return normalize(v);
 }
 
-#define RESOLUTION 128
+#define RESOLUTION 256
 
 [numthreads(1, 1, 1)]
 void main(uint2 DTid : SV_DispatchThreadID)

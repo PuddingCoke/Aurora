@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef _MODEL_H_
-#define _MODEL_H_
-
 #include<Aurora/Renderer.h>
 
 #include<assimp/Importer.hpp>
@@ -11,18 +8,18 @@
 
 #include<vector>
 
-struct Vertex
-{
-	DirectX::XMFLOAT3 pos;
-	DirectX::XMFLOAT2 uv;
-	DirectX::XMFLOAT3 normal;
-	DirectX::XMFLOAT3 tangent;
-	DirectX::XMFLOAT3 bitangent;
-};
-
 class Model
 {
 public:
+
+	struct Vertex
+	{
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT2 uv;
+		DirectX::XMFLOAT3 normal;
+		DirectX::XMFLOAT3 tangent;
+		DirectX::XMFLOAT3 bitangent;
+	};
 
 	static constexpr unsigned int stride = sizeof(Vertex);
 
@@ -49,6 +46,7 @@ public:
 		for (unsigned int i = 0; i < vertexCount; i++)
 		{
 			vertices[i].pos = DirectX::XMFLOAT3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+
 			if (hasUV)
 			{
 				vertices[i].uv = DirectX::XMFLOAT2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
@@ -57,7 +55,9 @@ public:
 			{
 				vertices[i].uv = DirectX::XMFLOAT2(0.f, 0.f);
 			}
+
 			vertices[i].normal = DirectX::XMFLOAT3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+
 			if (hasTangent)
 			{
 				vertices[i].tangent = DirectX::XMFLOAT3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
@@ -91,5 +91,3 @@ public:
 	}
 
 };
-
-#endif // !_MODEL_H_

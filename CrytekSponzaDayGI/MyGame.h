@@ -24,11 +24,12 @@ public:
 
 	~MyGame()
 	{
+
 	}
 
 	void imGUICall() override
 	{
-		
+		globalIllumination.imGUICall();
 	}
 
 	void update(const float& dt) override

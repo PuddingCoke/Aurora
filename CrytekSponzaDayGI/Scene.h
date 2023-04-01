@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef _SCENE_H_
-#define _SCENE_H_
-
 #include"Material.h"
 #include"Model.h"
 
@@ -128,5 +125,3 @@ public:
 	std::vector<Model*> models;
 
 };
-
-#endif // !_SCENE_H_

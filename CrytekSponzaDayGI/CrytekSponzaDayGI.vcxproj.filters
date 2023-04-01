@@ -48,5 +48,9 @@
     <FxCompile Include="OctahedralEncode.hlsl" />
     <FxCompile Include="OctahedralDebug.hlsl" />
     <FxCompile Include="DistanceCubeDebug.hlsl" />
+    <FxCompile Include="ProbeRenderVS.hlsl" />
+    <FxCompile Include="ProbeRenderGS.hlsl" />
+    <FxCompile Include="ProbeRenderPS.hlsl" />
+    <FxCompile Include="CubeRenderBouncePS.hlsl" />
   </ItemGroup>
 </Project>
