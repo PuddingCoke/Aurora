@@ -29,7 +29,7 @@ public:
 		DirectX::XMFLOAT3 start = { -142.f,-16.f,-74.f };
 		float spacing = 18.2f;
 		DirectX::XMUINT3 count = { 17,9,12 };
-		float padding;
+		float padding = 0.f;
 	} irradianceVolumeParam;
 
 	struct CubeRenderParam
@@ -92,8 +92,8 @@ public:
 				float Ylm[9];
 			};
 
-			const unsigned int sampleCount = 1024;
-			const unsigned int sampleCountSqrt = 32;
+			const unsigned int sampleCount = 1600;
+			const unsigned int sampleCountSqrt = 40;
 			const double oneoverN = 1.0 / (double)sampleCountSqrt;
 
 			unsigned int i = 0;
