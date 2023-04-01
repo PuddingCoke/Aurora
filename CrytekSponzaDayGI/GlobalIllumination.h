@@ -16,8 +16,6 @@
 
 #include"Scene.h"
 
-//伸展八面体贴图一点，防止采样边缘的问题
-
 class GlobalIllumination
 {
 public:
@@ -30,7 +28,7 @@ public:
 	{
 		DirectX::XMFLOAT3 start;
 		float spacing;
-		DirectX::XMUINT3 count;
+		DirectX::XMUINT3 count = { 16,8,8 };
 		float padding;
 	} irradianceVolumeParam;
 
@@ -60,6 +58,7 @@ public:
 		radianceCube(new RenderCube(captureResolution, DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		distanceCube(new RenderCube(captureResolution, DXGI_FORMAT_R32_FLOAT)),
 		depthCube(new DepthCube(captureResolution)),
+		skybox(new TextureCube(assetPath + "/sky/kloppenheim_05_4k.hdr", 1024)),
 		deferredVShader(new Shader("DeferredVShader.hlsl", ShaderType::Vertex)),
 		deferredPShader(new Shader("DeferredPShader.hlsl", ShaderType::Pixel)),
 		deferredFinal(new Shader("DeferredFinal.hlsl", ShaderType::Pixel)),
@@ -68,6 +67,9 @@ public:
 		cubeRenderPS(new Shader("CubeRenderPS.hlsl", ShaderType::Pixel)),
 		irradianceCompute(new Shader("IrradianceCompute.hlsl", ShaderType::Compute)),
 		octahedralEncode(new Shader("OctahedralEncode.hlsl", ShaderType::Compute)),
+		irradianceDebug(new Shader("IrradianceDebug.hlsl", ShaderType::Pixel)),
+		distanceCubeDebug(new Shader("DistanceCubeDebug.hlsl", ShaderType::Pixel)),
+		octahedralDebug(new Shader("OctahedralDebug.hlsl", ShaderType::Pixel)),
 		irradianceVolumeBuffer(new Buffer(sizeof(IrradianceVolumeParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		cubeRenderBuffer(new Buffer(sizeof(CubeRenderParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
@@ -75,7 +77,8 @@ public:
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		sunAngle(Math::half_pi - 0.02f)
+		sunAngle(Math::half_pi - 0.02f),
+		showRadiance(true)
 	{
 		//预计算球面采样点
 		{
@@ -85,8 +88,8 @@ public:
 				float Ylm[9];
 			};
 
-			const unsigned int sampleCount = 400;
-			const unsigned int sampleCountSqrt = 20;
+			const unsigned int sampleCount = 1600;
+			const unsigned int sampleCountSqrt = 40;
 			const double oneoverN = 1.0 / (double)sampleCountSqrt;
 
 			unsigned int i = 0;
@@ -132,6 +135,13 @@ public:
 
 			Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(deferredVShader), inputLayout.ReleaseAndGetAddressOf());
 		}
+
+
+		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
+			showRadiance = !showRadiance;
+			});
+
+		updateShadow();
 	}
 
 	~GlobalIllumination()
@@ -148,6 +158,7 @@ public:
 		delete radianceCube;
 		delete distanceCube;
 		delete depthCube;
+		delete skybox;
 
 		delete deferredVShader;
 		delete deferredPShader;
@@ -157,6 +168,9 @@ public:
 		delete cubeRenderPS;
 		delete irradianceCompute;
 		delete octahedralEncode;
+		delete irradianceDebug;
+		delete distanceCubeDebug;
+		delete octahedralDebug;
 
 		delete irradianceVolumeBuffer;
 		delete cubeRenderBuffer;
@@ -182,54 +196,97 @@ public:
 			updateShadow();
 		}
 
-		updateLightProbe();
+		//updateLightProbe();
 	}
 
-	//光照方向改变
-	void updateShadow()
+	void render()
 	{
-		const float xSize = 183;
-		const float ySize = 130;
-		const float distance = 260.f;
-		const DirectX::XMVECTOR offset = { 6.5f,0.f,0.f };
+		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 
-		light.lightDir = { 0.f,sinf(sunAngle),cosf(sunAngle),0.f };
-		light.lightColor = DirectX::Colors::White;
+		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-		light.lightDir = DirectX::XMVector3Normalize(light.lightDir);
+		gBaseColor->clearRTV(DirectX::Colors::Black);
+		gPosition->clearRTV(DirectX::Colors::Black);
+		gNormalSpecular->clearRTV(DirectX::Colors::Black);
 
-		const DirectX::XMVECTOR lightCamPos = DirectX::XMVectorAdd(DirectX::XMVectorScale(light.lightDir, distance), offset);
-		const DirectX::XMMATRIX lightProjMat = DirectX::XMMatrixOrthographicLH(xSize, ySize, 1.f, 512.f);
-		const DirectX::XMMATRIX lightViewMat = DirectX::XMMatrixLookAtLH(lightCamPos, offset, { 0.f,1.f,0.f });
-		const DirectX::XMMATRIX lightMat = DirectX::XMMatrixTranspose(lightViewMat * lightProjMat);
+		RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, depthTexture);
+		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
-		memcpy(lightBuffer->map(0).pData, &light, sizeof(Light));
-		lightBuffer->unmap(0);
+		scene->render(deferredVShader, deferredPShader);
 
-		memcpy(shadowProjBuffer->map(0).pData, &lightMat, sizeof(DirectX::XMMATRIX));
-		shadowProjBuffer->unmap(0);
+		originTexture->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
+		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(depthTexture->getSRV(), gNormalSpecular->getSRV()),shadowTexture }, 0);
+		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer }, 1);
+		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
+
+		RenderAPI::fullScreenVS->use();
+		deferredFinal->use();
+
+		RenderAPI::get()->DrawQuad();
+
+		RenderAPI::get()->OMSetRTV({originTexture}, depthTexture);
+
+		RenderAPI::get()->PSSetSRV({ skybox }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+
+		RenderAPI::skyboxVS->use();
+		skyboxPShader->use();
+
+		RenderAPI::get()->DrawCube();
+
+		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 
-		RenderAPI::get()->RSSetState(States::rasterShadow);
-		RenderAPI::get()->RSSetViewport(shadowMapRes, shadowMapRes);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
+		RenderAPI::fullScreenVS->use();
+		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->DrawQuad();
 
-		shadowTexture->clearDSV(D3D11_CLEAR_DEPTH);
+		/*RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->OMSetRTV({}, shadowTexture);
-		RenderAPI::get()->VSSetConstantBuffer({ shadowProjBuffer }, 2);
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetDefRTV(depthTexture);
 
-		scene->renderGeometry(RenderAPI::shadowVS);
+		RenderAPI::skyboxVS->use();*/
 
-		RenderAPI::get()->RSSetState(States::rasterCullBack);
-		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
-	}
+		/*if (showRadiance)
+		{
+			RenderAPI::get()->PSSetSRV({ distanceCube }, 0);
 
-	//光照方向改变
-	void updateLightProbe()
-	{
+			distanceCubeDebug->use();
 
+			RenderAPI::get()->DrawCube();
+		}
+		else
+		{
+			RenderAPI::get()->PSSetSRV({ depthOctahedralMap }, 0);
+
+			octahedralDebug->use();
+
+			RenderAPI::get()->DrawCube();
+		}*/
+
+		/*if (showRadiance)
+		{
+			RenderAPI::get()->PSSetSRV({ radianceCube }, 0);
+
+			RenderAPI::skyboxVS->use();
+			skyboxPShader->use();
+
+			RenderAPI::get()->DrawCube();
+		}
+		else
+		{
+			RenderAPI::get()->PSSetSRV({ irradianceCoeff }, 0);
+
+			RenderAPI::skyboxVS->use();
+			irradianceDebug->use();
+
+			RenderAPI::get()->DrawCube();
+		}*/
 	}
 
 	void debugDrawSphere()
@@ -289,6 +346,64 @@ private:
 		else                return sqrt2 * K(l, -m) * sin(-m * phi) * P(l, -m, cos(theta));
 	}
 
+	//光照方向改变
+	void updateShadow()
+	{
+		const float xSize = 183;
+		const float ySize = 130;
+		const float distance = 260.f;
+		const DirectX::XMVECTOR offset = { 6.5f,0.f,0.f };
+
+		light.lightDir = { 0.f,sinf(sunAngle),cosf(sunAngle),0.f };
+		light.lightColor = DirectX::Colors::White;
+
+		light.lightDir = DirectX::XMVector3Normalize(light.lightDir);
+
+		const DirectX::XMVECTOR lightCamPos = DirectX::XMVectorAdd(DirectX::XMVectorScale(light.lightDir, distance), offset);
+		const DirectX::XMMATRIX lightProjMat = DirectX::XMMatrixOrthographicLH(xSize, ySize, 1.f, 512.f);
+		const DirectX::XMMATRIX lightViewMat = DirectX::XMMatrixLookAtLH(lightCamPos, offset, { 0.f,1.f,0.f });
+		const DirectX::XMMATRIX lightMat = DirectX::XMMatrixTranspose(lightViewMat * lightProjMat);
+
+		memcpy(lightBuffer->map(0).pData, &light, sizeof(Light));
+		lightBuffer->unmap(0);
+
+		memcpy(shadowProjBuffer->map(0).pData, &lightMat, sizeof(DirectX::XMMATRIX));
+		shadowProjBuffer->unmap(0);
+
+		RenderAPI::get()->OMSetBlendState(nullptr);
+		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+
+		RenderAPI::get()->RSSetState(States::rasterShadow);
+		RenderAPI::get()->RSSetViewport(shadowMapRes, shadowMapRes);
+
+		shadowTexture->clearDSV(D3D11_CLEAR_DEPTH);
+
+		RenderAPI::get()->OMSetRTV({}, shadowTexture);
+		RenderAPI::get()->VSSetConstantBuffer({ shadowProjBuffer }, 2);
+
+		scene->renderGeometry(RenderAPI::shadowVS);
+
+		RenderAPI::get()->RSSetState(States::rasterCullBack);
+		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+	}
+
+	//光照方向改变
+	void updateLightProbe()
+	{
+		//RenderCubeAt({ 0,0,0 });
+
+		for (UINT x = 0; x < irradianceVolumeParam.count.x; x++)
+		{
+			for (UINT z = 0; z < irradianceVolumeParam.count.z; z++)
+			{
+				for (UINT y = 0; y < irradianceVolumeParam.count.y; y++)
+				{
+					RenderCubeAt({ x,y,z });
+				}
+			}
+		}
+	}
+
 	UINT ProbeGridPosToIndex(const DirectX::XMUINT3& probeGridPos)
 	{
 		return probeGridPos.x + probeGridPos.z * irradianceVolumeParam.count.x + probeGridPos.y * irradianceVolumeParam.count.x * irradianceVolumeParam.count.z;
@@ -305,9 +420,15 @@ private:
 
 	void RenderCubeAt(const DirectX::XMUINT3& probeGridPos)
 	{
-		const DirectX::XMFLOAT3 location = ProbeGridPosToLoc(probeGridPos);
+		//const DirectX::XMFLOAT3 location = ProbeGridPosToLoc(probeGridPos);
 
-		const UINT probeIndex = ProbeGridPosToIndex(probeGridPos);
+		//const UINT probeIndex = ProbeGridPosToIndex(probeGridPos);
+
+		DirectX::XMFLOAT3 location;
+
+		DirectX::XMStoreFloat3(&location, Camera::getEye());
+
+		const UINT probeIndex = 0;
 
 		const DirectX::XMVECTOR focusPoints[6] =
 		{
@@ -343,19 +464,20 @@ private:
 		cubeRenderBuffer->unmap(0);
 
 		radianceCube->clearRTV(DirectX::Colors::Black);
-		float distanceClear[4] = { 512.f,512.f,512.f };
+		float distanceClear[4] = { 512.f,512.f,512.f,512.f };
 		distanceCube->clearRTV(distanceClear);
-
 		depthCube->clearDSV(D3D11_CLEAR_DEPTH);
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		RenderAPI::get()->RSSetViewport(captureResolution, captureResolution);
 		RenderAPI::get()->OMSetRTV({ radianceCube,distanceCube }, depthCube);
 		RenderAPI::get()->VSSetConstantBuffer({ cubeRenderBuffer }, 2);
-		RenderAPI::get()->PSSetSRV({ shadowTexture }, 2);
+		RenderAPI::get()->PSSetSRV({ shadowTexture }, 3);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,cubeRenderBuffer }, 1);
+		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
 		scene->renderCube(cubeRenderVS, cubeRenderPS);
 
@@ -402,6 +524,8 @@ private:
 
 	DepthCube* depthCube;
 
+	TextureCube* skybox;
+
 	Shader* deferredVShader;
 
 	Shader* deferredPShader;
@@ -418,6 +542,12 @@ private:
 
 	Shader* octahedralEncode;
 
+	Shader* irradianceDebug;
+
+	Shader* distanceCubeDebug;
+
+	Shader* octahedralDebug;
+
 	Buffer* irradianceVolumeBuffer;
 
 	Buffer* cubeRenderBuffer;
@@ -431,6 +561,8 @@ private:
 	Scene* scene;
 
 	float sunAngle;
+
+	bool showRadiance;
 
 	HBAOEffect hbaoEffect;
 

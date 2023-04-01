@@ -4,9 +4,6 @@ Texture2D gBaseColor : register(t2);
 Texture2D ssaoTexture : register(t3);
 Texture2D<float> shadowTexture : register(t4);
 
-Texture2DArray<float3> probeArray;
-TextureCubeArray<float> depthArray;
-
 SamplerState wrapSampler : register(s0);
 SamplerState clampSampler : register(s1);
 SamplerComparisonState shadowSampler : register(s2);
@@ -33,35 +30,6 @@ cbuffer Light : register(b2)
 cbuffer LightMatrix : register(b3)
 {
     matrix lightViewProj;
-}
-
-cbuffer ProbeField : register(b4)
-{
-    float3 fieldSize;
-    float probeSpacing;
-    uint3 probeCount;
-    float padding;
-}
-
-uint ProbeLocationToProbeIndex(uint3 location)
-{
-    return location.x + location.z * probeCount.x + location.y * probeCount.x * probeCount.z;
-}
-
-//这个函数求出来的是位于左前下方的探针
-//index0 0 0 0
-//index1 1 0 0
-//index2 0 1 0
-//index3 0 0 1
-//index4 1 1 0
-//index5 1 0 1
-//index6 0 1 1
-//index7 1 1 1
-uint3 PositionToProbeLocation(float3 pos)
-{
-    pos += fieldSize / 2.0;
-    pos /= probeSpacing;
-    return uint3(pos);
 }
 
 float CalShadow(float3 P)

@@ -91,8 +91,7 @@ public:
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
-			const Material* const mat = materials[models[i]->materialIndex];
-			RenderAPI::get()->PSSetSRV({ mat->diffuse,mat->specular,mat->normal }, 0);
+			materials[models[i]->materialIndex]->use();
 			models[i]->draw();
 		}
 	}
@@ -106,8 +105,7 @@ public:
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
-			const Material* const mat = materials[models[i]->materialIndex];
-			RenderAPI::get()->PSSetSRV({ mat->diffuse,mat->specular }, 0);
+			materials[models[i]->materialIndex]->use();
 			models[i]->drawInstance();
 		}
 	}

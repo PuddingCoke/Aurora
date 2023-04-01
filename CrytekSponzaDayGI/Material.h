@@ -27,6 +27,11 @@ public:
 		delete normal;
 	}
 
+	void use() const
+	{
+		RenderAPI::get()->PSSetSRV({ diffuse,specular,normal }, 0);
+	}
+
 	ResourceTexture* const diffuse;
 	ResourceTexture* const specular;
 	ResourceTexture* const normal;

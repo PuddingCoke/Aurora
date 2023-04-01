@@ -44,8 +44,9 @@
     <FxCompile Include="CubeRenderVS.hlsl" />
     <FxCompile Include="CubeRenderPS.hlsl" />
     <FxCompile Include="IrradianceCompute.hlsl" />
-    <FxCompile Include="IrradianceEvaluate.hlsl" />
+    <FxCompile Include="IrradianceDebug.hlsl" />
     <FxCompile Include="OctahedralEncode.hlsl" />
-    <FxCompile Include="OctahedralDecode.hlsl" />
+    <FxCompile Include="OctahedralDebug.hlsl" />
+    <FxCompile Include="DistanceCubeDebug.hlsl" />
   </ItemGroup>
 </Project>

@@ -19,13 +19,15 @@ Texture2D tSpecular : register(t1);
 Texture2D tNormal : register(t2);
 
 SamplerState wrapSampler : register(s0);
+SamplerState clampSampler : register(s1);
+SamplerComparisonState shadowSampler : register(s2);
 
 PixelOutput main(PixelInput input)
 {
     float4 baseColor = tDiffuse.Sample(wrapSampler, input.uv);
     
     [branch]
-    if (baseColor.a < 0.5)
+    if (baseColor.a < 0.9)
     {
         discard;
     }

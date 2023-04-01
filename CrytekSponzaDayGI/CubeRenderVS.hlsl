@@ -21,7 +21,8 @@ struct VertexOutput
 cbuffer ProjMatrices : register(b2)
 {
     matrix viewProj[6];
-    float4 probeLocation;
+    float3 probeLocation;
+    uint probeIndex;
 };
 
 VertexOutput main(VertexInput input, uint instanceID : SV_InstanceID)

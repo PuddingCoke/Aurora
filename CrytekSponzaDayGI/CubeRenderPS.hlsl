@@ -9,7 +9,8 @@ struct PixelInput
 
 Texture2D tDiffuse : register(t0);
 Texture2D tSpecular : register(t1);
-Texture2D<float> shadowTexture : register(t2);
+Texture2D tNormal : register(t2);
+Texture2D<float> shadowTexture : register(t3);
 
 SamplerState wrapSampler : register(s0);
 SamplerState clampSampler : register(s1);
@@ -36,24 +37,10 @@ cbuffer ProjMatrices : register(b4)
 float CalShadow(float3 P)
 {
     float4 shadowPos = mul(float4(P, 1.0), lightViewProj);
+    
     shadowPos.xy = shadowPos.xy * float2(0.5, -0.5) + 0.5;
     
-    float shadow = 0.0;
-    const float2 texelSize = 1.0 / float2(4096.0, 4096.0);
-    
-    [unroll]
-    for (int x = -1; x <= 1; x++)
-    {
-        [unroll]
-        for (int y = -1; y <= 1; y++)
-        {
-            shadow += shadowTexture.SampleCmpLevelZero(shadowSampler, shadowPos.xy + float2(x, y) * texelSize, shadowPos.z);
-        }
-    }
-    
-    shadow /= 9.0;
-    
-    return 1.0 - shadow;
+    return 1.0 - shadowTexture.SampleCmpLevelZero(shadowSampler, shadowPos.xy, shadowPos.z);
 }
 
 struct PixelOuput
@@ -71,7 +58,7 @@ PixelOuput main(PixelInput input)
         discard;
     }
     
-    const float specular = tSpecular.Sample(wrapSampler, input.uv).r;
+    const float3 specular = tSpecular.Sample(wrapSampler, input.uv).rgb;
     
     const float3 V = normalize(probeLocation - input.pos);
     
