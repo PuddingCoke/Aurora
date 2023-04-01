@@ -49,6 +49,7 @@ public:
 	{
 		camera.registerEvent();
 
+		bloomEffect.setExposure(0.6f);
 		bloomEffect.applyChange();
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
@@ -78,7 +79,9 @@ public:
 
 	void update(const float& dt) override
 	{
-		param.factor = 0.1f + 0.01f * sinf(Graphics::getSTime());
+		//param.factor = 0.1f + 0.01f * sinf(Graphics::getSTime());
+
+		param.factor = 0.18f;
 
 		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
 		simulationBuffer->unmap(0);

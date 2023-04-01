@@ -152,7 +152,7 @@ public:
 
 		irradianceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R16G16B16A16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 		irradianceBounceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R16G16B16A16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
-		depthOctahedralMap = new ComputeTexture(256, 256, DXGI_FORMAT_R16G16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
+		depthOctahedralMap = new ComputeTexture(18, 18, DXGI_FORMAT_R16G16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 
 		irradianceVolumeBuffer = new Buffer(sizeof(IrradianceVolumeParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &irradianceVolumeParam);
 
@@ -494,7 +494,7 @@ private:
 			{0.0f, 1.0f,  0.0f}
 		};
 
-		const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.0001f, 512.f);
+		const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 1.f, 512.f);
 
 		for (int i = 0; i < 6; i++)
 		{
@@ -542,7 +542,7 @@ private:
 
 		octahedralEncode->use();
 
-		RenderAPI::get()->Dispatch(256, 256, 1);
+		RenderAPI::get()->Dispatch(18, 18, 1);
 	}
 
 	void RenderCubeBounceAt(const DirectX::XMUINT3& probeGridPos)
@@ -570,7 +570,7 @@ private:
 			{0.0f, 1.0f,  0.0f}
 		};
 
-		const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.0001f, 512.f);
+		const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 1.f, 512.f);
 
 		for (int i = 0; i < 6; i++)
 		{
