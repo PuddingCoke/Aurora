@@ -542,7 +542,7 @@ private:
 
 		octahedralEncode->use();
 
-		RenderAPI::get()->Dispatch(18, 18, 1);
+		RenderAPI::get()->Dispatch(1, 1, 1);
 	}
 
 	void RenderCubeBounceAt(const DirectX::XMUINT3& probeGridPos)

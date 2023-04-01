@@ -35,7 +35,7 @@ float3 octDecode(float x, float y)
 
 #define RESOLUTION 18
 
-[numthreads(1, 1, 1)]
+[numthreads(18, 18, 1)]
 void main(uint2 DTid : SV_DispatchThreadID)
 {
     bool isBorderTexel = (DTid.x == 0 || DTid.x == (RESOLUTION - 1)) | (DTid.y == 0 || DTid.y == (RESOLUTION - 1));
