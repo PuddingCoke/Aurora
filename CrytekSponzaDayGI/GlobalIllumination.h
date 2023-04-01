@@ -26,9 +26,9 @@ public:
 
 	struct IrradianceVolumeParam
 	{
-		DirectX::XMFLOAT3 start = { -182.f,-18.f,-125.f };
-		float spacing = 25.f;
-		DirectX::XMUINT3 count = { 16,8,11 };
+		DirectX::XMFLOAT3 start = { -142.f,-16.f,-74.f };
+		float spacing = 18.2f;
+		DirectX::XMUINT3 count = { 17,9,12 };
 		float padding;
 	} irradianceVolumeParam;
 
@@ -81,6 +81,9 @@ public:
 		sunAngle(Math::half_pi - 0.01f),
 		showRadiance(true)
 	{
+		bloomEffect.setIntensity(0.5f);
+		bloomEffect.applyChange();
+
 		//预计算球面采样点
 		{
 			struct Sample
@@ -139,6 +142,12 @@ public:
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
 			showRadiance = !showRadiance;
+
+			DirectX::XMFLOAT3 eyePos;
+			DirectX::XMStoreFloat3(&eyePos, Camera::getEye());
+
+			std::cout << eyePos.x << " " << eyePos.y << " " << eyePos.z << "\n";
+
 			});
 
 		irradianceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R16G16B16A16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
@@ -253,7 +262,7 @@ public:
 
 		RenderAPI::get()->DrawCube();
 
-		/*RenderAPI::get()->RSSetState(States::rasterCullNone);
+		RenderAPI::get()->RSSetState(States::rasterCullNone);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 		RenderAPI::get()->VSSetConstantBuffer({ irradianceVolumeBuffer }, 2);
 
@@ -268,7 +277,7 @@ public:
 
 		RenderAPI::get()->RSSetState(States::rasterCullBack);
 		RenderAPI::get()->GSSetShader(nullptr);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
 

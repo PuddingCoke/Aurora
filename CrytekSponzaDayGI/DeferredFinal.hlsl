@@ -146,7 +146,7 @@ float3 GetIndirectDiffuse(float3 P, float3 N)
     {
         uint3 offset = offsets[i];
         
-        uint3 probeGridCoord = baseGridCoord + offset;
+        uint3 probeGridCoord = clamp(baseGridCoord + offset, uint3(0, 0, 0), probeCount - uint3(1, 1, 1));
         
         uint probeIndex = ProbeGridPosToIndex(probeGridCoord);
         
