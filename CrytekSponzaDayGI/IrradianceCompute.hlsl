@@ -13,7 +13,7 @@ cbuffer ProjMatrices : register(b1)
     uint probeIndex;
 };
 
-RWTexture2DArray<float4> irradianceCoeff : register(u0);
+RWTexture2DArray<float3> irradianceCoeff : register(u0);
 
 TextureCube envCube : register(t0);
 
@@ -38,5 +38,5 @@ void main(uint2 DTid : SV_DispatchThreadID)
     
     result *= 4.0 * PI / float(numSamples);
     
-    irradianceCoeff[uint3(DTid, probeIndex)] = float4(result, 1.0);
+    irradianceCoeff[uint3(DTid, probeIndex)] = result;
 }

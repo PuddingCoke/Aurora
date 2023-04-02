@@ -3,7 +3,7 @@ Texture2D gNormalSpecular : register(t1);
 Texture2D gBaseColor : register(t2);
 Texture2D ssaoTexture : register(t3);
 Texture2D<float> shadowTexture : register(t4);
-Texture2DArray<float4> irradianceCoeff : register(t5);
+Texture2DArray<float3> irradianceCoeff : register(t5);
 Texture2DArray<float2> depthOctahedralMap : register(t6);
 
 SamplerState wrapSampler : register(s0);
@@ -93,15 +93,15 @@ float2 GetDepth(const in float3 N, const in uint probeIndex)
 float3 GetIrradiance(const in float3 N, const in uint probeIndex)
 {
     return max(float3(0.0, 0.0, 0.0),
-    A0 * C0 * irradianceCoeff[uint3(0, 0, probeIndex)].rgb
-    - A1 * C1 * irradianceCoeff[uint3(1, 0, probeIndex)].rgb * N.y
-    + A1 * C2 * irradianceCoeff[uint3(2, 0, probeIndex)].rgb * N.z
-    - A1 * C3 * irradianceCoeff[uint3(3, 0, probeIndex)].rgb * N.x
-    + A2 * C4 * irradianceCoeff[uint3(4, 0, probeIndex)].rgb * (N.y * N.x)
-    - A2 * C5 * irradianceCoeff[uint3(5, 0, probeIndex)].rgb * (N.y * N.z)
-    + A2 * C6 * irradianceCoeff[uint3(6, 0, probeIndex)].rgb * (3.0 * N.z * N.z - 1.0)
-    - A2 * C7 * irradianceCoeff[uint3(7, 0, probeIndex)].rgb * (N.x * N.z)
-    + A2 * C8 * irradianceCoeff[uint3(8, 0, probeIndex)].rgb * (N.x * N.x - N.y * N.y));
+    A0 * C0 * irradianceCoeff[uint3(0, 0, probeIndex)]
+    - A1 * C1 * irradianceCoeff[uint3(1, 0, probeIndex)] * N.y
+    + A1 * C2 * irradianceCoeff[uint3(2, 0, probeIndex)] * N.z
+    - A1 * C3 * irradianceCoeff[uint3(3, 0, probeIndex)] * N.x
+    + A2 * C4 * irradianceCoeff[uint3(4, 0, probeIndex)] * (N.y * N.x)
+    - A2 * C5 * irradianceCoeff[uint3(5, 0, probeIndex)] * (N.y * N.z)
+    + A2 * C6 * irradianceCoeff[uint3(6, 0, probeIndex)] * (3.0 * N.z * N.z - 1.0)
+    - A2 * C7 * irradianceCoeff[uint3(7, 0, probeIndex)] * (N.x * N.z)
+    + A2 * C8 * irradianceCoeff[uint3(8, 0, probeIndex)] * (N.x * N.x - N.y * N.y));
 }
 
 uint3 PosToProbeGridPos(float3 P)
