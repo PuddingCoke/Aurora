@@ -4,12 +4,18 @@
 #define _NVIDIAENCODER_H_
 
 #include<iostream>
-#include<fstream>
 #include<chrono>
 
 #include<NvEnc/nvEncodeAPI.h>
 #include<Aurora/Renderer.h>
 #include<Aurora/DX/Resource/Texture2D.h>
+
+extern "C"
+{
+#include<libavutil/avutil.h>
+#include<libavformat/avformat.h>
+#include<libavcodec/avcodec.h>
+}
 
 class NvidiaEncoder
 {
@@ -55,8 +61,6 @@ private:
 
 	NV_ENC_CREATE_BITSTREAM_BUFFER bitstream;
 
-	FILE* stream;
-
 	Texture2D* nv12Texture;
 
 	HMODULE moduleNvEncAPI;
@@ -76,6 +80,12 @@ private:
 	std::chrono::steady_clock::time_point timeEnd;
 
 	float encodeTime;
+
+	AVFormatContext* outCtx;
+
+	AVStream* outStream;
+
+
 
 };
 

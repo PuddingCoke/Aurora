@@ -46,8 +46,6 @@ bool NvidiaEncoder::encode()
 
 		encoding = false;
 
-		_pclose(stream);
-
 		std::cout << "[class NvidiaEncoder] encode complete!\n";
 
 		std::cout << "[class NvidiaEncoder] frame encode avg speed " << frameToEncode / encodeTime << "\n";
@@ -78,12 +76,29 @@ bool NvidiaEncoder::encode()
 
 			nvencAPI.nvEncLockBitstream(encoder, &lockBitstream);
 
-			fwrite(lockBitstream.bitstreamBufferPtr, lockBitstream.bitstreamSizeInBytes, 1, stream);
+			AVPacket* pkt = av_packet_alloc();
+
+			pkt->pts = av_rescale_q(frameEncoded, AVRational{ 1,60 }, outStream->time_base);
+			pkt->dts = pkt->pts;
+			pkt->stream_index = outStream->index;
+			pkt->data = (uint8_t*)lockBitstream.bitstreamBufferPtr;
+			pkt->size = lockBitstream.bitstreamSizeInBytes;
+
+			if (!memcmp(lockBitstream.bitstreamBufferPtr, "\x00\x00\x00\x01\x67", 5))
+			{
+				pkt->flags |= AV_PKT_FLAG_KEY;
+			}
+
+			av_write_frame(outCtx, pkt);
+
+			av_write_frame(outCtx, nullptr);
+
+			av_packet_free(&pkt);
 
 			nvencAPI.nvEncUnlockBitstream(encoder, lockBitstream.outputBitstream);
 		}
 
-		std::cout << "Encoding... " << frameEncoded << "\n";
+		std::cout << "Encoding... " << frameEncoded + 1 << "\n";
 	}
 
 	nvencAPI.nvEncUnmapInputResource(encoder, mapResource.mappedResource);
@@ -102,8 +117,8 @@ bool NvidiaEncoder::encode()
 }
 
 NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate, ID3D11Resource* const inputTexture2D, bool& initializeStatus) :
-	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0), width(width), height(height), encoder(nullptr), stream(nullptr),
-	nv12Texture(new Texture2D(width, height, 1, 1, DXGI_FORMAT_NV12, D3D11_BIND_RENDER_TARGET, 0)),
+	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0), width(width), height(height), encoder(nullptr),
+	nv12Texture(new Texture2D(width, height, 1, 1, DXGI_FORMAT_NV12, D3D11_BIND_RENDER_TARGET, 0)), outCtx(nullptr), outStream(nullptr),
 	nvencAPI{ NV_ENCODE_API_FUNCTION_LIST_VER },
 	bitstream{ NV_ENC_CREATE_BITSTREAM_BUFFER_VER }
 {
@@ -198,7 +213,25 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	std::cout << "[class NvidiaEncoder] frameToEncode " << frameToEncode << "\n";
 	std::cout << "[class NvidiaEncoder] start encoding\n";
 
-	stream = _popen("ffmpeg -y -f hevc -i pipe: -c copy output.mp4", "wb");
+	avformat_network_init();
+
+	avformat_alloc_output_context2(&outCtx, nullptr, "mp4", nullptr);
+
+	outCtx->url = av_strdup("output.mp4");
+
+	outStream = avformat_new_stream(outCtx, nullptr);
+
+	outStream->id = 0;
+
+	AVCodecParameters* vpar = outStream->codecpar;
+	vpar->codec_id = AV_CODEC_ID_HEVC;
+	vpar->codec_type = AVMEDIA_TYPE_VIDEO;
+	vpar->width = width;
+	vpar->height = height;
+
+	avio_open(&outCtx->pb, outCtx->url, AVIO_FLAG_WRITE);
+
+	avformat_write_header(outCtx, nullptr);
 }
 
 NvidiaEncoder::~NvidiaEncoder()
@@ -209,5 +242,9 @@ NvidiaEncoder::~NvidiaEncoder()
 		nvencAPI.nvEncDestroyEncoder(encoder);
 		delete nv12Texture;
 		FreeLibrary(moduleNvEncAPI);
+
+		av_write_trailer(outCtx);
+		avio_close(outCtx->pb);
+		avformat_free_context(outCtx);
 	}
 }

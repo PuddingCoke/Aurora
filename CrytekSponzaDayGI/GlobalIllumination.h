@@ -16,11 +16,12 @@
 
 #include"Scene.h"
 
+
 class GlobalIllumination
 {
 public:
 
-	static constexpr UINT captureResolution = 128;
+	static constexpr UINT captureResolution = 64;
 
 	static constexpr UINT shadowMapRes = 4096;
 
@@ -92,8 +93,8 @@ public:
 				float Ylm[9];
 			};
 
-			const unsigned int sampleCount = 1600;
-			const unsigned int sampleCountSqrt = 40;
+			const unsigned int sampleCount = 256;
+			const unsigned int sampleCountSqrt = 16;
 			const double oneoverN = 1.0 / (double)sampleCountSqrt;
 
 			unsigned int i = 0;
