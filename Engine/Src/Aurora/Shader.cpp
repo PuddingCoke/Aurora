@@ -25,46 +25,76 @@ Shader::Shader(const std::string& filePath, const ShaderType& type, const std::i
 {
 	std::cout << "[class Shader] " << filePath;
 
-	std::vector<D3D_SHADER_MACRO> shaderMacros = std::vector<D3D_SHADER_MACRO>{ macros };
-	shaderMacros.push_back({ nullptr,nullptr });
+	const std::wstring wFilePath = std::wstring(filePath.begin(), filePath.end());
 
-	std::wstring wFilePath = std::wstring(filePath.begin(), filePath.end());
+	const std::string fileExt = Utils::File::getExtension(filePath);
+
+	if (fileExt == "hlsl")
+	{
+		std::vector<D3D_SHADER_MACRO> shaderMacros = std::vector<D3D_SHADER_MACRO>{ macros };
+		shaderMacros.push_back({ nullptr,nullptr });
+
+		switch (type)
+		{
+		default:
+		case ShaderType::Vertex:
+			D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "vs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+			break;
+		case ShaderType::Hull:
+			D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "hs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+			break;
+		case ShaderType::Domain:
+			D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "ds_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+			break;
+		case ShaderType::Geometry:
+			D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "gs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+			break;
+		case ShaderType::Pixel:
+			D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "ps_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+			break;
+		case ShaderType::Compute:
+			D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "cs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
+			break;
+		}
+	}
+	else if (fileExt == "cso")
+	{
+		D3DReadFileToBlob(wFilePath.c_str(), shaderBlob.ReleaseAndGetAddressOf());
+	}
+	else
+	{
+		throw "Unsupported file extension";
+	}
 
 	switch (type)
 	{
 	default:
 	case ShaderType::Vertex:
-		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "vs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		Renderer::device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.vertexShader);
 		useFunc = &Shader::vertexUse;
 		releaseFunc = &Shader::vertexRelease;
 		break;
 	case ShaderType::Hull:
-		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "hs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		Renderer::device->CreateHullShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.hullShader);
 		useFunc = &Shader::hullUse;
 		releaseFunc = &Shader::hullRelease;
 		break;
 	case ShaderType::Domain:
-		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "ds_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		Renderer::device->CreateDomainShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.domainShader);
 		useFunc = &Shader::domainUse;
 		releaseFunc = &Shader::domainRelease;
 		break;
 	case ShaderType::Geometry:
-		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "gs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		Renderer::device->CreateGeometryShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.geometryShader);
 		useFunc = &Shader::geometryUse;
 		releaseFunc = &Shader::geometryRelease;
 		break;
 	case ShaderType::Pixel:
-		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "ps_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		Renderer::device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.pixelShader);
 		useFunc = &Shader::pixelUse;
 		releaseFunc = &Shader::pixelRelease;
 		break;
 	case ShaderType::Compute:
-		D3DCompileFromFile(wFilePath.c_str(), shaderMacros.data(), nullptr, "main", "cs_5_0", compileFlags, 0, shaderBlob.ReleaseAndGetAddressOf(), nullptr);
 		Renderer::device->CreateComputeShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.computeShader);
 		useFunc = &Shader::computeUse;
 		releaseFunc = &Shader::computeRelease;

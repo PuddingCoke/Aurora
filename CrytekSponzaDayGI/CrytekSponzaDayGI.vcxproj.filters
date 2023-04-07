@@ -44,13 +44,13 @@
     <FxCompile Include="CubeRenderVS.hlsl" />
     <FxCompile Include="CubeRenderPS.hlsl" />
     <FxCompile Include="IrradianceCompute.hlsl" />
-    <FxCompile Include="IrradianceDebug.hlsl" />
     <FxCompile Include="OctahedralEncode.hlsl" />
-    <FxCompile Include="OctahedralDebug.hlsl" />
-    <FxCompile Include="DistanceCubeDebug.hlsl" />
     <FxCompile Include="ProbeRenderVS.hlsl" />
     <FxCompile Include="ProbeRenderGS.hlsl" />
     <FxCompile Include="ProbeRenderPS.hlsl" />
     <FxCompile Include="CubeRenderBouncePS.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Common.hlsli" />
   </ItemGroup>
 </Project>

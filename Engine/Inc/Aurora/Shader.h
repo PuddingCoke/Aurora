@@ -10,6 +10,7 @@
 #include<iostream>
 
 #include"Renderer.h"
+#include"Utils.h"
 
 enum class ShaderType
 {
@@ -33,8 +34,10 @@ public:
 
 	void operator=(const Shader&) = delete;
 
+	//hlsl or cso
 	Shader(const std::string& filePath, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros = {});
 
+	//byte code
 	Shader(const BYTE* const bytes, const size_t& byteSize, const ShaderType& type);
 
 	void use() const;

@@ -33,17 +33,15 @@ float3 octDecode(float x, float y)
     return normalize(v);
 }
 
-#define RESOLUTION 18
-
-[numthreads(18, 18, 1)]
+[numthreads(16, 16, 1)]
 void main(uint2 DTid : SV_DispatchThreadID)
 {
-    bool isBorderTexel = (DTid.x == 0 || DTid.x == (RESOLUTION - 1)) | (DTid.y == 0 || DTid.y == (RESOLUTION - 1));
+    bool isBorderTexel = (DTid.x == 0 || DTid.x == 15) | (DTid.y == 0 || DTid.y == 15);
     
     //update interior texel
     if (!isBorderTexel)
     {
-        float2 coor = (float2(DTid - uint2(1, 1)) + 0.5) / (float(RESOLUTION - 2) / 2.0) - float2(1.0, 1.0);
+        float2 coor = (float2(DTid - uint2(1, 1)) + 0.5) / 7.0 - float2(1.0, 1.0);
     
         float3 dir = octDecode(coor.x, coor.y);
     
@@ -57,25 +55,25 @@ void main(uint2 DTid : SV_DispatchThreadID)
     //update border texel
     if (isBorderTexel)
     {
-        bool isCornerTexel = (DTid.x == 0 || DTid.x == (RESOLUTION - 1)) && (DTid.y == 0 || DTid.y == (RESOLUTION - 1));
-        bool isRowTexel = (DTid.x > 0 && DTid.x < (RESOLUTION - 1));
+        bool isCornerTexel = (DTid.x == 0 || DTid.x == 15) && (DTid.y == 0 || DTid.y == 15);
+        bool isRowTexel = (DTid.x > 0 && DTid.x < 15);
 
         uint2 copyCoor;
 
         if (isCornerTexel)
         {
-            copyCoor.x = DTid.x > 0 ? 1 : (RESOLUTION - 2);
-            copyCoor.y = DTid.y > 0 ? 1 : (RESOLUTION - 2);
+            copyCoor.x = DTid.x > 0 ? 1 : 14;
+            copyCoor.y = DTid.y > 0 ? 1 : 14;
         }
         else if (isRowTexel)
         {
-            copyCoor.x = (RESOLUTION - 1) - DTid.x;
+            copyCoor.x = 15 - DTid.x;
             copyCoor.y = DTid.y + ((DTid.y > 0) ? -1 : 1);
         }
         else
         {
             copyCoor.x = DTid.x + ((DTid.x > 0) ? -1 : 1);
-            copyCoor.y = (RESOLUTION - 1) - DTid.y;
+            copyCoor.y = 15 - DTid.y;
         }
 
         depthOctahedralMap[uint3(DTid, probeIndex)] = depthOctahedralMap[uint3(copyCoor, probeIndex)];

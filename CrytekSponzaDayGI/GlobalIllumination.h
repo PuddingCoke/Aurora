@@ -58,21 +58,18 @@ public:
 		distanceCube(new RenderCube(captureResolution, DXGI_FORMAT_R32_FLOAT)),
 		depthCube(new DepthCube(captureResolution)),
 		skybox(new TextureCube(assetPath + "/sky/kloppenheim_05_4k.hdr", 1024)),
-		deferredVShader(new Shader("DeferredVShader.hlsl", ShaderType::Vertex)),
-		deferredPShader(new Shader("DeferredPShader.hlsl", ShaderType::Pixel)),
-		deferredFinal(new Shader("DeferredFinal.hlsl", ShaderType::Pixel)),
-		skyboxPShader(new Shader("SkyboxPShader.hlsl", ShaderType::Pixel)),
-		cubeRenderVS(new Shader("CubeRenderVS.hlsl", ShaderType::Vertex)),
-		cubeRenderBouncePS(new Shader("CubeRenderBouncePS.hlsl", ShaderType::Pixel)),
-		cubeRenderPS(new Shader("CubeRenderPS.hlsl", ShaderType::Pixel)),
-		irradianceCompute(new Shader("IrradianceCompute.hlsl", ShaderType::Compute)),
-		octahedralEncode(new Shader("OctahedralEncode.hlsl", ShaderType::Compute)),
-		irradianceDebug(new Shader("IrradianceDebug.hlsl", ShaderType::Pixel)),
-		distanceCubeDebug(new Shader("DistanceCubeDebug.hlsl", ShaderType::Pixel)),
-		octahedralDebug(new Shader("OctahedralDebug.hlsl", ShaderType::Pixel)),
-		probeRenderVS(new Shader("ProbeRenderVS.hlsl", ShaderType::Vertex)),
-		probeRenderGS(new Shader("ProbeRenderGS.hlsl", ShaderType::Geometry)),
-		probeRenderPS(new Shader("ProbeRenderPS.hlsl", ShaderType::Pixel)),
+		deferredVShader(new Shader(Utils::getRootFolder() + "DeferredVShader.cso", ShaderType::Vertex)),
+		deferredPShader(new Shader(Utils::getRootFolder() + "DeferredPShader.cso", ShaderType::Pixel)),
+		deferredFinal(new Shader(Utils::getRootFolder() + "DeferredFinal.cso", ShaderType::Pixel)),
+		skyboxPShader(new Shader(Utils::getRootFolder() + "SkyboxPShader.cso", ShaderType::Pixel)),
+		cubeRenderVS(new Shader(Utils::getRootFolder() + "CubeRenderVS.cso", ShaderType::Vertex)),
+		cubeRenderBouncePS(new Shader(Utils::getRootFolder() + "CubeRenderBouncePS.cso", ShaderType::Pixel)),
+		cubeRenderPS(new Shader(Utils::getRootFolder() + "CubeRenderPS.cso", ShaderType::Pixel)),
+		irradianceCompute(new Shader(Utils::getRootFolder() + "IrradianceCompute.cso", ShaderType::Compute)),
+		octahedralEncode(new Shader(Utils::getRootFolder() + "OctahedralEncode.cso", ShaderType::Compute)),
+		probeRenderVS(new Shader(Utils::getRootFolder() + "ProbeRenderVS.cso", ShaderType::Vertex)),
+		probeRenderGS(new Shader(Utils::getRootFolder() + "ProbeRenderGS.cso", ShaderType::Geometry)),
+		probeRenderPS(new Shader(Utils::getRootFolder() + "ProbeRenderPS.cso", ShaderType::Pixel)),
 		cubeRenderBuffer(new Buffer(sizeof(CubeRenderParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		shadowProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
@@ -153,7 +150,7 @@ public:
 
 		irradianceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 		irradianceBounceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
-		depthOctahedralMap = new ComputeTexture(18, 18, DXGI_FORMAT_R16G16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
+		depthOctahedralMap = new ComputeTexture(16, 16, DXGI_FORMAT_R16G16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 
 		irradianceVolumeBuffer = new Buffer(sizeof(IrradianceVolumeParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &irradianceVolumeParam);
 
@@ -188,9 +185,6 @@ public:
 		delete cubeRenderPS;
 		delete irradianceCompute;
 		delete octahedralEncode;
-		delete irradianceDebug;
-		delete distanceCubeDebug;
-		delete octahedralDebug;
 		delete probeRenderVS;
 		delete probeRenderGS;
 		delete probeRenderPS;
@@ -271,7 +265,7 @@ public:
 		probeRenderGS->use();
 		probeRenderPS->use();
 
-		RenderAPI::get()->PSSetSRV({ irradianceCoeff,depthOctahedralMap }, 0);
+		RenderAPI::get()->PSSetSRV({ irradianceBounceCoeff,depthOctahedralMap }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		RenderAPI::get()->Draw(irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z, 0);
@@ -289,49 +283,6 @@ public:
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 		RenderAPI::get()->DrawQuad();
-
-		/*RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(depthTexture);
-
-		RenderAPI::skyboxVS->use();*/
-
-		/*if (showRadiance)
-		{
-			RenderAPI::get()->PSSetSRV({ distanceCube }, 0);
-
-			distanceCubeDebug->use();
-
-			RenderAPI::get()->DrawCube();
-		}
-		else
-		{
-			RenderAPI::get()->PSSetSRV({ depthOctahedralMap }, 0);
-
-			octahedralDebug->use();
-
-			RenderAPI::get()->DrawCube();
-		}*/
-
-		/*if (showRadiance)
-		{
-			RenderAPI::get()->PSSetSRV({ radianceCube }, 0);
-
-			RenderAPI::skyboxVS->use();
-			skyboxPShader->use();
-
-			RenderAPI::get()->DrawCube();
-		}
-		else
-		{
-			RenderAPI::get()->PSSetSRV({ irradianceCoeff }, 0);
-
-			RenderAPI::skyboxVS->use();
-			irradianceDebug->use();
-
-			RenderAPI::get()->DrawCube();
-		}*/
 	}
 
 
@@ -656,12 +607,6 @@ private:
 	Shader* irradianceCompute;
 
 	Shader* octahedralEncode;
-
-	Shader* irradianceDebug;
-
-	Shader* distanceCubeDebug;
-
-	Shader* octahedralDebug;
 
 	Shader* probeRenderVS;
 
