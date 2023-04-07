@@ -30,7 +30,10 @@ public:
 		DirectX::XMFLOAT3 start = { -142.f,-16.f,-74.f };
 		float spacing = 18.2f;
 		DirectX::XMUINT3 count = { 17,9,12 };
-		float padding = 0.f;
+		float irradianceDistanceBias = 0.8f;
+		float irradianceVarianceBias = 0.f;
+		float irradianceChebyshevBias = -1.0f;
+		DirectX::XMFLOAT2 padding;
 	} irradianceVolumeParam;
 
 	struct CubeRenderParam
@@ -76,8 +79,7 @@ public:
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		sunAngle(Math::half_pi - 0.01f),
-		showRadiance(true)
+		sunAngle(Math::half_pi - 0.01f)
 	{
 		bloomEffect.setIntensity(0.5f);
 		bloomEffect.applyChange();
@@ -139,20 +141,16 @@ public:
 		}
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
-			showRadiance = !showRadiance;
-
-			DirectX::XMFLOAT3 eyePos;
-			DirectX::XMStoreFloat3(&eyePos, Camera::getEye());
-
-			std::cout << eyePos.x << " " << eyePos.y << " " << eyePos.z << "\n";
-
+			memcpy(irradianceVolumeBuffer->map(0).pData, &irradianceVolumeParam, sizeof(IrradianceVolumeParam));
+			irradianceVolumeBuffer->unmap(0);
+			updateLightProbe();
 			});
 
 		irradianceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 		irradianceBounceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 		depthOctahedralMap = new ComputeTexture(16, 16, DXGI_FORMAT_R16G16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 
-		irradianceVolumeBuffer = new Buffer(sizeof(IrradianceVolumeParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &irradianceVolumeParam);
+		irradianceVolumeBuffer = new Buffer(sizeof(IrradianceVolumeParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &irradianceVolumeParam, D3D11_CPU_ACCESS_WRITE);
 
 		updateShadow();
 		updateLightProbe();
@@ -200,6 +198,9 @@ public:
 
 	void imGUICall()
 	{
+		ImGui::SliderFloat("irradiance distance bias", &irradianceVolumeParam.irradianceDistanceBias, -5.f, 5.f);
+		ImGui::SliderFloat("irradiance variance bias", &irradianceVolumeParam.irradianceVarianceBias, -5.f, 5.f);
+		ImGui::SliderFloat("irradiance chebyshev bias", &irradianceVolumeParam.irradianceChebyshevBias, -5.f, 5.f);
 		bloomEffect.imGUIEffectModifier();
 	}
 
@@ -627,8 +628,6 @@ private:
 	Scene* scene;
 
 	float sunAngle;
-
-	bool showRadiance;
 
 	HBAOEffect hbaoEffect;
 

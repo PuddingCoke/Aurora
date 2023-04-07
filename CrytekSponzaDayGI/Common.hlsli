@@ -3,7 +3,10 @@ struct IrradianceVolume
     float3 fieldStart;
     float probeSpacing;
     uint3 probeCount;
-    float padding;
+    float irradianceDistanceBias;
+    float irradianceVarianceBias;
+    float irradianceChebyshevBias;
+    float2 padding;
 };
 
 float signNotZero(float k)
@@ -14,6 +17,18 @@ float signNotZero(float k)
 float2 signNotZero(float2 v)
 {
     return float2(signNotZero(v.x), signNotZero(v.y));
+}
+
+float3 octDecode(float x, float y)
+{
+    float3 v = float3(x, y, 1.0 - abs(x) - abs(y));
+    
+    if (v.z < 0)
+    {
+        v.xy = (1.0 - abs(v.yx)) * signNotZero(v.xy);
+    }
+    
+    return normalize(v);
 }
 
 float2 octEncode(float3 v)
@@ -117,11 +132,13 @@ float3 GetIndirectDiffuse(in float3 P, in float3 N, in IrradianceVolume volume, 
         
         float2 temp = GetDepth(-dir, probeIndex, depthOctahedralMap, samplerState);
         
-        float mean = temp.x;
+        float mean = temp.x + volume.irradianceDistanceBias;
         
-        float variance = abs(temp.x * temp.x - temp.y);
+        float variance = abs(temp.x * temp.x - temp.y) + volume.irradianceVarianceBias;
         
         float chebyshevWeight = variance / (variance + (distToProbe - mean) * (distToProbe - mean));
+        
+        chebyshevWeight = max(chebyshevWeight * chebyshevWeight - volume.irradianceChebyshevBias, 0.0) / (1.0 - volume.irradianceChebyshevBias);
         
         weight = max(0.00001, weight * ((distToProbe <= mean) ? 1.0 : chebyshevWeight));
         

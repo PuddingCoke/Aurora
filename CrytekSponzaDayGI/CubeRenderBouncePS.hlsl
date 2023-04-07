@@ -46,10 +46,24 @@ cbuffer IrradianceVolumeParam : register(b5)
 float CalShadow(float3 P)
 {
     float4 shadowPos = mul(float4(P, 1.0), lightViewProj);
-    
     shadowPos.xy = shadowPos.xy * float2(0.5, -0.5) + 0.5;
     
-    return 1.0 - shadowTexture.SampleCmpLevelZero(shadowSampler, shadowPos.xy, shadowPos.z);
+    float shadow = 0.0;
+    const float2 texelSize = 1.0 / float2(4096.0, 4096.0);
+    
+    [unroll]
+    for (int x = -1; x < 2; x++)
+    {
+        [unroll]
+        for (int y = -1; y < 2; y++)
+        {
+            shadow += shadowTexture.SampleCmpLevelZero(shadowSampler, shadowPos.xy + float2(x, y) * texelSize, shadowPos.z);
+        }
+    }
+    
+    shadow /= 9.0;
+    
+    return 1.0 - shadow;
 }
 
 float4 main(PixelInput input) : SV_Target
