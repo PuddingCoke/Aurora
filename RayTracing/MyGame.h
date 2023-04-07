@@ -37,7 +37,7 @@ public:
 	}temporalAccumulationParam;
 
 	MyGame() :
-		rayTracingPS(new Shader("RayTracingPS.hlsl", ShaderType::Pixel)),
+		rayTracingPS(new Shader(Utils::getRootFolder() + "RayTracingPS.cso", ShaderType::Pixel)),
 		displayPS(new Shader("DisplayPS.hlsl", ShaderType::Pixel)),
 		swapTexture(new DoubleRTV(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
 		cameraParam{ 0.25f,0.0f,12.0f,0.1f },

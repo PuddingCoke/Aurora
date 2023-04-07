@@ -144,6 +144,7 @@ public:
 			memcpy(irradianceVolumeBuffer->map(0).pData, &irradianceVolumeParam, sizeof(IrradianceVolumeParam));
 			irradianceVolumeBuffer->unmap(0);
 			updateLightProbe();
+			updateLightBounceProbe();
 			});
 
 		irradianceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);

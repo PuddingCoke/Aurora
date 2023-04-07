@@ -45,6 +45,10 @@ Texture2D::Texture2D(const std::string& path) :
 
 			stbi_image_free(pixels);
 		}
+		else
+		{
+			throw "Cannot open file named " + path;
+		}
 	}
 	else if (fileExtension == "hdr")
 	{
@@ -77,20 +81,31 @@ Texture2D::Texture2D(const std::string& path) :
 
 			stbi_image_free(pixels);
 		}
+		else
+		{
+			throw "Cannot open file named " + path;
+		}
 	}
 	else if (fileExtension == "dds")
 	{
 		std::wstring wFilePath = std::wstring(path.begin(), path.end());
 
-		DirectX::CreateDDSTextureFromFile(Renderer::device, wFilePath.c_str(), (ID3D11Resource**)texture.GetAddressOf(), nullptr);
+		HRESULT hr = DirectX::CreateDDSTextureFromFile(Renderer::device, wFilePath.c_str(), (ID3D11Resource**)texture.GetAddressOf(), nullptr);
 
-		texture->GetDesc(&tDesc);
+		if (hr == S_OK)
+		{
+			texture->GetDesc(&tDesc);
 
-		width = tDesc.Width;
-		height = tDesc.Height;
-		format = tDesc.Format;
-		mipLevels = tDesc.MipLevels;
-		arraySize = tDesc.ArraySize;
+			width = tDesc.Width;
+			height = tDesc.Height;
+			format = tDesc.Format;
+			mipLevels = tDesc.MipLevels;
+			arraySize = tDesc.ArraySize;
+		}
+		else
+		{
+			throw "Cannot open file named " + path;
+		}
 	}
 	else
 	{

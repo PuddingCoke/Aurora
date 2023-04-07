@@ -76,9 +76,7 @@ bool NvidiaEncoder::encode()
 
 			nvencAPI.nvEncLockBitstream(encoder, &lockBitstream);
 
-			AVPacket* pkt = av_packet_alloc();
-
-			pkt->pts = av_rescale_q(frameEncoded, AVRational{ 1,60 }, outStream->time_base);
+			pkt->pts = av_rescale_q(frameEncoded, AVRational{ 1,(int)frameRate }, outStream->time_base);
 			pkt->dts = pkt->pts;
 			pkt->stream_index = outStream->index;
 			pkt->data = (uint8_t*)lockBitstream.bitstreamBufferPtr;
@@ -92,8 +90,6 @@ bool NvidiaEncoder::encode()
 			av_write_frame(outCtx, pkt);
 
 			av_write_frame(outCtx, nullptr);
-
-			av_packet_free(&pkt);
 
 			nvencAPI.nvEncUnlockBitstream(encoder, lockBitstream.outputBitstream);
 		}
@@ -117,7 +113,7 @@ bool NvidiaEncoder::encode()
 }
 
 NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& frameToEncode, const UINT& frameRate, ID3D11Resource* const inputTexture2D, bool& initializeStatus) :
-	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0), width(width), height(height), encoder(nullptr),
+	frameToEncode(frameToEncode), frameEncoded(0u), encoding(true), encodeTime(0), width(width), height(height), frameRate(frameRate), encoder(nullptr),
 	nv12Texture(new Texture2D(width, height, 1, 1, DXGI_FORMAT_NV12, D3D11_BIND_RENDER_TARGET, 0)), outCtx(nullptr), outStream(nullptr),
 	nvencAPI{ NV_ENCODE_API_FUNCTION_LIST_VER },
 	bitstream{ NV_ENC_CREATE_BITSTREAM_BUFFER_VER }
@@ -232,6 +228,8 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	avio_open(&outCtx->pb, outCtx->url, AVIO_FLAG_WRITE);
 
 	avformat_write_header(outCtx, nullptr);
+
+	pkt = av_packet_alloc();
 }
 
 NvidiaEncoder::~NvidiaEncoder()
@@ -243,6 +241,7 @@ NvidiaEncoder::~NvidiaEncoder()
 		delete nv12Texture;
 		FreeLibrary(moduleNvEncAPI);
 
+		av_packet_free(&pkt);
 		av_write_trailer(outCtx);
 		avio_close(outCtx->pb);
 		avformat_free_context(outCtx);

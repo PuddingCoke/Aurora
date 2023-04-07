@@ -41,6 +41,8 @@ private:
 
 	const UINT frameToEncode;
 
+	const UINT frameRate;
+
 	bool encoding;
 
 	void* encoder;
@@ -85,8 +87,7 @@ private:
 
 	AVStream* outStream;
 
-
-
+	AVPacket* pkt;
 };
 
 #endif // !_NVIDIAENCODER_H_
