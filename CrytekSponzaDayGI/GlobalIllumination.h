@@ -229,9 +229,9 @@ public:
 
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-		gBaseColor->clearRTV(DirectX::Colors::Black);
-		gPosition->clearRTV(DirectX::Colors::Black);
-		gNormalSpecular->clearRTV(DirectX::Colors::Black);
+		gBaseColor->clearRTV(DirectX::Colors::Transparent);
+		gPosition->clearRTV(DirectX::Colors::Transparent);
+		gNormalSpecular->clearRTV(DirectX::Colors::Transparent);
 
 		RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, depthTexture);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);

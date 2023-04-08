@@ -105,4 +105,10 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 	{
 		Renderer::device->QueryInterface(IID_ID3D11Debug, (void**)d3dDebug.ReleaseAndGetAddressOf());
 	}
+
+	DXGI_ADAPTER_DESC2 adapterDesc;
+
+	dxgiAdapter->GetDesc2(&adapterDesc);
+
+	std::cout << "[class Renderer] GPU VendorID 0x" << std::hex << adapterDesc.VendorId << std::dec << "\n";
 }

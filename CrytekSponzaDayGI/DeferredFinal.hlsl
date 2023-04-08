@@ -70,6 +70,13 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     const float4 normalSpecular = gNormalSpecular.Sample(clampSampler, texCoord);
     const float3 baseColor = gBaseColor.Sample(clampSampler, texCoord).rgb;
     
+    float alpha = gPosition.Sample(clampSampler, texCoord).a;
+    
+    if(alpha<0.8)
+    {
+        return float4(0.0, 0.0, 0.0, 1.0);
+    }
+    
     float3 outColor = float3(0.0, 0.0, 0.0);
     
     const float3 N = normalize(normalSpecular.rgb);

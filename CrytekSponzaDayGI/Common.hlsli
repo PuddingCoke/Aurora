@@ -110,6 +110,7 @@ float3 GetIndirectDiffuse(in float3 P, in float3 N, in IrradianceVolume volume, 
     
     float3 alpha = clamp((P - baseProbePos) / volume.probeSpacing, float3(0.0, 0.0, 0.0), float3(1.0, 1.0, 1.0));
     
+    [unroll]
     for (uint i = 0; i < 8; i++)
     {
         uint3 offset = uint3(i, i >> 1, i >> 2) & uint3(1, 1, 1);
