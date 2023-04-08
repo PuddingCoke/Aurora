@@ -72,14 +72,16 @@ public:
 		octahedralEncode(new Shader(Utils::getRootFolder() + "OctahedralEncode.cso", ShaderType::Compute)),
 		probeRenderVS(new Shader(Utils::getRootFolder() + "ProbeRenderVS.cso", ShaderType::Vertex)),
 		probeRenderGS(new Shader(Utils::getRootFolder() + "ProbeRenderGS.cso", ShaderType::Geometry)),
-		probeRenderPS(new Shader(Utils::getRootFolder() + "ProbeRenderPS.cso", ShaderType::Pixel)),
+		probeRenderPSDepth(new Shader(Utils::getRootFolder() + "ProbeRenderPSDepth.cso", ShaderType::Pixel)),
+		probeRenderPSIrradiance(new Shader(Utils::getRootFolder() + "ProbeRenderPSIrradiance.cso", ShaderType::Pixel)),
 		cubeRenderBuffer(new Buffer(sizeof(CubeRenderParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		shadowProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		sunAngle(Math::half_pi - 0.01f)
+		sunAngle(Math::half_pi - 0.01f),
+		showIrradiance(true)
 	{
 		bloomEffect.setIntensity(0.5f);
 		bloomEffect.applyChange();
@@ -147,6 +149,10 @@ public:
 			updateLightBounceProbe();
 			});
 
+		Keyboard::addKeyDownEvent(Keyboard::J, [this]() {
+			showIrradiance = !showIrradiance;
+			});
+
 		irradianceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 		irradianceBounceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 		depthOctahedralMap = new ComputeTexture(16, 16, DXGI_FORMAT_R16G16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
@@ -186,7 +192,8 @@ public:
 		delete octahedralEncode;
 		delete probeRenderVS;
 		delete probeRenderGS;
-		delete probeRenderPS;
+		delete probeRenderPSDepth;
+		delete probeRenderPSIrradiance;
 
 		delete irradianceVolumeBuffer;
 		delete cubeRenderBuffer;
@@ -265,7 +272,15 @@ public:
 
 		probeRenderVS->use();
 		probeRenderGS->use();
-		probeRenderPS->use();
+
+		if (showIrradiance)
+		{
+			probeRenderPSIrradiance->use();
+		}
+		else
+		{
+			probeRenderPSDepth->use();
+		}
 
 		RenderAPI::get()->PSSetSRV({ irradianceBounceCoeff,depthOctahedralMap }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
@@ -614,7 +629,9 @@ private:
 
 	Shader* probeRenderGS;
 
-	Shader* probeRenderPS;
+	Shader* probeRenderPSDepth;
+
+	Shader* probeRenderPSIrradiance;
 
 	Buffer* irradianceVolumeBuffer;
 
@@ -629,6 +646,8 @@ private:
 	Scene* scene;
 
 	float sunAngle;
+
+	bool showIrradiance;
 
 	HBAOEffect hbaoEffect;
 

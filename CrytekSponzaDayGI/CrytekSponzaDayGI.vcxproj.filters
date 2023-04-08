@@ -47,8 +47,9 @@
     <FxCompile Include="OctahedralEncode.hlsl" />
     <FxCompile Include="ProbeRenderVS.hlsl" />
     <FxCompile Include="ProbeRenderGS.hlsl" />
-    <FxCompile Include="ProbeRenderPS.hlsl" />
+    <FxCompile Include="ProbeRenderPSDepth.hlsl" />
     <FxCompile Include="CubeRenderBouncePS.hlsl" />
+    <FxCompile Include="ProbeRenderPSIrradiance.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Common.hlsli" />

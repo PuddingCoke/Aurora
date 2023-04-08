@@ -14,5 +14,4 @@ SamplerState linearClampSampler : register(s0);
 float4 main(PixelInput input) : SV_TARGET
 {
     return float4(GetDepth(input.dir, input.probeIndex, depthOctahedralMap, linearClampSampler).rrr / 512.0, 1.0);
-    //return float4(GetIrradiance(input.dir, input.probeIndex, irradianceCoeff), 1.0);
 }
