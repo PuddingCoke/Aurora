@@ -50,6 +50,9 @@
     <FxCompile Include="ProbeRenderPSDepth.hlsl" />
     <FxCompile Include="CubeRenderBouncePS.hlsl" />
     <FxCompile Include="ProbeRenderPSIrradiance.hlsl" />
+    <FxCompile Include="SSRPS.hlsl" />
+    <FxCompile Include="PosToViewSpacePS.hlsl" />
+    <FxCompile Include="SSRFillHole.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Common.hlsli" />

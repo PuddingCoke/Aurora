@@ -52,9 +52,12 @@ public:
 	//16 8 8
 	GlobalIllumination() :
 		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		gViewPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_SNORM, DirectX::Colors::Black)),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
+		reflectedUV(new RenderTexture(Graphics::getWidth() / 2, Graphics::getHeight() / 2, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		reflectedColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		depthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
 		shadowTexture(new ResDepthTexture(shadowMapRes, shadowMapRes)),
 		radianceCube(new RenderCube(captureResolution, DXGI_FORMAT_R16G16B16A16_FLOAT)),
@@ -74,6 +77,9 @@ public:
 		probeRenderGS(new Shader(Utils::getRootFolder() + "ProbeRenderGS.cso", ShaderType::Geometry)),
 		probeRenderPSDepth(new Shader(Utils::getRootFolder() + "ProbeRenderPSDepth.cso", ShaderType::Pixel)),
 		probeRenderPSIrradiance(new Shader(Utils::getRootFolder() + "ProbeRenderPSIrradiance.cso", ShaderType::Pixel)),
+		posToViewSpacePS(new Shader(Utils::getRootFolder() + "PosToViewSpacePS.cso", ShaderType::Pixel)),
+		ssrPS(new Shader(Utils::getRootFolder() + "SSRPS.cso", ShaderType::Pixel)),
+		ssrFillHole(new Shader(Utils::getRootFolder() + "SSRFillHole.cso", ShaderType::Pixel)),
 		cubeRenderBuffer(new Buffer(sizeof(CubeRenderParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		shadowProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
@@ -169,9 +175,12 @@ public:
 		delete shadowTexture;
 		delete depthTexture;
 		delete gPosition;
+		delete gViewPosition;
 		delete gNormalSpecular;
 		delete gBaseColor;
 		delete originTexture;
+		delete reflectedUV;
+		delete reflectedColor;
 		delete irradianceCoeff;
 		delete irradianceBounceCoeff;
 		delete depthOctahedralMap;
@@ -194,6 +203,9 @@ public:
 		delete probeRenderGS;
 		delete probeRenderPSDepth;
 		delete probeRenderPSIrradiance;
+		delete posToViewSpacePS;
+		delete ssrPS;
+		delete ssrFillHole;
 
 		delete irradianceVolumeBuffer;
 		delete cubeRenderBuffer;
@@ -266,7 +278,7 @@ public:
 
 		RenderAPI::get()->DrawCube();
 
-		RenderAPI::get()->RSSetState(States::rasterCullNone);
+		/*RenderAPI::get()->RSSetState(States::rasterCullNone);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 		RenderAPI::get()->VSSetConstantBuffer({ irradianceVolumeBuffer }, 2);
 
@@ -289,9 +301,43 @@ public:
 
 		RenderAPI::get()->RSSetState(States::rasterCullBack);
 		RenderAPI::get()->GSSetShader(nullptr);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
 
-		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(originTexture);
+		gViewPosition->clearRTV(DirectX::Colors::Transparent);
+		RenderAPI::get()->OMSetRTV({ gViewPosition }, nullptr);
+		RenderAPI::get()->PSSetSRV({ gPosition }, 0);
+		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
+		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
+
+		RenderAPI::fullScreenVS->use();
+		posToViewSpacePS->use();
+
+		RenderAPI::get()->DrawQuad();
+
+		reflectedUV->clearRTV(DirectX::Colors::Transparent);
+		RenderAPI::get()->RSSetViewport(reflectedUV->getWidth(), reflectedUV->getHeight());
+		RenderAPI::get()->OMSetRTV({ reflectedUV }, nullptr);
+		RenderAPI::get()->PSSetSRV({ gViewPosition,gNormalSpecular,originTexture }, 0);
+		RenderAPI::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
+		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
+
+		RenderAPI::fullScreenVS->use();
+		ssrPS->use();
+
+		RenderAPI::get()->DrawQuad();
+		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+
+		reflectedColor->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetRTV({ reflectedColor }, nullptr);
+		RenderAPI::get()->PSSetSRV({ reflectedUV,originTexture,gNormalSpecular }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
+
+		RenderAPI::fullScreenVS->use();
+		ssrFillHole->use();
+
+		RenderAPI::get()->DrawQuad();
+
+		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(reflectedColor);
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 
@@ -587,11 +633,17 @@ private:
 
 	RenderTexture* gPosition;
 
+	RenderTexture* gViewPosition;
+
 	RenderTexture* gNormalSpecular;
 
 	RenderTexture* gBaseColor;
 
 	RenderTexture* originTexture;
+
+	RenderTexture* reflectedUV;
+
+	RenderTexture* reflectedColor;
 
 	ComputeTexture* irradianceCoeff;
 
@@ -632,6 +684,12 @@ private:
 	Shader* probeRenderPSDepth;
 
 	Shader* probeRenderPSIrradiance;
+
+	Shader* posToViewSpacePS;
+
+	Shader* ssrPS;
+
+	Shader* ssrFillHole;
 
 	Buffer* irradianceVolumeBuffer;
 
