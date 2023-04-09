@@ -43,6 +43,14 @@ public:
 		UINT probeIndex;
 	} cubeRenderParam;
 
+	struct SSRParam
+	{
+		float maxDistance = 100.f;
+		float thickness = 2.0f;
+		float depthBias = 0.0f;
+		float padding;
+	} ssrParam;
+
 	struct Light
 	{
 		DirectX::XMVECTOR lightDir;
@@ -56,7 +64,7 @@ public:
 		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_SNORM, DirectX::Colors::Black)),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
-		reflectedUV(new RenderTexture(Graphics::getWidth() / 2, Graphics::getHeight() / 2, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
+		reflectedUV(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
 		reflectedColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		depthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
 		shadowTexture(new ResDepthTexture(shadowMapRes, shadowMapRes)),
@@ -164,6 +172,7 @@ public:
 		depthOctahedralMap = new ComputeTexture(16, 16, DXGI_FORMAT_R16G16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 
 		irradianceVolumeBuffer = new Buffer(sizeof(IrradianceVolumeParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &irradianceVolumeParam, D3D11_CPU_ACCESS_WRITE);
+		ssrParamBuffer = new Buffer(sizeof(SSRParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &ssrParam, D3D11_CPU_ACCESS_WRITE);
 
 		updateShadow();
 		updateLightProbe();
@@ -218,6 +227,9 @@ public:
 
 	void imGUICall()
 	{
+		ImGui::SliderFloat("SSR maxDistance", &ssrParam.maxDistance, 0.f, 300.f);
+		ImGui::SliderFloat("SSR thickness", &ssrParam.thickness, 0.f, 10.f);
+		ImGui::SliderFloat("SSR depthBias", &ssrParam.depthBias, 0.f, 10.f);
 		ImGui::SliderFloat("irradiance distance bias", &irradianceVolumeParam.irradianceDistanceBias, -5.f, 5.f);
 		ImGui::SliderFloat("irradiance variance bias", &irradianceVolumeParam.irradianceVarianceBias, -5.f, 5.f);
 		ImGui::SliderFloat("irradiance chebyshev bias", &irradianceVolumeParam.irradianceChebyshevBias, -5.f, 5.f);
@@ -240,6 +252,9 @@ public:
 			updateShadow();
 			updateLightProbe();
 		}
+
+		memcpy(ssrParamBuffer->map(0).pData, &ssrParam, sizeof(SSRParam));
+		ssrParamBuffer->unmap(0);
 	}
 
 	void render()
@@ -318,7 +333,7 @@ public:
 		RenderAPI::get()->RSSetViewport(reflectedUV->getWidth(), reflectedUV->getHeight());
 		RenderAPI::get()->OMSetRTV({ reflectedUV }, nullptr);
 		RenderAPI::get()->PSSetSRV({ gViewPosition,gNormalSpecular,originTexture }, 0);
-		RenderAPI::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
+		RenderAPI::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer(),ssrParamBuffer }, 1);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
 		RenderAPI::fullScreenVS->use();
@@ -698,6 +713,8 @@ private:
 	Buffer* lightBuffer;
 
 	Buffer* shadowProjBuffer;
+
+	Buffer* ssrParamBuffer;
 
 	StructuredBuffer* irradianceSamples;
 

@@ -20,11 +20,17 @@ cbuffer ViewMatrix : register(b2)
     matrix normalMatrix;
 };
 
+cbuffer SSRParam : register(b3)
+{
+    float maxDistance;
+    float thickness;
+    float depthBias;
+    float padding;
+}
+
 //final output first two components is uv next two components is visibility
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    const float maxDistance = 200;
-    const float thickness = 2.0;
     const float2 textureSize = float2(1920.0, 1080.0);
     
     float4 positionFrom = gViewPosition.Sample(clampSampler, texCoord);
@@ -64,7 +70,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     const float deltaX = endFrag.x - startFrag.x;
     const float deltaY = endFrag.y - startFrag.y;
     const float useX = abs(deltaX) >= abs(deltaY) ? 1.0 : 0.0;
-    const float2 increment = float2(deltaX, deltaY) / 200.0;
+    const float2 increment = float2(deltaX, deltaY) / 100.0;
     
     float search0 = 0.0;
     float search1 = 0.0;
@@ -78,7 +84,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     int i = 0;
     
     [unroll]
-    for (i = 0; i < 200; ++i)
+    for (i = 0; i < 100; ++i)
     {
         frag += increment;
         
@@ -92,7 +98,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         
         depth = viewDistance - positionTo.z;
         
-        if (depth > 0.0 && depth < thickness)
+        if (depth > depthBias && depth < thickness)
         {
             hit0 = 1;
             break;
@@ -110,7 +116,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     if (hit0)
     {
         [unroll]
-        for (i = 0; i < 5; ++i)
+        for (i = 0; i < 10; ++i)
         {
             frag = lerp(startFrag.xy, endFrag.xy, search1);
         
@@ -122,7 +128,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         
             depth = viewDistance - positionTo.z;
         
-            if (depth > 0.0 && depth < thickness)
+            if (depth > depthBias && depth < thickness)
             {
                 hit1 = 1;
                 search1 = search0 + ((search1 - search0) / 2.0);
@@ -143,9 +149,9 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     * (1 - max(dot(-unitPositionFrom, pivot), 0))
     * (1 - clamp(depth / thickness, 0, 1))
     * (1 - clamp(length(positionTo - positionFrom) / maxDistance, 0, 1))
-    * (uv.x > 0.0 && uv.x < 1.0)
-    * (uv.y > 0.0 && uv.y < 1.0);
-    //* (dot(hitNormal, pivot) < 0.5 ? 1.0 : 0.0);
+    * (uv.x >= 0.0 && uv.x <= 1.0)
+    * (uv.y >= 0.0 && uv.y <= 1.0)
+    * (dot(hitNormal, pivot) < 0.0 ? 1.0 : 0.0);
     
     visibility = clamp(visibility, 0.0, 1.0);
     
