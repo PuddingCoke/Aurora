@@ -180,32 +180,32 @@ void Shader::computeUse() const
 	Renderer::context->CSSetShader(shaderPtr.computeShader, nullptr, 0);
 }
 
-void Shader::vertexRelease()
+void Shader::vertexRelease() const
 {
 	shaderPtr.vertexShader->Release();
 }
 
-void Shader::hullRelease()
+void Shader::hullRelease() const
 {
 	shaderPtr.hullShader->Release();
 }
 
-void Shader::domainRelease()
+void Shader::domainRelease() const
 {
 	shaderPtr.domainShader->Release();
 }
 
-void Shader::geometryRelease()
+void Shader::geometryRelease() const
 {
 	shaderPtr.geometryShader->Release();
 }
 
-void Shader::pixelRelease()
+void Shader::pixelRelease() const
 {
 	shaderPtr.pixelShader->Release();
 }
 
-void Shader::computeRelease()
+void Shader::computeRelease() const
 {
 	shaderPtr.computeShader->Release();
 }

@@ -11,6 +11,11 @@ ID3D11DeviceContext4* Renderer::getContext()
 	return context;
 }
 
+const GPUManufacturer& Renderer::getGPUManufacturer()
+{
+	return instance->gpuManufacturer;
+}
+
 Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel, const UINT& extraDeviceFlags) :
 	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }
 {
@@ -110,5 +115,20 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 
 	dxgiAdapter->GetDesc2(&adapterDesc);
 
-	std::cout << "[class Renderer] GPU VendorID 0x" << std::hex << adapterDesc.VendorId << std::dec << "\n";
+	UINT vendorID = adapterDesc.VendorId;
+
+	std::cout << "[class Renderer] GPU VendorID 0x" << std::hex << vendorID << std::dec << "\n";
+
+	if (vendorID == 0x10DE)
+	{
+		gpuManufacturer = GPUManufacturer::NVIDIA;
+	}
+	else if (vendorID == 0x1002 || vendorID == 0x1022)
+	{
+		gpuManufacturer = GPUManufacturer::AMD;
+	}
+	else if (vendorID == 0x163C || vendorID == 0x8086 || vendorID == 0x8087)
+	{
+		gpuManufacturer = GPUManufacturer::INTEL;
+	}
 }

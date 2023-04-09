@@ -369,6 +369,15 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
+    <FxCompile Include="Shaders\FXAA\FXAA.hlsl">
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">FXAAPS</EntryPointName>
+    </FxCompile>
     <FxCompile Include="Shaders\MotionBlur\MotionBlurPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

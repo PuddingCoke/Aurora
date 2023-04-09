@@ -70,7 +70,7 @@ private:
 
 	void(Shader::* useFunc)() const;
 
-	void(Shader::* releaseFunc)();
+	void(Shader::* releaseFunc)() const;
 
 	void vertexUse() const;
 
@@ -84,17 +84,17 @@ private:
 
 	void computeUse() const;
 
-	void vertexRelease();
+	void vertexRelease() const;
 
-	void hullRelease();
+	void hullRelease() const;
 
-	void domainRelease();
+	void domainRelease() const;
 
-	void geometryRelease();
+	void geometryRelease() const;
 
-	void pixelRelease();
+	void pixelRelease() const;
 
-	void computeRelease();
+	void computeRelease() const;
 
 };
 

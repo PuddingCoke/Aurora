@@ -10,6 +10,13 @@
 
 using Microsoft::WRL::ComPtr;
 
+enum class GPUManufacturer
+{
+	NVIDIA,
+	AMD,
+	INTEL
+};
+
 class Renderer
 {
 public:
@@ -24,6 +31,8 @@ public:
 
 	static ID3D11DeviceContext4* getContext();
 
+	static const GPUManufacturer& getGPUManufacturer();
+
 private:
 
 	friend class Aurora;
@@ -36,9 +45,9 @@ private:
 
 	static Renderer* instance;
 
-	Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel, const UINT& extraDeviceFlags = 0);
-
 	static ID3D11DeviceContext4* context;
+
+	Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel, const UINT& extraDeviceFlags = 0);
 
 	D3D11_VIEWPORT vp;
 
@@ -53,6 +62,8 @@ private:
 	ComPtr<ID3D11Texture2D> backBuffer;
 
 	ComPtr<ID3D11Texture2D> msaaTexture;
+
+	GPUManufacturer gpuManufacturer;
 
 };
 

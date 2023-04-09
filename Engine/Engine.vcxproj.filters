@@ -425,5 +425,6 @@
     <FxCompile Include="Shaders\Noise\RandNoiseCS.hlsl" />
     <FxCompile Include="Shaders\Bloom\BloomDownSamplePS.hlsl" />
     <FxCompile Include="Shaders\Bloom\BloomKarisAveragePS.hlsl" />
+    <FxCompile Include="Shaders\FXAA\FXAA.hlsl" />
   </ItemGroup>
 </Project>
