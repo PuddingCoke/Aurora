@@ -24,11 +24,11 @@ cbuffer ProjMatrix : register(b0)
 
 cbuffer ViewMatrix : register(b1)
 {
-        matrix view;
-        float4 viewPos;
-        matrix prevViewProj;
-        matrix viewProj;
-        matrix normalMatrix;
+    matrix view;
+    float4 viewPos;
+    matrix prevViewProj;
+    matrix viewProj;
+    matrix normalMatrix;
 };
 
 VertexOutput main(VertexInput input)
