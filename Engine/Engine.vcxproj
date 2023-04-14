@@ -176,6 +176,7 @@
     <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\FadeEffect.h" />
+    <ClInclude Include="Inc\Aurora\PostProcessing\FXAAEffect.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\HBAOEffect.h" />
     <ClInclude Include="Inc\Aurora\PostProcessing\MotionBlurEffect.h" />
     <ClInclude Include="Inc\Aurora\RCTexture.h" />
@@ -235,6 +236,7 @@
     <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp" />
+    <ClCompile Include="Src\Aurora\PostProcessing\FXAAEffect.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\HBAOEffect.cpp" />
     <ClCompile Include="Src\Aurora\PostProcessing\MotionBlurEffect.cpp" />
     <ClCompile Include="Src\Aurora\RenderAPI.cpp" />
@@ -369,6 +371,17 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
+    <FxCompile Include="Shaders\FXAA\ColorToLuma.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="Shaders\FXAA\FXAA.hlsl">
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">g_%(Filename)Bytes</VariableName>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -376,7 +389,6 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Aurora/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">FXAAPS</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shaders\MotionBlur\MotionBlurPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -579,6 +591,9 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\FXAA\FXAAHeader.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

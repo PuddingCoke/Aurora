@@ -13,6 +13,7 @@
 
 #include<Aurora/PostProcessing/HBAOEffect.h>
 #include<Aurora/PostProcessing/BloomEffect.h>
+#include<Aurora/PostProcessing/FXAAEffect.h>
 
 #include"Scene.h"
 
@@ -89,6 +90,7 @@ public:
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
+		fxaaEffect(Graphics::getWidth(), Graphics::getHeight()),
 		sunAngle(Math::half_pi - 0.01f),
 		showIrradiance(true)
 	{
@@ -322,12 +324,16 @@ public:
 
 		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(reflectedColor);
 
+		ShaderResourceView* const antiAliasedSRV = fxaaEffect.process(bloomTextureSRV);
+
 		RenderAPI::get()->OMSetBlendState(nullptr);
 
 		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
+		RenderAPI::get()->PSSetSRV({ antiAliasedSRV }, 0);
+
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
+
 		RenderAPI::get()->DrawQuad();
 	}
 
@@ -687,5 +693,7 @@ private:
 	HBAOEffect hbaoEffect;
 
 	BloomEffect bloomEffect;
+
+	FXAAEffect fxaaEffect;
 
 };

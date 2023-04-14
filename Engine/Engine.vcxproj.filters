@@ -210,6 +210,9 @@
     <ClInclude Include="Inc\Aurora\A3D\DepthCube.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\PostProcessing\FXAAEffect.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -398,6 +401,9 @@
     <ClCompile Include="Src\Aurora\A3D\DepthCube.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Aurora\PostProcessing\FXAAEffect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Bloom\BloomFilterPS.hlsl" />
@@ -426,5 +432,9 @@
     <FxCompile Include="Shaders\Bloom\BloomDownSamplePS.hlsl" />
     <FxCompile Include="Shaders\Bloom\BloomKarisAveragePS.hlsl" />
     <FxCompile Include="Shaders\FXAA\FXAA.hlsl" />
+    <FxCompile Include="Shaders\FXAA\ColorToLuma.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\FXAA\FXAAHeader.hlsli" />
   </ItemGroup>
 </Project>
