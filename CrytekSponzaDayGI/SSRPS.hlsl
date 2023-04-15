@@ -56,7 +56,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     startFrag /= startFrag.w;
     startFrag.xy = startFrag.xy * float2(0.5, -0.5) + 0.5;
     
-    float4 endFrag = mul(float4(endView), proj);
+    float4 endFrag = mul(endView, proj);
     endFrag /= endFrag.w;
     endFrag.xy = endFrag.xy * float2(0.5, -0.5) + 0.5;
     
@@ -89,9 +89,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         
         float frontDepth = depthTexture.SampleLevel(clampSampler, curUV.xy, 0.0);
         
-        float depth = curUV.z;
-        
-        depthDiff = depth - frontDepth;
+        depthDiff = curUV.z - frontDepth;
         
         if (depthDiff > 0.0 && depthDiff <= thickness)
         {
@@ -106,29 +104,32 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     search1 = search0 + ((search1 - search0) / 2.0);
     
-    [unroll]
-    for (i = 0; i < 10; ++i)
+    if (hit0)
     {
-        curUV = lerp(startFrag.xyz, endFrag.xyz, search1);
-        
-        float frontDepth = depthTexture.SampleLevel(clampSampler, curUV.xy, 0.0);
-        
-        float depth = curUV.z;
-        
-        depthDiff = depth - frontDepth;
-        
-        if (depthDiff > 0.0 && depthDiff <= thickness)
+        [unroll]
+        for (i = 0; i < 10; ++i)
         {
-            hit1 = 1;
-            search1 = search0 + ((search1 - search0) / 2.0);
-        }
-        else
-        {
-            float temp = search1;
-            search1 = search1 + ((search1 - search0) / 2.0);
-            search0 = temp;
+            curUV = lerp(startFrag.xyz, endFrag.xyz, search1);
+        
+            float frontDepth = depthTexture.SampleLevel(clampSampler, curUV.xy, 0.0);
+        
+            depthDiff = curUV.z - frontDepth;
+        
+            if (depthDiff > 0.0 && depthDiff <= thickness)
+            {
+                hit1 = 1;
+                search1 = search0 + ((search1 - search0) / 2.0);
+            }
+            else
+            {
+                float temp = search1;
+                search1 = search1 + ((search1 - search0) / 2.0);
+                search0 = temp;
+            }
         }
     }
+    
+    float4 positionTo = mul(gPosition.Sample(clampSampler, curUV.xy), view);
     
     float3 hitNormal = normalize(mul(gNormalSpecular.Sample(clampSampler, curUV.xy).xyz, (float3x3) normalMatrix));
     
@@ -136,7 +137,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
       hit1
     * (1 - max(dot(-unitPositionFrom, pivot), 0))
     * (1 - clamp(depthDiff / thickness, 0, 1))
-    * (1 - clamp(length(mul(gPosition.Sample(clampSampler, curUV.xy), view) - positionFrom) / maxDistance, 0, 1))
+    * (1 - clamp(length(positionTo - positionFrom) / maxDistance, 0, 1))
     * float(curUV.x >= 0.0 && curUV.x <= 1.0)
     * float(curUV.y >= 0.0 && curUV.y <= 1.0)
     * (dot(hitNormal, pivot) < 0.0 ? 1.0 : 0.0);
