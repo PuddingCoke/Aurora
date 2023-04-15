@@ -7,6 +7,8 @@ SamplerState wrapSampler : register(s0);
 SamplerState clampSampler : register(s1);
 SamplerComparisonState shadowSampler : register(s2);
 
+#define RAYMARCHSTEP 200.0
+
 cbuffer ProjMatrix : register(b1)
 {
     matrix proj;
@@ -62,9 +64,9 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float3 percentage = (saturate(endFrag.xyz) - startFrag.xyz) / (endFrag.xyz - startFrag.xyz);
     
-    float maxPercentage = saturate(max(max(percentage.x, percentage.y), percentage.z));
+    float minPercentage = saturate(min(min(percentage.x, percentage.y), percentage.z));
     
-    float3 increment = (endFrag.xyz - startFrag.xyz) / 100.0;
+    float3 increment = (endFrag.xyz - startFrag.xyz) / RAYMARCHSTEP;
     
     float3 curUV = startFrag.xyz;
     
@@ -80,12 +82,12 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float depthDiff = thickness;
     
-    [unroll]
-    for (i = 0; i < int(100.0 * maxPercentage); ++i)
+    [loop]
+    for (i = 0; i < int(RAYMARCHSTEP * minPercentage); ++i)
     {
         curUV += increment;
         
-        search1 = float(i + 1) / 100.0;
+        search1 = float(i + 1) / RAYMARCHSTEP;
         
         float frontDepth = depthTexture.SampleLevel(clampSampler, curUV.xy, 0.0);
         
@@ -138,8 +140,6 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     * (1 - max(dot(-unitPositionFrom, pivot), 0))
     * (1 - clamp(depthDiff / thickness, 0, 1))
     * (1 - clamp(length(positionTo - positionFrom) / maxDistance, 0, 1))
-    * float(curUV.x >= 0.0 && curUV.x <= 1.0)
-    * float(curUV.y >= 0.0 && curUV.y <= 1.0)
     * (dot(hitNormal, pivot) < 0.0 ? 1.0 : 0.0);
     
     visibility = clamp(visibility, 0.0, 1.0);

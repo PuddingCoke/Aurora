@@ -46,7 +46,7 @@ public:
 
 	struct SSRParam
 	{
-		float maxDistance = 100.f;
+		float maxDistance = 200.f;
 		float thickness = 0.1f;
 		float depthBias = 0.0f;
 		float padding;
