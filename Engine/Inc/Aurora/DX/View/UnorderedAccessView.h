@@ -21,6 +21,8 @@ public:
 
 	ID3D11UnorderedAccessView** releaseAndGetUAV();
 
+	void createUAV(ID3D11Resource* const resource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc);
+
 	//解决binding hazard的问题
 	virtual void bindCUAV() = 0;
 
@@ -34,14 +36,10 @@ public:
 
 	void clear(const unsigned int* const value) const;
 
-protected:
-
 	//是否成功解绑
 	bool unbindFromCUAV();
 
 	bool unbindFromPUAV();
-
-	void createUAV(ID3D11Resource* const resource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc);
 
 private:
 

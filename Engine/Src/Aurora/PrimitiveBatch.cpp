@@ -1,4 +1,4 @@
-﻿#include<Aurora/A2D/PrimitiveBatch.h>
+﻿#include<Aurora/PrimitiveBatch.h>
 
 PrimitiveBatch* PrimitiveBatch::instance = nullptr;
 

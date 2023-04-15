@@ -7,7 +7,7 @@ SamplerState wrapSampler : register(s0);
 SamplerState clampSampler : register(s1);
 SamplerComparisonState shadowSampler : register(s2);
 
-#define RAYMARCHSTEP 200.0
+#define RAYMARCHSTEP 150.0
 
 cbuffer ProjMatrix : register(b1)
 {
@@ -33,7 +33,7 @@ cbuffer SSRParam : register(b3)
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float4 pos = gPosition.Sample(clampSampler, texCoord);
+    const float4 pos = gPosition.Sample(clampSampler, texCoord);
     
     float4 color = originTexture.Sample(clampSampler, texCoord);
     
@@ -42,12 +42,14 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         return color;
     }
     
-    float4 positionFrom = mul(pos, view);
+    const float4 positionFrom = mul(pos, view);
     
-    float4 normalSpeculr = gNormalSpecular.Sample(clampSampler, texCoord);
+    const float4 normalSpeculr = gNormalSpecular.Sample(clampSampler, texCoord);
     
     const float3 unitPositionFrom = normalize(positionFrom.xyz);
+    
     const float3 normal = normalize(mul(normalSpeculr.xyz, (float3x3) normalMatrix));
+    
     const float3 pivot = normalize(reflect(unitPositionFrom, normal));
     
     float4 startView = float4(positionFrom.xyz, 1.0);
@@ -62,15 +64,13 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     endFrag /= endFrag.w;
     endFrag.xy = endFrag.xy * float2(0.5, -0.5) + 0.5;
     
-    float3 percentage = (saturate(endFrag.xyz) - startFrag.xyz) / (endFrag.xyz - startFrag.xyz);
+    const float3 percentage = (saturate(endFrag.xyz) - startFrag.xyz) / (endFrag.xyz - startFrag.xyz);
     
-    float minPercentage = saturate(min(min(percentage.x, percentage.y), percentage.z));
+    const float minPercentage = saturate(min(min(percentage.x, percentage.y), percentage.z));
     
-    float3 increment = (endFrag.xyz - startFrag.xyz) / RAYMARCHSTEP;
+    const float3 increment = (endFrag.xyz - startFrag.xyz) / RAYMARCHSTEP;
     
     float3 curUV = startFrag.xyz;
-    
-    int i = 0;
     
     int hit0 = 0;
    
@@ -82,18 +82,20 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float depthDiff = thickness;
     
-    [loop]
+    int i = 0;
+    
+    [unroll]
     for (i = 0; i < int(RAYMARCHSTEP * minPercentage); ++i)
     {
         curUV += increment;
         
         search1 = float(i + 1) / RAYMARCHSTEP;
         
-        float frontDepth = depthTexture.SampleLevel(clampSampler, curUV.xy, 0.0);
+        const float frontDepth = depthTexture.SampleLevel(clampSampler, curUV.xy, 0.0);
         
         depthDiff = curUV.z - frontDepth;
         
-        if (depthDiff > 0.0 && depthDiff <= thickness)
+        if (depthDiff > depthBias && depthDiff <= thickness)
         {
             hit0 = 1;
             break;
@@ -113,36 +115,34 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         {
             curUV = lerp(startFrag.xyz, endFrag.xyz, search1);
         
-            float frontDepth = depthTexture.SampleLevel(clampSampler, curUV.xy, 0.0);
+            const float frontDepth = depthTexture.SampleLevel(clampSampler, curUV.xy, 0.0);
         
             depthDiff = curUV.z - frontDepth;
         
-            if (depthDiff > 0.0 && depthDiff <= thickness)
+            if (depthDiff > depthBias && depthDiff <= thickness)
             {
                 hit1 = 1;
                 search1 = search0 + ((search1 - search0) / 2.0);
             }
             else
             {
-                float temp = search1;
+                const float temp = search1;
                 search1 = search1 + ((search1 - search0) / 2.0);
                 search0 = temp;
             }
         }
     }
     
-    float4 positionTo = mul(gPosition.Sample(clampSampler, curUV.xy), view);
+    const float4 positionTo = mul(gPosition.Sample(clampSampler, curUV.xy), view);
     
-    float3 hitNormal = normalize(mul(gNormalSpecular.Sample(clampSampler, curUV.xy).xyz, (float3x3) normalMatrix));
+    const float3 hitNormal = normalize(mul(gNormalSpecular.Sample(clampSampler, curUV.xy).xyz, (float3x3) normalMatrix));
     
-    float visibility =
-      hit1
-    * (1 - max(dot(-unitPositionFrom, pivot), 0))
-    * (1 - clamp(depthDiff / thickness, 0, 1))
-    * (1 - clamp(length(positionTo - positionFrom) / maxDistance, 0, 1))
-    * (dot(hitNormal, pivot) < 0.0 ? 1.0 : 0.0);
-    
-    visibility = clamp(visibility, 0.0, 1.0);
+    const float visibility =
+    saturate(float(hit1)
+    * (1.0 - max(dot(-unitPositionFrom, pivot), 0))
+    * (1.0 - saturate(depthDiff / thickness))
+    * (1.0 - saturate(length(positionTo - positionFrom) / maxDistance))
+    * (dot(hitNormal, pivot) < 0.0 ? 1.0 : 0.0));
     
     color.rgb += originTexture.Sample(clampSampler, curUV.xy).rgb * visibility * normalSpeculr.w;
     

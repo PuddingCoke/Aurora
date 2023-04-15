@@ -4,6 +4,7 @@
 #include<Aurora/StructuredBuffer.h>
 #include<Aurora/RenderTexture.h>
 #include<Aurora/ResDepthTexture.h>
+#include<Aurora/CTextureWithMips.h>
 #include<Aurora/A3D/RenderCube.h>
 #include<Aurora/A3D/DepthCube.h>
 #include<Aurora/Shader.h>
@@ -26,6 +27,8 @@ public:
 
 	static constexpr UINT shadowMapRes = 4096;
 
+	static constexpr UINT hiZMipLevel = 3;
+
 	struct IrradianceVolumeParam
 	{
 		DirectX::XMFLOAT3 start = { -142.f,-16.f,-74.f };
@@ -46,8 +49,8 @@ public:
 
 	struct SSRParam
 	{
-		float maxDistance = 200.f;
-		float thickness = 0.1f;
+		float maxDistance = 100.f;
+		float thickness = 0.05f;
 		float depthBias = 0.0f;
 		float padding;
 	} ssrParam;
@@ -65,6 +68,7 @@ public:
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		reflectedColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		depthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
+		hiZTexture(new CTextureWithMips(1024, 1024, DXGI_FORMAT_R32_FLOAT, hiZMipLevel)),
 		shadowTexture(new ResDepthTexture(shadowMapRes, shadowMapRes)),
 		radianceCube(new RenderCube(captureResolution, DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		distanceCube(new RenderCube(captureResolution, DXGI_FORMAT_R32_FLOAT)),
@@ -84,6 +88,8 @@ public:
 		probeRenderPSDepth(new Shader(Utils::getRootFolder() + "ProbeRenderPSDepth.cso", ShaderType::Pixel)),
 		probeRenderPSIrradiance(new Shader(Utils::getRootFolder() + "ProbeRenderPSIrradiance.cso", ShaderType::Pixel)),
 		ssrPS(new Shader(Utils::getRootFolder() + "SSRPS.cso", ShaderType::Pixel)),
+		hiZInitializeCS(new Shader(Utils::getRootFolder() + "HiZInitializeCS.cso", ShaderType::Compute)),
+		hiZCreateCS(new Shader(Utils::getRootFolder() + "HiZCreateCS.cso", ShaderType::Compute)),
 		cubeRenderBuffer(new Buffer(sizeof(CubeRenderParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 		shadowProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
@@ -188,6 +194,7 @@ public:
 		delete irradianceCoeff;
 		delete irradianceBounceCoeff;
 		delete depthOctahedralMap;
+		delete hiZTexture;
 
 		delete radianceCube;
 		delete distanceCube;
@@ -208,12 +215,15 @@ public:
 		delete probeRenderPSDepth;
 		delete probeRenderPSIrradiance;
 		delete ssrPS;
+		delete hiZInitializeCS;
+		delete hiZCreateCS;
 
 		delete irradianceVolumeBuffer;
 		delete cubeRenderBuffer;
 		delete lightBuffer;
 		delete shadowProjBuffer;
 		delete irradianceSamples;
+		delete ssrParamBuffer;
 
 		delete scene;
 	}
@@ -248,6 +258,29 @@ public:
 
 		memcpy(ssrParamBuffer->map(0).pData, &ssrParam, sizeof(SSRParam));
 		ssrParamBuffer->unmap(0);
+	}
+
+	void CreateHiZ()
+	{
+		RenderAPI::get()->CSSetSRV({ depthTexture }, 0);
+		RenderAPI::get()->CSSetUAV({ hiZTexture->getUAV(0) }, 0);
+
+		hiZInitializeCS->use();
+
+		RenderAPI::get()->Dispatch(1024 / 8, 1024 / 8, 1);
+
+		//hiZMipLevel 3
+		//0 -> 1
+		//1 -> 2
+
+		hiZCreateCS->use();
+
+		for (UINT i = 0; i < hiZMipLevel - 1; i++)
+		{
+			RenderAPI::get()->CSSetUAV({ hiZTexture->getUAV(i),hiZTexture->getUAV(i + 1) }, 0);
+
+			RenderAPI::get()->Dispatch((512 >> i) / 8, (512 >> i) / 8, 1);
+		}
 	}
 
 	void render()
@@ -310,6 +343,10 @@ public:
 		RenderAPI::get()->RSSetState(States::rasterCullBack);
 		RenderAPI::get()->GSSetShader(nullptr);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
+
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+
+		CreateHiZ();
 
 		reflectedColor->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ reflectedColor }, nullptr);
@@ -636,6 +673,8 @@ private:
 
 	ComputeTexture* depthOctahedralMap;
 
+	CTextureWithMips* hiZTexture;
+
 	RenderCube* radianceCube;
 
 	RenderCube* distanceCube;
@@ -671,6 +710,10 @@ private:
 	Shader* probeRenderPSIrradiance;
 
 	Shader* ssrPS;
+
+	Shader* hiZInitializeCS;
+
+	Shader* hiZCreateCS;
 
 	Buffer* irradianceVolumeBuffer;
 

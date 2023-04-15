@@ -18,9 +18,6 @@
     <ClInclude Include="Inc\Aurora\Aurora.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\A2D\BitmapFont.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\Configuration.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -39,16 +36,13 @@
     <ClInclude Include="Inc\Aurora\Mouse.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\A2D\PrimitiveBatch.h">
+    <ClInclude Include="Inc\Aurora\PrimitiveBatch.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Random.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Aurora\A2D\SpriteBatch.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\DX\Resource\Texture2D.h">
@@ -106,9 +100,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\RCTexture.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Aurora\A2D\GameSceneManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\ComputeTexture.h">
@@ -213,12 +204,12 @@
     <ClInclude Include="Inc\Aurora\PostProcessing\FXAAEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\CTextureWithMips.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\A2D\BitmapFont.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Configuration.cpp">
@@ -236,16 +227,13 @@
     <ClCompile Include="Src\Aurora\Mouse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\A2D\PrimitiveBatch.cpp">
+    <ClCompile Include="Src\Aurora\PrimitiveBatch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Random.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Shader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\A2D\SpriteBatch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\DX\Resource\Texture2D.cpp">
@@ -303,9 +291,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\RCTexture.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\A2D\GameSceneManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\ComputeTexture.cpp">
@@ -402,6 +387,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\PostProcessing\FXAAEffect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\CTextureWithMips.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
