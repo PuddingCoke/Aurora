@@ -1,7 +1,7 @@
 RWTexture2D<float> depthRead : register(u0);
 RWTexture2D<float> depthWrite : register(u1);
 
-[numthreads(8, 8, 1)]
+[numthreads(16, 9, 1)]
 void main(uint2 DTid : SV_DispatchThreadID)
 {
     uint2 readCoord = DTid << 1;

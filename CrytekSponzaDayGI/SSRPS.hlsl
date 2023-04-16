@@ -1,13 +1,11 @@
 Texture2D<float4> gPosition : register(t0);
 Texture2D<float4> gNormalSpecular : register(t1);
-Texture2D<float> depthTexture : register(t2);
+Texture2D<float> hiZTexture : register(t2);
 Texture2D<float4> originTexture : register(t3);
 
 SamplerState wrapSampler : register(s0);
 SamplerState clampSampler : register(s1);
-SamplerComparisonState shadowSampler : register(s2);
-
-#define RAYMARCHSTEP 150.0
+SamplerState pointSampler : register(s2);
 
 cbuffer ProjMatrix : register(b1)
 {
@@ -29,6 +27,54 @@ cbuffer SSRParam : register(b3)
     float thickness;
     float depthBias;
     float padding;
+}
+
+float3 IntersectDepthPlane(in float3 o, in float3 d, in float t)
+{
+    return o + d * t;
+}
+
+float3 IntersectCellBoundary(in float3 o, in float3 d, in float2 cell, in float2 cell_count, in float2 crossStep, in float2 crossOffset)
+{
+    float3 intersection = 0;
+	
+    float2 index = cell + crossStep;
+    float2 boundary = index / cell_count;
+    boundary += crossOffset;
+	
+    float2 delta = boundary - o.xy;
+    delta /= d.xy;
+    float t = min(delta.x, delta.y);
+	
+    intersection = IntersectDepthPlane(o, d, t);
+	
+    return intersection;
+}
+
+float2 GetCell(in float2 pos, in float2 cellCount)
+{
+    return floor(pos * cellCount);
+}
+
+float2 GetCellCount(in int mipLevel)
+{
+    float2 cellCount;
+    
+    uint numberOfLevels;
+    
+    hiZTexture.GetDimensions(mipLevel, cellCount.x, cellCount.y, numberOfLevels);
+    
+    return cellCount;
+}
+
+float GetMinimumDepthPlane(in float2 p, in int mipLevel)
+{
+    return hiZTexture.SampleLevel(pointSampler, p, float(mipLevel));
+}
+
+bool CrossedCellBoundary(in float2 oldCellIndex, in float2 newCellIndex)
+{
+    return (oldCellIndex.x != newCellIndex.x) || (oldCellIndex.y != newCellIndex.y);
 }
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
@@ -68,83 +114,81 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     const float minPercentage = saturate(min(min(percentage.x, percentage.y), percentage.z));
     
-    const float3 increment = (endFrag.xyz - startFrag.xyz) / RAYMARCHSTEP;
+    endFrag.xyz = (endFrag.xyz - startFrag.xyz) * minPercentage + startFrag.xyz;
     
-    float3 curUV = startFrag.xyz;
+    const float3 reflectDir = normalize(endFrag.xyz - startFrag.xyz);
     
-    int hit0 = 0;
-   
-    int hit1 = 0;
+    const float2 crossStep = float2(reflectDir.x >= 0 ? 1 : -1, reflectDir.y >= 0 ? 1 : -1);
     
-    float search0 = 0.0;
+    const float2 crossOffset = saturate(crossStep / float2(1920.0, 1080.0) / 128.0);
     
-    float search1 = 0.0;
+    float3 ray = startFrag.xyz;
     
-    float depthDiff = thickness;
+    const float minZ = startFrag.z;
     
-    int i = 0;
+    const float maxZ = endFrag.z;
     
-    [unroll]
-    for (i = 0; i < int(RAYMARCHSTEP * minPercentage); ++i)
+    const float deltaZ = (maxZ - minZ);
+    
+    const float3 o = startFrag.xyz;
+    
+    const float3 d = endFrag.xyz - startFrag.xyz;
+    
+    const int startLevel = 3;
+    
+    const int stopLevel = 0;
+    
+    const float2 startCellCount = GetCellCount(startLevel);
+    
+    const float2 rayCell = GetCell(ray.xy, startCellCount);
+    
+    ray = IntersectCellBoundary(o, d, rayCell, startCellCount, crossStep, crossOffset * 64.0);
+    
+    int level = startLevel;
+    
+    uint iteration = 0;
+    
+    const bool isBackwardRay = (reflectDir.z < 0);
+    
+    const float rayDir = isBackwardRay ? -1 : 1;
+    
+    [loop]
+    while (level >= stopLevel && ray.z * rayDir <= maxZ * rayDir && iteration < 200)
     {
-        curUV += increment;
+        const float2 cellCount = GetCellCount(level);
         
-        search1 = float(i + 1) / RAYMARCHSTEP;
+        const float2 oldCellIdx = GetCell(ray.xy, cellCount);
         
-        const float frontDepth = depthTexture.SampleLevel(clampSampler, curUV.xy, 0.0);
+        float cell_minZ = GetMinimumDepthPlane((oldCellIdx + 0.5) / cellCount, level);
         
-        depthDiff = curUV.z - frontDepth;
+        float3 tmpRay = ((cell_minZ > ray.z) && !isBackwardRay) ? IntersectDepthPlane(o, d, (cell_minZ - minZ) / deltaZ) : ray;
         
-        if (depthDiff > depthBias && depthDiff <= thickness)
-        {
-            hit0 = 1;
-            break;
-        }
-        else
-        {
-            search0 = search1;
-        }
+        const float2 newCellIdx = GetCell(tmpRay.xy, cellCount);
+        
+        float thickness = ((level == 0) ? (ray.z - cell_minZ) : 0);
+        
+        bool crossed = (isBackwardRay && (cell_minZ > ray.z)) || (thickness > 0.001) || CrossedCellBoundary(oldCellIdx, newCellIdx);
+        
+        ray = crossed ? IntersectCellBoundary(o, d, oldCellIdx, cellCount, crossStep, crossOffset) : tmpRay;
+        
+        level = crossed ? min(3, level + 1) : (level - 1);
+        
+        iteration++;
     }
     
-    search1 = search0 + ((search1 - search0) / 2.0);
-    
-    if (hit0)
+    if (level < stopLevel)
     {
-        [unroll]
-        for (i = 0; i < 10; ++i)
-        {
-            curUV = lerp(startFrag.xyz, endFrag.xyz, search1);
+        const float4 positionTo = mul(gPosition.Sample(clampSampler, ray.xy), view);
+    
+        const float3 hitNormal = normalize(mul(gNormalSpecular.Sample(clampSampler, ray.xy).xyz, (float3x3) normalMatrix));
+    
+        const float visibility =
+        saturate((1.0 - max(dot(-unitPositionFrom, pivot), 0))
+        * (1.0 - saturate(length(positionTo - positionFrom) / maxDistance))
+        * (dot(hitNormal, pivot) < 0.0 ? 1.0 : 0.0));
         
-            const float frontDepth = depthTexture.SampleLevel(clampSampler, curUV.xy, 0.0);
-        
-            depthDiff = curUV.z - frontDepth;
-        
-            if (depthDiff > depthBias && depthDiff <= thickness)
-            {
-                hit1 = 1;
-                search1 = search0 + ((search1 - search0) / 2.0);
-            }
-            else
-            {
-                const float temp = search1;
-                search1 = search1 + ((search1 - search0) / 2.0);
-                search0 = temp;
-            }
-        }
+        color.rgb += originTexture.Sample(clampSampler, ray.xy).rgb * visibility * normalSpeculr.w;
     }
-    
-    const float4 positionTo = mul(gPosition.Sample(clampSampler, curUV.xy), view);
-    
-    const float3 hitNormal = normalize(mul(gNormalSpecular.Sample(clampSampler, curUV.xy).xyz, (float3x3) normalMatrix));
-    
-    const float visibility =
-    saturate(float(hit1)
-    * (1.0 - max(dot(-unitPositionFrom, pivot), 0))
-    * (1.0 - saturate(depthDiff / thickness))
-    * (1.0 - saturate(length(positionTo - positionFrom) / maxDistance))
-    * (dot(hitNormal, pivot) < 0.0 ? 1.0 : 0.0));
-    
-    color.rgb += originTexture.Sample(clampSampler, curUV.xy).rgb * visibility * normalSpeculr.w;
     
     return color;
 }

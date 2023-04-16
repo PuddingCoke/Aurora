@@ -27,7 +27,16 @@ public:
 
 	static constexpr UINT shadowMapRes = 4096;
 
-	static constexpr UINT hiZMipLevel = 3;
+	static constexpr UINT hiZMipLevel = 4;
+	//1920 1080
+	//960 540
+	//480 270
+	//240 135
+
+
+	static constexpr UINT hiZTextureResolution = 2048;
+
+	static constexpr UINT skyboxResolution = 1024;
 
 	struct IrradianceVolumeParam
 	{
@@ -68,12 +77,12 @@ public:
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		reflectedColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		depthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
-		hiZTexture(new CTextureWithMips(1024, 1024, DXGI_FORMAT_R32_FLOAT, hiZMipLevel)),
+		hiZTexture(new CTextureWithMips(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, hiZMipLevel)),
 		shadowTexture(new ResDepthTexture(shadowMapRes, shadowMapRes)),
 		radianceCube(new RenderCube(captureResolution, DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		distanceCube(new RenderCube(captureResolution, DXGI_FORMAT_R32_FLOAT)),
 		depthCube(new DepthCube(captureResolution)),
-		skybox(new TextureCube(assetPath + "/sky/kloppenheim_05_4k.hdr", 1024)),
+		skybox(new TextureCube(assetPath + "/sky/kloppenheim_05_4k.hdr", skyboxResolution)),
 		deferredVShader(new Shader(Utils::getRootFolder() + "DeferredVShader.cso", ShaderType::Vertex)),
 		deferredPShader(new Shader(Utils::getRootFolder() + "DeferredPShader.cso", ShaderType::Pixel)),
 		deferredFinal(new Shader(Utils::getRootFolder() + "DeferredFinal.cso", ShaderType::Pixel)),
@@ -260,29 +269,6 @@ public:
 		ssrParamBuffer->unmap(0);
 	}
 
-	void CreateHiZ()
-	{
-		RenderAPI::get()->CSSetSRV({ depthTexture }, 0);
-		RenderAPI::get()->CSSetUAV({ hiZTexture->getUAV(0) }, 0);
-
-		hiZInitializeCS->use();
-
-		RenderAPI::get()->Dispatch(1024 / 8, 1024 / 8, 1);
-
-		//hiZMipLevel 3
-		//0 -> 1
-		//1 -> 2
-
-		hiZCreateCS->use();
-
-		for (UINT i = 0; i < hiZMipLevel - 1; i++)
-		{
-			RenderAPI::get()->CSSetUAV({ hiZTexture->getUAV(i),hiZTexture->getUAV(i + 1) }, 0);
-
-			RenderAPI::get()->Dispatch((512 >> i) / 8, (512 >> i) / 8, 1);
-		}
-	}
-
 	void render()
 	{
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
@@ -346,13 +332,27 @@ public:
 
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
-		CreateHiZ();
+		RenderAPI::get()->CSSetSRV({ depthTexture }, 0);
+		RenderAPI::get()->CSSetUAV({ hiZTexture->getUAV(0) }, 0);
+
+		hiZInitializeCS->use();
+
+		RenderAPI::get()->Dispatch(1920 / 16, 1080 / 9, 1);
+
+		hiZCreateCS->use();
+
+		for (UINT i = 0; i < hiZMipLevel - 1; i++)
+		{
+			RenderAPI::get()->CSSetUAV({ hiZTexture->getUAV(i),hiZTexture->getUAV(i + 1) }, 0);
+
+			RenderAPI::get()->Dispatch((960 >> i) / 16, (540 >> i) / 9, 1);
+		}
 
 		reflectedColor->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ reflectedColor }, nullptr);
-		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,depthTexture,originTexture }, 0);
+		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,hiZTexture,originTexture }, 0);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer(),ssrParamBuffer }, 1);
-		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);
 
 		RenderAPI::fullScreenVS->use();
 		ssrPS->use();
