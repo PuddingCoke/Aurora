@@ -11,3 +11,8 @@ StructuredBuffer::StructuredBuffer(const UINT& byteWidth, const UINT& structureB
 
 	createSRV(getBuffer(), srvDesc);
 }
+
+void StructuredBuffer::bindSRV()
+{
+
+}

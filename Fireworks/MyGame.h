@@ -3,14 +3,13 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/Mouse.h>
-#include<Aurora/A2D/SpriteBatch.h>
-#include<Aurora/A2D/PrimitiveBatch.h>
+#include<Aurora/PrimitiveBatch.h>
 #include<Aurora/Event.h>
 #include<Aurora/States.h>
 #include<Aurora/DoubleRTV.h>
 #include<Aurora/Color.h>
 #include<Aurora/Timer.h>
-#include<Aurora/PostProcessing/FadeEffect.h>
+#include<Aurora/Effect/FadeEffect.h>
 
 #include"Objects.h"
 

@@ -4,8 +4,8 @@
 #include<Aurora/ResDepthTexture.h>
 #include<Aurora/A3D/FPSCamera.h>
 #include<Aurora/A3D/TextureCube.h>
-#include<Aurora/PostProcessing/BloomEffect.h>
-#include<Aurora/PostProcessing/HBAOEffect.h>
+#include<Aurora/Effect/BloomEffect.h>
+#include<Aurora/Effect/HBAOEffect.h>
 
 #include"Scene.h"
 

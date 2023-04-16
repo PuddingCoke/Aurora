@@ -17,7 +17,7 @@ RenderAPI::RenderAPI(const unsigned int& msaaLevel, ID3D11Texture2D* const rende
 		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		rtvDesc.Texture2D.MipSlice = 0;
 
-		defRenderTargetView = new RenderTargetView(renderTexture, rtvDesc);
+		defRenderTargetView = new CustomedRTV(renderTexture, rtvDesc);
 	}
 	else
 	{
@@ -25,7 +25,7 @@ RenderAPI::RenderAPI(const unsigned int& msaaLevel, ID3D11Texture2D* const rende
 		msaaViewDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 		msaaViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 
-		defRenderTargetView = new RenderTargetView(Renderer::instance->msaaTexture.Get(), msaaViewDesc);
+		defRenderTargetView = new CustomedRTV(Renderer::instance->msaaTexture.Get(), msaaViewDesc);
 	}
 
 	std::cout << "fullScreenVS ";

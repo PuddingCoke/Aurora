@@ -27,3 +27,8 @@ void ResDepthTexture::bindDSV()
 {
 	unbindFromSRV();
 }
+
+void ResDepthTexture::bindSRV()
+{
+
+}

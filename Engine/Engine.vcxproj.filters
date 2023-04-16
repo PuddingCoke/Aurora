@@ -135,16 +135,16 @@
     <ClInclude Include="Inc\Aurora\RenderAPI.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\BloomEffect.h">
+    <ClInclude Include="Inc\Aurora\Effect\BloomEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\EffectBase.h">
+    <ClInclude Include="Inc\Aurora\Effect\EffectBase.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\FadeEffect.h">
+    <ClInclude Include="Inc\Aurora\Effect\FadeEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\HBAOEffect.h">
+    <ClInclude Include="Inc\Aurora\Effect\HBAOEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\DX\Resource\Texture3D.h">
@@ -153,7 +153,7 @@
     <ClInclude Include="Inc\Aurora\ComputeTexture3D.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\MotionBlurEffect.h">
+    <ClInclude Include="Inc\Aurora\Effect\MotionBlurEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\StructuredBuffer.h">
@@ -201,7 +201,7 @@
     <ClInclude Include="Inc\Aurora\A3D\DepthCube.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PostProcessing\FXAAEffect.h">
+    <ClInclude Include="Inc\Aurora\Effect\FXAAEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\CTextureWithMips.h">
@@ -326,16 +326,16 @@
     <ClCompile Include="Src\Aurora\RenderAPI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\EffectBase.cpp">
+    <ClCompile Include="Src\Aurora\Effect\EffectBase.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\BloomEffect.cpp">
+    <ClCompile Include="Src\Aurora\Effect\BloomEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\FadeEffect.cpp">
+    <ClCompile Include="Src\Aurora\Effect\FadeEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\HBAOEffect.cpp">
+    <ClCompile Include="Src\Aurora\Effect\HBAOEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\DX\Resource\Texture3D.cpp">
@@ -344,7 +344,7 @@
     <ClCompile Include="Src\Aurora\ComputeTexture3D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\MotionBlurEffect.cpp">
+    <ClCompile Include="Src\Aurora\Effect\MotionBlurEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\StructuredBuffer.cpp">
@@ -386,7 +386,7 @@
     <ClCompile Include="Src\Aurora\A3D\DepthCube.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PostProcessing\FXAAEffect.cpp">
+    <ClCompile Include="Src\Aurora\Effect\FXAAEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\CTextureWithMips.cpp">

@@ -1,4 +1,4 @@
-#include<Aurora/PostProcessing/MotionBlurEffect.h>
+#include<Aurora/Effect/MotionBlurEffect.h>
 
 MotionBlurEffect::MotionBlurEffect(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format) :
 	EffectBase(width, height, format)

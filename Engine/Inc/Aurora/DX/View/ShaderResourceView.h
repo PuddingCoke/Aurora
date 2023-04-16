@@ -24,7 +24,7 @@ public:
 	void createSRV(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
 
 	//解决binding hazard的问题
-	virtual void bindSRV();
+	virtual void bindSRV() = 0;
 
 	void generateMips() const;
 

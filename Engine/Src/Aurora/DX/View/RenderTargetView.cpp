@@ -43,10 +43,6 @@ void RenderTargetView::unbindRTV()
 	Renderer::getContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
-void RenderTargetView::bindRTV()
-{
-}
-
 bool RenderTargetView::unbindFromRTV()
 {
 	if (boundOnRTV)

@@ -6,8 +6,8 @@
 
 #include<Aurora/A3D/FPSCamera.h>
 
-#include<Aurora/PostProcessing/HBAOEffect.h>
-#include<Aurora/PostProcessing/BloomEffect.h>
+#include<Aurora/Effect/HBAOEffect.h>
+#include<Aurora/Effect/BloomEffect.h>
 
 #include"Scene.h"
 

@@ -4,9 +4,8 @@
 #include<Aurora/DoubleRTV.h>
 #include<Aurora/Random.h>
 #include<Aurora/Math.h>
-#include<Aurora/A2D/SpriteBatch.h>
-#include<Aurora/PostProcessing/FadeEffect.h>
-#include<Aurora/PostProcessing/BloomEffect.h>
+#include<Aurora/Effect/FadeEffect.h>
+#include<Aurora/Effect/BloomEffect.h>
 
 #include<thread>
 
@@ -26,8 +25,6 @@ public:
 
 	DoubleRTV* doubleRTV;
 
-	SpriteBatch* batch;
-
 	FadeEffect fadeEffect;
 
 	BloomEffect bloomEffect;
@@ -40,7 +37,6 @@ public:
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
 		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
 		arrowTexture(new ResourceTexture("arrow.png")),
-		batch(SpriteBatch::create()),
 		doubleRTV(new DoubleRTV(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		fadeEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
@@ -77,7 +73,6 @@ public:
 		delete doubleRTV;
 		delete resolvedTexture;
 		delete arrowTexture;
-		delete batch;
 	}
 
 	void update(const float& dt) override
@@ -131,12 +126,12 @@ public:
 		renderTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
 
-		batch->begin();
+		/*batch->begin();
 		for (size_t i = 0; i < vehicles.size(); i++)
 		{
 			batch->draw(TEXTURE(arrowTexture), vehicles[i].pos.x, vehicles[i].pos.y, arrowTexture->getWidth() / 2, arrowTexture->getHeight() / 2, atan2f(vehicles[i].vel.y, vehicles[i].vel.x));
 		}
-		batch->end();
+		batch->end();*/
 
 		renderTexture->resolve(resolvedTexture);
 

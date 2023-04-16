@@ -29,3 +29,8 @@ void DepthCube::bindDSV()
 {
 	unbindFromSRV();
 }
+
+void DepthCube::bindSRV()
+{
+
+}

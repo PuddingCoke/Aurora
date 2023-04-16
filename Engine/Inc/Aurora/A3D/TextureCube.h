@@ -34,6 +34,8 @@ public:
 
 	~TextureCube();
 
+	virtual void bindSRV() override;
+
 private:
 
 	friend class Aurora;

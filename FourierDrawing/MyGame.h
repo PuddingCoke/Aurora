@@ -6,8 +6,7 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/Mouse.h>
-#include<Aurora/A2D/SpriteBatch.h>
-#include<Aurora/A2D/PrimitiveBatch.h>
+#include<Aurora/PrimitiveBatch.h>
 #include<Aurora/Event.h>
 #include<Aurora/States.h>
 #include<Aurora/RenderTexture.h>
@@ -48,8 +47,6 @@ public:
 
 	static constexpr int interval = 5;
 
-	SpriteBatch* sBatch;
-
 	PrimitiveBatch* pBatch;
 
 	RenderTexture* renderTexture;
@@ -61,7 +58,6 @@ public:
 	bool connected;
 
 	MyGame() :
-		sBatch(SpriteBatch::create()),
 		pBatch(PrimitiveBatch::create()),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Transparent, true)),
 		texture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
@@ -137,7 +133,6 @@ public:
 	~MyGame()
 	{
 		delete texture;
-		delete sBatch;
 		delete pBatch;
 		delete renderTexture;
 		delete[] epicycles;
@@ -224,10 +219,17 @@ public:
 
 		renderTexture->resolve(texture);
 
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 		RenderAPI::get()->OMSetDefRTV(nullptr);
-		sBatch->begin();
-		sBatch->draw(texture, texture, 0, 0);
-		sBatch->end();
+
+		RenderAPI::get()->PSSetSRV({ texture }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+
+		RenderAPI::fullScreenVS->use();
+		RenderAPI::fullScreenPS->use();
+
+		RenderAPI::get()->DrawQuad();
 
 	}
 };

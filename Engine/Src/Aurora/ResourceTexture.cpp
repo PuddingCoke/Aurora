@@ -47,3 +47,7 @@ ResourceTexture::ResourceTexture(const unsigned int& width, const unsigned int& 
 ResourceTexture::~ResourceTexture()
 {
 }
+
+void ResourceTexture::bindSRV()
+{
+}

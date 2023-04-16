@@ -15,6 +15,8 @@ public:
 
 	virtual void bindDSV() override;
 
+	virtual void bindSRV() override;
+
 };
 
 #endif // !_DEPTHCUBE_H_

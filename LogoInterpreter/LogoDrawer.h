@@ -2,7 +2,7 @@
 
 #include<Aurora/Math.h>
 #include<Aurora/Graphics.h>
-#include<Aurora/A2D/PrimitiveBatch.h>
+#include<Aurora/PrimitiveBatch.h>
 
 class LogoDrawer
 {

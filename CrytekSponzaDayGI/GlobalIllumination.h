@@ -12,9 +12,9 @@
 #include<Aurora/Math.h>
 #include<Aurora/Keyboard.h>
 
-#include<Aurora/PostProcessing/HBAOEffect.h>
-#include<Aurora/PostProcessing/BloomEffect.h>
-#include<Aurora/PostProcessing/FXAAEffect.h>
+#include<Aurora/Effect/HBAOEffect.h>
+#include<Aurora/Effect/BloomEffect.h>
+#include<Aurora/Effect/FXAAEffect.h>
 
 #include"Scene.h"
 
@@ -256,6 +256,7 @@ public:
 			sunAngle = Math::clamp(sunAngle, Math::half_pi - 0.365f, Math::half_pi + 0.365f);
 			updateShadow();
 			updateLightProbe();
+			updateLightBounceProbe();
 		}
 		else if (Keyboard::getKeyDown(Keyboard::E))
 		{
@@ -263,6 +264,7 @@ public:
 			sunAngle = Math::clamp(sunAngle, Math::half_pi - 0.365f, Math::half_pi + 0.365f);
 			updateShadow();
 			updateLightProbe();
+			updateLightBounceProbe();
 		}
 
 		memcpy(ssrParamBuffer->map(0).pData, &ssrParam, sizeof(SSRParam));
@@ -304,31 +306,6 @@ public:
 		skyboxPShader->use();
 
 		RenderAPI::get()->DrawCube();
-
-		/*RenderAPI::get()->RSSetState(States::rasterCullNone);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		RenderAPI::get()->VSSetConstantBuffer({ irradianceVolumeBuffer }, 2);
-
-		probeRenderVS->use();
-		probeRenderGS->use();
-
-		if (showIrradiance)
-		{
-			probeRenderPSIrradiance->use();
-		}
-		else
-		{
-			probeRenderPSDepth->use();
-		}
-
-		RenderAPI::get()->PSSetSRV({ irradianceBounceCoeff,depthOctahedralMap }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
-
-		RenderAPI::get()->Draw(irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z, 0);
-
-		RenderAPI::get()->RSSetState(States::rasterCullBack);
-		RenderAPI::get()->GSSetShader(nullptr);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
 
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 

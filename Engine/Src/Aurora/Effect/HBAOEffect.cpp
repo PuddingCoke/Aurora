@@ -1,4 +1,4 @@
-#include<Aurora/PostProcessing/HBAOEffect.h>
+#include<Aurora/Effect/HBAOEffect.h>
 
 HBAOEffect::HBAOEffect(const unsigned int& width, const unsigned int& height) :
 	EffectBase(width, height, DXGI_FORMAT_R32_FLOAT), pAOContext(nullptr)

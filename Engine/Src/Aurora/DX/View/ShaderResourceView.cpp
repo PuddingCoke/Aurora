@@ -123,7 +123,3 @@ void ShaderResourceView::generateMips() const
 {
 	Renderer::getContext()->GenerateMips(shaderResourceView.Get());
 }
-
-void ShaderResourceView::bindSRV()
-{
-}

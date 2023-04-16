@@ -28,7 +28,7 @@ public:
 	void createRTV(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc);
 
 	//解决binding hazard的问题
-	virtual void bindRTV();
+	virtual void bindRTV() = 0;
 
 	static void unbindRTV();
 

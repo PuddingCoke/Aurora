@@ -5,7 +5,7 @@
 #include<Aurora/RCTexture.h>
 #include<Aurora/Timer.h>
 
-#include<Aurora/PostProcessing/BloomEffect.h>
+#include<Aurora/Effect/BloomEffect.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game

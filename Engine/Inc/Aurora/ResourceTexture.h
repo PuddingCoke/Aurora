@@ -24,6 +24,8 @@ public:
 
 	virtual ~ResourceTexture();
 
+	virtual void bindSRV() override;
+
 };
 
 #endif // !_RESOURCETEXTURE_H_

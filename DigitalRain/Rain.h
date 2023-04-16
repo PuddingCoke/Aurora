@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/Graphics.h>
 #include<Aurora/Timer.h>
 #include<Aurora/Random.h>

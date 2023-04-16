@@ -4,7 +4,7 @@
 #include<Aurora/DoubleRTV.h>
 #include<Aurora/Color.h>
 #include<Aurora/Timer.h>
-#include<Aurora/PostProcessing/BloomEffect.h>
+#include<Aurora/Effect/BloomEffect.h>
 
 //基本思想 https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-38-fast-fluid-dynamics-simulation-gpu
 //有些公式看不懂可以看这个 http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf

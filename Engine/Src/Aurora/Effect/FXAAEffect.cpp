@@ -1,4 +1,4 @@
-#include<Aurora/PostProcessing/FXAAEffect.h>
+#include<Aurora/Effect/FXAAEffect.h>
 
 FXAAEffect::FXAAEffect(const UINT& width, const UINT& height) :
 	EffectBase(width, height, DXGI_FORMAT_R8G8B8A8_UNORM), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },

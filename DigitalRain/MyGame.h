@@ -5,7 +5,7 @@
 #include<Aurora/DepthTexture.h>
 
 #include<Aurora/A3D/OrbitCamera.h>
-#include<Aurora/PostProcessing/BloomEffect.h>
+#include<Aurora/Effect/BloomEffect.h>
 
 #include"TextBatch.h"
 #include"Rain.h"

@@ -11,7 +11,7 @@
 
 #include"StrangeAttractor.h"
 
-#include<Aurora/PostProcessing/BloomEffect.h>
+#include<Aurora/Effect/BloomEffect.h>
 
 //关于这种吸引子
 //https://gereshes.com/2020/01/13/attracted-to-attractors/

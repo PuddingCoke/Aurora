@@ -150,7 +150,21 @@ private:
 
 	~RenderAPI();
 
-	RenderTargetView* defRenderTargetView;
+	class CustomedRTV :public RenderTargetView
+	{
+	public:
+
+		CustomedRTV(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& rtvDesc)
+		{
+			createRTV(resource, rtvDesc);
+		}
+
+		void bindRTV() override
+		{
+
+		}
+
+	}*defRenderTargetView;
 
 };
 

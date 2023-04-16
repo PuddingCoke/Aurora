@@ -3,8 +3,7 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/Mouse.h>
-#include<Aurora/A2D/SpriteBatch.h>
-#include<Aurora/A2D/PrimitiveBatch.h>
+#include<Aurora/PrimitiveBatch.h>
 #include<Aurora/Event.h>
 #include<Aurora/States.h>
 #include<Aurora/RenderTexture.h>

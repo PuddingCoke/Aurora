@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/A2D/SpriteBatch.h>
 #include<Aurora/A3D/OrbitCamera.h>
 #include<Aurora/ComputeTexture.h>
 #include<Aurora/StructuredBuffer.h>

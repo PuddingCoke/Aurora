@@ -12,7 +12,6 @@
 #include<Aurora/CompiledShaders/BloomDownSamplePS.h>
 #include<Aurora/CompiledShaders/BloomKarisAveragePS.h>
 
-#include<Aurora/StructuredBuffer.h>
 #include<Aurora/Math.h>
 
 #include<ImGUI/imgui.h>

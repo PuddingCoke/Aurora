@@ -115,11 +115,27 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	rtvDesc.Texture2DArray.ArraySize = 1;
 	rtvDesc.Texture2DArray.MipSlice = 0;
 
+	class CustomedRTV :public RenderTargetView
+	{
+	public:
+
+		CustomedRTV(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& rtvDesc)
+		{
+			createRTV(resource, rtvDesc);
+		}
+
+		void bindRTV() override
+		{
+
+		}
+
+	};
+
 	for (int i = 0; i < 6; i++)
 	{
 		rtvDesc.Texture2DArray.FirstArraySlice = D3D11CalcSubresource(0, i, mipLevels);
 
-		RenderTargetView* rtv = new RenderTargetView(cubeTexture.Get(), rtvDesc);
+		CustomedRTV* rtv = new CustomedRTV(cubeTexture.Get(), rtvDesc);
 
 		RenderAPI::get()->OMSetRTV({ rtv }, nullptr);
 		const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH({ 0.f,0.f,0.f }, focusPoints[i], upVectors[i]);
@@ -166,4 +182,9 @@ void TextureCube::releaseShader()
 {
 	delete equirectangularVS;
 	delete equirectangularPS;
+}
+
+void TextureCube::bindSRV()
+{
+
 }
