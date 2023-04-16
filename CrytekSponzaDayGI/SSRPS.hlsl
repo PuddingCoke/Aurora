@@ -114,7 +114,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     const float minPercentage = saturate(min(min(percentage.x, percentage.y), percentage.z));
     
-    endFrag.xyz = (endFrag.xyz - startFrag.xyz) * minPercentage + startFrag.xyz;
+    endFrag = lerp(startFrag, endFrag, minPercentage);
     
     const float3 reflectDir = normalize(endFrag.xyz - startFrag.xyz);
     
