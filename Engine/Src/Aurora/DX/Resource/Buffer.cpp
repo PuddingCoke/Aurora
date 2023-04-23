@@ -1,5 +1,7 @@
 #include<Aurora/DX/Resource/Buffer.h>
 
+ID3D11Buffer* Buffer::globalBuffer = nullptr;
+
 Buffer* Buffer::curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
 
 ID3D11Buffer* Buffer::nullBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
@@ -17,7 +19,7 @@ void Buffer::updateSubresource(const void* const data, const unsigned int& subre
 }
 
 Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage, const void* const data, const UINT& CPUAccessFlags, const UINT& miscFlags, const UINT& structureByteStride) :
-	IASlot(-1)
+	IASlot(-1), startConstants(0), numConstants((byteWidth / 16 + 15) & ~15)
 {
 	D3D11_BUFFER_DESC bd = {};
 	bd.ByteWidth = byteWidth;
@@ -54,6 +56,11 @@ D3D11_MAPPED_SUBRESOURCE Buffer::map(const unsigned int& subresource, const D3D1
 void Buffer::unmap(const unsigned int& subresource) const
 {
 	Renderer::getContext()->Unmap(buffer.Get(), subresource);
+}
+
+Buffer* Buffer::createPerFrameCB(const UINT& byteWidth, const UINT& bindFlags, const UINT& miscFlags)
+{
+	return nullptr;
 }
 
 bool Buffer::unbindFromVertexBuffer()

@@ -29,6 +29,8 @@ public:
 
 	void unmap(const unsigned int& subresource) const;
 
+	static Buffer* createPerFrameCB(const UINT& byteWidth, const UINT& bindFlags, const UINT& miscFlags = 0);
+
 protected:
 
 	bool unbindFromVertexBuffer();
@@ -36,6 +38,8 @@ protected:
 private:
 
 	friend class ResManager;
+
+	static ID3D11Buffer* globalBuffer;//store perframe variable 4 megabytes
 
 	static Buffer* curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
@@ -49,6 +53,10 @@ private:
 	ComPtr<ID3D11Buffer> buffer;
 
 	int IASlot;
+
+	UINT startConstants;
+
+	UINT numConstants;
 
 };
 
