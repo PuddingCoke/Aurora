@@ -28,13 +28,6 @@ public:
 	static constexpr UINT shadowMapRes = 4096;
 
 	static constexpr UINT hiZMipLevel = 4;
-	//1920 1080
-	//960 540
-	//480 270
-	//240 135
-
-
-	static constexpr UINT hiZTextureResolution = 2048;
 
 	static constexpr UINT skyboxResolution = 1024;
 
@@ -58,7 +51,7 @@ public:
 
 	struct SSRParam
 	{
-		float maxDistance = 100.f;
+		float maxDistance = 256.f;
 		float thickness = 0.05f;
 		float depthBias = 0.0f;
 		float padding;

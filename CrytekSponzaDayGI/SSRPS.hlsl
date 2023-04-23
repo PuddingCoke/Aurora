@@ -58,13 +58,7 @@ float2 GetCell(in float2 pos, in float2 cellCount)
 
 float2 GetCellCount(in int mipLevel)
 {
-    float2 cellCount;
-    
-    uint numberOfLevels;
-    
-    hiZTexture.GetDimensions(mipLevel, cellCount.x, cellCount.y, numberOfLevels);
-    
-    return cellCount;
+    return float2(1920 >> mipLevel, 1080 >> mipLevel);
 }
 
 float GetMinimumDepthPlane(in float2 p, in int mipLevel)
@@ -152,7 +146,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     const float rayDir = isBackwardRay ? -1 : 1;
     
-    [loop]
+    [unroll]
     while (level >= stopLevel && ray.z * rayDir <= maxZ * rayDir && iteration < 200)
     {
         const float2 cellCount = GetCellCount(level);

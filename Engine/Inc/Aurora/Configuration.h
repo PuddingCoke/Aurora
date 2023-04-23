@@ -25,8 +25,6 @@ public:
 		Perspective
 	} cameraType;
 
-	HINSTANCE hInstance;
-
 	const int width;
 
 	const int height;
@@ -39,7 +37,7 @@ public:
 
 	const bool enableImGui;
 	
-	Configuration(const HINSTANCE& hInstance, const int& width, const int& height, const std::wstring& title, const CameraType& cameraType, const unsigned int& msaaLevel = 1, const EngineUsage& usage = EngineUsage::Normal, const bool& enableDebug = false, const bool& enableImGui = true);
+	Configuration(const int& width, const int& height, const std::wstring& title, const CameraType& cameraType, const unsigned int& msaaLevel = 1, const EngineUsage& usage = EngineUsage::Normal, const bool& enableDebug = false, const bool& enableImGui = true);
 
 };
 

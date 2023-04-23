@@ -13,8 +13,6 @@ int Aurora::iniEngine(const Configuration& config)
 	enableDebug = config.enableDebug;
 	enableImGui = (config.usage == Configuration::EngineUsage::Normal && config.enableImGui);
 
-	allocateConsole();
-
 	if (enableImGui)
 	{
 		std::cout << "[class Aurora] enable ImGUI\n";
@@ -36,7 +34,7 @@ int Aurora::iniEngine(const Configuration& config)
 		screenHeight = config.height;
 	}
 
-	iniWindow(config.hInstance, config.title, screenWidth, screenHeight);
+	iniWindow(config.title, screenWidth, screenHeight);
 
 	if (config.usage == Configuration::EngineUsage::AnimationRender)
 	{
@@ -287,8 +285,10 @@ LRESULT Aurora::WallpaperProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	return 0;
 }
 
-HRESULT Aurora::iniWindow(const HINSTANCE& hInstance, const std::wstring& title, const UINT& width, const UINT& height)
+HRESULT Aurora::iniWindow(const std::wstring& title, const UINT& width, const UINT& height)
 {
+	const HINSTANCE hInstance = GetModuleHandle(0);
+
 	WNDCLASSEX wcex = {};
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -454,18 +454,6 @@ void Aurora::runEncode()
 	std::cout << "[class Aurora] encode complete!\n";
 
 	std::cin.get();
-}
-
-void Aurora::allocateConsole()
-{
-	if (AllocConsole())
-	{
-		FILE* fpstdin = stdin, * fpstdout = stdout, * fpstderr = stderr;
-
-		freopen_s(&fpstdin, "CONIN$", "r", stdin);
-		freopen_s(&fpstdout, "CONOUT$", "w", stdout);
-		freopen_s(&fpstderr, "CONOUT$", "w", stderr);
-	}
 }
 
 Aurora::Aurora() :
