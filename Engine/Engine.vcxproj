@@ -178,6 +178,7 @@
     <ClInclude Include="Inc\Aurora\Effect\FXAAEffect.h" />
     <ClInclude Include="Inc\Aurora\Effect\HBAOEffect.h" />
     <ClInclude Include="Inc\Aurora\Effect\MotionBlurEffect.h" />
+    <ClInclude Include="Inc\Aurora\PerframeCB.h" />
     <ClInclude Include="Inc\Aurora\RCTexture.h" />
     <ClInclude Include="Inc\Aurora\RenderAPI.h" />
     <ClInclude Include="Inc\Aurora\ResManager.h" />
@@ -237,6 +238,7 @@
     <ClCompile Include="Src\Aurora\Effect\FXAAEffect.cpp" />
     <ClCompile Include="Src\Aurora\Effect\HBAOEffect.cpp" />
     <ClCompile Include="Src\Aurora\Effect\MotionBlurEffect.cpp" />
+    <ClCompile Include="Src\Aurora\PerframeCB.cpp" />
     <ClCompile Include="Src\Aurora\RenderAPI.cpp" />
     <ClCompile Include="Src\Aurora\ResManager.cpp" />
     <ClCompile Include="Src\Aurora\DX\View\ShaderResourceView.cpp" />

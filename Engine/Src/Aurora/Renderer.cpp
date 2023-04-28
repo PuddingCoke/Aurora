@@ -2,13 +2,14 @@
 
 Renderer* Renderer::instance = nullptr;
 
-ID3D11Device5* Renderer::device = nullptr;
-
-ID3D11DeviceContext4* Renderer::context = nullptr;
+ID3D11Device5* Renderer::getDevice()
+{
+	return instance->device5.Get();
+}
 
 ID3D11DeviceContext4* Renderer::getContext()
 {
-	return context;
+	return instance->context4.Get();
 }
 
 const GPUManufacturer& Renderer::getGPUManufacturer()
@@ -19,6 +20,8 @@ const GPUManufacturer& Renderer::getGPUManufacturer()
 Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel, const UINT& extraDeviceFlags) :
 	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }
 {
+	instance = this;
+
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
 		D3D_FEATURE_LEVEL_11_1,
@@ -50,11 +53,11 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, ARRAYSIZE(featureLevels),
 			D3D11_SDK_VERSION, device11.ReleaseAndGetAddressOf(), &maxSupportedFeatureLevel, context11.ReleaseAndGetAddressOf());
 
-		device11->QueryInterface(IID_ID3D11Device5, (void**)device5.ReleaseAndGetAddressOf());
-		context11->QueryInterface(IID_ID3D11DeviceContext4, (void**)context4.ReleaseAndGetAddressOf());
+		device11.As(&device5);
+		context11.As(&context4);
 
-		device = device5.Get();
-		context = context4.Get();
+		//device11->QueryInterface(IID_ID3D11Device5, (void**)device5.ReleaseAndGetAddressOf());
+		//context11->QueryInterface(IID_ID3D11DeviceContext4, (void**)context4.ReleaseAndGetAddressOf());
 
 		ComPtr<IDXGIDevice> dxgiDevice11;
 		device11.As(&dxgiDevice11);
@@ -82,7 +85,7 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
 		ComPtr<IDXGISwapChain1> sc;
-		dxgiFactory->CreateSwapChainForHwnd(Renderer::device, hWnd, &sd, nullptr, nullptr, sc.ReleaseAndGetAddressOf());
+		dxgiFactory->CreateSwapChainForHwnd(Renderer::getDevice(), hWnd, &sd, nullptr, nullptr, sc.ReleaseAndGetAddressOf());
 		sc.As(&swapChain);
 	}
 
@@ -103,12 +106,12 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		tDesc.Usage = D3D11_USAGE_DEFAULT;
 		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
 
-		Renderer::device->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
 	}
 
 	if (enableDebug)
 	{
-		Renderer::device->QueryInterface(IID_ID3D11Debug, (void**)d3dDebug.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)d3dDebug.ReleaseAndGetAddressOf());
 	}
 
 	DXGI_ADAPTER_DESC2 adapterDesc;

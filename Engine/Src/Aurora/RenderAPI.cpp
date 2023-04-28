@@ -10,6 +10,8 @@ Shader* RenderAPI::randNoiseCS = nullptr;
 
 RenderAPI::RenderAPI(const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture)
 {
+	instance = this;
+
 	if (msaaLevel == 1)
 	{
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
@@ -172,7 +174,7 @@ void RenderAPI::CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& s
 
 void RenderAPI::IASetInputLayout(ID3D11InputLayout* const layout) const
 {
-	Renderer::context->IASetInputLayout(layout);
+	Renderer::getContext()->IASetInputLayout(layout);
 }
 
 void RenderAPI::IASetVertexBuffer(const unsigned int& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets) const
@@ -182,14 +184,14 @@ void RenderAPI::IASetVertexBuffer(const unsigned int& slot, const std::initializ
 
 void RenderAPI::IASetIndexBuffer(Buffer* const buffer, const DXGI_FORMAT& format, const UINT& offset) const
 {
-	Renderer::context->IASetIndexBuffer(buffer->getBuffer(), format, offset);
+	Renderer::getContext()->IASetIndexBuffer(buffer->getBuffer(), format, offset);
 }
 
 void RenderAPI::RSSetViewport(const float& width, const float& height) const
 {
 	Renderer::instance->vp.Width = width;
 	Renderer::instance->vp.Height = height;
-	Renderer::context->RSSetViewports(1, &Renderer::instance->vp);
+	Renderer::getContext()->RSSetViewports(1, &Renderer::instance->vp);
 }
 
 void RenderAPI::RSSetViewport(const unsigned int& width, const unsigned int& height) const
@@ -204,92 +206,92 @@ void RenderAPI::RSSetViewport(const int& width, const int& height) const
 
 void RenderAPI::IASetTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology) const
 {
-	Renderer::context->IASetPrimitiveTopology(topology);
+	Renderer::getContext()->IASetPrimitiveTopology(topology);
 }
 
 void RenderAPI::OMSetBlendState(ID3D11BlendState* const state) const
 {
-	Renderer::context->OMSetBlendState(state, nullptr, 0xFFFFFFFF);
+	Renderer::getContext()->OMSetBlendState(state, nullptr, 0xFFFFFFFF);
 }
 
 void RenderAPI::RSSetState(ID3D11RasterizerState* const state) const
 {
-	Renderer::context->RSSetState(state);
+	Renderer::getContext()->RSSetState(state);
 }
 
 void RenderAPI::OMSetDepthStencilState(ID3D11DepthStencilState* const state, const UINT& stencilRef) const
 {
-	Renderer::context->OMSetDepthStencilState(state, stencilRef);
+	Renderer::getContext()->OMSetDepthStencilState(state, stencilRef);
 }
 
 void RenderAPI::DrawQuad() const
 {
-	Renderer::context->Draw(3, 0);
+	Renderer::getContext()->Draw(3, 0);
 }
 
 void RenderAPI::DrawCube() const
 {
-	Renderer::context->Draw(36, 0);
+	Renderer::getContext()->Draw(36, 0);
 }
 
 void RenderAPI::Dispatch(const UINT& threadGroupCountX, const UINT& threadGroupCountY, const UINT& threadGroupCountZ) const
 {
-	Renderer::context->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
+	Renderer::getContext()->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
 
 void RenderAPI::Draw(const UINT& vertexCount, const UINT& startVertexLocation) const
 {
-	Renderer::context->Draw(vertexCount, startVertexLocation);
+	Renderer::getContext()->Draw(vertexCount, startVertexLocation);
 }
 
 void RenderAPI::DrawIndexed(const UINT& indexCount, const UINT& startIndexLocation, const UINT& baseVertexLocation) const
 {
-	Renderer::context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
+	Renderer::getContext()->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
 }
 
 void RenderAPI::DrawInstanced(const UINT& vertexCountPerInstance, const UINT& instanceCount, const UINT& startVertexLocation, const UINT& startInstanceLocation) const
 {
-	Renderer::context->DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
+	Renderer::getContext()->DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 }
 
 void RenderAPI::VSSetShader(ID3D11VertexShader* const shader) const
 {
-	Renderer::context->VSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->VSSetShader(shader, nullptr, 0);
 }
 
 void RenderAPI::HSSetShader(ID3D11HullShader* const shader) const
 {
-	Renderer::context->HSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->HSSetShader(shader, nullptr, 0);
 }
 
 void RenderAPI::DSSetShader(ID3D11DomainShader* const shader) const
 {
-	Renderer::context->DSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->DSSetShader(shader, nullptr, 0);
 }
 
 void RenderAPI::GSSetShader(ID3D11GeometryShader* const shader) const
 {
-	Renderer::context->GSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->GSSetShader(shader, nullptr, 0);
 }
 
 void RenderAPI::PSSetShader(ID3D11PixelShader* const shader) const
 {
-	Renderer::context->PSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->PSSetShader(shader, nullptr, 0);
 }
 
 void RenderAPI::CSSetShader(ID3D11ComputeShader* const shader) const
 {
-	Renderer::context->CSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->CSSetShader(shader, nullptr, 0);
 }
 
 void RenderAPI::ResolveSubresource(ID3D11Resource* const pDstResource, const UINT& DstSubresource, ID3D11Resource* const pSrcResource, const UINT& SrcSubresource, const DXGI_FORMAT& format) const
 {
-	Renderer::context->ResolveSubresource(pDstResource, DstSubresource, pSrcResource, SrcSubresource, format);
+	Renderer::getContext()->ResolveSubresource(pDstResource, DstSubresource, pSrcResource, SrcSubresource, format);
 }
 
 void RenderAPI::CopySubresourceRegion(ID3D11Resource* const pDstResource, const UINT& DstSubresource, const UINT& DstX, const UINT& DstY, const UINT& DstZ, ID3D11Resource* const pSrcResource, const UINT& SrcSubresource, const D3D11_BOX* const pSrcBox) const
 {
-	Renderer::context->CopySubresourceRegion(pDstResource, DstSubresource, DstX, DstY, DstZ, pSrcResource, SrcSubresource, pSrcBox);
+	Renderer::getContext()->CopySubresourceRegion(pDstResource, DstSubresource, DstX, DstY, DstZ, pSrcResource, SrcSubresource, pSrcBox);
 }
 
 void RenderAPI::UnbindRTV() const

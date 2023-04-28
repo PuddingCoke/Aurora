@@ -1,7 +1,5 @@
 #include<Aurora/DX/Resource/Buffer.h>
 
-ID3D11Buffer* Buffer::globalBuffer = nullptr;
-
 Buffer* Buffer::curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
 
 ID3D11Buffer* Buffer::nullBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
@@ -33,11 +31,11 @@ Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& 
 	{
 		D3D11_SUBRESOURCE_DATA subresource = {};
 		subresource.pSysMem = data;
-		Renderer::device->CreateBuffer(&bd, &subresource, buffer.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateBuffer(&bd, &subresource, buffer.ReleaseAndGetAddressOf());
 	}
 	else
 	{
-		Renderer::device->CreateBuffer(&bd, nullptr, buffer.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateBuffer(&bd, nullptr, buffer.ReleaseAndGetAddressOf());
 	}
 }
 
@@ -46,21 +44,20 @@ Buffer::~Buffer()
 	unbindFromVertexBuffer();
 }
 
-D3D11_MAPPED_SUBRESOURCE Buffer::map(const unsigned int& subresource, const D3D11_MAP& mapType, const unsigned int& mapFlags) const
+D3D11_MAPPED_SUBRESOURCE Buffer::map(const D3D11_MAP& mapType, const unsigned int& mapFlags) const
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData;
-	Renderer::getContext()->Map(buffer.Get(), subresource, mapType, mapFlags, &mappedData);
+	Renderer::getContext()->Map(buffer.Get(), 0, mapType, mapFlags, &mappedData);
 	return mappedData;
 }
 
-void Buffer::unmap(const unsigned int& subresource) const
+void Buffer::unmap() const
 {
-	Renderer::getContext()->Unmap(buffer.Get(), subresource);
+	Renderer::getContext()->Unmap(buffer.Get(), 0);
 }
 
-Buffer* Buffer::createPerFrameCB(const UINT& byteWidth, const UINT& bindFlags, const UINT& miscFlags)
+Buffer::Buffer()
 {
-	return nullptr;
 }
 
 bool Buffer::unbindFromVertexBuffer()

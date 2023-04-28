@@ -87,8 +87,8 @@ const float& FXAAEffect::getFXAAQualityEdgeThresholdMin() const
 
 void FXAAEffect::applyChange() const
 {
-	memcpy(fxaaParamBuffer->map(0).pData, &fxaaParam, sizeof(FXAAParam));
-	fxaaParamBuffer->unmap(0);
+	memcpy(fxaaParamBuffer->map().pData, &fxaaParam, sizeof(FXAAParam));
+	fxaaParamBuffer->unmap();
 }
 
 void FXAAEffect::compileShaders()

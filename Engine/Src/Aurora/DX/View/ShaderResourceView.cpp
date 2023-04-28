@@ -116,7 +116,7 @@ bool ShaderResourceView::unbindFromSRV()
 
 void ShaderResourceView::createSRV(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc)
 {
-	Renderer::device->CreateShaderResourceView(resource, &desc, shaderResourceView.ReleaseAndGetAddressOf());
+	Renderer::getDevice()->CreateShaderResourceView(resource, &desc, shaderResourceView.ReleaseAndGetAddressOf());
 }
 
 void ShaderResourceView::generateMips() const

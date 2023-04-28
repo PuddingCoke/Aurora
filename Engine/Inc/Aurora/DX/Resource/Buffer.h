@@ -10,8 +10,6 @@ class Buffer
 {
 public:
 
-	Buffer() = delete;
-
 	Buffer(const Buffer&) = delete;
 
 	void operator=(const Buffer&) = delete;
@@ -25,21 +23,27 @@ public:
 
 	void updateSubresource(const void* const data, const unsigned int& subresource) const;
 
-	D3D11_MAPPED_SUBRESOURCE map(const unsigned int& subresource, const D3D11_MAP& mapType = D3D11_MAP_WRITE_DISCARD, const unsigned int& mapFlags = 0) const;
+	D3D11_MAPPED_SUBRESOURCE map(const D3D11_MAP& mapType = D3D11_MAP_WRITE_DISCARD, const unsigned int& mapFlags = 0) const;
 
-	void unmap(const unsigned int& subresource) const;
-
-	static Buffer* createPerFrameCB(const UINT& byteWidth, const UINT& bindFlags, const UINT& miscFlags = 0);
+	void unmap() const;
 
 protected:
 
+	Buffer();
+
 	bool unbindFromVertexBuffer();
+
+	ComPtr<ID3D11Buffer> buffer;
+
+	int IASlot;
+
+	UINT startConstants;
+
+	UINT numConstants;
 
 private:
 
 	friend class ResManager;
-
-	static ID3D11Buffer* globalBuffer;//store perframe variable 4 megabytes
 
 	static Buffer* curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
@@ -49,14 +53,6 @@ private:
 
 	//解决绑定时的binding hazard
 	virtual void bindVertexBuffer();
-
-	ComPtr<ID3D11Buffer> buffer;
-
-	int IASlot;
-
-	UINT startConstants;
-
-	UINT numConstants;
 
 };
 

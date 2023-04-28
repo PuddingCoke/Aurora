@@ -158,12 +158,12 @@ public:
 				{"BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			};
 
-			Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(deferredVShader), modelInputLayout.ReleaseAndGetAddressOf());
+			Renderer::getDevice()->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(deferredVShader), modelInputLayout.ReleaseAndGetAddressOf());
 		}
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
-			memcpy(irradianceVolumeBuffer->map(0).pData, &irradianceVolumeParam, sizeof(IrradianceVolumeParam));
-			irradianceVolumeBuffer->unmap(0);
+			memcpy(irradianceVolumeBuffer->map().pData, &irradianceVolumeParam, sizeof(IrradianceVolumeParam));
+			irradianceVolumeBuffer->unmap();
 			updateLightProbe();
 			updateLightBounceProbe();
 			});
@@ -260,8 +260,8 @@ public:
 			updateLightBounceProbe();
 		}
 
-		memcpy(ssrParamBuffer->map(0).pData, &ssrParam, sizeof(SSRParam));
-		ssrParamBuffer->unmap(0);
+		memcpy(ssrParamBuffer->map().pData, &ssrParam, sizeof(SSRParam));
+		ssrParamBuffer->unmap();
 	}
 
 	void render()
@@ -415,11 +415,11 @@ private:
 		const DirectX::XMMATRIX lightViewMat = DirectX::XMMatrixLookAtLH(lightCamPos, offset, { 0.f,1.f,0.f });
 		const DirectX::XMMATRIX lightMat = DirectX::XMMatrixTranspose(lightViewMat * lightProjMat);
 
-		memcpy(lightBuffer->map(0).pData, &light, sizeof(Light));
-		lightBuffer->unmap(0);
+		memcpy(lightBuffer->map().pData, &light, sizeof(Light));
+		lightBuffer->unmap();
 
-		memcpy(shadowProjBuffer->map(0).pData, &lightMat, sizeof(DirectX::XMMATRIX));
-		shadowProjBuffer->unmap(0);
+		memcpy(shadowProjBuffer->map().pData, &lightMat, sizeof(DirectX::XMMATRIX));
+		shadowProjBuffer->unmap();
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 		RenderAPI::get()->IASetInputLayout(modelInputLayout.Get());
@@ -516,8 +516,8 @@ private:
 		cubeRenderParam.probeLocation = location;
 		cubeRenderParam.probeIndex = probeIndex;
 
-		memcpy(cubeRenderBuffer->map(0).pData, &cubeRenderParam, sizeof(CubeRenderParam));
-		cubeRenderBuffer->unmap(0);
+		memcpy(cubeRenderBuffer->map().pData, &cubeRenderParam, sizeof(CubeRenderParam));
+		cubeRenderBuffer->unmap();
 
 		radianceCube->clearRTV(DirectX::Colors::Black);
 		float distanceClear[4] = { 512.f,512.f,512.f,512.f };
@@ -592,8 +592,8 @@ private:
 		cubeRenderParam.probeLocation = location;
 		cubeRenderParam.probeIndex = probeIndex;
 
-		memcpy(cubeRenderBuffer->map(0).pData, &cubeRenderParam, sizeof(CubeRenderParam));
-		cubeRenderBuffer->unmap(0);
+		memcpy(cubeRenderBuffer->map().pData, &cubeRenderParam, sizeof(CubeRenderParam));
+		cubeRenderBuffer->unmap();
 
 		radianceCube->clearRTV(DirectX::Colors::Black);
 		depthCube->clearDSV(D3D11_CLEAR_DEPTH);

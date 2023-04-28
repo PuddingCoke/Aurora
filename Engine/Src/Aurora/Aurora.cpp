@@ -38,18 +38,20 @@ int Aurora::iniEngine(const Configuration& config)
 
 	if (config.usage == Configuration::EngineUsage::AnimationRender)
 	{
-		Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, enableDebug, config.msaaLevel, D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
+		new Renderer(hwnd, screenWidth, screenHeight, enableDebug, config.msaaLevel, D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
 	}
 	else
 	{
-		Renderer::instance = new Renderer(hwnd, screenWidth, screenHeight, enableDebug, config.msaaLevel);
+		new Renderer(hwnd, screenWidth, screenHeight, enableDebug, config.msaaLevel);
 	}
 
-	States::instance = new States();
+	new States();
 
-	Graphics::instance = new Graphics(screenWidth, screenHeight, config.msaaLevel);
+	PerframeCB::ini();
 
-	Camera::instance = new Camera();
+	new Graphics(screenWidth, screenHeight, config.msaaLevel);
+
+	new Camera();
 
 	if (usage == Configuration::EngineUsage::AnimationRender)
 	{
@@ -64,22 +66,22 @@ int Aurora::iniEngine(const Configuration& config)
 		tDesc.Usage = D3D11_USAGE_DEFAULT;
 		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
 
-		Renderer::device->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, encodeTexture.ReleaseAndGetAddressOf());
 
-		RenderAPI::instance = new RenderAPI(Graphics::instance->msaaLevel, encodeTexture.Get());
+		new RenderAPI(Graphics::getMSAALevel(), encodeTexture.Get());
 	}
 	else
 	{
-		RenderAPI::instance = new RenderAPI(Graphics::instance->msaaLevel, Renderer::instance->backBuffer.Get());
+		new RenderAPI(Graphics::getMSAALevel(), Renderer::instance->backBuffer.Get());
 	}
 
 	TextureCube::iniShader();
 
-	ResManager::instance = new ResManager();
+	new ResManager();
 
 	if (enableDebug)
 	{
-		Renderer::device->QueryInterface(IID_ID3D11Debug, (void**)Renderer::instance->d3dDebug.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)Renderer::instance->d3dDebug.ReleaseAndGetAddressOf());
 	}
 
 	//初始化一些默认状态，比如Viewport、BlendState等等 
@@ -89,7 +91,6 @@ int Aurora::iniEngine(const Configuration& config)
 	case Configuration::CameraType::Orthogonal:
 		std::cout << "[class Aurora] orthogonal camera\n";
 		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::getWidth(), 0, (float)Graphics::getHeight(), -1.f, 1.f));
-		Camera::setView(DirectX::XMMatrixIdentity());
 		break;
 	case Configuration::CameraType::Perspective:
 		std::cout << "[class Aurora] perspective camera\n";
@@ -103,7 +104,7 @@ int Aurora::iniEngine(const Configuration& config)
 
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(hwnd);
-	ImGui_ImplDX11_Init(Renderer::device, Renderer::context);
+	ImGui_ImplDX11_Init(Renderer::getDevice(), Renderer::getContext());
 
 	RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
@@ -114,16 +115,6 @@ int Aurora::iniEngine(const Configuration& config)
 	RenderAPI::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
 
 	RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-
-	//pixel compute shader占用第一个槽位来获取跟时间相关的变量
-	RenderAPI::get()->PSSetConstantBuffer({ Graphics::instance->deltaTimeBuffer }, 0);
-	RenderAPI::get()->CSSetConstantBuffer({ Graphics::instance->deltaTimeBuffer }, 0);
-
-	//vertex geometry hull domain shader占用前两个槽位来获取矩阵信息或者摄像头的信息
-	RenderAPI::get()->VSSetConstantBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
-	RenderAPI::get()->HSSetConstantBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
-	RenderAPI::get()->DSSetConstantBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
-	RenderAPI::get()->GSSetConstantBuffer({ Camera::instance->projBuffer,Camera::instance->viewBuffer }, 0);
 
 	return 0;
 }
@@ -144,8 +135,7 @@ void Aurora::iniGame(Game* const game)
 		break;
 	}
 
-	//解绑并释放所有资源
-	Renderer::context->ClearState();
+	Renderer::getContext()->ClearState();
 
 	delete game;
 
@@ -160,6 +150,8 @@ void Aurora::iniGame(Game* const game)
 	delete RenderAPI::instance;
 
 	TextureCube::releaseShader();
+
+	PerframeCB::release();
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -396,8 +388,19 @@ void Aurora::runGame()
 		ImGui::Text("FrameRate %.1f", ImGui::GetIO().Framerate);
 
 		const std::chrono::steady_clock::time_point timeStart = timer.now();
+
+		PerframeCB::mapPerframeBuffer();
+
 		game->update(Graphics::getDeltaTime());
+
 		game->imGUICall();
+
+		Graphics::instance->updateDeltaTimeBuffer();
+
+		PerframeCB::unmapPerframeBuffer();
+
+		bindCommonCB();
+
 		game->render();
 
 		ImGui::End();
@@ -411,14 +414,13 @@ void Aurora::runGame()
 
 		if (Graphics::instance->msaaLevel != 1)
 		{
-			Renderer::context->ResolveSubresource(Renderer::instance->backBuffer.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
+			Renderer::getContext()->ResolveSubresource(Renderer::instance->backBuffer.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
 
 		Renderer::instance->swapChain->Present(1, 0);
 		const std::chrono::steady_clock::time_point timeEnd = timer.now();
 		Graphics::instance->deltaTime.deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
 		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
-		Graphics::instance->updateDeltaTimeBuffer();
 	}
 }
 
@@ -441,19 +443,41 @@ void Aurora::runEncode()
 	Graphics::instance->deltaTime.deltaTime = 1.f / 60.f;
 	do
 	{
+		PerframeCB::mapPerframeBuffer();
+
 		game->update(Graphics::getDeltaTime());
+
+		Graphics::instance->updateDeltaTimeBuffer();
+
+		PerframeCB::unmapPerframeBuffer();
+
+		bindCommonCB();
+
 		game->render();
+
 		if (Graphics::instance->msaaLevel != 1)
 		{
-			Renderer::context->ResolveSubresource(encodeTexture.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
+			Renderer::getContext()->ResolveSubresource(encodeTexture.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
 		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
-		Graphics::instance->updateDeltaTimeBuffer();
 	} while (nvidiaEncoder.encode());
 
 	std::cout << "[class Aurora] encode complete!\n";
 
 	std::cin.get();
+}
+
+void Aurora::bindCommonCB()
+{
+	//pixel compute shader占用第一个槽位来获取跟时间相关的变量
+	RenderAPI::get()->PSSetConstantBuffer({ Graphics::getDeltaTimeBuffer() }, 0);
+	RenderAPI::get()->CSSetConstantBuffer({ Graphics::getDeltaTimeBuffer() }, 0);
+
+	//vertex geometry hull domain shader占用前两个槽位来获取矩阵信息或者摄像头的信息
+	RenderAPI::get()->VSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
+	RenderAPI::get()->HSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
+	RenderAPI::get()->DSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
+	RenderAPI::get()->GSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
 }
 
 Aurora::Aurora() :

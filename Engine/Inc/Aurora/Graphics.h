@@ -3,7 +3,7 @@
 #ifndef _GRAPHICS_H_
 #define _GRAPHICS_H_
 
-#include"DX/Resource/Buffer.h"
+#include"PerframeCB.h"
 #include"Random.h"
 
 class Graphics
@@ -44,7 +44,7 @@ private:
 
 	void updateDeltaTimeBuffer();
 
-	Buffer* deltaTimeBuffer;
+	PerframeCB* deltaTimeBuffer;
 
 	struct RecordConfig
 	{

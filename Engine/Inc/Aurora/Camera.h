@@ -53,7 +53,7 @@ private:
 
 	Buffer* projBuffer;
 
-	Buffer* viewBuffer;
+	PerframeCB* viewBuffer;
 
 	DirectX::XMMATRIX projMatrix;
 

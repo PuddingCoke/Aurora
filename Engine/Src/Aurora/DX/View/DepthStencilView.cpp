@@ -30,5 +30,5 @@ void DepthStencilView::bindDSV()
 
 void DepthStencilView::createDSV(ID3D11Resource* const resource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc)
 {
-	Renderer::device->CreateDepthStencilView(resource, &desc, depthStencilView.ReleaseAndGetAddressOf());
+	Renderer::getDevice()->CreateDepthStencilView(resource, &desc, depthStencilView.ReleaseAndGetAddressOf());
 }

@@ -82,8 +82,8 @@ public:
 		cameraParam.radius = Math::lerp(cameraParam.radius, targetRadius, 10.f * dt);
 		//cameraParam.theta += dt * 0.5f;
 
-		memcpy(cameraParamBuffer->map(0).pData, &cameraParam, sizeof(CameraParam));
-		cameraParamBuffer->unmap(0);
+		memcpy(cameraParamBuffer->map().pData, &cameraParam, sizeof(CameraParam));
+		cameraParamBuffer->unmap();
 	}
 
 	void render()
@@ -105,8 +105,8 @@ public:
 			temporalAccumulationParam.frameCount++;
 			temporalAccumulationParam.randomSeed = Random::Float() * 50.f;
 
-			memcpy(temporalAccumulationBuffer->map(0).pData, &temporalAccumulationParam, sizeof(TemporalAccumulationParam));
-			temporalAccumulationBuffer->unmap(0);
+			memcpy(temporalAccumulationBuffer->map().pData, &temporalAccumulationParam, sizeof(TemporalAccumulationParam));
+			temporalAccumulationBuffer->unmap();
 
 			RenderAPI::get()->OMSetRTV({ swapTexture->write() }, nullptr);
 			RenderAPI::get()->PSSetSRV({ swapTexture->read() }, 0);

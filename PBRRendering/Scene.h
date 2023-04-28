@@ -30,7 +30,7 @@ public:
 			{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0}
 		};
 
-		Renderer::device->CreateInputLayout(desc, ARRAYSIZE(desc), SHADERDATA(vertexShader), inputLayout.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateInputLayout(desc, ARRAYSIZE(desc), SHADERDATA(vertexShader), inputLayout.ReleaseAndGetAddressOf());
 
 	}
 

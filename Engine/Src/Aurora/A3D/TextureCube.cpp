@@ -27,7 +27,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 		tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 		tDesc.ArraySize = 6;
 		tDesc.MipLevels = 1;
-		Renderer::device->CreateTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
 	}
 
 	for (unsigned int i = 0; i < 6; i++)
@@ -55,7 +55,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 TextureCube::TextureCube(const std::string& texturePath)
 {
 	const std::wstring wTexturePath(texturePath.begin(), texturePath.end());
-	DirectX::CreateDDSTextureFromFileEx(Renderer::device, Renderer::getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)cubeTexture.ReleaseAndGetAddressOf(), releaseAndGetSRV());
+	DirectX::CreateDDSTextureFromFileEx(Renderer::getDevice(), Renderer::getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)cubeTexture.ReleaseAndGetAddressOf(), releaseAndGetSRV());
 
 	std::cout << "[class TextureCube] " << texturePath << " create successfully!\n";
 }
@@ -76,7 +76,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	tDesc.ArraySize = 6;
 	tDesc.MipLevels = mipLevels;
-	Renderer::device->CreateTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
+	Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
 
 	const DirectX::XMVECTOR focusPoints[6] =
 	{
@@ -140,8 +140,8 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 		RenderAPI::get()->OMSetRTV({ rtv }, nullptr);
 		const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH({ 0.f,0.f,0.f }, focusPoints[i], upVectors[i]);
 		const DirectX::XMMATRIX viewProj = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
-		memcpy(buffer->map(0).pData, &viewProj, sizeof(DirectX::XMMATRIX));
-		buffer->unmap(0);
+		memcpy(buffer->map().pData, &viewProj, sizeof(DirectX::XMMATRIX));
+		buffer->unmap();
 		RenderAPI::get()->DrawCube();
 
 		delete rtv;

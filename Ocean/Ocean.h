@@ -119,7 +119,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 			{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 		};
 
-		Renderer::device->CreateInputLayout(inputLayoutDesc, ARRAYSIZE(inputLayoutDesc), SHADERDATA(oceanVShader), inputLayout.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateInputLayout(inputLayoutDesc, ARRAYSIZE(inputLayoutDesc), SHADERDATA(oceanVShader), inputLayout.ReleaseAndGetAddressOf());
 	}
 
 	{
@@ -178,8 +178,8 @@ inline Ocean::~Ocean()
 
 inline void Ocean::calculatePhillipTexture() const
 {
-	memcpy(oceanParamBuffer->map(0).pData, &param, sizeof(Param));
-	oceanParamBuffer->unmap(0);
+	memcpy(oceanParamBuffer->map().pData, &param, sizeof(Param));
+	oceanParamBuffer->unmap();
 
 	ResourceTexture* gaussTexture = new ResourceTexture(param.mapResolution, param.mapResolution, Texture2D::TextureType::Gauss);
 

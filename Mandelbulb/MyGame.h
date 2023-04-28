@@ -70,8 +70,8 @@ public:
 
 		param.radius = Math::lerp(param.radius, targetRadius, 10.f * dt);
 
-		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
-		simulationBuffer->unmap(0);
+		memcpy(simulationBuffer->map().pData, &param, sizeof(SimulationParam));
+		simulationBuffer->unmap();
 	}
 
 	void render()

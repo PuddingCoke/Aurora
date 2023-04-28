@@ -56,5 +56,5 @@ bool RenderTargetView::unbindFromRTV()
 
 void RenderTargetView::createRTV(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc)
 {
-	Renderer::device->CreateRenderTargetView(resource, &desc, renderTargetView.ReleaseAndGetAddressOf());
+	Renderer::getDevice()->CreateRenderTargetView(resource, &desc, renderTargetView.ReleaseAndGetAddressOf());
 }

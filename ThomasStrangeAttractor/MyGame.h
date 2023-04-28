@@ -58,8 +58,8 @@ public:
 
 		param.factor = 0.100f;
 
-		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
-		simulationBuffer->unmap(0);
+		memcpy(simulationBuffer->map().pData, &param, sizeof(SimulationParam));
+		simulationBuffer->unmap();
 
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 100.f);
 	}
@@ -83,8 +83,8 @@ public:
 
 		param.factor = 0.18f;
 
-		memcpy(simulationBuffer->map(0).pData, &param, sizeof(SimulationParam));
-		simulationBuffer->unmap(0);
+		memcpy(simulationBuffer->map().pData, &param, sizeof(SimulationParam));
+		simulationBuffer->unmap();
 
 		if (rotating)
 		{

@@ -71,7 +71,7 @@ public:
 				{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 			};
 
-			Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(displayVShader), inputLayout.ReleaseAndGetAddressOf());
+			Renderer::getDevice()->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(displayVShader), inputLayout.ReleaseAndGetAddressOf());
 		}
 
 

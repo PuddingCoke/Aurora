@@ -25,6 +25,7 @@
 #include"ResManager.h"
 #include"RenderAPI.h"
 #include"Utils.h"
+#include"PerframeCB.h"
 #include"A3D/TextureCube.h"
 
 #include"VideoEncoder/NvidiaEncoder.h"
@@ -71,6 +72,8 @@ private:
 	void runGame();
 
 	void runEncode();
+
+	void bindCommonCB();
 
 	Aurora();
 

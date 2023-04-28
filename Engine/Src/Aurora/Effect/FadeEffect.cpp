@@ -38,8 +38,8 @@ void FadeEffect::setFadeSpeed(const float& speed)
 {
 	fadeParam.fadeSpeed = speed;
 
-	memcpy(fadeBuffer->map(0).pData, &fadeParam, sizeof(FadeParam));
-	fadeBuffer->unmap(0);
+	memcpy(fadeBuffer->map().pData, &fadeParam, sizeof(FadeParam));
+	fadeBuffer->unmap();
 }
 
 FadeEffect::~FadeEffect()

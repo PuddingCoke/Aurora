@@ -12,7 +12,7 @@ HBAOEffect::HBAOEffect(const unsigned int& width, const unsigned int& height) :
 	customHeap.delete_ = ::operator delete;
 
 	GFSDK_SSAO_Status status;
-	status = GFSDK_SSAO_CreateContext_D3D11(Renderer::device, &pAOContext, &customHeap);
+	status = GFSDK_SSAO_CreateContext_D3D11(Renderer::getDevice(), &pAOContext, &customHeap);
 
 	if (status == GFSDK_SSAO_OK)
 	{

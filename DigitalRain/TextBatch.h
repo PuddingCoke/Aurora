@@ -77,7 +77,7 @@ public:
 			{"TEXCOORD",3,DXGI_FORMAT_R32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 		};
 
-		Renderer::device->CreateInputLayout(layoutDesc, ARRAYSIZE(layoutDesc), SHADERDATA(spriteVShader), inputLayout.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateInputLayout(layoutDesc, ARRAYSIZE(layoutDesc), SHADERDATA(spriteVShader), inputLayout.ReleaseAndGetAddressOf());
 
 		std::ifstream stream(configFilePath);
 
@@ -200,8 +200,8 @@ public:
 
 	void render()
 	{
-		memcpy(textBuffer->map(0).pData, textArray, sizeof(Text) * idx);
-		textBuffer->unmap(0);
+		memcpy(textBuffer->map().pData, textArray, sizeof(Text) * idx);
+		textBuffer->unmap();
 
 		spriteVShader->use();
 		spriteGShader->use();

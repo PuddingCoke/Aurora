@@ -89,8 +89,8 @@ public:
 
 		light.lightPos = lightPos;
 
-		memcpy(lightBuffer->map(0).pData, &light, sizeof(Light));
-		lightBuffer->unmap(0);
+		memcpy(lightBuffer->map().pData, &light, sizeof(Light));
+		lightBuffer->unmap();
 	}
 
 	void render()

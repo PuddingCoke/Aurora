@@ -27,7 +27,7 @@ public:
 
 	void operator=(const Renderer&) = delete;
 
-	static ID3D11Device5* device;
+	static ID3D11Device5* getDevice();
 
 	static ID3D11DeviceContext4* getContext();
 
@@ -44,8 +44,6 @@ private:
 	friend class RenderAPI;
 
 	static Renderer* instance;
-
-	static ID3D11DeviceContext4* context;
 
 	Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel, const UINT& extraDeviceFlags = 0);
 

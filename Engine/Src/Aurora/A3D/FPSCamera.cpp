@@ -4,7 +4,6 @@ FPSCamera::FPSCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& look
 	eye(eye), lookDir(lookDir), up(up), moveSpeed(moveSpeed)
 {
 	this->lookDir = DirectX::XMVector3Normalize(this->lookDir);
-	Camera::setView(this->eye, DirectX::XMVectorAdd(this->eye, this->lookDir), this->up);
 }
 
 void FPSCamera::applyInput(const float& dt)

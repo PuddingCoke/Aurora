@@ -15,7 +15,7 @@ PrimitiveBatch::PrimitiveBatch() :
 			{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
-		Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(lineVS), primitiveInputLayout.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(lineVS), primitiveInputLayout.ReleaseAndGetAddressOf());
 	}
 
 	//初始化circleInputLayout
@@ -27,7 +27,7 @@ PrimitiveBatch::PrimitiveBatch() :
 			{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,12,D3D11_INPUT_PER_INSTANCE_DATA,1}
 		};
 
-		Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(circleVS), circleInputLayout.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(circleVS), circleInputLayout.ReleaseAndGetAddressOf());
 	}
 
 	//初始化rcLineInputLayout
@@ -39,7 +39,7 @@ PrimitiveBatch::PrimitiveBatch() :
 			{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
-		Renderer::device->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(rcLineVS), rcLineInputLayout.ReleaseAndGetAddressOf());
+		Renderer::getDevice()->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(rcLineVS), rcLineInputLayout.ReleaseAndGetAddressOf());
 	}
 
 	setLineWidth(1.f);
@@ -141,8 +141,8 @@ void PrimitiveBatch::setLineWidth(const float& width)
 
 void PrimitiveBatch::applyChange() const
 {
-	memcpy(lineBuffer->map(0).pData, &lineParam, sizeof(LineParam));
-	lineBuffer->unmap(0);
+	memcpy(lineBuffer->map().pData, &lineParam, sizeof(LineParam));
+	lineBuffer->unmap();
 }
 
 PrimitiveBatch::LineRenderer::LineRenderer() :
@@ -174,8 +174,8 @@ void PrimitiveBatch::LineRenderer::end()
 
 void PrimitiveBatch::LineRenderer::updateVerticesData() const
 {
-	memcpy(vertexBuffer->map(0).pData, vertices, sizeof(float) * idx);
-	vertexBuffer->unmap(0);
+	memcpy(vertexBuffer->map().pData, vertices, sizeof(float) * idx);
+	vertexBuffer->unmap();
 }
 
 void PrimitiveBatch::LineRenderer::addLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& r, const float& g, const float& b, const float& a)
@@ -224,8 +224,8 @@ void PrimitiveBatch::CircleRenderer::end()
 
 void PrimitiveBatch::CircleRenderer::updateVerticesData() const
 {
-	memcpy(vertexBuffer->map(0).pData, vertices, sizeof(float) * idx);
-	vertexBuffer->unmap(0);
+	memcpy(vertexBuffer->map().pData, vertices, sizeof(float) * idx);
+	vertexBuffer->unmap();
 }
 
 void PrimitiveBatch::CircleRenderer::addCircle(const float& x, const float& y, const float& length, const float& r, const float& g, const float& b, const float& a)
@@ -273,8 +273,8 @@ void PrimitiveBatch::RCLineRenderer::end()
 
 void PrimitiveBatch::RCLineRenderer::updateVerticesData() const
 {
-	memcpy(vertexBuffer->map(0).pData, vertices, sizeof(float) * idx);
-	vertexBuffer->unmap(0);
+	memcpy(vertexBuffer->map().pData, vertices, sizeof(float) * idx);
+	vertexBuffer->unmap();
 }
 
 void PrimitiveBatch::RCLineRenderer::addRoundCapLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& width, const float& r, const float& g, const float& b, const float& a)

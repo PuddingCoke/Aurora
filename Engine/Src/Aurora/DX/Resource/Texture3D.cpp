@@ -17,5 +17,5 @@ Texture3D::Texture3D(const UINT& width, const UINT& height, const UINT& depth, c
 	desc.MipLevels = mipLevels;
 	desc.Usage = D3D11_USAGE_DEFAULT;
 
-	Renderer::device->CreateTexture3D(&desc, nullptr, texture.ReleaseAndGetAddressOf());
+	Renderer::getDevice()->CreateTexture3D(&desc, nullptr, texture.ReleaseAndGetAddressOf());
 }

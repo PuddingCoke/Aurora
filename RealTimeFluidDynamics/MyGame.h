@@ -113,7 +113,7 @@ public:
 			blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 			blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-			Renderer::device->CreateBlendState(&blendStateDesc, blendState.ReleaseAndGetAddressOf());
+			Renderer::getDevice()->CreateBlendState(&blendStateDesc, blendState.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -200,8 +200,8 @@ public:
 
 	void splat()
 	{
-		memcpy(simulationDeltaBuffer->map(0).pData, &simulationDelta, sizeof(SimulationDelta));
-		simulationDeltaBuffer->unmap(0);
+		memcpy(simulationDeltaBuffer->map().pData, &simulationDelta, sizeof(SimulationDelta));
+		simulationDeltaBuffer->unmap();
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
@@ -308,8 +308,8 @@ public:
 
 	void update(const float& dt) override
 	{
-		memcpy(simulationParamBuffer->map(0).pData, &simulationParam, sizeof(SimulationParam));
-		simulationParamBuffer->unmap(0);
+		memcpy(simulationParamBuffer->map().pData, &simulationParam, sizeof(SimulationParam));
+		simulationParamBuffer->unmap();
 
 		//物理模拟
 
