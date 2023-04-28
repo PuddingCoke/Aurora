@@ -6,4 +6,4 @@
 
 2.默认状态是以60帧渲染60秒，你可以通过Graphics::setRecordConfig这个函数来修改。
 
-PS：INTEL的QSV还有AMD的AMF应该有相关的API来驱动显卡编码。
+PS：INTEL的QSV还有AMD的AMF应该有相关的API来驱动显卡编码，最近在学习D3D12这个引擎以后可能不会更新了。
