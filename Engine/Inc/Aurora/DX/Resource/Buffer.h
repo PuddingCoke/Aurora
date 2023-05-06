@@ -3,10 +3,11 @@
 #ifndef _BUFFER_H_
 #define _BUFFER_H_
 
-#include<iostream>
 #include<Aurora/Renderer.h>
 
-class Buffer
+#include"Resource.h"
+
+class Buffer:public Resource
 {
 public:
 
@@ -19,13 +20,15 @@ public:
 
 	virtual ~Buffer();
 
-	ID3D11Buffer* getBuffer() const;
-
 	void updateSubresource(const void* const data, const unsigned int& subresource) const;
 
 	D3D11_MAPPED_SUBRESOURCE map(const D3D11_MAP& mapType = D3D11_MAP_WRITE_DISCARD, const unsigned int& mapFlags = 0) const;
 
 	void unmap() const;
+
+	ID3D11Resource* getResource() const override;
+
+	ID3D11Buffer* getBuffer() const;
 
 protected:
 

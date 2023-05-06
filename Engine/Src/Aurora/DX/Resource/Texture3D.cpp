@@ -19,3 +19,13 @@ Texture3D::Texture3D(const UINT& width, const UINT& height, const UINT& depth, c
 
 	Renderer::getDevice()->CreateTexture3D(&desc, nullptr, texture.ReleaseAndGetAddressOf());
 }
+
+ID3D11Resource* Texture3D::getResource() const
+{
+	return texture.Get();
+}
+
+ID3D11Texture3D* Texture3D::getTexture3D() const
+{
+	return texture.Get();
+}

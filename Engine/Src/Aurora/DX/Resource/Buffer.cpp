@@ -56,6 +56,11 @@ void Buffer::unmap() const
 	Renderer::getContext()->Unmap(buffer.Get(), 0);
 }
 
+ID3D11Resource* Buffer::getResource() const
+{
+	return buffer.Get();
+}
+
 Buffer::Buffer()
 {
 }

@@ -46,7 +46,7 @@ public:
 			}
 			else
 			{
-				colors[i] = DirectX::XMFLOAT4(radius * 0.4f + 0.1f, 1.f, 1.f, 1.f);
+				colors[i] = DirectX::XMFLOAT4(1.f, 1.f, radius * 0.4f + 0.1f, 1.f);
 			}
 		}
 

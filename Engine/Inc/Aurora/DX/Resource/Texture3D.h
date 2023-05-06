@@ -5,7 +5,9 @@
 
 #include<Aurora/Renderer.h>
 
-class Texture3D
+#include"Resource.h"
+
+class Texture3D :public Resource
 {
 public:
 
@@ -24,6 +26,10 @@ public:
 	const UINT height;
 
 	const UINT depth;
+
+	ID3D11Resource* getResource() const override;
+
+	ID3D11Texture3D* getTexture3D() const;
 
 protected:
 

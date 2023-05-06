@@ -15,7 +15,7 @@ void WallpaperHelper::getSystemResolution(UINT& width, UINT& height)
 
 	UINT dpi = GetDpiForWindow(GetDesktopWindow());
 
-	std::cout << "[class WallpaperHelper] system dpi " << dpi << "\n"; 
+	std::cout << "[class WallpaperHelper] system dpi " << dpi << "\n";
 
 	width = width * dpi / 96u;
 	height = height * dpi / 96u;
@@ -45,7 +45,7 @@ HWND WallpaperHelper::getWallpaperWindow()
 
 void WallpaperHelper::registerHOOK()
 {
-	auto mouseProc = [](int nCode, WPARAM wParam, LPARAM lParam)
+	static LRESULT(*mouseProc)(int nCode, WPARAM wParam, LPARAM lParam) = [](int nCode, WPARAM wParam, LPARAM lParam)
 	{
 		return MouseHookProc(nCode, wParam, lParam);
 	};
@@ -58,7 +58,7 @@ void WallpaperHelper::unregisterHOOK()
 	UnhookWindowsHookEx(mouseHook);
 }
 
-LRESULT __stdcall WallpaperHelper::MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WallpaperHelper::MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if (nCode == HC_ACTION)
 	{

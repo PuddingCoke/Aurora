@@ -16,7 +16,7 @@ bool NvidiaEncoder::encode()
 
 	registerResource.resourceType = NV_ENC_INPUT_RESOURCE_TYPE_DIRECTX;
 
-	registerResource.resourceToRegister = nv12Texture->getTexture2D();
+	registerResource.resourceToRegister = nv12Texture->getResource();
 
 	registerResource.width = width;
 
@@ -202,7 +202,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 
 	D3D11_VIDEO_PROCESSOR_OUTPUT_VIEW_DESC outputViewDesc = { D3D11_VPOV_DIMENSION_TEXTURE2D };
 
-	videoDevice->CreateVideoProcessorOutputView(nv12Texture->getTexture2D(), videoProcessEnumerator.Get(), &outputViewDesc, outputView.ReleaseAndGetAddressOf());
+	videoDevice->CreateVideoProcessorOutputView(nv12Texture->getResource(), videoProcessEnumerator.Get(), &outputViewDesc, outputView.ReleaseAndGetAddressOf());
 
 	std::cout << "[class NvidiaEncoder] render at " << width << " x " << height << "\n";
 	std::cout << "[class NvidiaEncoder] frameRate " << frameRate << "\n";

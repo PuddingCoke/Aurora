@@ -6,7 +6,8 @@
 //windows.h中也定义了min函数导致无法使用assimp https://github.com/assimp/assimp/issues/2271
 #define NOMINMAX
 
-#include<d3d11_4.h>
+#include"Window/Win32Form.h"
+
 #include<chrono>
 #include<iostream>
 #include<windowsx.h>
@@ -55,7 +56,7 @@ private:
 
 	static Aurora instance;
 
-	HWND hwnd;
+	Win32Form* winform;
 
 	Game* game;
 
@@ -65,15 +66,15 @@ private:
 
 	bool enableImGui;
 
-	ComPtr<ID3D11Texture2D> encodeTexture;
-
-	HRESULT iniWindow(const std::wstring& title, const UINT& width, const UINT& height);
+	Texture2D* encodeTexture;
 
 	void runGame();
 
 	void runEncode();
 
 	void bindCommonCB();
+	
+	void destroy();
 
 	Aurora();
 

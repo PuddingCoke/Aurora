@@ -210,6 +210,15 @@
     <ClInclude Include="Inc\Aurora\PerframeCB.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\DX\Resource\Resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\Window\Win32Form.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\ConstantBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -396,6 +405,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\PerframeCB.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\Window\Win32Form.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\ConstantBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

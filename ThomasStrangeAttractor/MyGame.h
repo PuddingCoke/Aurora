@@ -50,6 +50,7 @@ public:
 		camera.registerEvent();
 
 		bloomEffect.setExposure(0.6f);
+		bloomEffect.setThreshold(1.0f);
 		bloomEffect.applyChange();
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
@@ -81,7 +82,7 @@ public:
 	{
 		//param.factor = 0.1f + 0.01f * sinf(Graphics::getSTime());
 
-		param.factor = 0.18f;
+		param.factor = 0.100f;
 
 		memcpy(simulationBuffer->map().pData, &param, sizeof(SimulationParam));
 		simulationBuffer->unmap();
@@ -91,14 +92,14 @@ public:
 			camera.applyInput(dt);
 			camera.rotateX(dt);
 		}
-
-		RenderAPI::get()->CSSetConstantBuffer({ simulationBuffer }, 1);
-
-		attractor.update(dt);
 	}
 
 	void render() override
 	{
+		RenderAPI::get()->CSSetConstantBuffer({ simulationBuffer }, 1);
+
+		attractor.update(Graphics::getDeltaTime());
+
 		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 		renderTexture->clearRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ renderTexture }, depthTexture);

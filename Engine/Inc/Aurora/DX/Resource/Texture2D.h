@@ -16,7 +16,9 @@
 #include<stb_image/stb_image.h>
 #include<DDSTextureLoader/DDSTextureLoader11.h>
 
-class Texture2D
+#include"Resource.h"
+
+class Texture2D :public Resource
 {
 public:
 
@@ -51,6 +53,8 @@ public:
 	const UINT& getMipLevels() const;
 
 	const UINT& getArraySize() const;
+
+	ID3D11Resource* getResource() const override;
 
 	ID3D11Texture2D* getTexture2D() const;
 
