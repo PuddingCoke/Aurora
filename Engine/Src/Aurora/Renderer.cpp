@@ -43,7 +43,7 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		if (enableDebug)
 		{
 			std::cout << "[class Renderer] enable debug!\n";
-			deviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
+			deviceFlag |= D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
 		}
 		else
 		{
@@ -55,9 +55,6 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 
 		device11.As(&device5);
 		context11.As(&context4);
-
-		//device11->QueryInterface(IID_ID3D11Device5, (void**)device5.ReleaseAndGetAddressOf());
-		//context11->QueryInterface(IID_ID3D11DeviceContext4, (void**)context4.ReleaseAndGetAddressOf());
 
 		ComPtr<IDXGIDevice> dxgiDevice11;
 		device11.As(&dxgiDevice11);

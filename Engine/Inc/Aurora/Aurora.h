@@ -73,7 +73,7 @@ private:
 	void runEncode();
 
 	void bindCommonCB();
-	
+
 	void destroy();
 
 	Aurora();

@@ -90,7 +90,6 @@ int Aurora::iniEngine(const Configuration& config)
 		WallpaperHelper::registerHOOK();
 		HWND bg = WallpaperHelper::getWallpaperWindow();
 		SetParent(winform->getHWND(), bg);
-		MoveWindow(winform->getHWND(), 0, 0, screenWidth, screenHeight, 0);
 	}
 	else if (usage == Configuration::EngineUsage::AnimationRender)
 	{

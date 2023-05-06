@@ -19,7 +19,7 @@ public:
 
 	float targetRadius;
 
-	DoubleRTV* swapTexture;
+	RenderTexture* renderTexture;
 
 	struct CameraParam
 	{
@@ -39,7 +39,7 @@ public:
 	MyGame() :
 		rayTracingPS(new Shader(Utils::getRootFolder() + "RayTracingPS.cso", ShaderType::Pixel)),
 		displayPS(new Shader("DisplayPS.hlsl", ShaderType::Pixel)),
-		swapTexture(new DoubleRTV(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT)),
+		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_UNORM)),
 		cameraParam{ 0.25f,0.0f,12.0f,0.1f },
 		temporalAccumulationParam{ 0u,0.f,{} }
 	{
@@ -60,6 +60,8 @@ public:
 				targetRadius -= Mouse::getWheelDelta() * 1.f;
 			});
 
+		//prev*(1.0-1.0/frameCount)+cur*(1.0/frameCount)
+
 		cameraParamBuffer = new Buffer(sizeof(CameraParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &cameraParam, D3D11_CPU_ACCESS_WRITE);
 		temporalAccumulationBuffer = new Buffer(sizeof(TemporalAccumulationParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
 	}
@@ -70,7 +72,7 @@ public:
 		delete displayPS;
 		delete cameraParamBuffer;
 		delete temporalAccumulationBuffer;
-		delete swapTexture;
+		delete renderTexture;
 	}
 
 	void imGUICall() override
@@ -89,7 +91,7 @@ public:
 	void render()
 	{
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(nullptr);
+		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 
 		RenderAPI::get()->PSSetConstantBuffer({ cameraParamBuffer,temporalAccumulationBuffer }, 1);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
@@ -97,10 +99,14 @@ public:
 		RenderAPI::fullScreenVS->use();
 
 		temporalAccumulationParam.frameCount = 0;
-		swapTexture->read()->clearRTV(DirectX::Colors::Black);
-		swapTexture->write()->clearRTV(DirectX::Colors::Black);
 
-		for (unsigned int i = 0; i < 20; i++)
+		renderTexture->clearRTV(DirectX::Colors::Black);
+
+		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
+
+		rayTracingPS->use();
+
+		for (unsigned int i = 0; i < 50; i++)
 		{
 			temporalAccumulationParam.frameCount++;
 			temporalAccumulationParam.randomSeed = Random::Float() * 50.f;
@@ -108,19 +114,15 @@ public:
 			memcpy(temporalAccumulationBuffer->map().pData, &temporalAccumulationParam, sizeof(TemporalAccumulationParam));
 			temporalAccumulationBuffer->unmap();
 
-			RenderAPI::get()->OMSetRTV({ swapTexture->write() }, nullptr);
-			RenderAPI::get()->PSSetSRV({ swapTexture->read() }, 0);
-
-			rayTracingPS->use();
-
 			RenderAPI::get()->DrawQuad();
-			swapTexture->swap();
 		}
+
+		RenderAPI::get()->OMSetBlendState(nullptr);
 
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->PSSetSRV({ swapTexture->read() }, 0);
+		RenderAPI::get()->PSSetSRV({ renderTexture }, 0);
 
 		displayPS->use();
 

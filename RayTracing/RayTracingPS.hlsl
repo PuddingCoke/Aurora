@@ -333,10 +333,5 @@ float4 main(float2 texCoord : TEXCOORD, float4 pixelCoord : SV_POSITION) : SV_TA
     
     Ray ray = CreateRay(rayOrigin, rayDir);
     
-    float3 currentColor = Radiance(ray);
-    float3 historyColor = historyTex.Sample(linearSampler, texCoord).rgb;
-    
-    float3 outputColor = lerp(historyColor, currentColor, 1.0 / float(frameCount));
-    
-    return float4(outputColor, 1.0);
+    return float4(Radiance(ray), 1.0 / float(frameCount));
 }
