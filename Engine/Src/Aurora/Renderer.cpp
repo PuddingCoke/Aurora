@@ -43,7 +43,7 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		if (enableDebug)
 		{
 			std::cout << "[class Renderer] enable debug!\n";
-			deviceFlag |= D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
+			deviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
 		}
 		else
 		{

@@ -34,136 +34,11 @@ int Aurora::iniEngine(const Configuration& config)
 		screenHeight = config.height;
 	}
 
-	{
-		static LRESULT(*windowCallBack)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = nullptr;
+	iniWindow(config.title, screenWidth, screenHeight);
 
-		DWORD windowStyle = normalWndStyle;
+	iniRenderer(config.msaaLevel, screenWidth, screenHeight);
 
-		UINT startX = 0;
-
-		UINT startY = 0;
-
-		switch (usage)
-		{
-		default:
-		case Configuration::EngineUsage::Normal:
-			std::cout << "[class Aurora] usage normal\n";
-			windowStyle = normalWndStyle;
-			windowCallBack = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
-			{
-				return Aurora::get().WindowProc(hwnd, msg, wParam, lParam);
-			};
-			break;
-
-		case Configuration::EngineUsage::Wallpaper:
-			std::cout << "[class Aurora] usage wallpaper\n";
-			windowStyle = wallpaperWndStyle;
-			windowCallBack = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
-			{
-				return Aurora::get().WallpaperProc(hwnd, msg, wParam, lParam);
-			};
-			break;
-
-		case Configuration::EngineUsage::AnimationRender:
-			std::cout << "[class Aurora] usage animation render\n";
-			windowStyle = normalWndStyle;
-			windowCallBack = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
-			{
-				return Aurora::get().WallpaperProc(hwnd, msg, wParam, lParam);
-			};
-			break;
-		}
-
-
-		if (usage != Configuration::EngineUsage::Wallpaper)
-		{
-			startX = 100;
-			startY = 100;
-		}
-
-		winform = new Win32Form(config.title, startX, startY, screenWidth, screenHeight, windowStyle, windowCallBack);
-	}
-
-	//根据EngineUsage稍微调整一下窗口
-	if (usage == Configuration::EngineUsage::Wallpaper)
-	{
-		WallpaperHelper::registerHOOK();
-		HWND bg = WallpaperHelper::getWallpaperWindow();
-		SetParent(winform->getHWND(), bg);
-	}
-	else if (usage == Configuration::EngineUsage::AnimationRender)
-	{
-		ShowWindow(winform->getHWND(), SW_HIDE);
-	}
-
-	if (config.usage == Configuration::EngineUsage::AnimationRender)
-	{
-		new Renderer(winform->getHWND(), screenWidth, screenHeight, enableDebug, config.msaaLevel, D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
-	}
-	else
-	{
-		new Renderer(winform->getHWND(), screenWidth, screenHeight, enableDebug, config.msaaLevel);
-	}
-
-	new States();
-
-	PerframeCB::ini();
-
-	new Graphics(screenWidth, screenHeight, config.msaaLevel);
-
-	new Camera();
-
-	if (usage == Configuration::EngineUsage::AnimationRender)
-	{
-		encodeTexture = new Texture2D(screenWidth, screenHeight, 1, 1, DXGI_FORMAT_B8G8R8A8_UNORM, D3D11_BIND_RENDER_TARGET, 0);
-
-		new RenderAPI(Graphics::getMSAALevel(), encodeTexture->getTexture2D());
-	}
-	else
-	{
-		new RenderAPI(Graphics::getMSAALevel(), Renderer::instance->backBuffer.Get());
-	}
-
-	TextureCube::iniShader();
-
-	new ResManager();
-
-	if (enableDebug)
-	{
-		Renderer::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)Renderer::instance->d3dDebug.ReleaseAndGetAddressOf());
-	}
-
-	//初始化一些默认状态，比如Viewport、BlendState等等 
-	switch (config.cameraType)
-	{
-	default:
-	case Configuration::CameraType::Orthogonal:
-		std::cout << "[class Aurora] orthogonal camera\n";
-		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::getWidth(), 0, (float)Graphics::getHeight(), -1.f, 1.f));
-		break;
-	case Configuration::CameraType::Perspective:
-		std::cout << "[class Aurora] perspective camera\n";
-		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
-		break;
-	}
-
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(winform->getHWND());
-	ImGui_ImplDX11_Init(Renderer::getDevice(), Renderer::getContext());
-
-	RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
-
-	RenderAPI::get()->OMSetBlendState(States::defBlendState);
-
-	RenderAPI::get()->RSSetState(States::rasterCullBack);
-
-	RenderAPI::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
-
-	RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+	iniStates(config);
 
 	return 0;
 }
@@ -295,13 +170,16 @@ void Aurora::runGame()
 
 	while (winform->pollEvents())
 	{
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
+		if (enableImGui)
+		{
+			ImGui_ImplDX11_NewFrame();
+			ImGui_ImplWin32_NewFrame();
+			ImGui::NewFrame();
 
-		ImGui::Begin("Debug Window");
-		ImGui::Text("FrameTime %.8f", ImGui::GetIO().DeltaTime * 1000.f);
-		ImGui::Text("FrameRate %.1f", ImGui::GetIO().Framerate);
+			ImGui::Begin("Debug Window");
+			ImGui::Text("FrameTime %.8f", ImGui::GetIO().DeltaTime * 1000.f);
+			ImGui::Text("FrameRate %.1f", ImGui::GetIO().Framerate);
+		}
 
 		const std::chrono::steady_clock::time_point timeStart = timer.now();
 
@@ -309,7 +187,10 @@ void Aurora::runGame()
 
 		game->update(Graphics::getDeltaTime());
 
-		game->imGUICall();
+		if (enableImGui)
+		{
+			game->imGUICall();
+		}
 
 		Graphics::instance->updateDeltaTimeBuffer();
 
@@ -319,11 +200,11 @@ void Aurora::runGame()
 
 		game->render();
 
-		ImGui::End();
-		ImGui::Render();
-
 		if (enableImGui)
 		{
+			ImGui::End();
+			ImGui::Render();
+
 			RenderAPI::get()->OMSetDefRTV(nullptr);
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		}
@@ -420,9 +301,12 @@ void Aurora::destroy()
 
 	PerframeCB::release();
 
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+	if (enableImGui)
+	{
+		ImGui_ImplDX11_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
+	}
 
 	if (enableDebug)
 	{
@@ -446,4 +330,144 @@ Aurora::Aurora() :
 	winform(nullptr), game(nullptr), enableDebug(false), enableImGui(false), usage(Configuration::EngineUsage::Normal)
 {
 
+}
+
+void Aurora::iniWindow(const std::wstring& title, const UINT& screenWidth, const UINT& screenHeight)
+{
+	static LRESULT(*windowCallBack)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = nullptr;
+
+	DWORD windowStyle = normalWndStyle;
+
+	UINT startX = 0;
+
+	UINT startY = 0;
+
+	switch (usage)
+	{
+	default:
+	case Configuration::EngineUsage::Normal:
+		std::cout << "[class Aurora] usage normal\n";
+		windowStyle = normalWndStyle;
+		windowCallBack = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
+		{
+			return Aurora::get().WindowProc(hwnd, msg, wParam, lParam);
+		};
+		break;
+
+	case Configuration::EngineUsage::Wallpaper:
+		std::cout << "[class Aurora] usage wallpaper\n";
+		windowStyle = wallpaperWndStyle;
+		windowCallBack = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
+		{
+			return Aurora::get().WallpaperProc(hwnd, msg, wParam, lParam);
+		};
+		break;
+
+	case Configuration::EngineUsage::AnimationRender:
+		std::cout << "[class Aurora] usage animation render\n";
+		windowStyle = normalWndStyle;
+		windowCallBack = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
+		{
+			return Aurora::get().WallpaperProc(hwnd, msg, wParam, lParam);
+		};
+		break;
+	}
+
+
+	if (usage != Configuration::EngineUsage::Wallpaper)
+	{
+		startX = 100;
+		startY = 100;
+	}
+
+	winform = new Win32Form(title, startX, startY, screenWidth, screenHeight, windowStyle, windowCallBack);
+
+	if (usage == Configuration::EngineUsage::Wallpaper)
+	{
+		WallpaperHelper::registerHOOK();
+		HWND parentHWND = WallpaperHelper::getWallpaperWindow();
+		SetParent(winform->getHWND(), parentHWND);
+	}
+	else if (usage == Configuration::EngineUsage::AnimationRender)
+	{
+		ShowWindow(winform->getHWND(), SW_HIDE);
+	}
+}
+
+void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const UINT& screenHeight)
+{
+	if (usage == Configuration::EngineUsage::AnimationRender)
+	{
+		new Renderer(winform->getHWND(), screenWidth, screenHeight, enableDebug, msaaLevel, D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
+	}
+	else
+	{
+		new Renderer(winform->getHWND(), screenWidth, screenHeight, enableDebug, msaaLevel);
+	}
+
+	new States();
+
+	PerframeCB::ini();
+
+	new Graphics(screenWidth, screenHeight, msaaLevel);
+
+	new Camera();
+
+	if (usage == Configuration::EngineUsage::AnimationRender)
+	{
+		encodeTexture = new Texture2D(screenWidth, screenHeight, 1, 1, DXGI_FORMAT_B8G8R8A8_UNORM, D3D11_BIND_RENDER_TARGET, 0);
+
+		new RenderAPI(Graphics::getMSAALevel(), encodeTexture->getTexture2D());
+	}
+	else
+	{
+		new RenderAPI(Graphics::getMSAALevel(), Renderer::instance->backBuffer.Get());
+	}
+
+	TextureCube::iniShader();
+
+	new ResManager();
+
+	if (enableDebug)
+	{
+		Renderer::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)Renderer::instance->d3dDebug.ReleaseAndGetAddressOf());
+	}
+
+	if (enableImGui)
+	{
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+		ImGui::StyleColorsDark();
+		ImGui_ImplWin32_Init(winform->getHWND());
+		ImGui_ImplDX11_Init(Renderer::getDevice(), Renderer::getContext());
+	}
+}
+
+void Aurora::iniStates(const Configuration& config)
+{
+	//初始化一些默认状态，比如Viewport、BlendState等等 
+	switch (config.cameraType)
+	{
+	default:
+	case Configuration::CameraType::Orthogonal:
+		std::cout << "[class Aurora] orthogonal camera\n";
+		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::getWidth(), 0, (float)Graphics::getHeight(), -1.f, 1.f));
+		break;
+	case Configuration::CameraType::Perspective:
+		std::cout << "[class Aurora] perspective camera\n";
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
+		break;
+	}
+
+	RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+
+	RenderAPI::get()->OMSetBlendState(States::defBlendState);
+
+	RenderAPI::get()->RSSetState(States::rasterCullBack);
+
+	RenderAPI::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
+
+	RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 }

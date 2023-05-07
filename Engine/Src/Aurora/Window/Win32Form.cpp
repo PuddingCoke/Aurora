@@ -1,7 +1,7 @@
 #include<Aurora/Window/Win32Form.h>
 
-Win32Form::Win32Form(const std::wstring& title, const UINT& startX, const UINT& startY, const UINT& width, const UINT& height, const DWORD& windowStyle, LRESULT(*windowCallBack)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)):
-	hwnd(nullptr),msg{}
+Win32Form::Win32Form(const std::wstring& title, const UINT& startX, const UINT& startY, const UINT& width, const UINT& height, const DWORD& windowStyle, LRESULT(*windowCallBack)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)) :
+	hwnd(nullptr), msg{}
 {
 	const HINSTANCE hInstance = GetModuleHandle(0);
 

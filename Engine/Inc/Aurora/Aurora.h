@@ -78,6 +78,12 @@ private:
 
 	Aurora();
 
+	void iniWindow(const std::wstring& title,const UINT& screenWidth, const UINT& screenHeight);
+
+	void iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const UINT& screenHeight);
+
+	void iniStates(const Configuration& config);
+
 	static constexpr DWORD normalWndStyle = WS_CAPTION | WS_SYSMENU;
 
 	static constexpr DWORD wallpaperWndStyle = WS_POPUP;
