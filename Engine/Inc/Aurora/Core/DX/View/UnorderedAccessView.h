@@ -43,7 +43,7 @@ public:
 
 private:
 
-	friend class ResManager;
+	friend class RenderAPI;
 
 	static UnorderedAccessView* curCUAV[D3D11_PS_CS_UAV_REGISTER_COUNT];
 

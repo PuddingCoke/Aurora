@@ -184,7 +184,6 @@
     <ClInclude Include="Inc\Aurora\Core\Resource\PerframeCB.h" />
     <ClInclude Include="Inc\Aurora\Core\Resource\RCTexture.h" />
     <ClInclude Include="Inc\Aurora\Core\RenderAPI.h" />
-    <ClInclude Include="Inc\Aurora\Core\ResManager.h" />
     <ClInclude Include="Inc\Aurora\Core\Resource\ResDepthTexture.h" />
     <ClInclude Include="Inc\Aurora\Core\Resource\ResourceTexture.h" />
     <ClInclude Include="Inc\Aurora\Core\Resource\StructuredBuffer.h" />
@@ -245,7 +244,6 @@
     <ClCompile Include="Src\Aurora\Core\Effect\MotionBlurEffect.cpp" />
     <ClCompile Include="Src\Aurora\Core\Resource\PerframeCB.cpp" />
     <ClCompile Include="Src\Aurora\Core\RenderAPI.cpp" />
-    <ClCompile Include="Src\Aurora\Core\ResManager.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\ShaderResourceView.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\UnorderedAccessView.cpp" />
     <ClCompile Include="Src\Aurora\Core\Renderer.cpp" />

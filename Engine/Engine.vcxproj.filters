@@ -129,9 +129,6 @@
     <ClInclude Include="Inc\Aurora\Core\DX\View\Composition\RUSView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Core\ResManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\Core\RenderAPI.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -315,9 +312,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Core\DX\View\UnorderedAccessView.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\Core\ResManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Core\DX\View\RenderTargetView.cpp">

@@ -5,10 +5,16 @@
 
 #include<DirectXColors.h>
 
-#include"ResManager.h"
 #include"Shader.h"
 #include"States.h"
 #include"Graphics.h"
+
+#include"DX/View/RenderTargetView.h"
+#include"DX/View/UnorderedAccessView.h"
+#include"DX/View/ShaderResourceView.h"
+#include"DX/View/DepthStencilView.h"
+
+#include"DX/Resource/Buffer.h"
 
 #include"../CompiledShaders/FullScreenVS.h"
 #include"../CompiledShaders/FullScreenPS.h"
@@ -26,55 +32,55 @@ public:
 
 	void operator=(const RenderAPI&) = delete;
 
-	void OMSetDefRTV(DepthStencilView* const dsv) const;
-
 	void ClearDefRTV(const float* const color) const;
 
-	void OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, DepthStencilView* const dsv) const;
+	void OMSetDefRTV(DepthStencilView* const dsv);
 
-	void OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs) const;
+	void OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, DepthStencilView* const dsv);
 
-	void VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot) const;
+	void OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs);
 
-	void HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot) const;
+	void VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
 
-	void DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot) const;
+	void HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
 
-	void GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot) const;
+	void DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
 
-	void PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot) const;
+	void GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
 
-	void CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot) const;
+	void PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
 
-	void CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const unsigned int& slot) const;
+	void CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
 
-	void VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const;
+	void CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const unsigned int& slot);
 
-	void HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const;
+	void VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const;
+	void HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const;
+	void DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const;
+	void GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot) const;
+	void PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
+	void CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 
-	void HSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
+	void VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
 
-	void DSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
+	void HSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
 
-	void GSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
+	void DSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
 
-	void PSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
+	void GSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
 
-	void CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot) const;
+	void PSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
+
+	void CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
+
+	void IASetVertexBuffer(const unsigned int& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets);
 
 	void IASetInputLayout(ID3D11InputLayout* const layout) const;
-
-	void IASetVertexBuffer(const unsigned int& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets) const;
 
 	void IASetIndexBuffer(Buffer* const buffer, const DXGI_FORMAT& format, const UINT& offset) const;
 
@@ -161,6 +167,22 @@ private:
 		}
 
 	}*defRenderTargetView;
+
+	ID3D11RenderTargetView* tempRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
+
+	ID3D11UnorderedAccessView* tempUAV[D3D11_PS_CS_UAV_REGISTER_COUNT];
+
+	ID3D11ShaderResourceView* tempSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT];
+
+	ID3D11Buffer* tempBuffer[D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT];
+
+	UINT tempStartConstants[D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT];
+
+	UINT tempNumConstants[D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT];
+
+	ID3D11SamplerState* tempSampler[D3D11_COMMONSHADER_SAMPLER_REGISTER_COUNT];
+
+	UINT tempStrides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT], tempOffsets[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
 };
 

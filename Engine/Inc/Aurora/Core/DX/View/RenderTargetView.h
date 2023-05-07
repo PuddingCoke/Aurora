@@ -37,7 +37,7 @@ public:
 
 private:
 
-	friend class ResManager;
+	friend class RenderAPI;
 
 	static RenderTargetView* curRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
 

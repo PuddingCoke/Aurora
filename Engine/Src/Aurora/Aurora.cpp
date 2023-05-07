@@ -293,8 +293,6 @@ void Aurora::destroy()
 
 	delete Camera::instance;
 
-	delete ResManager::instance;
-
 	delete RenderAPI::instance;
 
 	TextureCube::releaseShader();
@@ -425,8 +423,6 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 	}
 
 	TextureCube::iniShader();
-
-	new ResManager();
 
 	if (enableDebug)
 	{

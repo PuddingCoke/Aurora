@@ -33,9 +33,7 @@ public:
 
 private:
 
-	friend class ResManager;
-
-	friend class CascadedShadowMap;
+	friend class RenderAPI;
 
 	static ShaderResourceView* curVSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT];
 

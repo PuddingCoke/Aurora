@@ -44,7 +44,7 @@ protected:
 
 private:
 
-	friend class ResManager;
+	friend class RenderAPI;
 
 	static Buffer* curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 

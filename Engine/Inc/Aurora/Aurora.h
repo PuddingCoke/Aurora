@@ -18,7 +18,6 @@
 
 #include<Aurora/Core/Camera.h>
 #include<Aurora/Core/Graphics.h>
-#include<Aurora/Core/ResManager.h>
 #include<Aurora/Core/States.h>
 #include<Aurora/Core/RenderAPI.h>
 #include<Aurora/Configuration.h>
