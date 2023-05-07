@@ -327,7 +327,7 @@ void Aurora::destroy()
 }
 
 Aurora::Aurora() :
-	winform(nullptr), game(nullptr), enableDebug(false), enableImGui(false), usage(Configuration::EngineUsage::Normal)
+	encodeTexture(nullptr), winform(nullptr), game(nullptr), enableDebug(false), enableImGui(false), usage(Configuration::EngineUsage::Normal)
 {
 
 }

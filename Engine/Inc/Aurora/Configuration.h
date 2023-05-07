@@ -3,9 +3,6 @@
 #ifndef _CONFIGURATION_H_
 #define _CONFIGURATION_H_
 
-#define NOMINMAX
-
-#include<Windows.h>
 #include<string>
 
 class Configuration

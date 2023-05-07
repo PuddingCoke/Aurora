@@ -7,8 +7,8 @@
 #include<chrono>
 
 #include<NvEnc/nvEncodeAPI.h>
-#include<Aurora/Renderer.h>
-#include<Aurora/DX/Resource/Texture2D.h>
+#include<Aurora/Core/Renderer.h>
+#include<Aurora/Core/DX/Resource/Texture2D.h>
 
 extern "C"
 {

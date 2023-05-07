@@ -21,142 +21,142 @@
     <ClInclude Include="Inc\Aurora\Configuration.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Event.h">
+    <ClInclude Include="Inc\Aurora\Input\Event.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Game.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Graphics.h">
+    <ClInclude Include="Inc\Aurora\Core\Graphics.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Keyboard.h">
+    <ClInclude Include="Inc\Aurora\Input\Keyboard.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Mouse.h">
+    <ClInclude Include="Inc\Aurora\Input\Mouse.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PrimitiveBatch.h">
+    <ClInclude Include="Inc\Aurora\Core\PrimitiveBatch.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Random.h">
+    <ClInclude Include="Inc\Aurora\Utils\Random.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Shader.h">
+    <ClInclude Include="Inc\Aurora\Core\Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\Resource\Texture2D.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\Resource\Texture2D.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Timer.h">
+    <ClInclude Include="Inc\Aurora\Utils\Timer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Utils.h">
+    <ClInclude Include="Inc\Aurora\Utils\Utils.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\States.h">
+    <ClInclude Include="Inc\Aurora\Core\States.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\RenderTexture.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\RenderTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DoubleRTV.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\DoubleRTV.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Color.h">
+    <ClInclude Include="Inc\Aurora\Utils\Color.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Math.h">
+    <ClInclude Include="Inc\Aurora\Utils\Math.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\ParticleSystem.h">
+    <ClInclude Include="Inc\Aurora\Core\ParticleSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\View\DepthStencilView.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\View\DepthStencilView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\A3D\TextureCube.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\TextureCube.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Wallpaper\WallpaperHelper.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Camera.h">
+    <ClInclude Include="Inc\Aurora\Core\Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Renderer.h">
+    <ClInclude Include="Inc\Aurora\Core\Renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\A3D\FPSCamera.h">
+    <ClInclude Include="Inc\Aurora\Core\Camera\FPSCamera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\A3D\OrbitCamera.h">
+    <ClInclude Include="Inc\Aurora\Core\Camera\OrbitCamera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\Resource\Buffer.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\Resource\Buffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\RCTexture.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\RCTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\ComputeTexture.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\ComputeTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\View\ShaderResourceView.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\View\ShaderResourceView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\View\UnorderedAccessView.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\View\UnorderedAccessView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\View\RenderTargetView.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\View\RenderTargetView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\ResourceTexture.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\ResourceTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\ComputeBuffer.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\ComputeBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\View\Composition\RSView.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\View\Composition\RSView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\View\Composition\USView.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\View\Composition\USView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\View\Composition\RUSView.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\View\Composition\RUSView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\ResManager.h">
+    <ClInclude Include="Inc\Aurora\Core\ResManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\RenderAPI.h">
+    <ClInclude Include="Inc\Aurora\Core\RenderAPI.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Effect\BloomEffect.h">
+    <ClInclude Include="Inc\Aurora\Core\Effect\BloomEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Effect\EffectBase.h">
+    <ClInclude Include="Inc\Aurora\Core\Effect\EffectBase.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Effect\FadeEffect.h">
+    <ClInclude Include="Inc\Aurora\Core\Effect\FadeEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Effect\HBAOEffect.h">
+    <ClInclude Include="Inc\Aurora\Core\Effect\HBAOEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\Resource\Texture3D.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\Resource\Texture3D.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\ComputeTexture3D.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\ComputeTexture3D.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Effect\MotionBlurEffect.h">
+    <ClInclude Include="Inc\Aurora\Core\Effect\MotionBlurEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\StructuredBuffer.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\StructuredBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\ImGUI\imgui.h">
@@ -189,34 +189,37 @@
     <ClInclude Include="Inc\DDSTextureLoader\DDSTextureLoader11.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\A3D\RenderCube.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\RenderCube.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DepthTexture.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\DepthTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\ResDepthTexture.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\ResDepthTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\A3D\DepthCube.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\DepthCube.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Effect\FXAAEffect.h">
+    <ClInclude Include="Inc\Aurora\Core\Effect\FXAAEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\CTextureWithMips.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\CTextureWithMips.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\PerframeCB.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\PerframeCB.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\DX\Resource\Resource.h">
+    <ClInclude Include="Inc\Aurora\Core\DX\Resource\Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Window\Win32Form.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\ConstantBuffer.h">
+    <ClInclude Include="Inc\Aurora\Core\Resource\ConstantBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\Core\ResourceEssential.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -227,55 +230,55 @@
     <ClCompile Include="Src\Aurora\Configuration.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Event.cpp">
+    <ClCompile Include="Src\Aurora\Input\Event.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Graphics.cpp">
+    <ClCompile Include="Src\Aurora\Core\Graphics.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Keyboard.cpp">
+    <ClCompile Include="Src\Aurora\Input\Keyboard.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Mouse.cpp">
+    <ClCompile Include="Src\Aurora\Input\Mouse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PrimitiveBatch.cpp">
+    <ClCompile Include="Src\Aurora\Core\PrimitiveBatch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Random.cpp">
+    <ClCompile Include="Src\Aurora\Utils\Random.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Shader.cpp">
+    <ClCompile Include="Src\Aurora\Core\Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\Resource\Texture2D.cpp">
+    <ClCompile Include="Src\Aurora\Core\DX\Resource\Texture2D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Timer.cpp">
+    <ClCompile Include="Src\Aurora\Utils\Timer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Utils.cpp">
+    <ClCompile Include="Src\Aurora\Utils\Utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\States.cpp">
+    <ClCompile Include="Src\Aurora\Core\States.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\RenderTexture.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\RenderTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DoubleRTV.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\DoubleRTV.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Color.cpp">
+    <ClCompile Include="Src\Aurora\Utils\Color.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\View\DepthStencilView.cpp">
+    <ClCompile Include="Src\Aurora\Core\DX\View\DepthStencilView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Math.cpp">
+    <ClCompile Include="Src\Aurora\Utils\Math.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Inc\stb_image\stb_image.cpp">
@@ -284,82 +287,82 @@
     <ClCompile Include="Src\Aurora\Wallpaper\WallpaperHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Camera.cpp">
+    <ClCompile Include="Src\Aurora\Core\Camera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\A3D\TextureCube.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\TextureCube.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Renderer.cpp">
+    <ClCompile Include="Src\Aurora\Core\Renderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\A3D\FPSCamera.cpp">
+    <ClCompile Include="Src\Aurora\Core\Camera\FPSCamera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\A3D\OrbitCamera.cpp">
+    <ClCompile Include="Src\Aurora\Core\Camera\OrbitCamera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\Resource\Buffer.cpp">
+    <ClCompile Include="Src\Aurora\Core\DX\Resource\Buffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\RCTexture.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\RCTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\ComputeTexture.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\ComputeTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\View\ShaderResourceView.cpp">
+    <ClCompile Include="Src\Aurora\Core\DX\View\ShaderResourceView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\View\UnorderedAccessView.cpp">
+    <ClCompile Include="Src\Aurora\Core\DX\View\UnorderedAccessView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\ResManager.cpp">
+    <ClCompile Include="Src\Aurora\Core\ResManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\View\RenderTargetView.cpp">
+    <ClCompile Include="Src\Aurora\Core\DX\View\RenderTargetView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\ResourceTexture.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\ResourceTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\ComputeBuffer.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\ComputeBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\View\Composition\RSView.cpp">
+    <ClCompile Include="Src\Aurora\Core\DX\View\Composition\RSView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\View\Composition\USView.cpp">
+    <ClCompile Include="Src\Aurora\Core\DX\View\Composition\USView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\View\Composition\RUSView.cpp">
+    <ClCompile Include="Src\Aurora\Core\DX\View\Composition\RUSView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\RenderAPI.cpp">
+    <ClCompile Include="Src\Aurora\Core\RenderAPI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Effect\EffectBase.cpp">
+    <ClCompile Include="Src\Aurora\Core\Effect\EffectBase.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Effect\BloomEffect.cpp">
+    <ClCompile Include="Src\Aurora\Core\Effect\BloomEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Effect\FadeEffect.cpp">
+    <ClCompile Include="Src\Aurora\Core\Effect\FadeEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Effect\HBAOEffect.cpp">
+    <ClCompile Include="Src\Aurora\Core\Effect\HBAOEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DX\Resource\Texture3D.cpp">
+    <ClCompile Include="Src\Aurora\Core\DX\Resource\Texture3D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\ComputeTexture3D.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\ComputeTexture3D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Effect\MotionBlurEffect.cpp">
+    <ClCompile Include="Src\Aurora\Core\Effect\MotionBlurEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\StructuredBuffer.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\StructuredBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Inc\ImGUI\imgui.cpp">
@@ -386,31 +389,31 @@
     <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader11.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\A3D\RenderCube.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\RenderCube.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\DepthTexture.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\DepthTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\ResDepthTexture.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\ResDepthTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\A3D\DepthCube.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\DepthCube.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Effect\FXAAEffect.cpp">
+    <ClCompile Include="Src\Aurora\Core\Effect\FXAAEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\CTextureWithMips.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\CTextureWithMips.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\PerframeCB.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\PerframeCB.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Window\Win32Form.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\ConstantBuffer.cpp">
+    <ClCompile Include="Src\Aurora\Core\Resource\ConstantBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

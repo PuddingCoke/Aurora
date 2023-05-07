@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/A3D/FPSCamera.h>
+
+#include<Aurora/Core/Camera/FPSCamera.h>
 
 #include"GlobalIllumination.h"
 

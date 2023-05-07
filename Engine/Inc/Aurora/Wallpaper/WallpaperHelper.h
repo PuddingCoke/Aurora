@@ -7,8 +7,8 @@
 
 #include<Windows.h>
 
-#include<Aurora/Graphics.h>
-#include<Aurora/Mouse.h>
+#include<Aurora/Core/Graphics.h>
+#include<Aurora/Input/Mouse.h>
 
 class WallpaperHelper
 {

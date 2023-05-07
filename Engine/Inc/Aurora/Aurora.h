@@ -16,18 +16,19 @@
 #include<ImGUI/imgui_impl_win32.h>
 #include<ImGUI/imgui_impl_dx11.h>
 
-#include"Camera.h"
-#include"Graphics.h"
-#include"Configuration.h"
-#include"Game.h"
-#include"Keyboard.h"
-#include"States.h"
-#include"Math.h"
-#include"ResManager.h"
-#include"RenderAPI.h"
-#include"Utils.h"
-#include"PerframeCB.h"
-#include"A3D/TextureCube.h"
+#include<Aurora/Core/Camera.h>
+#include<Aurora/Core/Graphics.h>
+#include<Aurora/Core/ResManager.h>
+#include<Aurora/Core/States.h>
+#include<Aurora/Core/RenderAPI.h>
+#include<Aurora/Configuration.h>
+#include<Aurora/Game.h>
+#include<Aurora/Input/Keyboard.h>
+#include<Aurora/Input/Mouse.h>
+#include<Aurora/Utils/Math.h>
+#include<Aurora/Utils/Utils.h>
+#include<Aurora/Core/Resource/PerframeCB.h>
+#include<Aurora/Core/Resource/TextureCube.h>
 
 #include"VideoEncoder/NvidiaEncoder.h"
 #include"Wallpaper/WallpaperHelper.h"

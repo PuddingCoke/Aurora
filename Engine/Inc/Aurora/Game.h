@@ -3,12 +3,6 @@
 #ifndef _GAME_H_
 #define _GAME_H_
 
-#include<DirectXMath.h>
-#include<DirectXColors.h>
-
-#include"Graphics.h"
-#include"Shader.h"
-
 class Game
 {
 public:

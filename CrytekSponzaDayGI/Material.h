@@ -1,7 +1,7 @@
 #pragma once
 
-#include<Aurora/RenderAPI.h>
-#include<Aurora/ResourceTexture.h>
+#include<Aurora/Core/RenderAPI.h>
+#include<Aurora/Core/Resource/ResourceTexture.h>
 
 class Material
 {
