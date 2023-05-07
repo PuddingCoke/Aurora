@@ -1,7 +1,7 @@
 #pragma once
 
 #include<iostream>
-#include<Aurora/Math.h>
+#include<Aurora/Utils/Math.h>
 
 using namespace std;
 

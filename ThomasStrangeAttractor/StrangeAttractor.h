@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include<Aurora/ParticleSystem.h>
-#include<Aurora/DX/Resource/Buffer.h>
-#include<Aurora/ComputeBuffer.h>
+#include<Aurora/Core/ParticleSystem.h>
+#include<Aurora/Core/DX/Resource/Buffer.h>
+#include<Aurora/Core/Resource/ComputeBuffer.h>
 
 class StrangeAttractor :public ParticleSystem
 {

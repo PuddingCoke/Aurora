@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/DepthTexture.h>
-#include<Aurora/A3D/FPSCamera.h>
+#include<Aurora/Core/ResourceEssential.h>
+#include<Aurora/Core/Camera/FPSCamera.h>
 
 #include"Ocean.h"
 
@@ -48,12 +48,12 @@ public:
 	void update(const float& dt) override
 	{
 		camera.applyInput(dt);
-
-		ocean.update();
 	}
 
 	void render()
 	{
+		ocean.update();
+
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::AliceBlue);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 

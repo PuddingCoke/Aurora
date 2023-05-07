@@ -2,10 +2,9 @@
 #include<iostream>
 
 #include<Aurora/Game.h>
-#include<Aurora/DepthTexture.h>
-
-#include<Aurora/A3D/OrbitCamera.h>
-#include<Aurora/Effect/BloomEffect.h>
+#include<Aurora/Core/ResourceEssential.h>
+#include<Aurora/Core/Camera/OrbitCamera.h>
+#include<Aurora/Core/Effect/BloomEffect.h>
 
 #include"TextBatch.h"
 #include"Rain.h"

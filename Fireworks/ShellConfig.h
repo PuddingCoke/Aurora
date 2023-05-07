@@ -3,9 +3,9 @@
 #ifndef _SHELLCONFIG_H_
 #define _SHELLCONFIG_H_
 
-#include<Aurora/Color.h>
-#include<Aurora/Math.h>
-#include<Aurora/Random.h>
+#include<Aurora/Utils/Color.h>
+#include<Aurora/Utils/Math.h>
+#include<Aurora/Utils/Random.h>
 
 enum class Glitter
 {

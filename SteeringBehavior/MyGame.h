@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/DoubleRTV.h>
-#include<Aurora/Random.h>
-#include<Aurora/Math.h>
-#include<Aurora/Effect/FadeEffect.h>
-#include<Aurora/Effect/BloomEffect.h>
+#include<Aurora/Core/Resource/DoubleRTV.h>
+#include<Aurora/Utils/Random.h>
+#include<Aurora/Utils/Math.h>
+#include<Aurora/Core/Effect/FadeEffect.h>
+#include<Aurora/Core/Effect/BloomEffect.h>
 
 #include<thread>
 

@@ -1,10 +1,8 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/A3D/OrbitCamera.h>
-#include<Aurora/ComputeTexture.h>
-#include<Aurora/StructuredBuffer.h>
-#include<Aurora/DepthTexture.h>
+#include<Aurora/Core/Camera/OrbitCamera.h>
+#include<Aurora/Core/ResourceEssential.h>
 
 #include"Scene.h"
 

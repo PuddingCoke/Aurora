@@ -1,10 +1,12 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/DoubleRTV.h>
-#include<Aurora/Color.h>
-#include<Aurora/Timer.h>
-#include<Aurora/Effect/BloomEffect.h>
+#include<Aurora/Utils/Color.h>
+#include<Aurora/Utils/Timer.h>
+
+#include<Aurora/Core/ResourceEssential.h>
+
+#include<Aurora/Core/Effect/BloomEffect.h>
 
 //基本思想 https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-38-fast-fluid-dynamics-simulation-gpu
 //有些公式看不懂可以看这个 http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf
@@ -308,12 +310,16 @@ public:
 
 	void update(const float& dt) override
 	{
+	}
+
+	void render()
+	{
 		memcpy(simulationParamBuffer->map().pData, &simulationParam, sizeof(SimulationParam));
 		simulationParamBuffer->unmap();
 
 		//物理模拟
 
-		if (colorUpdateTimer.update(dt * config.colorChangeSpeed))
+		if (colorUpdateTimer.update(Graphics::getDeltaTime() * config.colorChangeSpeed))
 		{
 			Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
 			c.r *= 0.15f;
@@ -323,10 +329,7 @@ public:
 		}
 
 		step();
-	}
 
-	void render()
-	{
 		//最后进行简单的渲染
 		RenderAPI::get()->OMSetBlendState(blendState.Get());
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());

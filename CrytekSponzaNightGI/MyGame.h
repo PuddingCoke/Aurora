@@ -1,13 +1,12 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/ComputeTexture3D.h>
-#include<Aurora/ResDepthTexture.h>
 
-#include<Aurora/A3D/FPSCamera.h>
+#include<Aurora/Core/Camera/FPSCamera.h>
+#include<Aurora/Core/ResourceEssential.h>
 
-#include<Aurora/Effect/HBAOEffect.h>
-#include<Aurora/Effect/BloomEffect.h>
+#include<Aurora/Core/Effect/HBAOEffect.h>
+#include<Aurora/Core/Effect/BloomEffect.h>
 
 #include"Scene.h"
 

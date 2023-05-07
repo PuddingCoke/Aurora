@@ -40,6 +40,8 @@ public:
 
 	void OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs);
 
+	void CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const unsigned int& slot);
+
 	void VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
 
 	void HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
@@ -51,8 +53,6 @@ public:
 	void PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
 
 	void CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
-
-	void CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const unsigned int& slot);
 
 	void VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
 

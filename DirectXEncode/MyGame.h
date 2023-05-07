@@ -2,11 +2,9 @@
 #include<iostream>
 
 #include<Aurora/Game.h>
-#include<Aurora/Mouse.h>
-#include<Aurora/Event.h>
-#include<Aurora/States.h>
-#include<Aurora/RenderTexture.h>
-#include<Aurora/Color.h>
+
+#include<Aurora/Utils/Color.h>
+#include<Aurora/Core/RenderAPI.h>
 
 class MyGame :public Game
 {

@@ -3,7 +3,7 @@
 #ifndef _MODEL_H_
 #define _MODEL_H_
 
-#include<Aurora/Renderer.h>
+#include<Aurora/Core/Renderer.h>
 
 #include<assimp/Importer.hpp>
 #include<assimp/scene.h>

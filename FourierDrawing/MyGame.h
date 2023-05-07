@@ -5,12 +5,11 @@
 #include<iostream>
 
 #include<Aurora/Game.h>
-#include<Aurora/Mouse.h>
-#include<Aurora/PrimitiveBatch.h>
-#include<Aurora/Event.h>
-#include<Aurora/States.h>
-#include<Aurora/RenderTexture.h>
-#include<Aurora/Color.h>
+#include<Aurora/Core/States.h>
+#include<Aurora/Core/PrimitiveBatch.h>
+#include<Aurora/Core/Resource/RenderTexture.h>
+#include<Aurora/Utils/Color.h>
+#include<Aurora/Input/Event.h>
 
 #include"Epicycle.hpp"
 #include"json.hpp"

@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/ComputeTexture.h>
-#include<Aurora/RCTexture.h>
-#include<Aurora/Timer.h>
+#include<Aurora/Core/Resource/ComputeTexture.h>
+#include<Aurora/Core/Resource/RCTexture.h>
+#include<Aurora/Utils/Timer.h>
 
-#include<Aurora/Effect/BloomEffect.h>
+#include<Aurora/Core/Effect/BloomEffect.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game

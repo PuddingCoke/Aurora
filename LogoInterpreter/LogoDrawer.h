@@ -1,8 +1,8 @@
 #pragma once
 
-#include<Aurora/Math.h>
-#include<Aurora/Graphics.h>
-#include<Aurora/PrimitiveBatch.h>
+#include<Aurora/Utils/Math.h>
+#include<Aurora/Core/Graphics.h>
+#include<Aurora/Core/PrimitiveBatch.h>
 
 class LogoDrawer
 {

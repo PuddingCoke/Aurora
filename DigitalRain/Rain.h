@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include<Aurora/Graphics.h>
-#include<Aurora/Timer.h>
-#include<Aurora/Random.h>
+#include<Aurora/Core/Graphics.h>
+#include<Aurora/Utils/Timer.h>
+#include<Aurora/Utils/Random.h>
 
 #include<vector>
 

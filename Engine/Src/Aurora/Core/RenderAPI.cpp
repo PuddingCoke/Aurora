@@ -141,6 +141,34 @@ void RenderAPI::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
 	Renderer::getContext()->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, (unsigned int)uavs.size(), tempUAV, nullptr);
 }
 
+void RenderAPI::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const unsigned int& slot)
+{
+	for (unsigned int i = slot; i < slot + uavs.size(); i++)
+	{
+		if (UnorderedAccessView::curCUAV[i])
+		{
+			UnorderedAccessView::curCUAV[i]->CUAVSlot = -1;
+			UnorderedAccessView::curCUAV[i] = nullptr;
+		}
+	}
+
+	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
+	for (unsigned int i = slot; i < slot + uavs.size(); i++, it++)
+	{
+		UnorderedAccessView::curCUAV[i] = it[0];
+		tempUAV[i - slot] = it[0]->unorderedAccessView.Get();
+
+		if (!it[0]->unbindFromCUAV() || !it[0]->unbindFromPUAV())
+		{
+			it[0]->bindCUAV();
+		}
+
+		it[0]->CUAVSlot = i;
+	}
+
+	Renderer::getContext()->CSSetUnorderedAccessViews(slot, (unsigned int)uavs.size(), tempUAV, nullptr);
+}
+
 void RenderAPI::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
 {
 	for (unsigned int i = slot; i < slot + srvs.size(); i++)
@@ -331,34 +359,6 @@ void RenderAPI::CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 	}
 
 	Renderer::getContext()->CSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
-}
-
-void RenderAPI::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const unsigned int& slot)
-{
-	for (unsigned int i = slot; i < slot + uavs.size(); i++)
-	{
-		if (UnorderedAccessView::curCUAV[i])
-		{
-			UnorderedAccessView::curCUAV[i]->CUAVSlot = -1;
-			UnorderedAccessView::curCUAV[i] = nullptr;
-		}
-	}
-
-	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
-	for (unsigned int i = slot; i < slot + uavs.size(); i++, it++)
-	{
-		UnorderedAccessView::curCUAV[i] = it[0];
-		tempUAV[i - slot] = it[0]->unorderedAccessView.Get();
-
-		if (!it[0]->unbindFromCUAV() || !it[0]->unbindFromPUAV())
-		{
-			it[0]->bindCUAV();
-		}
-
-		it[0]->CUAVSlot = i;
-	}
-
-	Renderer::getContext()->CSSetUnorderedAccessViews(slot, (unsigned int)uavs.size(), tempUAV, nullptr);
 }
 
 void RenderAPI::IASetVertexBuffer(const unsigned int& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)

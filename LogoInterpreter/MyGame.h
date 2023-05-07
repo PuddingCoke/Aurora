@@ -3,8 +3,8 @@
 #include<fstream>
 
 #include<Aurora/Game.h>
-#include<Aurora/PrimitiveBatch.h>
-#include<Aurora/RenderTexture.h>
+#include<Aurora/Core/PrimitiveBatch.h>
+#include<Aurora/Core/Resource/RenderTexture.h>
 
 #include"Logo.h"
 
