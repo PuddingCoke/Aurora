@@ -64,8 +64,8 @@ public:
 
 		RenderAPI::skyboxVS->use();
 		skyboxPS->use();
-		RenderAPI::get()->HSSetShader(nullptr);
-		RenderAPI::get()->DSSetShader(nullptr);
+		RenderAPI::get()->HSUnbindShader();
+		RenderAPI::get()->GSUnbindShader();
 
 		RenderAPI::get()->DrawCube();
 

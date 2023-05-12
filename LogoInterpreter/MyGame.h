@@ -43,7 +43,7 @@ public:
 
 		pBatch->end();
 
-		renderTexture->resolve(texture);
+		RenderAPI::get()->ResolveSubresource(texture, 0, renderTexture, 0, renderTexture->getFormat());
 
 		delete pBatch;
 	}

@@ -116,7 +116,7 @@ void PrimitiveBatch::end()
 
 	rcLineRenderer.end();
 
-	RenderAPI::get()->GSSetShader(nullptr);
+	RenderAPI::get()->GSUnbindShader();
 }
 
 void PrimitiveBatch::drawLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& r, const float& g, const float& b, const float& a)

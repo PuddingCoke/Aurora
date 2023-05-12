@@ -216,7 +216,7 @@ public:
 
 		pBatch->end();
 
-		renderTexture->resolve(texture);
+		RenderAPI::get()->ResolveSubresource(texture, 0, renderTexture, 0, renderTexture->getFormat());
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

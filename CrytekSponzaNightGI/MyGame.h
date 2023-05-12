@@ -328,7 +328,7 @@ public:
 		{
 			RenderAPI::get()->RSSetState(States::rasterCullBack);
 
-			RenderAPI::get()->GSSetShader(nullptr);
+			RenderAPI::get()->GSUnbindShader();
 			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler }, 0);
 
 			gBaseColor->clearRTV(DirectX::Colors::Black);

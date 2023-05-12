@@ -8,7 +8,7 @@ Shader* RenderAPI::skyboxVS = nullptr;
 Shader* RenderAPI::shadowVS = nullptr;
 Shader* RenderAPI::randNoiseCS = nullptr;
 
-RenderAPI::RenderAPI(const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture):
+RenderAPI::RenderAPI(const UINT& msaaLevel, ID3D11Texture2D* const renderTexture) :
 	tempBuffer{}, tempStartConstants{}, tempNumConstants{}, tempRTV{}, tempUAV{}, tempSRV{}, tempOffsets{}, tempStrides{}, tempSampler{}
 {
 	instance = this;
@@ -75,7 +75,7 @@ void RenderAPI::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, D
 		UnorderedAccessView::unbindPUAV();
 	}
 
-	for (unsigned int i = 0; RenderTargetView::curRTV[i]; i++)
+	for (UINT i = 0; RenderTargetView::curRTV[i]; i++)
 	{
 		RenderTargetView::curRTV[i]->boundOnRTV = false;
 		RenderTargetView::curRTV[i] = nullptr;
@@ -85,7 +85,7 @@ void RenderAPI::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, D
 	{
 		std::initializer_list<RenderTargetView*>::iterator it = rtvs.begin();
 
-		for (unsigned int i = 0; i < rtvs.size(); i++, it++)
+		for (UINT i = 0; i < rtvs.size(); i++, it++)
 		{
 			RenderTargetView::curRTV[i] = it[0];
 
@@ -99,11 +99,11 @@ void RenderAPI::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, D
 		if (dsv)
 		{
 			dsv->bindDSV();
-			Renderer::getContext()->OMSetRenderTargets((unsigned int)rtvs.size(), tempRTV, dsv->getDSV());
+			Renderer::getContext()->OMSetRenderTargets((UINT)rtvs.size(), tempRTV, dsv->getDSV());
 		}
 		else
 		{
-			Renderer::getContext()->OMSetRenderTargets((unsigned int)rtvs.size(), tempRTV, nullptr);
+			Renderer::getContext()->OMSetRenderTargets((UINT)rtvs.size(), tempRTV, nullptr);
 		}
 	}
 	else
@@ -127,7 +127,7 @@ void RenderAPI::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
 
 	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
 
-	for (unsigned int i = 0; i < uavs.size(); i++, it++)
+	for (UINT i = 0; i < uavs.size(); i++, it++)
 	{
 		UnorderedAccessView::curPUAV[i] = it[0];
 
@@ -138,12 +138,12 @@ void RenderAPI::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
 		it[0]->boundOnRTV = true;
 	}
 
-	Renderer::getContext()->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, (unsigned int)uavs.size(), tempUAV, nullptr);
+	Renderer::getContext()->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, (UINT)uavs.size(), tempUAV, nullptr);
 }
 
-void RenderAPI::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const unsigned int& slot)
+void RenderAPI::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const UINT& slot)
 {
-	for (unsigned int i = slot; i < slot + uavs.size(); i++)
+	for (UINT i = slot; i < slot + uavs.size(); i++)
 	{
 		if (UnorderedAccessView::curCUAV[i])
 		{
@@ -153,7 +153,7 @@ void RenderAPI::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs
 	}
 
 	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
-	for (unsigned int i = slot; i < slot + uavs.size(); i++, it++)
+	for (UINT i = slot; i < slot + uavs.size(); i++, it++)
 	{
 		UnorderedAccessView::curCUAV[i] = it[0];
 		tempUAV[i - slot] = it[0]->unorderedAccessView.Get();
@@ -166,12 +166,12 @@ void RenderAPI::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs
 		it[0]->CUAVSlot = i;
 	}
 
-	Renderer::getContext()->CSSetUnorderedAccessViews(slot, (unsigned int)uavs.size(), tempUAV, nullptr);
+	Renderer::getContext()->CSSetUnorderedAccessViews(slot, (UINT)uavs.size(), tempUAV, nullptr);
 }
 
-void RenderAPI::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
+void RenderAPI::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot)
 {
-	for (unsigned int i = slot; i < slot + srvs.size(); i++)
+	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
 		if (ShaderResourceView::curVSRV[i])
 		{
@@ -181,7 +181,7 @@ void RenderAPI::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
-	for (unsigned int i = slot; i < slot + srvs.size(); i++, it++)
+	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
 		ShaderResourceView::curVSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
@@ -198,12 +198,12 @@ void RenderAPI::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 		it[0]->VSSlot = i;
 	}
 
-	Renderer::getContext()->VSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
+	Renderer::getContext()->VSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
 }
 
-void RenderAPI::HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
+void RenderAPI::HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot)
 {
-	for (unsigned int i = slot; i < slot + srvs.size(); i++)
+	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
 		if (ShaderResourceView::curHSRV[i])
 		{
@@ -213,7 +213,7 @@ void RenderAPI::HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
-	for (unsigned int i = slot; i < slot + srvs.size(); i++, it++)
+	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
 		ShaderResourceView::curHSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
@@ -230,12 +230,12 @@ void RenderAPI::HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 		it[0]->HSSlot = i;
 	}
 
-	Renderer::getContext()->HSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
+	Renderer::getContext()->HSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
 }
 
-void RenderAPI::DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
+void RenderAPI::DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot)
 {
-	for (unsigned int i = slot; i < slot + srvs.size(); i++)
+	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
 		if (ShaderResourceView::curDSRV[i])
 		{
@@ -245,7 +245,7 @@ void RenderAPI::DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
-	for (unsigned int i = slot; i < slot + srvs.size(); i++, it++)
+	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
 		ShaderResourceView::curDSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
@@ -262,12 +262,12 @@ void RenderAPI::DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 		it[0]->DSSlot = i;
 	}
 
-	Renderer::getContext()->DSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
+	Renderer::getContext()->DSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
 }
 
-void RenderAPI::GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
+void RenderAPI::GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot)
 {
-	for (unsigned int i = slot; i < slot + srvs.size(); i++)
+	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
 		if (ShaderResourceView::curGSRV[i])
 		{
@@ -277,7 +277,7 @@ void RenderAPI::GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
-	for (unsigned int i = slot; i < slot + srvs.size(); i++, it++)
+	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
 		ShaderResourceView::curGSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
@@ -294,12 +294,12 @@ void RenderAPI::GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 		it[0]->GSSlot = i;
 	}
 
-	Renderer::getContext()->GSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
+	Renderer::getContext()->GSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
 }
 
-void RenderAPI::PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
+void RenderAPI::PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot)
 {
-	for (unsigned int i = slot; i < slot + srvs.size(); i++)
+	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
 		if (ShaderResourceView::curPSRV[i])
 		{
@@ -309,7 +309,7 @@ void RenderAPI::PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
-	for (unsigned int i = slot; i < slot + srvs.size(); i++, it++)
+	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
 		ShaderResourceView::curPSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
@@ -326,12 +326,12 @@ void RenderAPI::PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 		it[0]->PSSlot = i;
 	}
 
-	Renderer::getContext()->PSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
+	Renderer::getContext()->PSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
 }
 
-void RenderAPI::CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot)
+void RenderAPI::CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot)
 {
-	for (unsigned int i = slot; i < slot + srvs.size(); i++)
+	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
 		if (ShaderResourceView::curCSRV[i])
 		{
@@ -341,7 +341,7 @@ void RenderAPI::CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
-	for (unsigned int i = slot; i < slot + srvs.size(); i++, it++)
+	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
 		ShaderResourceView::curCSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
@@ -358,12 +358,12 @@ void RenderAPI::CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 		it[0]->CSSlot = i;
 	}
 
-	Renderer::getContext()->CSSetShaderResources(slot, (unsigned int)srvs.size(), tempSRV);
+	Renderer::getContext()->CSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
 }
 
-void RenderAPI::IASetVertexBuffer(const unsigned int& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
+void RenderAPI::IASetVertexBuffer(const UINT& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
 {
-	for (unsigned int i = slot; i < slot + (unsigned int)buffers.size(); i++)
+	for (UINT i = slot; i < slot + (UINT)buffers.size(); i++)
 	{
 		if (Buffer::curBuffer[i])
 		{
@@ -376,7 +376,7 @@ void RenderAPI::IASetVertexBuffer(const unsigned int& slot, const std::initializ
 	std::initializer_list<UINT>::iterator itStride = strides.begin();
 	std::initializer_list<UINT>::iterator itOffset = offsets.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)buffers.size(); i++, it++, itStride++, itOffset++)
+	for (UINT i = slot; i < slot + (UINT)buffers.size(); i++, it++, itStride++, itOffset++)
 	{
 		Buffer::curBuffer[i] = it[0];
 		tempBuffer[i - slot] = it[0]->buffer.Get();
@@ -391,163 +391,163 @@ void RenderAPI::IASetVertexBuffer(const unsigned int& slot, const std::initializ
 		it[0]->IASlot = i;
 	}
 
-	Renderer::getContext()->IASetVertexBuffers(slot, (unsigned int)buffers.size(), tempBuffer, tempStrides, tempOffsets);
+	Renderer::getContext()->IASetVertexBuffers(slot, (UINT)buffers.size(), tempBuffer, tempStrides, tempOffsets);
 }
 
-void RenderAPI::VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
+void RenderAPI::VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 		tempStartConstants[i - slot] = it[0]->startConstants;
 		tempNumConstants[i - slot] = it[0]->numConstants;
 	}
 
-	Renderer::getContext()->VSSetConstantBuffers1(slot, (unsigned int)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
+	Renderer::getContext()->VSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
+void RenderAPI::HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 		tempStartConstants[i - slot] = it[0]->startConstants;
 		tempNumConstants[i - slot] = it[0]->numConstants;
 	}
 
-	Renderer::getContext()->HSSetConstantBuffers1(slot, (unsigned int)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
+	Renderer::getContext()->HSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
+void RenderAPI::DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 		tempStartConstants[i - slot] = it[0]->startConstants;
 		tempNumConstants[i - slot] = it[0]->numConstants;
 	}
 
-	Renderer::getContext()->DSSetConstantBuffers1(slot, (unsigned int)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
+	Renderer::getContext()->DSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
+void RenderAPI::GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 		tempStartConstants[i - slot] = it[0]->startConstants;
 		tempNumConstants[i - slot] = it[0]->numConstants;
 	}
 
-	Renderer::getContext()->GSSetConstantBuffers1(slot, (unsigned int)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
+	Renderer::getContext()->GSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
+void RenderAPI::PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 		tempStartConstants[i - slot] = it[0]->startConstants;
 		tempNumConstants[i - slot] = it[0]->numConstants;
 	}
 
-	Renderer::getContext()->PSSetConstantBuffers1(slot, (unsigned int)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
+	Renderer::getContext()->PSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot)
+void RenderAPI::CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
 {
 	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)constantBuffers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 		tempStartConstants[i - slot] = it[0]->startConstants;
 		tempNumConstants[i - slot] = it[0]->numConstants;
 	}
 
-	Renderer::getContext()->CSSetConstantBuffers1(slot, (unsigned int)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
+	Renderer::getContext()->CSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+void RenderAPI::VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot)
 {
 	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)samplers.size(); i++, it++)
 	{
 		tempSampler[i - slot] = it[0];
 	}
 
-	Renderer::getContext()->VSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+	Renderer::getContext()->VSSetSamplers(slot, (UINT)samplers.size(), tempSampler);
 }
 
-void RenderAPI::HSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+void RenderAPI::HSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot)
 {
 	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)samplers.size(); i++, it++)
 	{
 		tempSampler[i - slot] = it[0];
 	}
 
-	Renderer::getContext()->HSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+	Renderer::getContext()->HSSetSamplers(slot, (UINT)samplers.size(), tempSampler);
 }
 
-void RenderAPI::DSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+void RenderAPI::DSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot)
 {
 	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)samplers.size(); i++, it++)
 	{
 		tempSampler[i - slot] = it[0];
 	}
 
-	Renderer::getContext()->DSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+	Renderer::getContext()->DSSetSamplers(slot, (UINT)samplers.size(), tempSampler);
 }
 
-void RenderAPI::GSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+void RenderAPI::GSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot)
 {
 	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)samplers.size(); i++, it++)
 	{
 		tempSampler[i - slot] = it[0];
 	}
 
-	Renderer::getContext()->GSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+	Renderer::getContext()->GSSetSamplers(slot, (UINT)samplers.size(), tempSampler);
 }
 
-void RenderAPI::PSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+void RenderAPI::PSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot)
 {
 	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)samplers.size(); i++, it++)
 	{
 		tempSampler[i - slot] = it[0];
 	}
 
-	Renderer::getContext()->PSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+	Renderer::getContext()->PSSetSamplers(slot, (UINT)samplers.size(), tempSampler);
 }
 
-void RenderAPI::CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot)
+void RenderAPI::CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot)
 {
 	std::initializer_list<ID3D11SamplerState*>::iterator it = samplers.begin();
 
-	for (unsigned int i = slot; i < slot + (unsigned int)samplers.size(); i++, it++)
+	for (UINT i = slot; i < slot + (UINT)samplers.size(); i++, it++)
 	{
 		tempSampler[i - slot] = it[0];
 	}
 
-	Renderer::getContext()->CSSetSamplers(slot, (unsigned int)samplers.size(), tempSampler);
+	Renderer::getContext()->CSSetSamplers(slot, (UINT)samplers.size(), tempSampler);
 }
 
 void RenderAPI::IASetInputLayout(ID3D11InputLayout* const layout) const
@@ -567,7 +567,7 @@ void RenderAPI::RSSetViewport(const float& width, const float& height) const
 	Renderer::getContext()->RSSetViewports(1, &Renderer::instance->vp);
 }
 
-void RenderAPI::RSSetViewport(const unsigned int& width, const unsigned int& height) const
+void RenderAPI::RSSetViewport(const UINT& width, const UINT& height) const
 {
 	RSSetViewport((float)width, (float)height);
 }
@@ -595,6 +595,11 @@ void RenderAPI::RSSetState(ID3D11RasterizerState* const state) const
 void RenderAPI::OMSetDepthStencilState(ID3D11DepthStencilState* const state, const UINT& stencilRef) const
 {
 	Renderer::getContext()->OMSetDepthStencilState(state, stencilRef);
+}
+
+void RenderAPI::ResolveSubresource(const Resource* const dstResource, const UINT& dstSubresource, const Resource* const srcResource, const UINT& srcSubresource, const DXGI_FORMAT& format)
+{
+	Renderer::getContext()->ResolveSubresource(dstResource->getResource(), dstSubresource, srcResource->getResource(), srcSubresource, format);
 }
 
 void RenderAPI::DrawQuad() const
@@ -627,34 +632,34 @@ void RenderAPI::DrawInstanced(const UINT& vertexCountPerInstance, const UINT& in
 	Renderer::getContext()->DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 }
 
-void RenderAPI::VSSetShader(ID3D11VertexShader* const shader) const
+void RenderAPI::VSUnbindShader() const
 {
-	Renderer::getContext()->VSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->VSSetShader(nullptr, nullptr, 0);
 }
 
-void RenderAPI::HSSetShader(ID3D11HullShader* const shader) const
+void RenderAPI::HSUnbindShader() const
 {
-	Renderer::getContext()->HSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->HSSetShader(nullptr, nullptr, 0);
 }
 
-void RenderAPI::DSSetShader(ID3D11DomainShader* const shader) const
+void RenderAPI::DSUnbindShader() const
 {
-	Renderer::getContext()->DSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->DSSetShader(nullptr, nullptr, 0);
 }
 
-void RenderAPI::GSSetShader(ID3D11GeometryShader* const shader) const
+void RenderAPI::GSUnbindShader() const
 {
-	Renderer::getContext()->GSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->GSSetShader(nullptr, nullptr, 0);
 }
 
-void RenderAPI::PSSetShader(ID3D11PixelShader* const shader) const
+void RenderAPI::PSUnbindShader() const
 {
-	Renderer::getContext()->PSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->PSSetShader(nullptr, nullptr, 0);
 }
 
-void RenderAPI::CSSetShader(ID3D11ComputeShader* const shader) const
+void RenderAPI::CSUnbindShader() const
 {
-	Renderer::getContext()->CSSetShader(shader, nullptr, 0);
+	Renderer::getContext()->CSSetShader(nullptr, nullptr, 0);
 }
 
 void RenderAPI::UnbindRTV() const
@@ -672,7 +677,7 @@ void RenderAPI::UnbindPSUAV() const
 	UnorderedAccessView::unbindPUAV();
 }
 
-void RenderAPI::GenNoise(UnorderedAccessView* const uav, const unsigned int& textureWidth, const unsigned int& textureHeight)
+void RenderAPI::GenNoise(UnorderedAccessView* const uav, const UINT& textureWidth, const UINT& textureHeight)
 {
 	randNoiseCS->use();
 	CSSetUAV({ uav }, 0);
@@ -693,9 +698,9 @@ void RenderAPI::DebugDraw(ShaderResourceView* const srv)
 
 	fullScreenVS->use();
 	fullScreenPS->use();
-	DSSetShader(nullptr);
-	HSSetShader(nullptr);
-	GSSetShader(nullptr);
+	DSUnbindShader();
+	HSUnbindShader();
+	GSUnbindShader();
 
 	RenderAPI::get()->DrawQuad();
 }

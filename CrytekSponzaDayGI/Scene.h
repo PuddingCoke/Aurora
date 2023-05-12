@@ -82,7 +82,7 @@ public:
 	void render(Shader* const vertexShader, Shader* const pixelShader)
 	{
 		vertexShader->use();
-		RenderAPI::get()->GSSetShader(nullptr);
+		RenderAPI::get()->GSUnbindShader();
 		pixelShader->use();
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -96,7 +96,7 @@ public:
 	void renderCube(Shader* const vertexShader, Shader* const pixelShader)
 	{
 		vertexShader->use();
-		RenderAPI::get()->GSSetShader(nullptr);
+		RenderAPI::get()->GSUnbindShader();
 		pixelShader->use();
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -110,8 +110,8 @@ public:
 	void renderGeometry(Shader* const vertexShader)
 	{
 		vertexShader->use();
-		RenderAPI::get()->GSSetShader(nullptr);
-		RenderAPI::get()->PSSetShader(nullptr);
+		RenderAPI::get()->GSUnbindShader();
+		RenderAPI::get()->PSUnbindShader();
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		for (unsigned int i = 0; i < models.size(); i++)

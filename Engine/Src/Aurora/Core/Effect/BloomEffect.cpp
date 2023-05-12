@@ -67,9 +67,9 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 	RenderAPI::get()->PSSetConstantBuffer({ bloomParamBuffer }, 1);
 	RenderAPI::get()->CSSetConstantBuffer({ bloomParamBuffer }, 1);
-	RenderAPI::get()->GSSetShader(nullptr);
-	RenderAPI::get()->HSSetShader(nullptr);
-	RenderAPI::get()->DSSetShader(nullptr);
+	RenderAPI::get()->GSUnbindShader();
+	RenderAPI::get()->HSUnbindShader();
+	RenderAPI::get()->DSUnbindShader();
 	RenderAPI::fullScreenVS->use();
 
 	RenderAPI::get()->OMSetBlendState(nullptr);

@@ -213,7 +213,7 @@ public:
 		}
 		pBatch->end();
 
-		texture->resolve(resolvedTexture);
+		RenderAPI::get()->ResolveSubresource(resolvedTexture, 0, texture, 0, texture->getFormat());
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);

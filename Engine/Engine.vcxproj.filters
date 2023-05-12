@@ -156,34 +156,34 @@
     <ClInclude Include="Inc\Aurora\Core\Resource\StructuredBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imgui.h">
+    <ClInclude Include="Inc\External\ImGUI\imgui.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imgui_impl_dx11.h">
+    <ClInclude Include="Inc\External\ImGUI\imgui_impl_dx11.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imgui_impl_win32.h">
+    <ClInclude Include="Inc\External\ImGUI\imgui_impl_win32.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imconfig.h">
+    <ClInclude Include="Inc\External\ImGUI\imconfig.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imgui_internal.h">
+    <ClInclude Include="Inc\External\ImGUI\imgui_internal.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imstb_textedit.h">
+    <ClInclude Include="Inc\External\ImGUI\imstb_textedit.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imstb_rectpack.h">
+    <ClInclude Include="Inc\External\ImGUI\imstb_rectpack.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imstb_truetype.h">
+    <ClInclude Include="Inc\External\ImGUI\imstb_truetype.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\stb_image\stb_image.h">
+    <ClInclude Include="Inc\External\stb_image\stb_image.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\DDSTextureLoader\DDSTextureLoader11.h">
+    <ClInclude Include="Inc\External\DDSTextureLoader\DDSTextureLoader11.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Core\Resource\RenderCube.h">
@@ -278,7 +278,7 @@
     <ClCompile Include="Src\Aurora\Utils\Math.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\stb_image\stb_image.cpp">
+    <ClCompile Include="Inc\External\stb_image\stb_image.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Wallpaper\WallpaperHelper.cpp">
@@ -359,28 +359,28 @@
     <ClCompile Include="Src\Aurora\Core\Resource\StructuredBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui.cpp">
+    <ClCompile Include="Inc\External\ImGUI\imgui.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_impl_dx11.cpp">
+    <ClCompile Include="Inc\External\ImGUI\imgui_impl_dx11.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_impl_win32.cpp">
+    <ClCompile Include="Inc\External\ImGUI\imgui_impl_win32.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_demo.cpp">
+    <ClCompile Include="Inc\External\ImGUI\imgui_demo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_draw.cpp">
+    <ClCompile Include="Inc\External\ImGUI\imgui_draw.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_widgets.cpp">
+    <ClCompile Include="Inc\External\ImGUI\imgui_widgets.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_tables.cpp">
+    <ClCompile Include="Inc\External\ImGUI\imgui_tables.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader11.cpp">
+    <ClCompile Include="Inc\External\DDSTextureLoader\DDSTextureLoader11.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Core\Resource\RenderCube.cpp">

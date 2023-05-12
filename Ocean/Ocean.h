@@ -249,9 +249,9 @@ inline void Ocean::render() const
 
 	RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 
-	RenderAPI::get()->Draw(4 * 256 * 256, 0u);
+	RenderAPI::get()->Draw(4 * 256 * 256, 0);
 
-	RenderAPI::get()->HSSetShader(nullptr);
-	RenderAPI::get()->DSSetShader(nullptr);
+	RenderAPI::get()->HSUnbindShader();
+	RenderAPI::get()->DSUnbindShader();
 }
 

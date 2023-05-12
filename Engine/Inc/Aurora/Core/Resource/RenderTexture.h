@@ -18,8 +18,6 @@ public:
 
 	virtual ~RenderTexture();
 
-	void resolve(Texture2D* const texture) const;
-
 };
 
 #endif // !_RENDERTEXTURE_H_

@@ -40,45 +40,45 @@ public:
 
 	void OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs);
 
-	void CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const unsigned int& slot);
+	void CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const UINT& slot);
 
-	void VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
+	void VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot);
 
-	void HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
+	void HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot);
 
-	void DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
+	void DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot);
 
-	void GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
+	void GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot);
 
-	void PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
+	void PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot);
 
-	void CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const unsigned int& slot);
+	void CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot);
 
-	void VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
+	void VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
 
-	void HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
+	void HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
 
-	void DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
+	void DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
 
-	void GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
+	void GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
 
-	void PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
+	void PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
 
-	void CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const unsigned int& slot);
+	void CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
 
-	void VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
+	void VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot);
 
-	void HSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
+	void HSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot);
 
-	void DSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
+	void DSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot);
 
-	void GSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
+	void GSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot);
 
-	void PSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
+	void PSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot);
 
-	void CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const unsigned int& slot);
+	void CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot);
 
-	void IASetVertexBuffer(const unsigned int& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets);
+	void IASetVertexBuffer(const UINT& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets);
 
 	void IASetInputLayout(ID3D11InputLayout* const layout) const;
 
@@ -86,7 +86,7 @@ public:
 
 	void RSSetViewport(const float& width, const float& height) const;
 
-	void RSSetViewport(const unsigned int& width, const unsigned int& height) const;
+	void RSSetViewport(const UINT& width, const UINT& height) const;
 
 	void RSSetViewport(const int& width, const int& height) const;
 
@@ -97,6 +97,8 @@ public:
 	void RSSetState(ID3D11RasterizerState* const state) const;
 
 	void OMSetDepthStencilState(ID3D11DepthStencilState* const state, const UINT& stencilRef) const;
+
+	void ResolveSubresource(const Resource* const dstResource, const UINT& dstSubresource, const Resource* const srcResource, const UINT& srcSubresource, const DXGI_FORMAT& format);
 
 	void DrawQuad() const;
 
@@ -110,17 +112,17 @@ public:
 
 	void DrawInstanced(const UINT& vertexCountPerInstance, const UINT& instanceCount, const UINT& startVertexLocation, const UINT& startInstanceLocation) const;
 
-	void VSSetShader(ID3D11VertexShader* const shader) const;
+	void VSUnbindShader() const;
 
-	void HSSetShader(ID3D11HullShader* const shader) const;
+	void HSUnbindShader() const;
 
-	void DSSetShader(ID3D11DomainShader* const shader) const;
+	void DSUnbindShader() const;
 
-	void GSSetShader(ID3D11GeometryShader* const shader) const;
+	void GSUnbindShader() const;
 
-	void PSSetShader(ID3D11PixelShader* const shader) const;
+	void PSUnbindShader() const;
 
-	void CSSetShader(ID3D11ComputeShader* const shader) const;
+	void CSUnbindShader() const;
 
 	void UnbindRTV() const;
 
@@ -128,7 +130,7 @@ public:
 
 	void UnbindPSUAV() const;
 
-	void GenNoise(UnorderedAccessView* const uav, const unsigned int& textureWidth, const unsigned int& textureHeight);
+	void GenNoise(UnorderedAccessView* const uav, const UINT& textureWidth, const UINT& textureHeight);
 
 	void DebugDraw(ShaderResourceView* const srv);
 
@@ -148,7 +150,7 @@ private:
 
 	static RenderAPI* instance;
 
-	RenderAPI(const unsigned int& msaaLevel, ID3D11Texture2D* const renderTexture);
+	RenderAPI(const UINT& msaaLevel, ID3D11Texture2D* const renderTexture);
 
 	~RenderAPI();
 

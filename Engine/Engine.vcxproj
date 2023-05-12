@@ -131,7 +131,7 @@
       <LanguageStandard>Default</LanguageStandard>
       <TreatWarningAsError>false</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Inc;$(ProjectDir)External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -199,27 +199,27 @@
     <ClInclude Include="Inc\Aurora\Utils\Utils.h" />
     <ClInclude Include="Inc\Aurora\Wallpaper\WallpaperHelper.h" />
     <ClInclude Include="Inc\Aurora\Core\Renderer.h" />
-    <ClInclude Include="Inc\DDSTextureLoader\DDSTextureLoader11.h" />
-    <ClInclude Include="Inc\ImGUI\imconfig.h" />
-    <ClInclude Include="Inc\ImGUI\imgui.h" />
-    <ClInclude Include="Inc\ImGUI\imgui_impl_dx11.h" />
-    <ClInclude Include="Inc\ImGUI\imgui_impl_win32.h" />
-    <ClInclude Include="Inc\ImGUI\imgui_internal.h" />
-    <ClInclude Include="Inc\ImGUI\imstb_rectpack.h" />
-    <ClInclude Include="Inc\ImGUI\imstb_textedit.h" />
-    <ClInclude Include="Inc\ImGUI\imstb_truetype.h" />
-    <ClInclude Include="Inc\stb_image\stb_image.h" />
+    <ClInclude Include="External\DDSTextureLoader\DDSTextureLoader11.h" />
+    <ClInclude Include="External\ImGUI\imconfig.h" />
+    <ClInclude Include="External\ImGUI\imgui.h" />
+    <ClInclude Include="External\ImGUI\imgui_impl_dx11.h" />
+    <ClInclude Include="External\ImGUI\imgui_impl_win32.h" />
+    <ClInclude Include="External\ImGUI\imgui_internal.h" />
+    <ClInclude Include="External\ImGUI\imstb_rectpack.h" />
+    <ClInclude Include="External\ImGUI\imstb_textedit.h" />
+    <ClInclude Include="External\ImGUI\imstb_truetype.h" />
+    <ClInclude Include="External\stb_image\stb_image.h" />
     <ClInclude Include="Inc\Aurora\Window\Win32Form.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader11.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_demo.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_draw.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_impl_dx11.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_impl_win32.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_tables.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="External\DDSTextureLoader\DDSTextureLoader11.cpp" />
+    <ClCompile Include="External\ImGUI\imgui.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_demo.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_draw.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_impl_dx11.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_impl_win32.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_tables.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="Src\Aurora\Core\Resource\RenderCube.cpp" />
     <ClCompile Include="Src\Aurora\Core\Resource\ComputeBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Core\Camera\FPSCamera.cpp" />
@@ -261,7 +261,7 @@
     <ClCompile Include="Src\Aurora\Core\Resource\RCTexture.cpp" />
     <ClCompile Include="Src\Aurora\Core\Resource\ResDepthTexture.cpp" />
     <ClCompile Include="Src\Aurora\Core\Resource\ResourceTexture.cpp" />
-    <ClCompile Include="Inc\stb_image\stb_image.cpp" />
+    <ClCompile Include="External\stb_image\stb_image.cpp" />
     <ClCompile Include="Src\Aurora\Core\Resource\StructuredBuffer.cpp" />
     <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp" />
     <ClCompile Include="Src\Aurora\Core\PrimitiveBatch.cpp" />

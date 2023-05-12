@@ -6,9 +6,10 @@
 #include<iostream>
 #include<chrono>
 
-#include<NvEnc/nvEncodeAPI.h>
 #include<Aurora/Core/Renderer.h>
 #include<Aurora/Core/DX/Resource/Texture2D.h>
+
+#include<NvEnc/nvEncodeAPI.h>
 
 extern "C"
 {

@@ -217,9 +217,9 @@ public:
 		RenderAPI::get()->Draw(idx, 0);
 		idx = 0;
 
-		RenderAPI::get()->VSSetShader(nullptr);
-		RenderAPI::get()->GSSetShader(nullptr);
-		RenderAPI::get()->PSSetShader(nullptr);
+		RenderAPI::get()->VSUnbindShader();
+		RenderAPI::get()->GSUnbindShader();
+		RenderAPI::get()->PSUnbindShader();
 	}
 
 	~TextBatch()
