@@ -31,7 +31,6 @@
     <FxCompile Include="Displacement.hlsl" />
     <FxCompile Include="IFFT.hlsl" />
     <FxCompile Include="OceanDShader.hlsl" />
-    <FxCompile Include="OceanGenNormalCS.hlsl" />
     <FxCompile Include="OceanHShader.hlsl" />
     <FxCompile Include="OceanPShader.hlsl" />
     <FxCompile Include="OceanVShader.hlsl" />

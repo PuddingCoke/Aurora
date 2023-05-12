@@ -25,15 +25,25 @@ private:
 
 	ComputeTexture* tempTexture;
 
-	ComputeTexture* displacementY;
+	ComputeTexture* Dy;
 
-	ComputeTexture* displacementX;
+	ComputeTexture* Dx;
 
-	ComputeTexture* displacementZ;
+	ComputeTexture* Dz;
 
-	ComputeTexture* displacementXYZ;
+	ComputeTexture* Dyx;
 
-	ComputeTexture* normalTexture;
+	ComputeTexture* Dyz;
+
+	ComputeTexture* Dxx;
+
+	ComputeTexture* Dzz;
+
+	ComputeTexture* Dxz;
+
+	ComputeTexture* Dxyz;
+
+	ComputeTexture* normalJacobian;
 
 	Buffer* patchVertexBuffer;
 
@@ -48,8 +58,6 @@ private:
 	Shader* permutationCS;
 
 	Shader* waveMergeCS;
-
-	Shader* oceanGenNormal;
 
 	Shader* oceanVShader;
 
@@ -90,12 +98,17 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	param{ mapResolution, mapLength, wind, phillipParam, 9.81f },
 	tildeh0k(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
 	tildeh0mkconj(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	displacementY(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	displacementX(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	displacementZ(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
+	Dy(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
+	Dx(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
+	Dz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
+	Dyx(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
+	Dyz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
+	Dxx(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
+	Dzz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
+	Dxz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
 	tempTexture(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	displacementXYZ(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
-	normalTexture(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
+	Dxyz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
+	normalJacobian(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
 	phillipSpectrumShader(new Shader("PhillipsSpectrum.hlsl", ShaderType::Compute)),
 	displacementShader(new Shader("Displacement.hlsl", ShaderType::Compute)),
 	ifftShader(new Shader("IFFT.hlsl", ShaderType::Compute)),
@@ -104,8 +117,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	oceanVShader(new Shader("OceanVShader.hlsl", ShaderType::Vertex)),
 	oceanHShader(new Shader("OceanHShader.hlsl", ShaderType::Hull)),
 	oceanDShader(new Shader("OceanDShader.hlsl", ShaderType::Domain)),
-	oceanPShader(new Shader("OceanPShader.hlsl", ShaderType::Pixel)),
-	oceanGenNormal(new Shader("OceanGenNormalCS.hlsl", ShaderType::Compute))
+	oceanPShader(new Shader("OceanPShader.hlsl", ShaderType::Pixel))
 {
 
 	{
@@ -161,16 +173,20 @@ inline Ocean::~Ocean()
 	delete oceanHShader;
 	delete oceanDShader;
 	delete oceanPShader;
-	delete oceanGenNormal;
 
 	delete tildeh0k;
 	delete tildeh0mkconj;
-	delete displacementY;
-	delete displacementX;
-	delete displacementZ;
+	delete Dy;
+	delete Dx;
+	delete Dz;
+	delete Dyx;
+	delete Dyz;
+	delete Dxx;
+	delete Dzz;
+	delete Dxz;
+	delete Dxyz;
+	delete normalJacobian;
 	delete tempTexture;
-	delete displacementXYZ;
-	delete normalTexture;
 }
 
 inline void Ocean::calculatePhillipTexture() const
@@ -214,26 +230,25 @@ inline void Ocean::update() const
 	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 
 	RenderAPI::get()->CSSetSRV({ tildeh0k,tildeh0mkconj }, 0);
-	RenderAPI::get()->CSSetUAV({ displacementY,displacementX,displacementZ }, 0);
+	RenderAPI::get()->CSSetUAV({ Dy,Dx,Dz,Dyx,Dyz,Dxx,Dzz,Dxz }, 0);
 
 	displacementShader->use();
 
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
-	IFFT(displacementY);
-	IFFT(displacementX);
-	IFFT(displacementZ);
+	IFFT(Dy);
+	IFFT(Dx);
+	IFFT(Dz);
+	IFFT(Dyx);
+	IFFT(Dyz);
+	IFFT(Dxx);
+	IFFT(Dzz);
+	IFFT(Dxz);
 
-	RenderAPI::get()->CSSetSRV({ displacementY,displacementX,displacementZ }, 0);
-	RenderAPI::get()->CSSetUAV({ displacementXYZ }, 0);
+	RenderAPI::get()->CSSetSRV({ Dy,Dx,Dz,Dyx,Dyz,Dxx,Dzz,Dxz }, 0);
+	RenderAPI::get()->CSSetUAV({ Dxyz,normalJacobian }, 0);
 
 	waveMergeCS->use();
-	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
-
-	RenderAPI::get()->CSSetSRV({ displacementXYZ }, 0);
-	RenderAPI::get()->CSSetUAV({ normalTexture }, 0);
-
-	oceanGenNormal->use();
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 }
 
@@ -248,8 +263,8 @@ inline void Ocean::render() const
 	oceanDShader->use();
 	oceanPShader->use();
 
-	RenderAPI::get()->DSSetSRV({ displacementXYZ }, 0);
-	RenderAPI::get()->PSSetSRV({ normalTexture }, 0);
+	RenderAPI::get()->DSSetSRV({ Dxyz }, 0);
+	RenderAPI::get()->PSSetSRV({ normalJacobian }, 0);
 
 	RenderAPI::get()->PSSetSampler({ States::linearWrapSampler }, 0);
 	RenderAPI::get()->DSSetSampler({ States::linearWrapSampler }, 0);
