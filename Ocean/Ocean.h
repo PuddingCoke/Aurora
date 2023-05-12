@@ -45,7 +45,9 @@ private:
 
 	Shader* ifftShader;
 
-	Shader* signCorrectionShader;
+	Shader* permutationCS;
+
+	Shader* waveMergeCS;
 
 	Shader* oceanGenNormal;
 
@@ -97,7 +99,8 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	phillipSpectrumShader(new Shader("PhillipsSpectrum.hlsl", ShaderType::Compute)),
 	displacementShader(new Shader("Displacement.hlsl", ShaderType::Compute)),
 	ifftShader(new Shader("IFFT.hlsl", ShaderType::Compute)),
-	signCorrectionShader(new Shader("SignCorrection.hlsl", ShaderType::Compute)),
+	permutationCS(new Shader("PermutationCS.hlsl", ShaderType::Compute)),
+	waveMergeCS(new Shader("WaveMergeCS.hlsl", ShaderType::Compute)),
 	oceanVShader(new Shader("OceanVShader.hlsl", ShaderType::Vertex)),
 	oceanHShader(new Shader("OceanHShader.hlsl", ShaderType::Hull)),
 	oceanDShader(new Shader("OceanDShader.hlsl", ShaderType::Domain)),
@@ -152,7 +155,8 @@ inline Ocean::~Ocean()
 	delete phillipSpectrumShader;
 	delete displacementShader;
 	delete ifftShader;
-	delete signCorrectionShader;
+	delete permutationCS;
+	delete waveMergeCS;
 	delete oceanVShader;
 	delete oceanHShader;
 	delete oceanDShader;
@@ -200,6 +204,9 @@ inline void Ocean::IFFT(ComputeTexture* const cTexture) const
 
 	ifftShader->use();
 	RenderAPI::get()->Dispatch(param.mapResolution, 1u, 1u);
+
+	permutationCS->use();
+	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 }
 
 inline void Ocean::update() const
@@ -220,7 +227,7 @@ inline void Ocean::update() const
 	RenderAPI::get()->CSSetSRV({ displacementY,displacementX,displacementZ }, 0);
 	RenderAPI::get()->CSSetUAV({ displacementXYZ }, 0);
 
-	signCorrectionShader->use();
+	waveMergeCS->use();
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
 	RenderAPI::get()->CSSetSRV({ displacementXYZ }, 0);

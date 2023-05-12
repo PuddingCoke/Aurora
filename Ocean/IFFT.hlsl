@@ -11,32 +11,31 @@ float2 ComplexMul(float2 z, float2 w)
 }
 
 [numthreads(1024, 1, 1)]
-void main(uint3 groupThreadID : SV_GroupThreadID, uint3 groupID : SV_GroupID)
+void main(int3 groupThreadID : SV_GroupThreadID, int3 groupID : SV_GroupID)
 {
     const float N = 1024.0;
     
-    uint z = groupID.x;
-    uint x = groupThreadID.x;
+    int z = groupID.x;
+    int x = groupThreadID.x;
     
-    uint nj = (reversebits(x) >> (32 - 10)) & (1024 - 1);
-    pingpong[0][nj] = input[uint2(z, x)];
+    int nj = (reversebits(x) >> (32 - 10)) & (1024 - 1);
+    pingpong[0][nj] = input[int2(z, x)];
     
     GroupMemoryBarrierWithGroupSync();
     
-    uint src = 0;
+    int src = 0;
     
     [unroll]
-    for (uint s = 1; s <= 10; ++s)
+    for (int s = 1; s <= 10; ++s)
     {
-        uint m = 1 << s;
-        uint mh = m >> 1;
+        int m = 1 << s;
+        int mh = m >> 1;
         
-        uint k = (x * (1024 / m)) & (1024 - 1);
-        uint i = (x & ~(m - 1));
-        uint j = (x & (mh - 1));
+        int k = (x * (1024 / m)) & (1024 - 1);
+        int i = (x & ~(m - 1));
+        int j = (x & (mh - 1));
         
         float theta = (TWO_PI * float(k)) / N;
-        
         float2 W_N_k = float2(cos(theta), sin(theta));
         
         float2 input1 = pingpong[src][i + j + mh];
@@ -48,5 +47,5 @@ void main(uint3 groupThreadID : SV_GroupThreadID, uint3 groupID : SV_GroupID)
         GroupMemoryBarrierWithGroupSync();
     }
     
-    output[uint2(x, z)] = pingpong[src][x];
+    output[int2(x, z)] = pingpong[src][x];
 }

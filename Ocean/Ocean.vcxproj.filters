@@ -36,7 +36,8 @@
     <FxCompile Include="OceanPShader.hlsl" />
     <FxCompile Include="OceanVShader.hlsl" />
     <FxCompile Include="PhillipsSpectrum.hlsl" />
-    <FxCompile Include="SignCorrection.hlsl" />
+    <FxCompile Include="WaveMergeCS.hlsl" />
     <FxCompile Include="SkyboxPS.hlsl" />
+    <FxCompile Include="PermutationCS.hlsl" />
   </ItemGroup>
 </Project>
