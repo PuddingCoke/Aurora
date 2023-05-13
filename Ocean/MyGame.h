@@ -22,6 +22,12 @@ public:
 
 	ResourceTexture* perlinTexture;
 
+	ResourceTexture* foamBubbleTexture;
+
+	ResourceTexture* foamIntensityTexture;
+
+	ResourceTexture* windGustsTexture;
+
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	MyGame() :
@@ -30,7 +36,10 @@ public:
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
 		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
 		textureCube(new TextureCube("ColdSunsetEquirect.png",2048)),
-		perlinTexture(new ResourceTexture("PerlinNoise.dds"))
+		perlinTexture(new ResourceTexture("PerlinNoise.dds")),
+		foamBubbleTexture(new ResourceTexture("foam_bubbles.dds")),
+		foamIntensityTexture(new ResourceTexture("foam_intensity.dds")),
+		windGustsTexture(new ResourceTexture("wind_gusts.dds"))
 	{
 		camera.registerEvent();
 
@@ -43,6 +52,9 @@ public:
 		delete skyboxPS;
 		delete textureCube;
 		delete perlinTexture;
+		delete foamBubbleTexture;
+		delete foamIntensityTexture;
+		delete windGustsTexture;
 	}
 
 	void update(const float& dt) override
@@ -72,7 +84,7 @@ public:
 		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 		RenderAPI::get()->OMSetDefRTV(depthTexture);
 
-		RenderAPI::get()->PSSetSRV({ textureCube,perlinTexture }, 1);
+		RenderAPI::get()->PSSetSRV({ textureCube,perlinTexture,foamBubbleTexture,foamIntensityTexture,windGustsTexture }, 1);
 
 		ocean.render();
 	}
