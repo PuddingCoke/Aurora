@@ -5,20 +5,20 @@ HHOOK WallpaperHelper::mouseHook;
 void WallpaperHelper::getSystemResolution(UINT& width, UINT& height)
 {
 	HMONITOR monitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTONEAREST);
-	MONITORINFO info = {};
-	info.cbSize = sizeof(MONITORINFO);
-	GetMonitorInfo(monitor, &info);
-	width = info.rcMonitor.right - info.rcMonitor.left;
-	height = info.rcMonitor.bottom - info.rcMonitor.top;
 
-	//以上代码获取的width和height实际上是 windowWidth/dpi*96 windowHeight/dpi*96所以还得获取屏幕dpi
+	MONITORINFOEX monitorInfo;
+	monitorInfo.cbSize = sizeof(MONITORINFOEX);
+	
+	GetMonitorInfo(monitor, &monitorInfo);
 
-	UINT dpi = GetDpiForWindow(GetDesktopWindow());
+	DEVMODE devMode;
+	devMode.dmSize = sizeof(DEVMODE);
+	devMode.dmDriverExtra = 0;
 
-	std::cout << "[class WallpaperHelper] system dpi " << dpi << "\n";
+	EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
 
-	width = width * dpi / 96u;
-	height = height * dpi / 96u;
+	width = devMode.dmPelsWidth;
+	height = devMode.dmPelsHeight;
 }
 
 HWND WallpaperHelper::getWallpaperWindow()
