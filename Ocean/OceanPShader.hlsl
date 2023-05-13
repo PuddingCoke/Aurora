@@ -31,7 +31,7 @@ SamplerState linearSampler : register(s0);
 #define ONE_OVER_4PI 0.0795774715459476
 
 static const float3 L = normalize(float3(1.0, 1.0, 1.0));
-static const float3 oceanColor = float3(0.0000, 0.2307, 0.3613);
+static const float3 oceanColor = float3(0.0000, 0.3307, 0.3613);
 static const float3 sunColor = float3(1.0, 1.0, 1.0);
 static const float3 perlinFrequency = float3(1.12, 0.59, 0.23);
 static const float3 perlinGradient = float3(0.014, 0.016, 0.022);
