@@ -332,7 +332,7 @@ Aurora::Aurora() :
 
 void Aurora::iniWindow(const std::wstring& title, const UINT& screenWidth, const UINT& screenHeight)
 {
-	static LRESULT(*windowCallBack)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = nullptr;
+	LRESULT(*windowCallBack)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = nullptr;
 
 	DWORD windowStyle = normalWndStyle;
 
@@ -346,28 +346,19 @@ void Aurora::iniWindow(const std::wstring& title, const UINT& screenWidth, const
 	case Configuration::EngineUsage::Normal:
 		std::cout << "[class Aurora] usage normal\n";
 		windowStyle = normalWndStyle;
-		windowCallBack = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
-		{
-			return Aurora::get().WindowProc(hwnd, msg, wParam, lParam);
-		};
+		windowCallBack = Aurora::WindowProc;
 		break;
 
 	case Configuration::EngineUsage::Wallpaper:
 		std::cout << "[class Aurora] usage wallpaper\n";
 		windowStyle = wallpaperWndStyle;
-		windowCallBack = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
-		{
-			return Aurora::get().WallpaperProc(hwnd, msg, wParam, lParam);
-		};
+		windowCallBack = Aurora::WallpaperProc;
 		break;
 
 	case Configuration::EngineUsage::AnimationRender:
 		std::cout << "[class Aurora] usage animation render\n";
 		windowStyle = normalWndStyle;
-		windowCallBack = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->LRESULT
-		{
-			return Aurora::get().WallpaperProc(hwnd, msg, wParam, lParam);
-		};
+		windowCallBack = Aurora::WallpaperProc;
 		break;
 	}
 

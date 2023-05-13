@@ -45,12 +45,7 @@ HWND WallpaperHelper::getWallpaperWindow()
 
 void WallpaperHelper::registerHOOK()
 {
-	static LRESULT(*mouseProc)(int nCode, WPARAM wParam, LPARAM lParam) = [](int nCode, WPARAM wParam, LPARAM lParam)
-	{
-		return MouseHookProc(nCode, wParam, lParam);
-	};
-
-	mouseHook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, NULL, 0);
+	mouseHook = SetWindowsHookEx(WH_MOUSE_LL, WallpaperHelper::MouseHookProc, NULL, 0);
 }
 
 void WallpaperHelper::unregisterHOOK()
