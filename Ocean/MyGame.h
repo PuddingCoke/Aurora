@@ -3,6 +3,7 @@
 #include<Aurora/Game.h>
 #include<Aurora/Core/ResourceEssential.h>
 #include<Aurora/Core/Camera/FPSCamera.h>
+#include<Aurora/Core/Effect/BloomEffect.h>
 
 #include"Ocean.h"
 
@@ -15,6 +16,8 @@ public:
 	Ocean ocean;
 
 	Shader* skyboxPS;
+
+	RenderTexture* originTexture;
 
 	DepthTexture* depthTexture;
 
@@ -30,16 +33,20 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
+	BloomEffect effect;
+
 	MyGame() :
 		camera({ 1024,100,3584 }, { 0,-0.2f,-1.f }, { 0,1,0 }, 100),
 		ocean(1024, 512, { 20.f,0.f }, 0.000003f),
-		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
+		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, false)),
 		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
-		textureCube(new TextureCube("ColdSunsetEquirect.png",2048)),
+		textureCube(new TextureCube("ColdSunsetEquirect.png", 2048)),
 		perlinTexture(new ResourceTexture("PerlinNoise.dds")),
 		foamBubbleTexture(new ResourceTexture("foam_bubbles.dds")),
 		foamIntensityTexture(new ResourceTexture("foam_intensity.dds")),
-		windGustsTexture(new ResourceTexture("wind_gusts.dds"))
+		windGustsTexture(new ResourceTexture("wind_gusts.dds")),
+		effect(Graphics::getWidth(), Graphics::getHeight())
 	{
 		camera.registerEvent();
 
@@ -48,6 +55,7 @@ public:
 
 	~MyGame()
 	{
+		delete originTexture;
 		delete depthTexture;
 		delete skyboxPS;
 		delete textureCube;
@@ -62,12 +70,17 @@ public:
 		camera.applyInput(dt);
 	}
 
+	void imGUICall() override
+	{
+		effect.imGUIEffectModifier();
+	}
+
 	void render()
 	{
 		ocean.update();
 
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::AliceBlue);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		originTexture->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -82,11 +95,27 @@ public:
 		RenderAPI::get()->DrawCube();
 
 		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
-		RenderAPI::get()->OMSetDefRTV(depthTexture);
+		RenderAPI::get()->OMSetRTV({ originTexture }, depthTexture);
 
 		RenderAPI::get()->PSSetSRV({ textureCube,perlinTexture,foamBubbleTexture,foamIntensityTexture,windGustsTexture }, 1);
 
 		ocean.render();
+
+		ShaderResourceView* bloomSRV = effect.process(originTexture);
+
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->OMSetBlendState(nullptr);
+
+		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		RenderAPI::get()->OMSetDefRTV(nullptr);
+
+		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+
+		RenderAPI::fullScreenVS->use();
+		RenderAPI::fullScreenPS->use();
+
+		RenderAPI::get()->DrawQuad();
 	}
 
 
