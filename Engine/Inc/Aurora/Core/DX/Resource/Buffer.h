@@ -18,7 +18,7 @@ public:
 
 	virtual ~Buffer();
 
-	void updateSubresource(const void* const data, const unsigned int& subresource) const;
+	void updateSubresource(const void* const data) const;
 
 	D3D11_MAPPED_SUBRESOURCE map(const D3D11_MAP& mapType = D3D11_MAP_WRITE_DISCARD, const unsigned int& mapFlags = 0) const;
 

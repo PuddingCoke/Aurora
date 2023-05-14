@@ -11,9 +11,9 @@ ID3D11Buffer* Buffer::getBuffer() const
 	return buffer.Get();
 }
 
-void Buffer::updateSubresource(const void* const data, const unsigned int& subresource) const
+void Buffer::updateSubresource(const void* const data) const
 {
-	Renderer::getContext()->UpdateSubresource(buffer.Get(), subresource, nullptr, data, 0, 0);
+	Renderer::getContext()->UpdateSubresource(buffer.Get(), 0, nullptr, data, 0, 0);
 }
 
 Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage, const void* const data, const UINT& CPUAccessFlags, const UINT& miscFlags, const UINT& structureByteStride) :

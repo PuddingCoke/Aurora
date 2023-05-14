@@ -52,9 +52,9 @@ private:
 
 	static void setView(const DirectX::XMMATRIX& view);
 
-	Buffer* projBuffer;
+	ConstantBuffer* projBuffer;
 
-	PerframeCB* viewBuffer;
+	ConstantBuffer* viewBuffer;
 
 	DirectX::XMMATRIX projMatrix;
 

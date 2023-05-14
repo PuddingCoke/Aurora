@@ -27,9 +27,9 @@ const DirectX::XMVECTOR& Camera::getEye()
 	return instance->viewInfo.eyePos;
 }
 
-Camera::Camera():
-	projBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DEFAULT)),
-	viewBuffer(new PerframeCB(sizeof(ViewInfo)))
+Camera::Camera() :
+	projBuffer(new ConstantBuffer(sizeof(DirectX::XMMATRIX), D3D11_USAGE_DEFAULT)),
+	viewBuffer(new ConstantBuffer(sizeof(ViewInfo), D3D11_USAGE_DYNAMIC))
 {
 	instance = this;
 }
@@ -44,7 +44,7 @@ void Camera::setProj(const DirectX::XMMATRIX& proj)
 {
 	instance->projMatrix = proj;
 	const DirectX::XMMATRIX projTrans = DirectX::XMMatrixTranspose(proj);
-	instance->projBuffer->updateSubresource(&projTrans, 0);
+	instance->projBuffer->updateSubresource(&projTrans);
 }
 
 void Camera::setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar)
@@ -61,7 +61,8 @@ void Camera::setView(const DirectX::XMMATRIX& view)
 	instance->viewInfo.viewProj = DirectX::XMMatrixTranspose(instance->viewMatrix * instance->projMatrix);
 	instance->viewInfo.normalMatrix = DirectX::XMMatrixInverse(nullptr, instance->viewMatrix);
 
-	PerframeCB::updateData(instance->viewBuffer, &instance->viewInfo, sizeof(ViewInfo));
+	memcpy(instance->viewBuffer->map().pData, &instance->viewInfo, sizeof(ViewInfo));
+	instance->viewBuffer->unmap();
 }
 
 void Camera::setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up)

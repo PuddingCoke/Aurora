@@ -3,7 +3,7 @@
 #ifndef _GRAPHICS_H_
 #define _GRAPHICS_H_
 
-#include<Aurora/Core/Resource/PerframeCB.h>
+#include<Aurora/Core/Resource/ConstantBuffer.h>
 #include<Aurora/Utils/Random.h>
 
 class Graphics
@@ -44,7 +44,7 @@ private:
 
 	void updateDeltaTimeBuffer();
 
-	PerframeCB* deltaTimeBuffer;
+	ConstantBuffer* deltaTimeBuffer;
 
 	struct RecordConfig
 	{

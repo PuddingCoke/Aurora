@@ -183,6 +183,7 @@ void Aurora::runGame()
 			ImGui::NewFrame();
 
 			ImGui::Begin("Debug Window");
+			ImGui::Text("TimeElapsed %.2f", Graphics::getSTime());
 			ImGui::Text("FrameTime %.8f", ImGui::GetIO().DeltaTime * 1000.f);
 			ImGui::Text("FrameRate %.1f", ImGui::GetIO().Framerate);
 		}
