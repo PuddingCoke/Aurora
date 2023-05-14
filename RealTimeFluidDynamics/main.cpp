@@ -7,7 +7,7 @@ using EngineUsage = Configuration::EngineUsage;
 
 int main(int argc, const char* argv[])
 {
-	Configuration config(1920, 1080, L"Aurora Test", CameraType::Orthogonal, 1, EngineUsage::Wallpaper, true);
+	Configuration config(1920, 1080, L"Aurora Test", CameraType::Orthogonal, 1, EngineUsage::Normal, true);
 	if (!Aurora::get().iniEngine(config))
 	{
 		Aurora::get().iniGame(new MyGame());

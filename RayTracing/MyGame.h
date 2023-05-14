@@ -106,7 +106,7 @@ public:
 
 		rayTracingPS->use();
 
-		for (unsigned int i = 0; i < 50; i++)
+		for (unsigned int i = 0; i < 10; i++)
 		{
 			temporalAccumulationParam.frameCount++;
 			temporalAccumulationParam.randomSeed = Random::Float() * 50.f;

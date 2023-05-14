@@ -15,11 +15,11 @@ static const float lambda = 1.0;
 [numthreads(32, 32, 1)]
 void main(uint2 DTid : SV_DispatchThreadID)
 {
-    float2 gradient = float2(-(Dyx[DTid].x / (1.0 + lambda * Dxx[DTid].x)), -(Dyz[DTid].y / (1.0 + lambda * Dzz[DTid].x)));
+    float2 slope = float2(Dyx[DTid].x / (1.0 + lambda * Dxx[DTid].x), Dyz[DTid].x / (1.0 + lambda * Dzz[DTid].x));
     
     float jacobian = (1 + lambda * Dxx[DTid].x) * (1 + lambda * Dzz[DTid].x) - lambda * lambda * Dxz[DTid].x * Dxz[DTid].x;
  
     Dxyz[DTid] = float4(lambda * Dx[DTid].x, Dy[DTid].x, lambda * Dz[DTid].x, 1.0);
     
-    normalJacobian[DTid] = float4(normalize(float3(gradient.x, 1.0, gradient.y)), jacobian);
+    normalJacobian[DTid] = float4(normalize(float3(-slope.x, 1.0, -slope.y)), jacobian);
 }
