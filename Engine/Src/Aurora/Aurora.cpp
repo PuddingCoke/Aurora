@@ -10,8 +10,14 @@ Aurora& Aurora::get()
 int Aurora::iniEngine(const Configuration& config)
 {
 	usage = config.usage;
-	enableDebug = config.enableDebug;
 	enableImGui = (config.usage == Configuration::EngineUsage::Normal && config.enableImGui);
+	enableDebug = false;
+
+#ifdef _DEBUG
+
+	enableDebug = true;
+
+#endif // DEBUG
 
 	if (enableImGui)
 	{
@@ -332,44 +338,24 @@ Aurora::Aurora() :
 
 void Aurora::iniWindow(const std::wstring& title, const UINT& screenWidth, const UINT& screenHeight)
 {
-	LRESULT(*windowCallBack)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = nullptr;
-
-	DWORD windowStyle = normalWndStyle;
-
-	UINT startX = 0;
-
-	UINT startY = 0;
-
 	switch (usage)
 	{
 	default:
 	case Configuration::EngineUsage::Normal:
 		std::cout << "[class Aurora] usage normal\n";
-		windowStyle = normalWndStyle;
-		windowCallBack = Aurora::WindowProc;
+		winform = new Win32Form(title, 100, 100, screenWidth, screenHeight, normalWndStyle, Aurora::WindowProc);
 		break;
 
 	case Configuration::EngineUsage::Wallpaper:
 		std::cout << "[class Aurora] usage wallpaper\n";
-		windowStyle = wallpaperWndStyle;
-		windowCallBack = Aurora::WallpaperProc;
+		winform = new Win32Form(title, 0, 0, screenWidth, screenHeight, wallpaperWndStyle, Aurora::WallpaperProc);
 		break;
 
 	case Configuration::EngineUsage::AnimationRender:
 		std::cout << "[class Aurora] usage animation render\n";
-		windowStyle = normalWndStyle;
-		windowCallBack = Aurora::WallpaperProc;
+		winform = new Win32Form(title, 100, 100, screenWidth, screenHeight, normalWndStyle, Aurora::WallpaperProc);
 		break;
 	}
-
-
-	if (usage != Configuration::EngineUsage::Wallpaper)
-	{
-		startX = 100;
-		startY = 100;
-	}
-
-	winform = new Win32Form(title, startX, startY, screenWidth, screenHeight, windowStyle, windowCallBack);
 
 	if (usage == Configuration::EngineUsage::Wallpaper)
 	{
@@ -401,6 +387,7 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 	new Graphics(screenWidth, screenHeight, msaaLevel);
 
 	new Camera();
+
 
 	if (usage == Configuration::EngineUsage::AnimationRender)
 	{

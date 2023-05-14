@@ -48,10 +48,6 @@ public:
 
 	void iniGame(Game* const game);
 
-	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-	static LRESULT CALLBACK WallpaperProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 private:
 
 	static Aurora instance;
@@ -87,6 +83,10 @@ private:
 	static constexpr DWORD normalWndStyle = WS_CAPTION | WS_SYSMENU;
 
 	static constexpr DWORD wallpaperWndStyle = WS_POPUP;
+
+	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+	static LRESULT CALLBACK WallpaperProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 };
 
