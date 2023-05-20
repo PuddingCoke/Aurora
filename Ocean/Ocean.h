@@ -119,6 +119,9 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	oceanDShader(new Shader("OceanDShader.hlsl", ShaderType::Domain)),
 	oceanPShader(new Shader("OceanPShader.hlsl", ShaderType::Pixel))
 {
+	float clearValue[] = { 999,999,999,999 };
+
+	normalJacobian->clear(clearValue);
 
 	{
 		D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[2] =

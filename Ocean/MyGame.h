@@ -25,27 +25,18 @@ public:
 
 	ResourceTexture* perlinTexture;
 
-	ResourceTexture* foamBubbleTexture;
-
-	ResourceTexture* foamIntensityTexture;
-
-	ResourceTexture* windGustsTexture;
-
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	BloomEffect effect;
 
 	MyGame() :
 		camera({ 1024,100,3584 }, { 0,-0.2f,-1.f }, { 0,1,0 }, 100),
-		ocean(1024, 512, { 20.f,0.f }, 0.000003f),
+		ocean(1024, 512, { 15.f,0.f }, 0.000003f),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, false)),
 		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
 		textureCube(new TextureCube("ColdSunsetEquirect.png", 2048)),
 		perlinTexture(new ResourceTexture("PerlinNoise.dds")),
-		foamBubbleTexture(new ResourceTexture("foam_bubbles.dds")),
-		foamIntensityTexture(new ResourceTexture("foam_intensity.dds")),
-		windGustsTexture(new ResourceTexture("wind_gusts.dds")),
 		effect(Graphics::getWidth(), Graphics::getHeight())
 	{
 		camera.registerEvent();
@@ -60,9 +51,6 @@ public:
 		delete skyboxPS;
 		delete textureCube;
 		delete perlinTexture;
-		delete foamBubbleTexture;
-		delete foamIntensityTexture;
-		delete windGustsTexture;
 	}
 
 	void update(const float& dt) override
@@ -97,7 +85,7 @@ public:
 		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 		RenderAPI::get()->OMSetRTV({ originTexture }, depthTexture);
 
-		RenderAPI::get()->PSSetSRV({ textureCube,perlinTexture,foamBubbleTexture,foamIntensityTexture,windGustsTexture }, 1);
+		RenderAPI::get()->PSSetSRV({ textureCube,perlinTexture }, 1);
 
 		ocean.render();
 
