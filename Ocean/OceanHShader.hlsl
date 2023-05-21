@@ -23,7 +23,7 @@ cbuffer ProjMatrix : register(b0)
 
 cbuffer ViewMatrix : register(b1)
 {
-    matrix view;    
+    matrix view;
     float4 viewPos;
 }
 
@@ -32,13 +32,26 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 	uint PatchID : SV_PrimitiveID)
 {
     HS_CONSTANT_DATA_OUTPUT Output;
+    
+    float3 centerPos = float3(0.0, 0.0, 0.0);
+    
+    centerPos += ip[0].position;
+    centerPos += ip[1].position;
+    centerPos += ip[2].position;
+    centerPos += ip[3].position;
 
-    Output.EdgeTessFactor[0] =
-		Output.EdgeTessFactor[1] =
-		Output.EdgeTessFactor[2] =
-		Output.EdgeTessFactor[3] =
-		Output.InsideTessFactor[0] =
-		Output.InsideTessFactor[1] = 16.0;
+    centerPos /= 4.0;
+    
+    float dist = distance(viewPos.xyz, centerPos);
+    
+    float tessFactor = 8.0 + distance(ip[0].position, ip[1].position) / dist;
+    
+    Output.EdgeTessFactor[0] = tessFactor;
+    Output.EdgeTessFactor[1] = tessFactor;
+    Output.EdgeTessFactor[2] = tessFactor;
+    Output.EdgeTessFactor[3] = tessFactor;
+    Output.InsideTessFactor[0] = (Output.EdgeTessFactor[0] + Output.EdgeTessFactor[1] + Output.EdgeTessFactor[2]) / 3.0;
+    Output.InsideTessFactor[1] = (Output.EdgeTessFactor[2] + Output.EdgeTessFactor[3] + Output.EdgeTessFactor[0]) / 3.0;
 
     return Output;
 }

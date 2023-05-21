@@ -99,7 +99,7 @@ public:
 
 		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
-
+		
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 

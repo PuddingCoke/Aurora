@@ -69,6 +69,8 @@ private:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
+	ComPtr<ID3D11RasterizerState> wireState;
+
 	static constexpr unsigned int patchSize = 32;
 
 	struct Param
@@ -157,6 +159,14 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 		}
 
 		patchVertexBuffer = new Buffer(sizeof(Vertex) * vertices.size(), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE, vertices.data());
+	}
+
+	{
+		D3D11_RASTERIZER_DESC desc = {};
+		desc.CullMode = D3D11_CULL_BACK;
+		desc.FillMode = D3D11_FILL_WIREFRAME;
+		
+		Renderer::getDevice()->CreateRasterizerState(&desc, wireState.ReleaseAndGetAddressOf());
 	}
 
 	calculatePhillipTexture();
