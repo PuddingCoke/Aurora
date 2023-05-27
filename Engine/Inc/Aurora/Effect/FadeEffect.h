@@ -35,7 +35,7 @@ protected:
 
 	Shader* fadePShader;
 
-	Buffer* fadeBuffer;
+	ConstantBuffer* fadeBuffer;
 
 };
 

@@ -239,6 +239,7 @@ public:
 		ImGui::SliderFloat("irradiance variance bias", &irradianceVolumeParam.irradianceVarianceBias, -5.f, 5.f);
 		ImGui::SliderFloat("irradiance chebyshev bias", &irradianceVolumeParam.irradianceChebyshevBias, -5.f, 5.f);
 		bloomEffect.imGUIEffectModifier();
+		fxaaEffect.imGUIEffectModifier();
 	}
 
 	void update(const float& dt)

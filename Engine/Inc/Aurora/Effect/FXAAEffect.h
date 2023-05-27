@@ -54,7 +54,7 @@ private:
 		float fxaaQualityEdgeThresholdMin;
 	} fxaaParam;
 
-	Buffer* fxaaParamBuffer;
+	ConstantBuffer* fxaaParamBuffer;
 
 	Shader* colorToLuma;
 

@@ -2,7 +2,7 @@
 
 FadeEffect::FadeEffect(const unsigned int& width, const unsigned int& height) :
 	EffectBase(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT), fadeParam{ 3.f,0.f,0.f,0.f },
-	fadeBuffer(new BUFFERDYN(FadeParam))
+	fadeBuffer(new ConstantBuffer(sizeof(FadeParam), D3D11_USAGE_DYNAMIC))
 {
 	compileShaders();
 

@@ -120,9 +120,9 @@ private:
 
 	const unsigned int bloomHeight;
 
-	Buffer* blurParamBuffer[blurSteps];
+	ConstantBuffer* blurParamBuffer[blurSteps];
 
-	Buffer* bloomParamBuffer;
+	ConstantBuffer* bloomParamBuffer;
 
 	struct BloomParam
 	{

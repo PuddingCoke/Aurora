@@ -21,13 +21,13 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 			blurParam[i].iteration = iteration[i];
 			blurParam[i].sigma = sigma[i];
 
-			blurParamBuffer[i] = new BUFFERDYN(BlurParam);
+			blurParamBuffer[i] = new ConstantBuffer(sizeof(BlurParam), D3D11_USAGE_DYNAMIC);
 
 			updateCurve(i);
 		}
 	}
 
-	bloomParamBuffer = new BUFFERDYN(BloomParam);
+	bloomParamBuffer = new ConstantBuffer(sizeof(BloomParam), D3D11_USAGE_DYNAMIC);
 
 	bloomParam.exposure = 1.f;
 	bloomParam.gamma = 1.f;

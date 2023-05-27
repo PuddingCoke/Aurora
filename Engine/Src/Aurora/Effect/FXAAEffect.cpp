@@ -6,7 +6,7 @@ FXAAEffect::FXAAEffect(const UINT& width, const UINT& height) :
 {
 	compileShaders();
 
-	fxaaParamBuffer = new Buffer(sizeof(FXAAParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &fxaaParam, D3D11_CPU_ACCESS_WRITE);
+	fxaaParamBuffer = new ConstantBuffer(sizeof(FXAAParam), D3D11_USAGE_DYNAMIC, &fxaaParam);
 }
 
 FXAAEffect::~FXAAEffect()
