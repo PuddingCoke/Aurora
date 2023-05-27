@@ -8,6 +8,7 @@
 #include<string>
 #include<fstream>
 #include<sstream>
+#include<algorithm>
 #include<Windows.h>
 
 class Utils
@@ -28,20 +29,19 @@ public:
 
 		File(const File&) = delete;
 
-		static std::string readAllText(const std::string& filePath);
+		static std::string backslashToSlash(const std::string& filePath);
 
-		static std::string getExtension(const std::string& fileName);
+		static std::string getParentFolder(const std::string& filePath);
+
+		static std::string getExtension(const std::string& filePath);
 	};
 
 private:
 
 	friend class Aurora;
 
-	static void ini();
-
 	static std::string exeRootPath;
 
 };
-
 
 #endif // !_UTILITY_H_

@@ -3,6 +3,8 @@
 #ifndef _RENDERTARGETVIEW_H_
 #define _RENDERTARGETVIEW_H_
 
+#include<DirectXColors.h>
+
 #include<Aurora/Core/Renderer.h>
 
 class RenderTargetView

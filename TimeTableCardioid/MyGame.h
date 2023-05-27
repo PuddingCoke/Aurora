@@ -5,8 +5,8 @@
 #include<Aurora/Input/Mouse.h>
 #include<Aurora/Core/PrimitiveBatch.h>
 #include<Aurora/Input/Event.h>
-#include<Aurora/Core/States.h>
-#include<Aurora/Core/Resource/RenderTexture.h>
+#include<Aurora/EngineAPI/States.h>
+#include<Aurora/Resource/RenderTexture.h>
 #include<Aurora/Utils/Color.h>
 #include<Aurora/Utils/Timer.h>
 #include<Aurora/Utils/Math.h>

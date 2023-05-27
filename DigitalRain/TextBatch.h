@@ -2,8 +2,8 @@
 
 #include<unordered_map>
 
-#include<Aurora/Core/RenderAPI.h>
-#include<Aurora/Core/Resource/ResourceTexture.h>
+#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/Resource/ResourceTexture.h>
 
 class TextBatch
 {

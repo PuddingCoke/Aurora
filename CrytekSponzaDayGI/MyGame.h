@@ -2,7 +2,7 @@
 
 #include<Aurora/Game.h>
 
-#include<Aurora/Core/Camera/FPSCamera.h>
+#include<Aurora/Camera/FPSCamera.h>
 
 #include"GlobalIllumination.h"
 

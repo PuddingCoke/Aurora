@@ -4,12 +4,12 @@
 #include<Aurora/Game.h>
 #include<Aurora/Input/Mouse.h>
 #include<Aurora/Input/Event.h>
-#include<Aurora/Core/States.h>
+#include<Aurora/EngineAPI/States.h>
 #include<Aurora/Core/PrimitiveBatch.h>
-#include<Aurora/Core/Resource/DoubleRTV.h>
+#include<Aurora/Resource/DoubleRTV.h>
 #include<Aurora/Utils/Color.h>
 #include<Aurora/Utils/Timer.h>
-#include<Aurora/Core/Effect/FadeEffect.h>
+#include<Aurora/Effect/FadeEffect.h>
 
 #include"Objects.h"
 

@@ -3,7 +3,7 @@
 #ifndef _OBJECTS_H_
 #define _OBJECTS_H_
 
-#include<Aurora/Core/Graphics.h>
+#include<Aurora/EngineAPI/Graphics.h>
 #include<Aurora/Utils/Color.h>
 
 #include<iostream>

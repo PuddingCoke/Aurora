@@ -5,9 +5,9 @@
 #include<iostream>
 
 #include<Aurora/Game.h>
-#include<Aurora/Core/States.h>
+#include<Aurora/EngineAPI/States.h>
 #include<Aurora/Core/PrimitiveBatch.h>
-#include<Aurora/Core/Resource/RenderTexture.h>
+#include<Aurora/Resource/RenderTexture.h>
 #include<Aurora/Utils/Color.h>
 #include<Aurora/Input/Event.h>
 

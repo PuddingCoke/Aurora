@@ -42,12 +42,12 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 
 		if (enableDebug)
 		{
-			std::cout << "[class Renderer] enable debug!\n";
+			std::cout << "[class Renderer] enable debug\n";
 			deviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
 		}
 		else
 		{
-			std::cout << "[class Renderer] disable debug!\n";
+			std::cout << "[class Renderer] disable debug\n";
 		}
 
 		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, ARRAYSIZE(featureLevels),
@@ -117,18 +117,26 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 
 	UINT vendorID = adapterDesc.VendorId;
 
-	std::cout << "[class Renderer] GPU VendorID 0x" << std::hex << vendorID << std::dec << "\n";
+	std::cout << "[class Renderer] GPU VendorID 0x" << std::hex << vendorID << std::dec << " Manufacturer:";
 
 	if (vendorID == 0x10DE)
 	{
+		std::cout << "NVIDIA\n";
 		gpuManufacturer = GPUManufacturer::NVIDIA;
 	}
 	else if (vendorID == 0x1002 || vendorID == 0x1022)
 	{
+		std::cout << "AMD\n";
 		gpuManufacturer = GPUManufacturer::AMD;
 	}
 	else if (vendorID == 0x163C || vendorID == 0x8086 || vendorID == 0x8087)
 	{
+		std::cout << "INTEL\n";
 		gpuManufacturer = GPUManufacturer::INTEL;
+	}
+	else
+	{
+		std::cout << "UNKNOWN\n";
+		gpuManufacturer = GPUManufacturer::UNKNOWN;
 	}
 }

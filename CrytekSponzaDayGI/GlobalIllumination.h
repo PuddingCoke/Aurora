@@ -1,20 +1,20 @@
 #pragma once
 
-#include<Aurora/Core/Resource/ComputeTexture.h>
-#include<Aurora/Core/Resource/StructuredBuffer.h>
-#include<Aurora/Core/Resource/RenderTexture.h>
-#include<Aurora/Core/Resource/ResDepthTexture.h>
-#include<Aurora/Core/Resource/CTextureWithMips.h>
-#include<Aurora/Core/Resource/RenderCube.h>
-#include<Aurora/Core/Resource/DepthCube.h>
+#include<Aurora/Resource/ComputeTexture.h>
+#include<Aurora/Resource/StructuredBuffer.h>
+#include<Aurora/Resource/RenderTexture.h>
+#include<Aurora/Resource/ResDepthTexture.h>
+#include<Aurora/Resource/CTextureWithMips.h>
+#include<Aurora/Resource/RenderCube.h>
+#include<Aurora/Resource/DepthCube.h>
 #include<Aurora/Core/Shader.h>
-#include<Aurora/Core/RenderAPI.h>
+#include<Aurora/EngineAPI/RenderAPI.h>
 #include<Aurora/Utils/Math.h>
 #include<Aurora/Input/Keyboard.h>
 
-#include<Aurora/Core/Effect/HBAOEffect.h>
-#include<Aurora/Core/Effect/BloomEffect.h>
-#include<Aurora/Core/Effect/FXAAEffect.h>
+#include<Aurora/Effect/HBAOEffect.h>
+#include<Aurora/Effect/BloomEffect.h>
+#include<Aurora/Effect/FXAAEffect.h>
 
 #include"Scene.h"
 

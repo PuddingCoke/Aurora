@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<Aurora/Core/Graphics.h>
+#include<Aurora/EngineAPI/Graphics.h>
 #include<Aurora/Utils/Timer.h>
 #include<Aurora/Utils/Random.h>
 

@@ -2,7 +2,7 @@
 
 #include<Aurora/Core/ParticleSystem.h>
 #include<Aurora/Core/DX/Resource/Buffer.h>
-#include<Aurora/Core/Resource/ComputeBuffer.h>
+#include<Aurora/Resource/ComputeBuffer.h>
 
 class StrangeAttractor :public ParticleSystem
 {

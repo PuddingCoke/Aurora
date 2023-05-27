@@ -14,7 +14,8 @@ enum class GPUManufacturer
 {
 	NVIDIA,
 	AMD,
-	INTEL
+	INTEL,
+	UNKNOWN
 };
 
 class Renderer

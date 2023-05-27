@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/Core/Camera/OrbitCamera.h>
-#include<Aurora/Core/ResourceEssential.h>
+#include<Aurora/Camera/OrbitCamera.h>
+#include<Aurora/EngineAPI/ResourceEssential.h>
 
 #include"Scene.h"
 

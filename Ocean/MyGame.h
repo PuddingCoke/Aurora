@@ -1,9 +1,9 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/Core/ResourceEssential.h>
-#include<Aurora/Core/Camera/FPSCamera.h>
-#include<Aurora/Core/Effect/BloomEffect.h>
+#include<Aurora/EngineAPI/ResourceEssential.h>
+#include<Aurora/Camera/FPSCamera.h>
+#include<Aurora/Effect/BloomEffect.h>
 
 #include"Ocean.h"
 

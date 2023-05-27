@@ -4,15 +4,15 @@
 #include<Aurora/Game.h>
 #include<Aurora/Input/Mouse.h>
 #include<Aurora/Input/Event.h>
-#include<Aurora/Core/States.h>
-#include<Aurora/Core/Resource/RenderTexture.h>
-#include<Aurora/Core/Resource/ResDepthTexture.h>
-#include<Aurora/Core/Resource/DepthTexture.h>
-#include<Aurora/Core/Camera/OrbitCamera.h>
+#include<Aurora/EngineAPI/States.h>
+#include<Aurora/Resource/RenderTexture.h>
+#include<Aurora/Resource/ResDepthTexture.h>
+#include<Aurora/Resource/DepthTexture.h>
+#include<Aurora/Camera/OrbitCamera.h>
 
 #include"StrangeAttractor.h"
 
-#include<Aurora/Core/Effect/BloomEffect.h>
+#include<Aurora/Effect/BloomEffect.h>
 
 //关于这种吸引子
 //https://gereshes.com/2020/01/13/attracted-to-attractors/

@@ -16,21 +16,22 @@
 #include<ImGUI/imgui_impl_win32.h>
 #include<ImGUI/imgui_impl_dx11.h>
 
-#include<Aurora/Core/Camera.h>
-#include<Aurora/Core/Graphics.h>
-#include<Aurora/Core/States.h>
-#include<Aurora/Core/RenderAPI.h>
 #include<Aurora/Configuration.h>
 #include<Aurora/Game.h>
+
+#include<Aurora/EngineAPI/Camera.h>
+#include<Aurora/EngineAPI/Graphics.h>
+#include<Aurora/EngineAPI/States.h>
+#include<Aurora/EngineAPI/RenderAPI.h>
 #include<Aurora/Input/Keyboard.h>
 #include<Aurora/Input/Mouse.h>
 #include<Aurora/Utils/Math.h>
 #include<Aurora/Utils/Utils.h>
-#include<Aurora/Core/Resource/PerframeCB.h>
-#include<Aurora/Core/Resource/TextureCube.h>
+#include<Aurora/Resource/PerframeCB.h>
+#include<Aurora/Resource/TextureCube.h>
 
-#include"VideoEncoder/NvidiaEncoder.h"
-#include"Wallpaper/WallpaperHelper.h"
+#include<Aurora/VideoEncoder/NvidiaEncoder.h>
+#include<Aurora/Wallpaper/WallpaperHelper.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -44,7 +45,7 @@ public:
 
 	static Aurora& get();
 
-	int iniEngine(const Configuration& config);
+	int iniEngine(const Configuration& config, const int& argc, const char* argv[]);
 
 	void iniGame(Game* const game);
 
@@ -74,7 +75,7 @@ private:
 
 	Aurora();
 
-	void iniWindow(const std::wstring& title,const UINT& screenWidth, const UINT& screenHeight);
+	void iniWindow(const std::wstring& title, const UINT& screenWidth, const UINT& screenHeight);
 
 	void iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const UINT& screenHeight);
 

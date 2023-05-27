@@ -7,8 +7,16 @@ Aurora& Aurora::get()
 	return instance;
 }
 
-int Aurora::iniEngine(const Configuration& config)
+int Aurora::iniEngine(const Configuration& config, const int& argc, const char* argv[])
 {
+	{
+		std::string exeRootPath = argv[0];
+
+		Utils::exeRootPath = Utils::File::backslashToSlash(Utils::File::getParentFolder(exeRootPath));
+
+		std::cout << "[class Aurora] executable path " << Utils::getRootFolder() << "\n";
+	}
+
 	usage = config.usage;
 	enableImGui = (config.usage == Configuration::EngineUsage::Normal && config.enableImGui);
 	enableDebug = false;
@@ -23,8 +31,6 @@ int Aurora::iniEngine(const Configuration& config)
 	{
 		std::cout << "[class Aurora] enable ImGUI\n";
 	}
-
-	Utils::ini();
 
 	Keyboard::ini();
 
@@ -339,12 +345,17 @@ Aurora::Aurora() :
 
 void Aurora::iniWindow(const std::wstring& title, const UINT& screenWidth, const UINT& screenHeight)
 {
+	UINT resolutionX;
+	UINT resolutionY;
+
+	WallpaperHelper::getSystemResolution(resolutionX, resolutionY);
+
 	switch (usage)
 	{
 	default:
 	case Configuration::EngineUsage::Normal:
 		std::cout << "[class Aurora] usage normal\n";
-		winform = new Win32Form(title, 100, 100, screenWidth, screenHeight, normalWndStyle, Aurora::WindowProc);
+		winform = new Win32Form(title, (resolutionX - screenWidth) / 2, (resolutionY - screenHeight) / 2, screenWidth, screenHeight, normalWndStyle, Aurora::WindowProc);
 		break;
 
 	case Configuration::EngineUsage::Wallpaper:

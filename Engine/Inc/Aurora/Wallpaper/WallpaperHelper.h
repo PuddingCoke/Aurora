@@ -7,7 +7,7 @@
 
 #include<Windows.h>
 
-#include<Aurora/Core/Graphics.h>
+#include<Aurora/EngineAPI/Graphics.h>
 #include<Aurora/Input/Mouse.h>
 
 class WallpaperHelper

@@ -1,9 +1,9 @@
 #pragma once
 
-#include<Aurora/Core/RenderAPI.h>
-#include<Aurora/Core/States.h>
+#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/States.h>
 #include<Aurora/Core/Shader.h>
-#include<Aurora/Core/ResourceEssential.h>
+#include<Aurora/EngineAPI/ResourceEssential.h>
 
 class Ocean
 {

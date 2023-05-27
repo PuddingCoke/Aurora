@@ -11,7 +11,7 @@
 #include<Aurora/Utils/Utils.h>
 #include<Aurora/Utils/Random.h>
 #include<Aurora/Core/Renderer.h>
-#include<Aurora/Core/Graphics.h>
+#include<Aurora/EngineAPI/Graphics.h>
 
 #include<stb_image/stb_image.h>
 #include<DDSTextureLoader/DDSTextureLoader11.h>
