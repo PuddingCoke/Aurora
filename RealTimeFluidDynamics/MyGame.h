@@ -84,6 +84,8 @@ public:
 	Shader* viscousDiffusionPS;
 	Shader* vorticityPS;
 
+	bool colorChanging;
+
 	MyGame() :
 		colorUpdateTimer(1.f),
 		fluidFinalPS(new Shader("FluidFinalPS.hlsl", ShaderType::Pixel)),
@@ -98,7 +100,8 @@ public:
 		viscousDiffusionPS(new Shader("ViscousDiffusionPS.hlsl", ShaderType::Pixel)),
 		vorticityPS(new Shader("VorticityPS.hlsl", ShaderType::Pixel)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
+		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
+		colorChanging(true)
 	{
 		bloomEffect.setThreshold(0.f);
 		bloomEffect.applyChange();
@@ -148,11 +151,11 @@ public:
 		Mouse::addLeftDownEvent([this]()
 			{
 				simulationDelta.pos = { (float)Mouse::getX() / Graphics::getWidth(), (float)(Graphics::getHeight() - Mouse::getY()) / Graphics::getHeight() };
-				Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
-				c.r *= 0.15f;
-				c.g *= 0.15f;
-				c.b *= 0.15f;
-				simulationDelta.splatColor = { c.r,c.g,c.b,1.f };
+				if (colorChanging)
+				{
+					Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
+					simulationDelta.splatColor = { c.r,c.g,c.b,1.f };
+				}
 			});
 
 		Mouse::addMoveEvent([this]() {
@@ -166,8 +169,8 @@ public:
 
 				const DirectX::XMFLOAT2 posDelta =
 				{
-					(pos.x - simulationDelta.pos.x)* config.splatForce,
-					((pos.y - simulationDelta.pos.y) / Graphics::getAspectRatio())* config.splatForce
+					(pos.x - simulationDelta.pos.x) * config.splatForce,
+					((pos.y - simulationDelta.pos.y) / Graphics::getAspectRatio()) * config.splatForce
 				};
 
 				simulationDelta.pos = pos;
@@ -305,7 +308,9 @@ public:
 		ImGui::SliderFloat("Curl intensity", &simulationParam.curlIntensity, 0.f, 100.f);
 		ImGui::SliderFloat("Splat radius", &simulationParam.splatRadius, 0.f, 0.1f);
 		ImGui::SliderFloat("Splat force", &config.splatForce, 1000.f, 10000.f);
-		bloomEffect.imGUIEffectModifier();
+		ImGui::Checkbox("Color dynamic change", &colorChanging);
+		ImGui::ColorPicker4("Splat color", (float*)&(simulationDelta.splatColor.x), ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_DisplayHSV);
+		//bloomEffect.imGUIEffectModifier();
 	}
 
 	void update(const float& dt) override
@@ -321,11 +326,11 @@ public:
 
 		if (colorUpdateTimer.update(Graphics::getDeltaTime() * config.colorChangeSpeed))
 		{
-			Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
-			c.r *= 0.15f;
-			c.g *= 0.15f;
-			c.b *= 0.15f;
-			simulationDelta.splatColor = { c.r,c.g,c.b,1.f };
+			if (colorChanging)
+			{
+				Color c = Color::HSVtoRGB({ Random::Float(),1.f,1.f });
+				simulationDelta.splatColor = { c.r,c.g,c.b,1.f };
+			}
 		}
 
 		step();

@@ -363,6 +363,9 @@ MigrationBackup/
 FodyWeavers.xsd
 
 Engine.lib
+
 Engine-d.lib
+
 Engine-d.idb
-CompiledShaders/
+
+Engine/Inc/Aurora/CompiledShaders/*.h
