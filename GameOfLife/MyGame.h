@@ -66,7 +66,7 @@ public:
 		DirectX::XMFLOAT2 padding;
 	} gameParam;
 
-	Buffer* gameBuffer;
+	ConstantBuffer* gameBuffer;
 
 	Timer timer;
 
@@ -87,7 +87,7 @@ public:
 	{
 		gameParam.mapSize = DirectX::XMUINT2(simulationWidth, simulationHeight);
 
-		gameBuffer = new Buffer(sizeof(GameParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &gameParam);
+		gameBuffer = new ConstantBuffer(sizeof(GameParam), D3D11_USAGE_IMMUTABLE, &gameParam);
 
 		randomize();
 

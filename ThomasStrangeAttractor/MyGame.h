@@ -26,7 +26,7 @@ public:
 
 	RenderTexture* renderTexture;
 
-	Buffer* simulationBuffer;
+	ConstantBuffer* simulationBuffer;
 
 	BloomEffect bloomEffect;
 
@@ -46,7 +46,7 @@ public:
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
 		camera({ 4,4,-11 }, { -1,-1,-1 }, 2.f),
-		simulationBuffer(new Buffer(sizeof(SimulationParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, 0, D3D11_CPU_ACCESS_WRITE))
+		simulationBuffer(new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_DYNAMIC))
 	{
 		camera.registerEvent();
 

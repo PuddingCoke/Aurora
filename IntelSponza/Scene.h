@@ -51,7 +51,7 @@ public:
 			lights[i - 2].radius = 30.f;
 		}
 
-		lightBuffer = new Buffer(sizeof(Light) * 22, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, lights);
+		lightBuffer = new ConstantBuffer(sizeof(Light) * 22, D3D11_USAGE_IMMUTABLE, lights);
 	}
 
 	void draw(Shader* vertexShader, Shader* pixelHasTex, Shader* pixelNoTex, Shader* pixelTrans)
@@ -113,7 +113,7 @@ public:
 		}
 	}
 
-	Buffer* lightBuffer;
+	ConstantBuffer* lightBuffer;
 
 private:
 

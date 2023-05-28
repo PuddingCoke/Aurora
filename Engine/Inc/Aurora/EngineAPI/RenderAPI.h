@@ -17,6 +17,8 @@
 
 #include<Aurora/Core/DX/Resource/Buffer.h>
 
+#include<Aurora/Resource/ConstantBuffer.h>
+
 #include<Aurora/CompiledShaders/FullScreenVS.h>
 #include<Aurora/CompiledShaders/FullScreenPS.h>
 #include<Aurora/CompiledShaders/ShadowVS.h>
@@ -55,17 +57,17 @@ public:
 
 	void CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot);
 
-	void VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
+	void VSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot);
 
-	void HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
+	void HSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot);
 
-	void DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
+	void DSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot);
 
-	void GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
+	void GSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot);
 
-	void PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
+	void PSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot);
 
-	void CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot);
+	void CSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot);
 
 	void VSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot);
 

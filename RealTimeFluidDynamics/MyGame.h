@@ -60,9 +60,9 @@ public:
 
 	DoubleRTV* pressureTex;//压力
 
-	Buffer* simulationParamBuffer;
+	ConstantBuffer* simulationParamBuffer;
 
-	Buffer* simulationDeltaBuffer;
+	ConstantBuffer* simulationDeltaBuffer;
 
 	Timer colorUpdateTimer;
 
@@ -144,8 +144,8 @@ public:
 				{0,0}
 			};
 
-			simulationParamBuffer = new Buffer(sizeof(SimulationParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &simulationParam, D3D11_CPU_ACCESS_WRITE);
-			simulationDeltaBuffer = new Buffer(sizeof(SimulationDelta), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &simulationDelta, D3D11_CPU_ACCESS_WRITE);
+			simulationParamBuffer = new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_DYNAMIC, &simulationParam);
+			simulationDeltaBuffer = new ConstantBuffer(sizeof(SimulationDelta), D3D11_USAGE_DYNAMIC, &simulationDelta);
 		}
 
 		Mouse::addLeftDownEvent([this]()

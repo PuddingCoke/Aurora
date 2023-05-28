@@ -19,7 +19,7 @@ public:
 
 	DepthTexture* depthTexture;
 
-	Buffer* lightBuffer;
+	ConstantBuffer* lightBuffer;
 
 	Shader* brdfGenPS;
 
@@ -43,7 +43,7 @@ public:
 		scene(assetPath + "DNA.obj"),
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
 		camera({ 2,0,0 }, { 0,1,0 }),
-		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
+		lightBuffer(new ConstantBuffer(sizeof(Light), D3D11_USAGE_DYNAMIC)),
 		brdfGenPS(new Shader("BRDFGenPS.hlsl", ShaderType::Pixel)),
 		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
 		brdfTex(new RenderTexture(512, 512, DXGI_FORMAT_R32G32_FLOAT)),

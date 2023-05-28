@@ -16,7 +16,7 @@ public:
 
 	void operator=(const Graphics&) = delete;
 
-	static Buffer* getDeltaTimeBuffer();
+	static ConstantBuffer* getDeltaTimeBuffer();
 
 	static const float& getDeltaTime();
 

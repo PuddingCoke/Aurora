@@ -3,7 +3,7 @@
 PrimitiveBatch* PrimitiveBatch::instance = nullptr;
 
 PrimitiveBatch::PrimitiveBatch() :
-	lineBuffer(new Buffer(sizeof(LineParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
+	lineBuffer(new ConstantBuffer(sizeof(LineParam), D3D11_USAGE_DYNAMIC))
 {
 	compileShaders();
 

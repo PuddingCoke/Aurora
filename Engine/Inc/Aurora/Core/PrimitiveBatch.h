@@ -55,7 +55,7 @@ private:
 	ComPtr<ID3D11InputLayout> circleInputLayout;
 	ComPtr<ID3D11InputLayout> rcLineInputLayout;
 
-	Buffer* lineBuffer;
+	ConstantBuffer* lineBuffer;
 
 	struct LineParam
 	{

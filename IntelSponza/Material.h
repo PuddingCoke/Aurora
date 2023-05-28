@@ -95,7 +95,7 @@ public:
 		prop.roughness = roughness;
 		prop.metallic = metallic;
 
-		materialBuffer = new Buffer(sizeof(MaterialProp), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &prop);
+		materialBuffer = new ConstantBuffer(sizeof(MaterialProp), D3D11_USAGE_IMMUTABLE, &prop);
 	}
 
 	~Material()
@@ -135,7 +135,7 @@ public:
 		}
 	}
 
-	Buffer* materialBuffer;
+	ConstantBuffer* materialBuffer;
 
 	ResourceTexture* baseColor;
 	ResourceTexture* metallicRoughness;

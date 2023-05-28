@@ -394,9 +394,9 @@ void RenderAPI::IASetVertexBuffer(const UINT& slot, const std::initializer_list<
 	Renderer::getContext()->IASetVertexBuffers(slot, (UINT)buffers.size(), tempBuffer, tempStrides, tempOffsets);
 }
 
-void RenderAPI::VSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
+void RenderAPI::VSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
+	std::initializer_list<ConstantBuffer*>::iterator it = constantBuffers.begin();
 
 	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
@@ -408,9 +408,9 @@ void RenderAPI::VSSetConstantBuffer(const std::initializer_list<Buffer*>& consta
 	Renderer::getContext()->VSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::HSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
+void RenderAPI::HSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
+	std::initializer_list<ConstantBuffer*>::iterator it = constantBuffers.begin();
 
 	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
@@ -422,9 +422,9 @@ void RenderAPI::HSSetConstantBuffer(const std::initializer_list<Buffer*>& consta
 	Renderer::getContext()->HSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::DSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
+void RenderAPI::DSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
+	std::initializer_list<ConstantBuffer*>::iterator it = constantBuffers.begin();
 
 	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
@@ -436,9 +436,9 @@ void RenderAPI::DSSetConstantBuffer(const std::initializer_list<Buffer*>& consta
 	Renderer::getContext()->DSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::GSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
+void RenderAPI::GSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
+	std::initializer_list<ConstantBuffer*>::iterator it = constantBuffers.begin();
 
 	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
@@ -450,9 +450,9 @@ void RenderAPI::GSSetConstantBuffer(const std::initializer_list<Buffer*>& consta
 	Renderer::getContext()->GSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::PSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
+void RenderAPI::PSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
+	std::initializer_list<ConstantBuffer*>::iterator it = constantBuffers.begin();
 
 	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{
@@ -464,9 +464,9 @@ void RenderAPI::PSSetConstantBuffer(const std::initializer_list<Buffer*>& consta
 	Renderer::getContext()->PSSetConstantBuffers1(slot, (UINT)constantBuffers.size(), tempBuffer, tempStartConstants, tempNumConstants);
 }
 
-void RenderAPI::CSSetConstantBuffer(const std::initializer_list<Buffer*>& constantBuffers, const UINT& slot)
+void RenderAPI::CSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot)
 {
-	std::initializer_list<Buffer*>::iterator it = constantBuffers.begin();
+	std::initializer_list<ConstantBuffer*>::iterator it = constantBuffers.begin();
 
 	for (UINT i = slot; i < slot + (UINT)constantBuffers.size(); i++, it++)
 	{

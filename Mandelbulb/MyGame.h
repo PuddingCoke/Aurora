@@ -10,7 +10,7 @@ public:
 
 	Shader* mandelBulbPS;
 
-	Buffer* simulationBuffer;
+	ConstantBuffer* simulationBuffer;
 
 	float targetRadius;
 
@@ -43,7 +43,7 @@ public:
 				targetRadius -= Mouse::getWheelDelta() * 0.1f;
 			});
 
-		simulationBuffer = new Buffer(sizeof(SimulationParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &param, D3D11_CPU_ACCESS_WRITE);
+		simulationBuffer = new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_DYNAMIC, &param);
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->OMSetBlendState(nullptr);

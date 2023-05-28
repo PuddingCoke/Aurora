@@ -2,7 +2,7 @@
 
 Graphics* Graphics::instance = nullptr;
 
-Buffer* Graphics::getDeltaTimeBuffer()
+ConstantBuffer* Graphics::getDeltaTimeBuffer()
 {
 	return instance->deltaTimeBuffer;
 }

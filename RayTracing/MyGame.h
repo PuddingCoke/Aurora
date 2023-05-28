@@ -13,9 +13,9 @@ public:
 
 	Shader* displayPS;
 
-	Buffer* cameraParamBuffer;
+	ConstantBuffer* cameraParamBuffer;
 
-	Buffer* temporalAccumulationBuffer;
+	ConstantBuffer* temporalAccumulationBuffer;
 
 	float targetRadius;
 
@@ -62,8 +62,8 @@ public:
 
 		//prev*(1.0-1.0/frameCount)+cur*(1.0/frameCount)
 
-		cameraParamBuffer = new Buffer(sizeof(CameraParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &cameraParam, D3D11_CPU_ACCESS_WRITE);
-		temporalAccumulationBuffer = new Buffer(sizeof(TemporalAccumulationParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
+		cameraParamBuffer = new ConstantBuffer(sizeof(CameraParam), D3D11_USAGE_DYNAMIC, &cameraParam);
+		temporalAccumulationBuffer = new ConstantBuffer(sizeof(TemporalAccumulationParam), D3D11_USAGE_DYNAMIC);
 	}
 
 	~MyGame()

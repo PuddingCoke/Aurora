@@ -56,7 +56,7 @@ public:
 
 			prop.specularColor = DirectX::XMFLOAT4(color.r, color.g, color.b, 1.f);
 
-			materialBuffer = new Buffer(sizeof(MaterialProp), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &prop);
+			materialBuffer = new ConstantBuffer(sizeof(MaterialProp), D3D11_USAGE_IMMUTABLE, &prop);
 		}
 
 	}
@@ -77,6 +77,6 @@ public:
 private:
 
 	Buffer* vertexBuffer;
-	Buffer* materialBuffer;
+	ConstantBuffer* materialBuffer;
 
 };

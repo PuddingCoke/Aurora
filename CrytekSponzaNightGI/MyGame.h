@@ -35,9 +35,9 @@ public:
 
 	Scene* scene;
 
-	Buffer* voxelParamBuffer;
+	ConstantBuffer* voxelParamBuffer;
 
-	Buffer* lightBuffer;
+	ConstantBuffer* lightBuffer;
 
 	Shader* voxelVShader;
 
@@ -136,7 +136,7 @@ public:
 			voxelTextureColorFinal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_RENDER_TARGET, D3D11_RESOURCE_MISC_GENERATE_MIPS, 5);
 			voxelTextureNormal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, DXGI_FORMAT_R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_UINT);
 
-			voxelParamBuffer = new Buffer(sizeof(VoxelParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &voxelParam);
+			voxelParamBuffer = new ConstantBuffer(sizeof(VoxelParam), D3D11_USAGE_IMMUTABLE, &voxelParam);
 		}
 
 		{
@@ -171,7 +171,7 @@ public:
 			setLight(&lightInfo.lights[8], { -0.5f * 50.0f, 20.0f, 0.0f }, { 1.f,1.f,1.f }, 120.0f);
 			setLight(&lightInfo.lights[9], { 0.75f * 50.0f, 20.0f, 0.0f }, { 1.f,1.f,1.f }, 120.0f);
 
-			lightBuffer = new Buffer(sizeof(LightInfo), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &lightInfo);
+			lightBuffer = new ConstantBuffer(sizeof(LightInfo), D3D11_USAGE_IMMUTABLE, &lightInfo);
 		}
 
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
@@ -184,7 +184,7 @@ public:
 				-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f,
 				-(float)voxelParam.voxelGridLength / 2.f, (float)voxelParam.voxelGridLength / 2.f));
 
-			Buffer* voxelProjBuffer = new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_IMMUTABLE, &voxelProj);
+			ConstantBuffer* voxelProjBuffer = new ConstantBuffer(sizeof(DirectX::XMMATRIX), D3D11_USAGE_IMMUTABLE, &voxelProj);
 
 			RenderAPI::get()->OMSetBlendState(nullptr);
 			RenderAPI::get()->IASetInputLayout(inputLayout.Get());

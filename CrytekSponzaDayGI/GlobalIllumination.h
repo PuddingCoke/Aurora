@@ -92,9 +92,9 @@ public:
 		ssrPS(new Shader(Utils::getRootFolder() + "SSRPS.cso", ShaderType::Pixel)),
 		hiZInitializeCS(new Shader(Utils::getRootFolder() + "HiZInitializeCS.cso", ShaderType::Compute)),
 		hiZCreateCS(new Shader(Utils::getRootFolder() + "HiZCreateCS.cso", ShaderType::Compute)),
-		cubeRenderBuffer(new Buffer(sizeof(CubeRenderParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
-		lightBuffer(new Buffer(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
-		shadowProjBuffer(new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
+		cubeRenderBuffer(new ConstantBuffer(sizeof(CubeRenderParam), D3D11_USAGE_DYNAMIC)),
+		lightBuffer(new ConstantBuffer(sizeof(Light), D3D11_USAGE_DYNAMIC)),
+		shadowProjBuffer(new ConstantBuffer(sizeof(DirectX::XMMATRIX), D3D11_USAGE_DYNAMIC)),
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
@@ -176,8 +176,8 @@ public:
 		irradianceBounceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 		depthOctahedralMap = new ComputeTexture(16, 16, DXGI_FORMAT_R16G16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 
-		irradianceVolumeBuffer = new Buffer(sizeof(IrradianceVolumeParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &irradianceVolumeParam, D3D11_CPU_ACCESS_WRITE);
-		ssrParamBuffer = new Buffer(sizeof(SSRParam), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, &ssrParam, D3D11_CPU_ACCESS_WRITE);
+		irradianceVolumeBuffer = new ConstantBuffer(sizeof(IrradianceVolumeParam), D3D11_USAGE_DYNAMIC, &irradianceVolumeParam);
+		ssrParamBuffer = new ConstantBuffer(sizeof(SSRParam), D3D11_USAGE_DYNAMIC, &ssrParam);
 
 		updateShadow();
 		updateLightProbe();
@@ -686,15 +686,15 @@ private:
 
 	Shader* hiZCreateCS;
 
-	Buffer* irradianceVolumeBuffer;
+	ConstantBuffer* irradianceVolumeBuffer;
 
-	Buffer* cubeRenderBuffer;
+	ConstantBuffer* cubeRenderBuffer;
 
-	Buffer* lightBuffer;
+	ConstantBuffer* lightBuffer;
 
-	Buffer* shadowProjBuffer;
+	ConstantBuffer* shadowProjBuffer;
 
-	Buffer* ssrParamBuffer;
+	ConstantBuffer* ssrParamBuffer;
 
 	StructuredBuffer* irradianceSamples;
 

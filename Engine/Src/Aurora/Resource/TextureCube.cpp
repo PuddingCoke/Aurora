@@ -62,7 +62,7 @@ TextureCube::TextureCube(const std::string& texturePath)
 
 TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResolution, const unsigned int& mipLevels)
 {
-	Buffer* buffer = new Buffer(sizeof(DirectX::XMMATRIX), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE);
+	ConstantBuffer* buffer = new ConstantBuffer(sizeof(DirectX::XMMATRIX), D3D11_USAGE_DYNAMIC);
 
 	ResourceTexture* equirectangularMap = new ResourceTexture(texturePath);
 

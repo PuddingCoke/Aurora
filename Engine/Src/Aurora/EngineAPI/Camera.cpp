@@ -12,12 +12,12 @@ const DirectX::XMMATRIX& Camera::getView()
 	return instance->viewMatrix;
 }
 
-Buffer* Camera::getProjBuffer()
+ConstantBuffer* Camera::getProjBuffer()
 {
 	return instance->projBuffer;
 }
 
-Buffer* Camera::getViewBuffer()
+ConstantBuffer* Camera::getViewBuffer()
 {
 	return instance->viewBuffer;
 }

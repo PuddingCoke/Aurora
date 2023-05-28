@@ -49,7 +49,7 @@ private:
 
 	Buffer* patchVertexBuffer;
 
-	Buffer* oceanParamBuffer;
+	ConstantBuffer* oceanParamBuffer;
 
 	Shader* phillipSpectrumShader;
 
@@ -100,7 +100,7 @@ private:
 };
 
 inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, const DirectX::XMFLOAT2& wind, const float& phillipParam) :
-	oceanParamBuffer(new Buffer(sizeof(Param), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
+	oceanParamBuffer(new ConstantBuffer(sizeof(Param), D3D11_USAGE_DYNAMIC)),
 	param{ mapResolution, mapLength, wind, phillipParam, 9.81f },
 	tildeh0k(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
 	tildeh0(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),

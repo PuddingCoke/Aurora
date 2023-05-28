@@ -27,9 +27,9 @@ public:
 
 	static const DirectX::XMMATRIX& getView();
 
-	static Buffer* getProjBuffer();
+	static ConstantBuffer* getProjBuffer();
 
-	static Buffer* getViewBuffer();
+	static ConstantBuffer* getViewBuffer();
 
 	static const DirectX::XMVECTOR& getEye();
 
