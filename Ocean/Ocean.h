@@ -21,7 +21,9 @@ private:
 
 	ComputeTexture* tildeh0k;
 
-	ComputeTexture* tildeh0mkconj;
+	ComputeTexture* tildeh0;
+
+	ComputeTexture* waveData;
 
 	ComputeTexture* tempTexture;
 
@@ -50,6 +52,8 @@ private:
 	Buffer* oceanParamBuffer;
 
 	Shader* phillipSpectrumShader;
+
+	Shader* conjugatedCalcCS;
 
 	Shader* displacementShader;
 
@@ -99,7 +103,8 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	oceanParamBuffer(new Buffer(sizeof(Param), D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
 	param{ mapResolution, mapLength, wind, phillipParam, 9.81f },
 	tildeh0k(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	tildeh0mkconj(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
+	tildeh0(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
+	waveData(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
 	Dy(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
 	Dx(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
 	Dz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
@@ -112,6 +117,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	Dxyz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
 	normalJacobian(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
 	phillipSpectrumShader(new Shader("PhillipsSpectrum.hlsl", ShaderType::Compute)),
+	conjugatedCalcCS(new Shader("ConjugatedCalcCS.hlsl", ShaderType::Compute)),
 	displacementShader(new Shader("Displacement.hlsl", ShaderType::Compute)),
 	ifftShader(new Shader("IFFT.hlsl", ShaderType::Compute)),
 	permutationCS(new Shader("PermutationCS.hlsl", ShaderType::Compute)),
@@ -165,7 +171,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 		D3D11_RASTERIZER_DESC desc = {};
 		desc.CullMode = D3D11_CULL_BACK;
 		desc.FillMode = D3D11_FILL_WIREFRAME;
-		
+
 		Renderer::getDevice()->CreateRasterizerState(&desc, wireState.ReleaseAndGetAddressOf());
 	}
 
@@ -178,6 +184,7 @@ inline Ocean::~Ocean()
 	delete patchVertexBuffer;
 
 	delete phillipSpectrumShader;
+	delete conjugatedCalcCS;
 	delete displacementShader;
 	delete ifftShader;
 	delete permutationCS;
@@ -188,7 +195,8 @@ inline Ocean::~Ocean()
 	delete oceanPShader;
 
 	delete tildeh0k;
-	delete tildeh0mkconj;
+	delete tildeh0;
+	delete waveData;
 	delete Dy;
 	delete Dx;
 	delete Dz;
@@ -211,9 +219,16 @@ inline void Ocean::calculatePhillipTexture() const
 
 	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 	RenderAPI::get()->CSSetSRV({ gaussTexture }, 0);
-	RenderAPI::get()->CSSetUAV({ tildeh0k,tildeh0mkconj }, 0);
+	RenderAPI::get()->CSSetUAV({ tildeh0k,waveData }, 0);
 
 	phillipSpectrumShader->use();
+
+	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
+
+	RenderAPI::get()->CSSetSRV({ tildeh0k }, 0);
+	RenderAPI::get()->CSSetUAV({ tildeh0 }, 0);
+
+	conjugatedCalcCS->use();
 
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
@@ -242,7 +257,7 @@ inline void Ocean::update() const
 {
 	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 
-	RenderAPI::get()->CSSetSRV({ tildeh0k,tildeh0mkconj }, 0);
+	RenderAPI::get()->CSSetSRV({ tildeh0,waveData }, 0);
 	RenderAPI::get()->CSSetUAV({ Dy,Dx,Dz,Dyx,Dyz,Dxx,Dzz,Dxz }, 0);
 
 	displacementShader->use();

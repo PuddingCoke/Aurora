@@ -11,16 +11,19 @@ cbuffer OceanParam : register(b1)
 };
 
 RWTexture2D<float2> tildeh0k : register(u0);
-RWTexture2D<float2> tildeh0mkconj : register(u1);
+RWTexture2D<float4> waveData : register(u1);
 
 Texture2D gaussTexture : register(t0);
+
+float Dispersion(float2 k)
+{
+    float w_0 = M_PI / 100.0;
+    return floor(sqrt(gravity * length(k)) / w_0) * w_0;
+}
 
 float getPhillip(float2 k)
 {
     float len = length(k);
-    
-    if (len < 0.000001)
-        return 0.0;
         
     float len2 = len * len;
     float len4 = len2 * len2;
@@ -55,9 +58,16 @@ void main(uint3 DTid : SV_DispatchThreadID)
 {
     float2 k = float2(M_PI * (2.0 * float(DTid.x) - float(mapResolution)) / float(mapLength), M_PI * (2.0 * float(DTid.y) - float(mapResolution)) / float(mapLength));
     
-    float ph1 = getPhillip(k);
-    float ph2 = getPhillip(-k);
+    float len = length(k);
     
-    tildeh0k[DTid.xy] = gaussTexture[DTid.xy].xy * sqrt(ph1 / 2.0);
-    tildeh0mkconj[DTid.xy] = conj(gaussTexture[DTid.xy].zw * sqrt(ph2 / 2.0));
+    if (len >= 0.0001 && len <= 5.0)
+    {
+        tildeh0k[DTid.xy] = gaussTexture[DTid.xy].xy * sqrt(getPhillip(k) / 2.0);
+        waveData[DTid.xy] = float4(k.x, 1.0 / len, k.y, Dispersion(k));
+    }
+    else
+    {
+        tildeh0k[DTid.xy] = float2(0.0, 0.0);
+        waveData[DTid.xy] = float4(k.x, 1.0, k.y, 0.0);
+    }
 }

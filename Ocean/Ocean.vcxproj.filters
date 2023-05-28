@@ -38,5 +38,6 @@
     <FxCompile Include="WaveMergeCS.hlsl" />
     <FxCompile Include="SkyboxPS.hlsl" />
     <FxCompile Include="PermutationCS.hlsl" />
+    <FxCompile Include="ConjugatedCalcCS.hlsl" />
   </ItemGroup>
 </Project>
