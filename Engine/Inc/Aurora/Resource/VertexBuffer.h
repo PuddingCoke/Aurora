@@ -30,9 +30,9 @@ private:
 
 	static VertexBuffer* curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
-	static ID3D11Buffer* nullBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+	static ID3D11Buffer* const nullBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
-	static UINT nullStrides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+	static const UINT nullStrides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
 	//解决绑定时的binding hazard
 	virtual void bindVertexBuffer();

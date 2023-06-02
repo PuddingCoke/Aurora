@@ -444,4 +444,6 @@ void Aurora::iniStates(const Configuration& config)
 	RenderAPI::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
 
 	RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+
+	bindCommonCB();
 }

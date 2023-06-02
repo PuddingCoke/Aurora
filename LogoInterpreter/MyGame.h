@@ -71,7 +71,7 @@ public:
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
 
-		RenderAPI::get()->PSSetSRV({ texture}, 0);
+		RenderAPI::get()->PSSetSRV({ texture }, 0);
 		RenderAPI::get()->DrawQuad();
 	}
 

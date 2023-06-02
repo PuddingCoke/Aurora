@@ -58,7 +58,7 @@ public:
 			rotating = !rotating;
 			});
 
-		param.factor = 0.100f;
+		param.factor = 0.180f;
 
 		memcpy(simulationBuffer->map().pData, &param, sizeof(SimulationParam));
 		simulationBuffer->unmap();
@@ -82,8 +82,6 @@ public:
 	void update(const float& dt) override
 	{
 		//param.factor = 0.1f + 0.01f * sinf(Graphics::getSTime());
-
-		param.factor = 0.100f;
 
 		memcpy(simulationBuffer->map().pData, &param, sizeof(SimulationParam));
 		simulationBuffer->unmap();
