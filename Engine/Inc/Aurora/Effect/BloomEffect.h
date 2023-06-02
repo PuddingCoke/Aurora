@@ -12,6 +12,8 @@
 #include<Aurora/CompiledShaders/BloomDownSamplePS.h>
 #include<Aurora/CompiledShaders/BloomKarisAveragePS.h>
 
+#include<Aurora/Resource/SwapTexture.h>
+
 #include<Aurora/Utils/Math.h>
 
 #include<ImGUI/imgui.h>
@@ -91,27 +93,7 @@ private:
 
 	ResourceTexture* lensDirtTexture;
 
-	class SwapRenderComputeTexture
-	{
-	public:
-
-		SwapRenderComputeTexture(const UINT& width, const UINT& height);
-
-		~SwapRenderComputeTexture();
-
-		RenderComputeTexture* read() const;
-
-		RenderComputeTexture* write() const;
-
-		void swap();
-
-	private:
-
-		RenderComputeTexture* rcTexture1;
-
-		RenderComputeTexture* rcTexture2;
-
-	} *swapTexture[blurSteps];
+	SwapTexture<RenderComputeTexture>* swapTexture[blurSteps];
 
 	//明亮的像素会被提取到这个材质上
 	RenderTexture* filterTexture;
