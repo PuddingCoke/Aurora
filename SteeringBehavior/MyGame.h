@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/Resource/DoubleRTV.h>
+#include<Aurora/Resource/SwapTexture.h>
 #include<Aurora/Utils/Random.h>
 #include<Aurora/Utils/Math.h>
 #include<Aurora/Effect/FadeEffect.h>
@@ -23,7 +23,7 @@ public:
 
 	ResourceTexture* arrowTexture;
 
-	DoubleRTV* doubleRTV;
+	SwapTexture<RenderTexture>* doubleRTV;
 
 	FadeEffect fadeEffect;
 
@@ -37,7 +37,7 @@ public:
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
 		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
 		arrowTexture(new ResourceTexture("arrow.png")),
-		doubleRTV(new DoubleRTV(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		doubleRTV(new SwapTexture<RenderTexture>([] {return new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT); })),
 		fadeEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
 	{

@@ -8,6 +8,8 @@
 
 #include<Aurora/Effect/BloomEffect.h>
 
+#include<Aurora/Resource/SwapTexture.h>
+
 //基本思想 https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-38-fast-fluid-dynamics-simulation-gpu
 //有些公式看不懂可以看这个 http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf
 //涡流的具体实现在这里 https://softologyblog.wordpress.com/2019/03/13/vorticity-confinement-for-eulerian-fluid-simulations/
@@ -50,15 +52,15 @@ public:
 		DirectX::XMFLOAT2 v0;
 	}simulationParam;//模拟属性
 
-	DoubleRTV* colorTex;//颜色
+	SwapTexture<RenderTexture>* colorTex;//颜色
 
-	DoubleRTV* velocityTex;//速度
+	SwapTexture<RenderTexture>* velocityTex;//速度
 
 	RenderTexture* curlTex;//旋度
 
 	RenderTexture* divergenceTex;//散度
 
-	DoubleRTV* pressureTex;//压力
+	SwapTexture<RenderTexture>* pressureTex;//压力
 
 	ConstantBuffer* simulationParamBuffer;
 
@@ -125,9 +127,17 @@ public:
 			const DirectX::XMUINT2 colorRes = { (UINT)(config.colorRes * Graphics::getAspectRatio()), config.colorRes };
 			const DirectX::XMUINT2 simRes = { (UINT)(config.simRes * Graphics::getAspectRatio()), config.simRes };
 
-			colorTex = new DoubleRTV(colorRes.x, colorRes.y, DXGI_FORMAT_R16G16B16A16_FLOAT);
-			velocityTex = new DoubleRTV(simRes.x, simRes.y, DXGI_FORMAT_R16G16_FLOAT);
-			pressureTex = new DoubleRTV(simRes.x, simRes.y, DXGI_FORMAT_R16_FLOAT);
+
+			colorTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(colorRes.x, colorRes.y, DXGI_FORMAT_R16G16B16A16_FLOAT); });
+
+			velocityTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT_R16G16_FLOAT); });
+
+			pressureTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT_R16_FLOAT); });
+
+
+			//colorTex = new DoubleRTV(colorRes.x, colorRes.y, DXGI_FORMAT_R16G16B16A16_FLOAT);
+			//velocityTex = new DoubleRTV(simRes.x, simRes.y, DXGI_FORMAT_R16G16_FLOAT);
+			//pressureTex = new DoubleRTV(simRes.x, simRes.y, DXGI_FORMAT_R16_FLOAT);
 			curlTex = new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT_R16_FLOAT);
 			divergenceTex = new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT_R16_FLOAT);
 

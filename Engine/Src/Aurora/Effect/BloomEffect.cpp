@@ -15,7 +15,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 		{
 			resolutions[i] = DirectX::XMUINT2(width >> (i + 1), height >> (i + 1));
 
-			swapTexture[i] = new SwapRCTexture(resolutions[i].x, resolutions[i].y);
+			swapTexture[i] = new SwapRenderComputeTexture(resolutions[i].x, resolutions[i].y);
 
 			blurParam[i].texelSize = DirectX::XMFLOAT2(1.f / resolutions[i].x, 1.f / resolutions[i].y);
 			blurParam[i].iteration = iteration[i];
@@ -250,31 +250,31 @@ void BloomEffect::compileShaders()
 	bloomKarisAverage = new Shader(g_BloomKarisAveragePSBytes, sizeof(g_BloomKarisAveragePSBytes), ShaderType::Pixel);
 }
 
-BloomEffect::SwapRCTexture::SwapRCTexture(const UINT& width, const UINT& height) :
-	rcTexture1(new RCTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
-	rcTexture2(new RCTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black))
+BloomEffect::SwapRenderComputeTexture::SwapRenderComputeTexture(const UINT& width, const UINT& height) :
+	rcTexture1(new RenderComputeTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
+	rcTexture2(new RenderComputeTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black))
 {
 }
 
-BloomEffect::SwapRCTexture::~SwapRCTexture()
+BloomEffect::SwapRenderComputeTexture::~SwapRenderComputeTexture()
 {
 	delete rcTexture1;
 	delete rcTexture2;
 }
 
-RCTexture* BloomEffect::SwapRCTexture::read() const
+RenderComputeTexture* BloomEffect::SwapRenderComputeTexture::read() const
 {
 	return rcTexture1;
 }
 
-RCTexture* BloomEffect::SwapRCTexture::write() const
+RenderComputeTexture* BloomEffect::SwapRenderComputeTexture::write() const
 {
 	return rcTexture2;
 }
 
-void BloomEffect::SwapRCTexture::swap()
+void BloomEffect::SwapRenderComputeTexture::swap()
 {
-	RCTexture* const temp = rcTexture1;
+	RenderComputeTexture* const temp = rcTexture1;
 	rcTexture1 = rcTexture2;
 	rcTexture2 = temp;
 }

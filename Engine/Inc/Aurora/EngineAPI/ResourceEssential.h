@@ -13,8 +13,7 @@
 #include<Aurora/Resource/CTextureWithMips.h>
 #include<Aurora/Resource/DepthCube.h>
 #include<Aurora/Resource/DepthTexture.h>
-#include<Aurora/Resource/DoubleRTV.h>
-#include<Aurora/Resource/RCTexture.h>
+#include<Aurora/Resource/RenderComputeTexture.h>
 #include<Aurora/Resource/RenderCube.h>
 #include<Aurora/Resource/RenderTexture.h>
 #include<Aurora/Resource/ResDepthTexture.h>

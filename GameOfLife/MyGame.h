@@ -2,7 +2,7 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/Resource/ComputeTexture.h>
-#include<Aurora/Resource/RCTexture.h>
+#include<Aurora/Resource/RenderComputeTexture.h>
 #include<Aurora/Utils/Timer.h>
 
 #include<Aurora/Effect/BloomEffect.h>
@@ -52,7 +52,7 @@ public:
 
 	} *swapTexture;
 
-	RCTexture* rcTexture;
+	RenderComputeTexture* rcTexture;
 
 	Shader* evolveCS;
 
@@ -79,7 +79,7 @@ public:
 	MyGame() :
 		timer(1.f / 60.f),
 		swapTexture(new SwapComputeTexture(simulationWidth, simulationHeight)),
-		rcTexture(new RCTexture(simulationWidth, simulationHeight, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
+		rcTexture(new RenderComputeTexture(simulationWidth, simulationHeight, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
 		evolveCS(new Shader("EvolveCS.hlsl", ShaderType::Compute)),
 		randomizeCS(new Shader("RandomizeCS.hlsl", ShaderType::Compute)),
 		visualizeCS(new Shader("VisualizeCS.hlsl", ShaderType::Compute)),

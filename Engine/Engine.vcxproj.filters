@@ -60,9 +60,6 @@
     <ClInclude Include="Inc\Aurora\Resource\RenderTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Resource\DoubleRTV.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\Utils\Color.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -99,7 +96,7 @@
     <ClInclude Include="Inc\Aurora\Core\DX\Resource\Buffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Resource\RCTexture.h">
+    <ClInclude Include="Inc\Aurora\Resource\RenderComputeTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Resource\ComputeTexture.h">
@@ -219,6 +216,9 @@
     <ClInclude Include="Inc\Aurora\Resource\VertexBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\Resource\SwapTexture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -263,9 +263,6 @@
     <ClCompile Include="Src\Aurora\Resource\RenderTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Resource\DoubleRTV.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Aurora\Utils\Color.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -299,7 +296,7 @@
     <ClCompile Include="Src\Aurora\Core\DX\Resource\Buffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Resource\RCTexture.cpp">
+    <ClCompile Include="Src\Aurora\Resource\RenderComputeTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Resource\ComputeTexture.cpp">
@@ -351,9 +348,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Effect\MotionBlurEffect.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\Resource\StructuredBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Resource\RenderCube.cpp">
@@ -408,6 +402,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Resource\VertexBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\Resource\StructuredBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

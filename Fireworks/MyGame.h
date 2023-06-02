@@ -6,7 +6,7 @@
 #include<Aurora/Input/Event.h>
 #include<Aurora/EngineAPI/States.h>
 #include<Aurora/Core/PrimitiveBatch.h>
-#include<Aurora/Resource/DoubleRTV.h>
+#include<Aurora/Resource/SwapTexture.h>
 #include<Aurora/Utils/Color.h>
 #include<Aurora/Utils/Timer.h>
 #include<Aurora/Effect/FadeEffect.h>
@@ -23,14 +23,14 @@ public:
 
 	ResourceTexture* resolvedTexture;
 
-	DoubleRTV* doubleRTV;
+	SwapTexture<RenderTexture>* doubleRTV;
 
 	MyGame() :
 		pBatch(PrimitiveBatch::create()),
 		currentSkyColor{ 0.0f,0.0f,0.0f,1.0f },
 		texture(new RenderTexture(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
 		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
-		doubleRTV(new DoubleRTV(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM)),
+		doubleRTV(new SwapTexture<RenderTexture>([] {return new RenderTexture(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM); })),
 		effect(1920, 1080)
 	{
 		Star::active = &starActive;
@@ -40,7 +40,7 @@ public:
 
 		Mouse::addLeftDownEvent([] {
 			std::cout << "Launch\n";
-		(new Shell(getShellConfig(ShellType::random)))->launch(Mouse::getX(), Mouse::getY());
+			(new Shell(getShellConfig(ShellType::random)))->launch(Mouse::getX(), Mouse::getY());
 			});
 	}
 

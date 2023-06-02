@@ -1,6 +1,6 @@
-#include<Aurora/Resource/RCTexture.h>
+#include<Aurora/Resource/RenderComputeTexture.h>
 
-RCTexture::RCTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4]) :
+RenderComputeTexture::RenderComputeTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4]) :
 	Texture2D(width, height, format, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_RENDER_TARGET)
 {
 	{
@@ -34,6 +34,6 @@ RCTexture::RCTexture(const unsigned int& width, const unsigned int& height, cons
 	clearRTV(color);
 }
 
-RCTexture::~RCTexture()
+RenderComputeTexture::~RenderComputeTexture()
 {
 }

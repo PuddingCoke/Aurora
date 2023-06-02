@@ -91,25 +91,25 @@ private:
 
 	ResourceTexture* lensDirtTexture;
 
-	class SwapRCTexture
+	class SwapRenderComputeTexture
 	{
 	public:
 
-		SwapRCTexture(const UINT& width, const UINT& height);
+		SwapRenderComputeTexture(const UINT& width, const UINT& height);
 
-		~SwapRCTexture();
+		~SwapRenderComputeTexture();
 
-		RCTexture* read() const;
+		RenderComputeTexture* read() const;
 
-		RCTexture* write() const;
+		RenderComputeTexture* write() const;
 
 		void swap();
 
 	private:
 
-		RCTexture* rcTexture1;
+		RenderComputeTexture* rcTexture1;
 
-		RCTexture* rcTexture2;
+		RenderComputeTexture* rcTexture2;
 
 	} *swapTexture[blurSteps];
 
