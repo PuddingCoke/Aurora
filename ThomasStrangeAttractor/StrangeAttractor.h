@@ -2,7 +2,7 @@
 
 #include<Aurora/Core/ParticleSystem.h>
 #include<Aurora/Core/DX/Resource/Buffer.h>
-#include<Aurora/Resource/ComputeBuffer.h>
+#include<Aurora/Resource/ComputeVertexBuffer.h>
 
 class StrangeAttractor :public ParticleSystem
 {
@@ -12,9 +12,9 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	ComputeBuffer* particlePosBuffer;
+	ComputeVertexBuffer* particlePosBuffer;
 
-	Buffer* particleColorBuffer;
+	VertexBuffer* particleColorBuffer;
 
 	Shader* displayVShader;
 
@@ -57,8 +57,8 @@ public:
 		uavDesc.Buffer.Flags = 0;
 		uavDesc.Buffer.NumElements = particleNum;
 
-		particlePosBuffer = new ComputeBuffer(uavDesc, particleNum * sizeof(DirectX::XMFLOAT4), D3D11_BIND_VERTEX_BUFFER, positions);
-		particleColorBuffer = new Buffer(particleNum * sizeof(DirectX::XMFLOAT4), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE, colors);
+		particlePosBuffer = new ComputeVertexBuffer(particleNum * sizeof(DirectX::XMFLOAT4), positions);
+		particleColorBuffer = new VertexBuffer(particleNum * sizeof(DirectX::XMFLOAT4), D3D11_USAGE_IMMUTABLE, colors);
 
 		delete[] positions;
 		delete[] colors;

@@ -91,7 +91,7 @@ private:
 
 		void addLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& r, const float& g, const float& b, const float& a);
 
-		Buffer* vertexBuffer;
+		VertexBuffer* vertexBuffer;
 
 		float* vertices;
 
@@ -117,7 +117,7 @@ private:
 
 		void addCircle(const float& x, const float& y, const float& length, const float& r, const float& g, const float& b, const float& a);
 
-		Buffer* vertexBuffer;
+		VertexBuffer* vertexBuffer;
 
 		float* vertices;
 
@@ -143,7 +143,7 @@ private:
 
 		void addRoundCapLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& width, const float& r, const float& g, const float& b, const float& a);
 
-		Buffer* vertexBuffer;
+		VertexBuffer* vertexBuffer;
 
 		float* vertices;
 

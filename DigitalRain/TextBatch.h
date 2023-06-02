@@ -27,7 +27,7 @@ public:
 
 	static constexpr size_t maxTextNum = 32768;
 
-	Buffer* textBuffer;
+	VertexBuffer* textBuffer;
 
 	struct Text
 	{
@@ -63,7 +63,7 @@ public:
 		spriteVShader(new Shader("SpriteVShader.hlsl", ShaderType::Vertex)),
 		spriteGShader(new Shader("SpriteGShader.hlsl", ShaderType::Geometry)),
 		spritePShader(new Shader("SpritePShader.hlsl", ShaderType::Pixel)),
-		textBuffer(new Buffer(sizeof(Text)* maxTextNum, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE)),
+		textBuffer(new VertexBuffer(sizeof(Text)* maxTextNum, D3D11_USAGE_DYNAMIC, nullptr)),
 		textArray(new Text[maxTextNum])
 	{
 		D3D11_INPUT_ELEMENT_DESC layoutDesc[] =
@@ -188,7 +188,7 @@ public:
 	void drawText(const char& context, const float& x, const float& y, const float& z, const float& r, const float& g, const float& b, const float& a)
 	{
 		const Character& character = characterMap[context];
-		textArray[idx].position = DirectX::XMFLOAT3(x, y, z); 
+		textArray[idx].position = DirectX::XMFLOAT3(x, y, z);
 		textArray[idx].size = DirectX::XMFLOAT2(character.width * scale, character.height * scale);
 		textArray[idx].color = DirectX::XMFLOAT4(r, g, b, a);
 		textArray[idx].uvLeft = character.leftTexCoord;

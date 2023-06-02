@@ -30,7 +30,7 @@ public:
 				vertices.push_back(Vertex{ {mesh->mVertices[i].x,mesh->mVertices[i].y,mesh->mVertices[i].z},{mesh->mNormals[i].x,mesh->mNormals[i].y,mesh->mNormals[i].z} });
 			}
 
-			vertexBuffer = new Buffer(sizeof(Vertex) * vertices.size(), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE, vertices.data());
+			vertexBuffer = new VertexBuffer(sizeof(Vertex) * vertices.size(), D3D11_USAGE_IMMUTABLE, vertices.data());
 
 		}
 
@@ -76,7 +76,7 @@ public:
 
 private:
 
-	Buffer* vertexBuffer;
+	VertexBuffer* vertexBuffer;
 	ConstantBuffer* materialBuffer;
 
 };

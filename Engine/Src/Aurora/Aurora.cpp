@@ -196,8 +196,6 @@ void Aurora::runGame()
 
 		const std::chrono::steady_clock::time_point timeStart = timer.now();
 
-		PerframeCB::mapPerframeBuffer();
-
 		game->update(Graphics::getDeltaTime());
 
 		if (enableImGui)
@@ -206,8 +204,6 @@ void Aurora::runGame()
 		}
 
 		Graphics::instance->updateDeltaTimeBuffer();
-
-		PerframeCB::unmapPerframeBuffer();
 
 		bindCommonCB();
 
@@ -253,13 +249,9 @@ void Aurora::runEncode()
 	Graphics::instance->deltaTime.deltaTime = 1.f / 60.f;
 	do
 	{
-		PerframeCB::mapPerframeBuffer();
-
 		game->update(Graphics::getDeltaTime());
 
 		Graphics::instance->updateDeltaTimeBuffer();
-
-		PerframeCB::unmapPerframeBuffer();
 
 		bindCommonCB();
 
@@ -309,8 +301,6 @@ void Aurora::destroy()
 	delete RenderAPI::instance;
 
 	TextureCube::releaseShader();
-
-	PerframeCB::release();
 
 	if (enableImGui)
 	{
@@ -393,8 +383,6 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 	}
 
 	new States();
-
-	PerframeCB::ini();
 
 	new Graphics(screenWidth, screenHeight, msaaLevel);
 

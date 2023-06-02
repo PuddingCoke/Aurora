@@ -18,6 +18,7 @@
 #include<Aurora/Core/DX/Resource/Buffer.h>
 
 #include<Aurora/Resource/ConstantBuffer.h>
+#include<Aurora/Resource/VertexBuffer.h>
 
 #include<Aurora/CompiledShaders/FullScreenVS.h>
 #include<Aurora/CompiledShaders/FullScreenPS.h>
@@ -81,7 +82,7 @@ public:
 
 	void CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& samplers, const UINT& slot);
 
-	void IASetVertexBuffer(const UINT& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets);
+	void IASetVertexBuffer(const UINT& slot, const std::initializer_list<VertexBuffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets);
 
 	void IASetInputLayout(ID3D11InputLayout* const layout) const;
 

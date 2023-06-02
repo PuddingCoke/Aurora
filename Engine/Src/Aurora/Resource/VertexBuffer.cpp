@@ -1,0 +1,36 @@
+#include<Aurora/Resource/VertexBuffer.h>
+
+VertexBuffer* VertexBuffer::curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+
+ID3D11Buffer* VertexBuffer::nullBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+
+UINT VertexBuffer::nullStrides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+
+VertexBuffer::VertexBuffer(const UINT& byteWidth, const D3D11_USAGE& usage, const void* const data, const UINT& extraBindFlags, const UINT& miscFlags) :
+	Buffer(byteWidth, D3D11_BIND_VERTEX_BUFFER | extraBindFlags, usage, data, usage == D3D11_USAGE_DYNAMIC ? D3D11_CPU_ACCESS_WRITE : 0, miscFlags, 0),
+	IASlot(-1)
+{
+
+}
+
+VertexBuffer::~VertexBuffer()
+{
+	unbindFromVertexBuffer();
+}
+
+bool VertexBuffer::unbindFromVertexBuffer()
+{
+	if (IASlot != -1)
+	{
+		Renderer::getContext()->IASetVertexBuffers(IASlot, 1, nullBuffer, nullStrides, nullStrides);
+		curBuffer[IASlot] = nullptr;
+		IASlot = -1;
+		return true;
+	}
+
+	return false;
+}
+
+void VertexBuffer::bindVertexBuffer()
+{
+}

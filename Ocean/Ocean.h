@@ -47,7 +47,7 @@ private:
 
 	ComputeTexture* normalJacobian;
 
-	Buffer* patchVertexBuffer;
+	VertexBuffer* patchVertexBuffer;
 
 	ConstantBuffer* oceanParamBuffer;
 
@@ -164,7 +164,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 			}
 		}
 
-		patchVertexBuffer = new Buffer(sizeof(Vertex) * vertices.size(), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE, vertices.data());
+		patchVertexBuffer = new VertexBuffer(sizeof(Vertex) * vertices.size(), D3D11_USAGE_IMMUTABLE, vertices.data());
 	}
 
 	{

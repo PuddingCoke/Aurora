@@ -12,6 +12,14 @@ public:
 	ConstantBuffer(const UINT& byteWidth, const D3D11_USAGE& usage,
 		const void* const data = nullptr, const UINT& miscFlags = 0);
 
+protected:
+
+	UINT startConstants;
+
+	UINT numConstants;
+
+	friend class RenderAPI;
+
 };
 
 #endif // !_CONSTANTBUFFER_H_

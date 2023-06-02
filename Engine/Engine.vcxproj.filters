@@ -117,7 +117,7 @@
     <ClInclude Include="Inc\Aurora\Resource\ResourceTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Resource\ComputeBuffer.h">
+    <ClInclude Include="Inc\Aurora\Resource\ComputeVertexBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Core\DX\View\Composition\RSView.h">
@@ -174,9 +174,6 @@
     <ClInclude Include="Inc\Aurora\Resource\CTextureWithMips.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Resource\PerframeCB.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\Core\DX\Resource\Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -217,6 +214,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="External\stb_image\stb_image.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\Resource\VertexBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -317,7 +317,7 @@
     <ClCompile Include="Src\Aurora\Resource\ResourceTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Resource\ComputeBuffer.cpp">
+    <ClCompile Include="Src\Aurora\Resource\ComputeVertexBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Core\DX\View\Composition\RSView.cpp">
@@ -374,9 +374,6 @@
     <ClCompile Include="Src\Aurora\Resource\CTextureWithMips.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Resource\PerframeCB.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Aurora\Window\Win32Form.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -408,6 +405,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="External\stb_image\stb_image.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\Resource\VertexBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

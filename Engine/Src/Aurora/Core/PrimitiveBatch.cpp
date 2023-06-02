@@ -147,7 +147,7 @@ void PrimitiveBatch::applyChange() const
 
 PrimitiveBatch::LineRenderer::LineRenderer() :
 	vertices(new float[2 * 6 * maxLineNum]), idx(0),
-	vertexBuffer(new Buffer(sizeof(float) * 2 * 6 * maxLineNum, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
+	vertexBuffer(new VertexBuffer(sizeof(float) * 2 * 6 * maxLineNum, D3D11_USAGE_DYNAMIC, nullptr))
 {
 }
 
@@ -197,7 +197,7 @@ void PrimitiveBatch::LineRenderer::addLine(const float& x1, const float& y1, con
 
 PrimitiveBatch::CircleRenderer::CircleRenderer() :
 	vertices(new float[maxCircleNum * 7]), idx(0),
-	vertexBuffer(new Buffer(sizeof(float) * 7 * maxCircleNum, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
+	vertexBuffer(new VertexBuffer(sizeof(float) * 7 * maxCircleNum, D3D11_USAGE_DYNAMIC, nullptr))
 {
 }
 
@@ -246,7 +246,7 @@ void PrimitiveBatch::CircleRenderer::addCircle(const float& x, const float& y, c
 
 PrimitiveBatch::RCLineRenderer::RCLineRenderer() :
 	vertices(new float[maxLineNum * 7 * 2]), idx(0),
-	vertexBuffer(new Buffer(sizeof(float) * 2 * 7 * maxLineNum, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, nullptr, D3D11_CPU_ACCESS_WRITE))
+	vertexBuffer(new VertexBuffer(sizeof(float) * 2 * 7 * maxLineNum, D3D11_USAGE_DYNAMIC, nullptr))
 {
 }
 

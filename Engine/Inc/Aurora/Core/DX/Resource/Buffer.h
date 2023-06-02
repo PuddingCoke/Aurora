@@ -5,16 +5,18 @@
 
 #include"Resource.h"
 
-class Buffer:public Resource
+class Buffer :public Resource
 {
 public:
+
+	Buffer() = delete;
 
 	Buffer(const Buffer&) = delete;
 
 	void operator=(const Buffer&) = delete;
 
 	Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage,
-		const void* const data = nullptr, const UINT& CPUAccessFlags = 0, const UINT& miscFlags = 0, const UINT& structureByteStride = 0);
+		const void* const data, const UINT& CPUAccessFlags, const UINT& miscFlags, const UINT& structureByteStride);
 
 	virtual ~Buffer();
 
@@ -30,30 +32,7 @@ public:
 
 protected:
 
-	Buffer();
-
-	bool unbindFromVertexBuffer();
-
 	ComPtr<ID3D11Buffer> buffer;
-
-	int IASlot;
-
-	UINT startConstants;
-
-	UINT numConstants;
-
-private:
-
-	friend class RenderAPI;
-
-	static Buffer* curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
-
-	static ID3D11Buffer* nullBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
-
-	static UINT nullStrides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
-
-	//解决绑定时的binding hazard
-	virtual void bindVertexBuffer();
 
 };
 

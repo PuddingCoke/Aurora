@@ -69,8 +69,8 @@ public:
 		}
 
 
-		vertexBuffer = new Buffer(sizeof(Vertex) * mesh->mNumVertices, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE, vertices.data());
-		indexBuffer = new Buffer(sizeof(UINT) * indices.size(), D3D11_BIND_INDEX_BUFFER, D3D11_USAGE_IMMUTABLE, indices.data());
+		vertexBuffer = new VertexBuffer(sizeof(Vertex) * mesh->mNumVertices, D3D11_USAGE_IMMUTABLE, vertices.data());
+		indexBuffer = new Buffer(sizeof(UINT) * indices.size(), D3D11_BIND_INDEX_BUFFER, D3D11_USAGE_IMMUTABLE, indices.data(), 0, 0, 0);
 	}
 
 	~Model()
@@ -89,7 +89,7 @@ public:
 private:
 
 	//pos uv normal tangent bitangent
-	Buffer* vertexBuffer;
+	VertexBuffer* vertexBuffer;
 
 	Buffer* indexBuffer;
 

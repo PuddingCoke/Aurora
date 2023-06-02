@@ -6,11 +6,19 @@
 #include"Material.h"
 #include"Model.h"
 
+#include<assimp/Importer.hpp>
+#include<assimp/scene.h>
+#include<assimp/postprocess.h>
+
 const std::string assetPath = "E:/Assets/Sponza";
 
 class Scene
 {
 public:
+
+	static constexpr UINT stride = sizeof(Vertex);
+
+	static constexpr UINT offset = 0;
 
 	static Scene* create(const std::string& filePath)
 	{
@@ -60,26 +68,66 @@ public:
 			{
 				normalPath = assetPath + "/sponza/dummy_ddn.dds";
 			}
-
+			
 			materials.push_back(new Material(diffusePath, specularPath, normalPath));
 		}
 
-		for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+		std::vector<Vertex> vertices;
+
+		UINT startVertexLocation = 0;
+
+		UINT vertexCount = 0;
+
+		for (unsigned int j = 0; j < scene->mNumMeshes; j++)
 		{
-			models.push_back(new Model(scene, scene->mMeshes[i]));
+			const bool hasUV = scene->mMeshes[j]->HasTextureCoords(0);
+			const bool hasTangent = scene->mMeshes[j]->HasTangentsAndBitangents();
+
+			vertexCount = scene->mMeshes[j]->mNumVertices;
+
+			for (unsigned int i = 0; i < scene->mMeshes[j]->mNumVertices; i++)
+			{
+				Vertex vert;
+
+				vert.pos = DirectX::XMFLOAT3(scene->mMeshes[j]->mVertices[i].x, scene->mMeshes[j]->mVertices[i].y, scene->mMeshes[j]->mVertices[i].z);
+				if (hasUV)
+				{
+					vert.uv = DirectX::XMFLOAT2(scene->mMeshes[j]->mTextureCoords[0][i].x, scene->mMeshes[j]->mTextureCoords[0][i].y);
+				}
+				else
+				{
+					vert.uv = DirectX::XMFLOAT2(0.f, 0.f);
+				}
+				vert.normal = DirectX::XMFLOAT3(scene->mMeshes[j]->mNormals[i].x, scene->mMeshes[j]->mNormals[i].y, scene->mMeshes[j]->mNormals[i].z);
+				if (hasTangent)
+				{
+					vert.tangent = DirectX::XMFLOAT3(scene->mMeshes[j]->mTangents[i].x, scene->mMeshes[j]->mTangents[i].y, scene->mMeshes[j]->mTangents[i].z);
+					vert.bitangent = DirectX::XMFLOAT3(scene->mMeshes[j]->mBitangents[i].x, scene->mMeshes[j]->mBitangents[i].y, scene->mMeshes[j]->mBitangents[i].z);
+				}
+				else
+				{
+					vert.tangent = DirectX::XMFLOAT3(0.f, 1.f, 0.f);
+					vert.bitangent = DirectX::XMFLOAT3(0.f, 1.f, 0.f);
+				}
+
+				vertices.push_back(vert);
+			}
+
+			models.push_back(Model(scene->mMeshes[j]->mMaterialIndex, vertexCount, startVertexLocation));
+
+			startVertexLocation += vertexCount;
 		}
 
+		modelBuffer = new VertexBuffer(sizeof(Vertex) * vertices.size(), D3D11_USAGE_IMMUTABLE, vertices.data());
 	}
 
 	~Scene()
 	{
+		delete modelBuffer;
+
 		for (unsigned int i = 0; i < materials.size(); i++)
 		{
 			delete materials[i];
-		}
-		for (unsigned int i = 0; i < models.size(); i++)
-		{
-			delete models[i];
 		}
 	}
 
@@ -88,10 +136,11 @@ public:
 		vertexShader->use();
 		pixelShader->use();
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
-			materials[models[i]->materialIndex]->use();
-			models[i]->draw();
+			materials[models[i].materialIndex]->use();
+			models[i].draw();
 		}
 	}
 
@@ -101,16 +150,19 @@ public:
 		geometryShader->use();
 		pixelShader->use();
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
-			materials[models[i]->materialIndex]->use();
-			models[i]->draw();
+			materials[models[i].materialIndex]->use();
+			models[i].draw();
 		}
 	}
 
 	std::vector<Material*> materials;
 
-	std::vector<Model*> models;
+	std::vector<Model> models;
+
+	VertexBuffer* modelBuffer;
 
 };
 

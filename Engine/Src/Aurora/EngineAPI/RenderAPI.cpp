@@ -361,24 +361,24 @@ void RenderAPI::CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 	Renderer::getContext()->CSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
 }
 
-void RenderAPI::IASetVertexBuffer(const UINT& slot, const std::initializer_list<Buffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
+void RenderAPI::IASetVertexBuffer(const UINT& slot, const std::initializer_list<VertexBuffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
 {
 	for (UINT i = slot; i < slot + (UINT)buffers.size(); i++)
 	{
-		if (Buffer::curBuffer[i])
+		if (VertexBuffer::curBuffer[i])
 		{
-			Buffer::curBuffer[i]->IASlot = -1;
-			Buffer::curBuffer[i] = nullptr;
+			VertexBuffer::curBuffer[i]->IASlot = -1;
+			VertexBuffer::curBuffer[i] = nullptr;
 		}
 	}
 
-	std::initializer_list<Buffer*>::iterator it = buffers.begin();
+	std::initializer_list<VertexBuffer*>::iterator it = buffers.begin();
 	std::initializer_list<UINT>::iterator itStride = strides.begin();
 	std::initializer_list<UINT>::iterator itOffset = offsets.begin();
 
 	for (UINT i = slot; i < slot + (UINT)buffers.size(); i++, it++, itStride++, itOffset++)
 	{
-		Buffer::curBuffer[i] = it[0];
+		VertexBuffer::curBuffer[i] = it[0];
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 		tempStrides[i - slot] = itStride[0];
 		tempOffsets[i - slot] = itOffset[0];

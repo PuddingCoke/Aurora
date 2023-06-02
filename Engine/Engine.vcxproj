@@ -146,7 +146,7 @@
     <ClInclude Include="Inc\Aurora\EngineAPI\ResourceEssential.h" />
     <ClInclude Include="Inc\Aurora\Resource\RenderCube.h" />
     <ClInclude Include="Inc\Aurora\Aurora.h" />
-    <ClInclude Include="Inc\Aurora\Resource\ComputeBuffer.h" />
+    <ClInclude Include="Inc\Aurora\Resource\ComputeVertexBuffer.h" />
     <ClInclude Include="Inc\Aurora\Resource\ComputeTexture3D.h" />
     <ClInclude Include="Inc\Aurora\Resource\DepthCube.h" />
     <ClInclude Include="Inc\Aurora\Resource\ConstantBuffer.h" />
@@ -154,6 +154,7 @@
     <ClInclude Include="Inc\Aurora\Resource\DepthTexture.h" />
     <ClInclude Include="Inc\Aurora\Core\DX\Resource\Buffer.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\Camera.h" />
+    <ClInclude Include="Inc\Aurora\Resource\VertexBuffer.h" />
     <ClInclude Include="Inc\Aurora\Utils\Color.h" />
     <ClInclude Include="Inc\Aurora\Resource\ComputeTexture.h" />
     <ClInclude Include="Inc\Aurora\Configuration.h" />
@@ -181,7 +182,6 @@
     <ClInclude Include="Inc\Aurora\Effect\FXAAEffect.h" />
     <ClInclude Include="Inc\Aurora\Effect\HBAOEffect.h" />
     <ClInclude Include="Inc\Aurora\Effect\MotionBlurEffect.h" />
-    <ClInclude Include="Inc\Aurora\Resource\PerframeCB.h" />
     <ClInclude Include="Inc\Aurora\Resource\RCTexture.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\RenderAPI.h" />
     <ClInclude Include="Inc\Aurora\Resource\ResDepthTexture.h" />
@@ -221,7 +221,7 @@
     <ClCompile Include="External\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="External\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="Src\Aurora\Resource\RenderCube.cpp" />
-    <ClCompile Include="Src\Aurora\Resource\ComputeBuffer.cpp" />
+    <ClCompile Include="Src\Aurora\Resource\ComputeVertexBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Camera\FPSCamera.cpp" />
     <ClCompile Include="Src\Aurora\Camera\OrbitCamera.cpp" />
     <ClCompile Include="Src\Aurora\Resource\ComputeTexture3D.cpp" />
@@ -242,13 +242,13 @@
     <ClCompile Include="Src\Aurora\Effect\FXAAEffect.cpp" />
     <ClCompile Include="Src\Aurora\Effect\HBAOEffect.cpp" />
     <ClCompile Include="Src\Aurora\Effect\MotionBlurEffect.cpp" />
-    <ClCompile Include="Src\Aurora\Resource\PerframeCB.cpp" />
     <ClCompile Include="Src\Aurora\EngineAPI\RenderAPI.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\ShaderResourceView.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\UnorderedAccessView.cpp" />
     <ClCompile Include="Src\Aurora\Core\Renderer.cpp" />
     <ClCompile Include="Src\Aurora\Resource\TextureCube.cpp" />
     <ClCompile Include="Src\Aurora\EngineAPI\Camera.cpp" />
+    <ClCompile Include="Src\Aurora\Resource\VertexBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Utils\Color.cpp" />
     <ClCompile Include="Src\Aurora\Aurora.cpp" />
     <ClCompile Include="Src\Aurora\Configuration.cpp" />
