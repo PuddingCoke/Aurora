@@ -150,12 +150,12 @@ public:
 		RenderAPI::get()->PSSetSampler({ States::anisotropicWrapSampler,States::linearClampSampler }, 0);
 
 		resDepthTexture->clearDSV(D3D11_CLEAR_DEPTH);
-		gBaseColor->clearRTV(DirectX::Colors::Black);
-		gPosition->clearRTV(DirectX::Colors::Black);
-		gNormal->clearRTV(DirectX::Colors::Black);
-		gRoughnessMetallic->clearRTV(DirectX::Colors::Black);
+		gBaseColor->clearRTV(DirectX::Colors::Black, 0);
+		gPosition->clearRTV(DirectX::Colors::Black, 0);
+		gNormal->clearRTV(DirectX::Colors::Black, 0);
+		gRoughnessMetallic->clearRTV(DirectX::Colors::Black, 0);
 
-		RenderAPI::get()->OMSetRTV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic }, resDepthTexture);
+		RenderAPI::get()->OMSetRTV({ gBaseColor->getRTVMip(0),gPosition->getRTVMip(0),gNormal->getRTVMip(0),gRoughnessMetallic->getRTVMip(0) }, resDepthTexture);
 
 		mainScene->draw(deferredVS, deferredPSHasTex, deferredPSNoTex, deferredPSTrans);
 
@@ -165,8 +165,8 @@ public:
 
 		ShaderResourceView* hbaoSRV = hbaoEffect.process(resDepthTexture->getSRV(), gNormal->getSRV());
 
-		originTexture->clearRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
+		originTexture->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, nullptr);
 
 		RenderAPI::get()->PSSetSRV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic,hbaoSRV }, 0);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),mainScene->lightBuffer }, 1);

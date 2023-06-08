@@ -6,13 +6,27 @@
 #include<Aurora/Core/DX/Resource/Texture2D.h>
 #include<Aurora/Core/DX/View/Composition/RSView.h>
 
-class RenderTexture :public Texture2D, public RSView
+class RenderTexture :public Texture2D, public ShaderResourceView
 {
 public:
 
-	RenderTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const float color[4] = DirectX::Colors::Black, const bool& enableMSAA = false);
+	RenderTexture(const UINT& width, const UINT& height, const DXGI_FORMAT& format, const float color[4] = DirectX::Colors::Black, const bool& enableMSAA = false);
+
+	RenderTexture(const UINT& width, const UINT& height, const DXGI_FORMAT& format, const UINT& mipLevels, const UINT& arraySize, const float color[4] = DirectX::Colors::Black);
 
 	virtual ~RenderTexture();
+
+	RenderTargetView* getRTVMip(const UINT& index);
+
+	ShaderResourceView* getSRVMip(const UINT& index);
+
+	virtual void bindSRV() override;
+
+	void clearRTV(const float color[4], const UINT& index) const;
+
+private:
+
+	RSView* mipArray;
 
 };
 

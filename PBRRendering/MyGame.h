@@ -55,7 +55,7 @@ public:
 
 		RenderAPI::get()->RSSetViewport(512, 512);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetRTV({ brdfTex }, nullptr);
+		RenderAPI::get()->OMSetRTV({ brdfTex->getRTVMip(0) }, nullptr);
 
 		RenderAPI::fullScreenVS->use();
 		brdfGenPS->use();

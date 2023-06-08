@@ -190,8 +190,8 @@ public:
 			RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 
 			const unsigned int color[4] = { 0,0,0,0 };
-			voxelTextureColor->clear(color);
-			voxelTextureNormal->clear(color);
+			voxelTextureColor->clearUAV(color);
+			voxelTextureNormal->clearUAV(color);
 			RenderAPI::get()->OMSetUAV({ voxelTextureColor,voxelTextureNormal });
 
 			RenderAPI::get()->VSSetConstantBuffer({ voxelProjBuffer }, 2);
@@ -331,17 +331,17 @@ public:
 			RenderAPI::get()->GSUnbindShader();
 			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler }, 0);
 
-			gBaseColor->clearRTV(DirectX::Colors::Black);
-			gPosition->clearRTV(DirectX::Colors::Black);
-			gNormalSpecular->clearRTV(DirectX::Colors::Black);
+			gBaseColor->clearRTV(DirectX::Colors::Black, 0);
+			gPosition->clearRTV(DirectX::Colors::Black, 0);
+			gNormalSpecular->clearRTV(DirectX::Colors::Black, 0);
 			resDepthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 
-			RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, resDepthTexture);
+			RenderAPI::get()->OMSetRTV({ gPosition->getRTVMip(0),gNormalSpecular->getRTVMip(0),gBaseColor->getRTVMip(0) }, resDepthTexture);
 
 			scene->draw(deferredVShader, deferredPShader);
 
-			originTexture->clearRTV(DirectX::Colors::Black);
-			RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
+			originTexture->clearRTV(DirectX::Colors::Black, 0);
+			RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, nullptr);
 			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(resDepthTexture->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
 			RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);
 
@@ -350,7 +350,7 @@ public:
 
 			RenderAPI::get()->DrawQuad();
 
-			RenderAPI::get()->OMSetRTV({ originTexture }, resDepthTexture);
+			RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, resDepthTexture);
 			RenderAPI::get()->PSSetSRV({ skybox }, 0);
 
 			RenderAPI::skyboxVS->use();

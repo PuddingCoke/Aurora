@@ -150,7 +150,6 @@
     <ClInclude Include="Inc\Aurora\Resource\ComputeTexture3D.h" />
     <ClInclude Include="Inc\Aurora\Resource\DepthCube.h" />
     <ClInclude Include="Inc\Aurora\Resource\ConstantBuffer.h" />
-    <ClInclude Include="Inc\Aurora\Resource\CTextureWithMips.h" />
     <ClInclude Include="Inc\Aurora\Resource\DepthTexture.h" />
     <ClInclude Include="Inc\Aurora\Core\DX\Resource\Buffer.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\Camera.h" />
@@ -227,7 +226,6 @@
     <ClCompile Include="Src\Aurora\Resource\ComputeTexture3D.cpp" />
     <ClCompile Include="Src\Aurora\Resource\DepthCube.cpp" />
     <ClCompile Include="Src\Aurora\Resource\ConstantBuffer.cpp" />
-    <ClCompile Include="Src\Aurora\Resource\CTextureWithMips.cpp" />
     <ClCompile Include="Src\Aurora\Resource\DepthTexture.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\Resource\Buffer.cpp" />
     <ClCompile Include="Src\Aurora\Resource\ComputeTexture.cpp" />

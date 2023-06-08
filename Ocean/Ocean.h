@@ -102,20 +102,20 @@ private:
 inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, const DirectX::XMFLOAT2& wind, const float& phillipParam) :
 	oceanParamBuffer(new ConstantBuffer(sizeof(Param), D3D11_USAGE_DYNAMIC)),
 	param{ mapResolution, mapLength, wind, phillipParam, 9.81f },
-	tildeh0k(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	tildeh0(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
-	waveData(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
-	Dy(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	Dx(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	Dz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	Dyx(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	Dyz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	Dxx(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	Dzz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	Dxz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	tempTexture(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT)),
-	Dxyz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
-	normalJacobian(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT)),
+	tildeh0k(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT)),
+	tildeh0(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT)),
+	waveData(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT)),
+	Dy(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT)),
+	Dx(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT)),
+	Dz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT)),
+	Dyx(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT)),
+	Dyz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT)),
+	Dxx(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT)),
+	Dzz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT)),
+	Dxz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT)),
+	tempTexture(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT)),
+	Dxyz(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT)),
+	normalJacobian(new ComputeTexture(mapResolution, mapResolution, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT)),
 	phillipSpectrumShader(new Shader("PhillipsSpectrum.hlsl", ShaderType::Compute)),
 	conjugatedCalcCS(new Shader("ConjugatedCalcCS.hlsl", ShaderType::Compute)),
 	displacementShader(new Shader("Displacement.hlsl", ShaderType::Compute)),
@@ -129,7 +129,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 {
 	float clearValue[] = { 999,999,999,999 };
 
-	normalJacobian->clear(clearValue);
+	normalJacobian->clearUAV(clearValue, 0);
 
 	{
 		D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[2] =
@@ -219,14 +219,14 @@ inline void Ocean::calculatePhillipTexture() const
 
 	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 	RenderAPI::get()->CSSetSRV({ gaussTexture }, 0);
-	RenderAPI::get()->CSSetUAV({ tildeh0k,waveData }, 0);
+	RenderAPI::get()->CSSetUAV({ tildeh0k->getUAVMip(0),waveData->getUAVMip(0) }, 0);
 
 	phillipSpectrumShader->use();
 
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
 	RenderAPI::get()->CSSetSRV({ tildeh0k }, 0);
-	RenderAPI::get()->CSSetUAV({ tildeh0 }, 0);
+	RenderAPI::get()->CSSetUAV({ tildeh0->getUAVMip(0) }, 0);
 
 	conjugatedCalcCS->use();
 
@@ -237,13 +237,13 @@ inline void Ocean::calculatePhillipTexture() const
 
 inline void Ocean::IFFT(ComputeTexture* const cTexture) const
 {
-	RenderAPI::get()->CSSetUAV({ tempTexture }, 0);
+	RenderAPI::get()->CSSetUAV({ tempTexture->getUAVMip(0) }, 0);
 	RenderAPI::get()->CSSetSRV({ cTexture }, 0);
 
 	ifftShader->use();
 	RenderAPI::get()->Dispatch(param.mapResolution, 1u, 1u);
 
-	RenderAPI::get()->CSSetUAV({ cTexture }, 0);
+	RenderAPI::get()->CSSetUAV({ cTexture->getUAVMip(0) }, 0);
 	RenderAPI::get()->CSSetSRV({ tempTexture }, 0);
 
 	ifftShader->use();
@@ -258,7 +258,7 @@ inline void Ocean::update() const
 	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 
 	RenderAPI::get()->CSSetSRV({ tildeh0,waveData }, 0);
-	RenderAPI::get()->CSSetUAV({ Dy,Dx,Dz,Dyx,Dyz,Dxx,Dzz,Dxz }, 0);
+	RenderAPI::get()->CSSetUAV({ Dy->getUAVMip(0),Dx->getUAVMip(0),Dz->getUAVMip(0),Dyx->getUAVMip(0),Dyz->getUAVMip(0),Dxx->getUAVMip(0),Dzz->getUAVMip(0),Dxz->getUAVMip(0) }, 0);
 
 	displacementShader->use();
 
@@ -274,7 +274,7 @@ inline void Ocean::update() const
 	IFFT(Dxz);
 
 	RenderAPI::get()->CSSetSRV({ Dy,Dx,Dz,Dyx,Dyz,Dxx,Dzz,Dxz }, 0);
-	RenderAPI::get()->CSSetUAV({ Dxyz,normalJacobian }, 0);
+	RenderAPI::get()->CSSetUAV({ Dxyz->getUAVMip(0),normalJacobian->getUAVMip(0) }, 0);
 
 	waveMergeCS->use();
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);

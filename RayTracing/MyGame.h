@@ -99,9 +99,9 @@ public:
 
 		temporalAccumulationParam.frameCount = 0;
 
-		renderTexture->clearRTV(DirectX::Colors::Black);
+		renderTexture->clearRTV(DirectX::Colors::Black, 0);
 
-		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
+		RenderAPI::get()->OMSetRTV({ renderTexture->getRTVMip(0) }, nullptr);
 
 		rayTracingPS->use();
 

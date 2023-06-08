@@ -4,7 +4,6 @@
 #include<Aurora/Resource/StructuredBuffer.h>
 #include<Aurora/Resource/RenderTexture.h>
 #include<Aurora/Resource/ResDepthTexture.h>
-#include<Aurora/Resource/CTextureWithMips.h>
 #include<Aurora/Resource/RenderCube.h>
 #include<Aurora/Resource/DepthCube.h>
 #include<Aurora/Core/Shader.h>
@@ -70,7 +69,7 @@ public:
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		reflectedColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		depthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
-		hiZTexture(new CTextureWithMips(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, hiZMipLevel)),
+		hiZTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, hiZMipLevel, 1)),
 		shadowTexture(new ResDepthTexture(shadowMapRes, shadowMapRes)),
 		radianceCube(new RenderCube(captureResolution, DXGI_FORMAT_R16G16B16A16_FLOAT)),
 		distanceCube(new RenderCube(captureResolution, DXGI_FORMAT_R32_FLOAT)),
@@ -172,9 +171,9 @@ public:
 			showIrradiance = !showIrradiance;
 			});
 
-		irradianceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
-		irradianceBounceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
-		depthOctahedralMap = new ComputeTexture(16, 16, DXGI_FORMAT_R16G16_FLOAT, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
+		irradianceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, 1, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
+		irradianceBounceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, 1, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
+		depthOctahedralMap = new ComputeTexture(16, 16, DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT, 1, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 
 		irradianceVolumeBuffer = new ConstantBuffer(sizeof(IrradianceVolumeParam), D3D11_USAGE_DYNAMIC, &irradianceVolumeParam);
 		ssrParamBuffer = new ConstantBuffer(sizeof(SSRParam), D3D11_USAGE_DYNAMIC, &ssrParam);
@@ -271,17 +270,17 @@ public:
 
 		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 
-		gBaseColor->clearRTV(DirectX::Colors::Transparent);
-		gPosition->clearRTV(DirectX::Colors::Transparent);
-		gNormalSpecular->clearRTV(DirectX::Colors::Transparent);
+		gBaseColor->clearRTV(DirectX::Colors::Transparent, 0);
+		gPosition->clearRTV(DirectX::Colors::Transparent, 0);
+		gNormalSpecular->clearRTV(DirectX::Colors::Transparent, 0);
 
-		RenderAPI::get()->OMSetRTV({ gPosition,gNormalSpecular,gBaseColor }, depthTexture);
+		RenderAPI::get()->OMSetRTV({ gPosition->getRTVMip(0),gNormalSpecular->getRTVMip(0),gBaseColor->getRTVMip(0) }, depthTexture);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
 		scene->render(deferredVShader, deferredPShader);
 
-		originTexture->clearRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ originTexture }, nullptr);
+		originTexture->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(depthTexture->getSRV(), gNormalSpecular->getSRV()),shadowTexture,irradianceBounceCoeff,depthOctahedralMap }, 0);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,irradianceVolumeBuffer }, 1);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
@@ -291,7 +290,7 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
-		RenderAPI::get()->OMSetRTV({ originTexture }, depthTexture);
+		RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, depthTexture);
 
 		RenderAPI::get()->PSSetSRV({ skybox }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
@@ -304,7 +303,7 @@ public:
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
 		RenderAPI::get()->CSSetSRV({ depthTexture }, 0);
-		RenderAPI::get()->CSSetUAV({ hiZTexture->getUAV(0) }, 0);
+		RenderAPI::get()->CSSetUAV({ hiZTexture->getUAVMip(0) }, 0);
 
 		hiZInitializeCS->use();
 
@@ -314,13 +313,14 @@ public:
 
 		for (UINT i = 0; i < hiZMipLevel - 1; i++)
 		{
-			RenderAPI::get()->CSSetUAV({ hiZTexture->getUAV(i),hiZTexture->getUAV(i + 1) }, 0);
+			RenderAPI::get()->CSSetSRV({ hiZTexture->getSRVMip(i) }, 0);
+			RenderAPI::get()->CSSetUAV({ hiZTexture->getUAVMip(i + 1) }, 0);
 
 			RenderAPI::get()->Dispatch((960 >> i) / 16, (540 >> i) / 9, 1);
 		}
 
-		reflectedColor->clearRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ reflectedColor }, nullptr);
+		reflectedColor->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->OMSetRTV({ reflectedColor->getRTVMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,hiZTexture,originTexture }, 0);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer(),ssrParamBuffer }, 1);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);
@@ -538,7 +538,7 @@ private:
 
 		scene->renderCube(cubeRenderVS, cubeRenderPS);
 
-		RenderAPI::get()->CSSetUAV({ irradianceCoeff }, 0);
+		RenderAPI::get()->CSSetUAV({ irradianceCoeff->getUAVMip(0) }, 0);
 		RenderAPI::get()->CSSetSRV({ radianceCube,irradianceSamples }, 0);
 		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
 		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
@@ -547,7 +547,7 @@ private:
 
 		RenderAPI::get()->Dispatch(1, 1, 1);
 
-		RenderAPI::get()->CSSetUAV({ depthOctahedralMap }, 0);
+		RenderAPI::get()->CSSetUAV({ depthOctahedralMap->getUAVMip(0) }, 0);
 		RenderAPI::get()->CSSetSRV({ distanceCube }, 0);
 		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
 		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
@@ -612,7 +612,7 @@ private:
 
 		scene->renderCube(cubeRenderVS, cubeRenderBouncePS);
 
-		RenderAPI::get()->CSSetUAV({ irradianceBounceCoeff }, 0);
+		RenderAPI::get()->CSSetUAV({ irradianceBounceCoeff->getUAVMip(0) }, 0);
 		RenderAPI::get()->CSSetSRV({ radianceCube,irradianceSamples }, 0);
 		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
 		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
@@ -644,7 +644,7 @@ private:
 
 	ComputeTexture* depthOctahedralMap;
 
-	CTextureWithMips* hiZTexture;
+	ComputeTexture* hiZTexture;
 
 	RenderCube* radianceCube;
 

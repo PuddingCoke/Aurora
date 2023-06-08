@@ -163,7 +163,7 @@ public:
 		}
 		pBatch->end();
 
-		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
+		RenderAPI::get()->OMSetRTV({ renderTexture->getRTVMip(0) }, nullptr);
 		pBatch->begin();
 		if (curFrame++ == length)
 		{

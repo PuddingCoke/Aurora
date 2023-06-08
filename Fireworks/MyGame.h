@@ -192,8 +192,8 @@ public:
 	{
 		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 
-		texture->clearRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ texture }, nullptr);
+		texture->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->OMSetRTV({ texture->getRTVMip(0) }, nullptr);
 
 		pBatch->begin();
 		for (std::list<Star*>::iterator it = Star::active->begin(); it != Star::active->end(); it++)
@@ -218,7 +218,7 @@ public:
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 
-		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
+		RenderAPI::get()->OMSetRTV({ doubleRTV->write()->getRTVMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
 
@@ -239,7 +239,7 @@ public:
 
 		ShaderResourceView* const fadedTextureSRV = effect.process(doubleRTV->read());
 
-		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
+		RenderAPI::get()->OMSetRTV({ doubleRTV->write()->getRTVMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSRV({ fadedTextureSRV }, 0);
 
 		RenderAPI::fullScreenVS->use();

@@ -10,7 +10,6 @@
 #include<Aurora/Resource/ComputeTexture3D.h>
 #include<Aurora/Resource/ConstantBuffer.h>
 #include<Aurora/Resource/VertexBuffer.h>
-#include<Aurora/Resource/CTextureWithMips.h>
 #include<Aurora/Resource/DepthCube.h>
 #include<Aurora/Resource/DepthTexture.h>
 #include<Aurora/Resource/RenderComputeTexture.h>

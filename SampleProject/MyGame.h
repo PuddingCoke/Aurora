@@ -11,7 +11,7 @@ public:
 	ComputeTexture* noiseTexture;
 
 	MyGame() :
-		noiseTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM))
+		noiseTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM))
 	{
 	}
 
@@ -27,7 +27,7 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->GenNoise(noiseTexture, Graphics::getWidth(), Graphics::getHeight());
+		RenderAPI::get()->GenNoise(noiseTexture->getUAVMip(0), Graphics::getWidth(), Graphics::getHeight());
 		RenderAPI::get()->DebugDraw(noiseTexture);
 	}
 

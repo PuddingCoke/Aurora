@@ -50,12 +50,12 @@ void UnorderedAccessView::unbindPUAV()
 	Renderer::getContext()->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0, num, nullUAV, nullptr);
 }
 
-void UnorderedAccessView::clear(const float* const color) const
+void UnorderedAccessView::clearUAV(const float* const color) const
 {
 	Renderer::getContext()->ClearUnorderedAccessViewFloat(unorderedAccessView.Get(), color);
 }
 
-void UnorderedAccessView::clear(const unsigned int* const value) const
+void UnorderedAccessView::clearUAV(const unsigned int* const value) const
 {
 	Renderer::getContext()->ClearUnorderedAccessViewUint(unorderedAccessView.Get(), value);
 }

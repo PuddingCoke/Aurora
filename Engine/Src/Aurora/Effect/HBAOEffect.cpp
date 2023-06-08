@@ -27,8 +27,7 @@ HBAOEffect::~HBAOEffect()
 
 ShaderResourceView* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV, ID3D11ShaderResourceView* const normalSRV) const
 {
-	//解决一下binding hazard的问题
-	outputRTV->bindRTV();
+	outputRTV->unbindFromSRV();
 
 	GFSDK_SSAO_InputData_D3D11 input;
 	input.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;
@@ -61,7 +60,7 @@ ShaderResourceView* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV
 	params.EnableDualLayerAO = false;
 
 	GFSDK_SSAO_Output_D3D11 output;
-	output.pRenderTargetView = outputRTV->getRTV();
+	output.pRenderTargetView = outputRTV->getRTVMip(0)->getRTV();
 	output.Blend.Mode = GFSDK_SSAO_OVERWRITE_RGB;
 
 	pAOContext->RenderAO(Renderer::getContext(), input, params, output);

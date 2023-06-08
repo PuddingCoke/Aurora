@@ -168,9 +168,6 @@
     <ClInclude Include="Inc\Aurora\Effect\FXAAEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Resource\CTextureWithMips.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\Core\DX\Resource\Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -363,9 +360,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Effect\FXAAEffect.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\Resource\CTextureWithMips.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Window\Win32Form.cpp">

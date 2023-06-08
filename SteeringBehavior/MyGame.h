@@ -123,8 +123,8 @@ public:
 	{
 		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 
-		renderTexture->clearRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ renderTexture }, nullptr);
+		renderTexture->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->OMSetRTV({ renderTexture->getRTVMip(0) }, nullptr);
 
 		/*batch->begin();
 		for (size_t i = 0; i < vehicles.size(); i++)
@@ -138,7 +138,7 @@ public:
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 
-		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
+		RenderAPI::get()->OMSetRTV({ doubleRTV->write()->getRTVMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
 
@@ -161,7 +161,7 @@ public:
 
 		ShaderResourceView* const fadedTextureSRV = fadeEffect.process(doubleRTV->read());
 
-		RenderAPI::get()->OMSetRTV({ doubleRTV->write() }, nullptr);
+		RenderAPI::get()->OMSetRTV({ doubleRTV->write()->getRTVMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSRV({ fadedTextureSRV }, 0);
 
 		RenderAPI::fullScreenVS->use();
