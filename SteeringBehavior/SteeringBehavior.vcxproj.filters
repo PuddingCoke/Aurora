@@ -18,16 +18,16 @@
     <ClInclude Include="MyGame.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Vehicle.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="StepCS.hlsl" />
+    <FxCompile Include="VehicleVS.hlsl" />
+    <FxCompile Include="VehiclePS.hlsl" />
+    <FxCompile Include="VehicleGS.hlsl" />
   </ItemGroup>
 </Project>

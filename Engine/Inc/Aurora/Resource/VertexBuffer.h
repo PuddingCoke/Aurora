@@ -13,8 +13,7 @@ public:
 
 	void operator=(const VertexBuffer&) = delete;
 
-	VertexBuffer(const UINT& byteWidth, const D3D11_USAGE& usage,
-		const void* const data = nullptr, const UINT& extraBindFlags = 0, const UINT& miscFlags = 0);
+	VertexBuffer(const UINT& byteWidth, const D3D11_USAGE& usage, const void* const data = nullptr, const UINT& extraBindFlags = 0, const UINT& miscFlags = 0);
 
 	virtual ~VertexBuffer();
 

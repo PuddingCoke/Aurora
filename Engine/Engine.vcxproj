@@ -153,6 +153,7 @@
     <ClInclude Include="Inc\Aurora\Resource\DepthTexture.h" />
     <ClInclude Include="Inc\Aurora\Core\DX\Resource\Buffer.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\Camera.h" />
+    <ClInclude Include="Inc\Aurora\Resource\ResourceBuffer.h" />
     <ClInclude Include="Inc\Aurora\Resource\SwapTexture.h" />
     <ClInclude Include="Inc\Aurora\Resource\VertexBuffer.h" />
     <ClInclude Include="Inc\Aurora\Utils\Color.h" />
@@ -244,6 +245,7 @@
     <ClCompile Include="Src\Aurora\Core\DX\View\ShaderResourceView.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\UnorderedAccessView.cpp" />
     <ClCompile Include="Src\Aurora\Core\Renderer.cpp" />
+    <ClCompile Include="Src\Aurora\Resource\ResourceBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Resource\StructuredBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Resource\TextureCube.cpp" />
     <ClCompile Include="Src\Aurora\EngineAPI\Camera.cpp" />

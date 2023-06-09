@@ -7,15 +7,18 @@
 #include<Aurora/Effect/FadeEffect.h>
 #include<Aurora/Effect/BloomEffect.h>
 
-#include<thread>
-
-#include"Vehicle.h"
+#include<Aurora/Resource/ComputeVertexBuffer.h>
+#include<Aurora/Resource/ResourceBuffer.h>
 
 class MyGame :public Game
 {
 public:
 
-	std::vector<Vehicle> vehicles;
+	static constexpr UINT vehicleNum = 1000;
+
+	ComputeVertexBuffer* positionVelocity;
+
+	ResourceBuffer* maxSpeedMaxForce;
 
 	RenderTexture* renderTexture;
 
@@ -23,146 +26,143 @@ public:
 
 	ResourceTexture* arrowTexture;
 
-	SwapTexture<RenderTexture>* doubleRTV;
-
-	FadeEffect fadeEffect;
-
 	BloomEffect bloomEffect;
 
-	float exposure;
+	struct SimulationParam
+	{
+		UINT vehicleNum;
+		FLOAT speedMultiply;
+		DirectX::XMFLOAT2 padding;
+	} param;
 
-	float gamma;
+	ConstantBuffer* simulationParamBuffer;
+
+	Shader* stepCS;
+
+	Shader* vehicleVS;
+
+	Shader* vehicleGS;
+
+	Shader* vehiclePS;
+
+	ComPtr<ID3D11InputLayout> inputLayout;
 
 	MyGame() :
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
 		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
 		arrowTexture(new ResourceTexture("arrow.png")),
-		doubleRTV(new SwapTexture<RenderTexture>([] {return new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT); })),
-		fadeEffect(Graphics::getWidth(), Graphics::getHeight()),
-		bloomEffect(Graphics::getWidth(), Graphics::getHeight())
+		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
+		stepCS(new Shader("StepCS.hlsl", ShaderType::Compute)),
+		vehicleVS(new Shader("VehicleVS.hlsl", ShaderType::Vertex)),
+		vehicleGS(new Shader("VehicleGS.hlsl", ShaderType::Geometry)),
+		vehiclePS(new Shader("VehiclePS.hlsl", ShaderType::Pixel)),
+		param{}
 	{
-		bloomEffect.setExposure(2.05f);
-		bloomEffect.setGamma(0.29f);
-		bloomEffect.setIntensity(0.97f);
+		bloomEffect.setExposure(1.3f);
+		bloomEffect.setGamma(1.4f);
+		bloomEffect.setIntensity(1.f);
 		bloomEffect.setThreshold(0.0f);
 		bloomEffect.applyChange();
 
-		fadeEffect.setFadeSpeed(7.0f);
+		DirectX::XMFLOAT4* positionVelocityArray = new DirectX::XMFLOAT4[vehicleNum];
+		DirectX::XMFLOAT4* maxSpeedMaxForceArray = new DirectX::XMFLOAT4[vehicleNum];
 
-		exposure = bloomEffect.getExposure();
-		gamma = bloomEffect.getGamma();
-
-		for (size_t i = 0; i < 700; i++)
+		for (size_t i = 0; i < vehicleNum; i++)
 		{
 			float angle = Random::Float() * Math::two_pi;
 			float xSpeed = 3.f * cosf(angle);
 			float ySpeed = 3.f * sinf(angle);
-			vehicles.push_back(Vehicle(Vector(Random::Float() * Graphics::getWidth(), Random::Float() * Graphics::getHeight()), Vector(xSpeed, ySpeed), 3.f, 0.1f));
+			positionVelocityArray[i] = DirectX::XMFLOAT4(Random::Float() * Graphics::getWidth(), Random::Float() * Graphics::getHeight(), xSpeed, ySpeed);
+			maxSpeedMaxForceArray[i] = DirectX::XMFLOAT4(3.f, 0.1f, 0.f, 0.f);
 		}
 
-		Keyboard::addKeyDownEvent(Keyboard::B, [this]()
-			{
-				std::cout << exposure << "\n";
-				std::cout << gamma << "\n";
-			});
+		positionVelocity = new ComputeVertexBuffer(sizeof(DirectX::XMFLOAT4) * vehicleNum, positionVelocityArray);
+		maxSpeedMaxForce = new ResourceBuffer(sizeof(DirectX::XMFLOAT4) * vehicleNum, D3D11_USAGE_DEFAULT, maxSpeedMaxForceArray);
+
+		delete[] positionVelocityArray;
+		delete[] maxSpeedMaxForceArray;
+
+		param.vehicleNum = vehicleNum;
+		param.speedMultiply = 120.f;
+
+		simulationParamBuffer = new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_IMMUTABLE, &param);
+
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{"POSITION",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
+			{"VELOCITY",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
+		};
+
+		Renderer::getDevice()->CreateInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(vehicleVS), inputLayout.ReleaseAndGetAddressOf());
 	}
 
 	~MyGame()
 	{
+		delete positionVelocity;
+		delete maxSpeedMaxForce;
+		delete simulationParamBuffer;
 		delete renderTexture;
-		delete doubleRTV;
 		delete resolvedTexture;
 		delete arrowTexture;
+		delete stepCS;
+		delete vehicleVS;
+		delete vehicleGS;
+		delete vehiclePS;
+	}
+
+	void imGUICall() override
+	{
+		bloomEffect.imGUIEffectModifier();
 	}
 
 	void update(const float& dt) override
 	{
-		if (Keyboard::getKeyDown(Keyboard::A))
-		{
-			exposure += 0.01f;
-			bloomEffect.setExposure(exposure);
-			bloomEffect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::S))
-		{
-			exposure -= 0.01f;
-			bloomEffect.setExposure(exposure);
-			bloomEffect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::H))
-		{
-			gamma += 0.01f;
-			bloomEffect.setGamma(gamma);
-			bloomEffect.applyChange();
-		}
-		else if (Keyboard::getKeyDown(Keyboard::J))
-		{
-			gamma -= 0.01f;
-			bloomEffect.setGamma(gamma);
-			bloomEffect.applyChange();
-		}
+		RenderAPI::get()->CSSetUAV({ positionVelocity }, 0);
+		RenderAPI::get()->CSSetSRV({ maxSpeedMaxForce }, 0);
 
-		for (unsigned int i = 0; i < vehicles.size(); i++)
-		{
-			vehicles[i].flock(vehicles);
+		RenderAPI::get()->CSSetConstantBuffer({ simulationParamBuffer }, 1);
 
-			float length;
+		stepCS->use();
 
-			DirectX::XMStoreFloat(&length, DirectX::XMVector2Length(DirectX::XMVectorSubtract({ vehicles[i].pos.x,vehicles[i].pos.y }, { Mouse::getX(),Mouse::getY() })));
-
-			if (length < 50.f)
-			{
-				vehicles[i].apply(vehicles[i].flee(Vector(Mouse::getX(), Mouse::getY())) * 10.f);
-			}
-
-			vehicles[i].update(dt * 150.f);
-		}
+		RenderAPI::get()->Dispatch(vehicleNum / 1000 + 1, 1, 1);
 	}
 
 	void render()
 	{
-		RenderAPI::get()->OMSetBlendState(States::defBlendState);
+		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 
 		renderTexture->clearRTV(DirectX::Colors::Black, 0);
 		RenderAPI::get()->OMSetRTV({ renderTexture->getRTVMip(0) }, nullptr);
 
-		/*batch->begin();
-		for (size_t i = 0; i < vehicles.size(); i++)
-		{
-			batch->draw(TEXTURE(arrowTexture), vehicles[i].pos.x, vehicles[i].pos.y, arrowTexture->getWidth() / 2, arrowTexture->getHeight() / 2, atan2f(vehicles[i].vel.y, vehicles[i].vel.x));
-		}
-		batch->end();*/
+		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+
+		RenderAPI::get()->IASetVertexBuffer(0, { positionVelocity }, { sizeof(DirectX::XMFLOAT4) }, { 0 });
+
+		RenderAPI::get()->PSSetSRV({ arrowTexture }, 0);
+
+		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+
+		vehicleVS->use();
+		vehicleGS->use();
+		vehiclePS->use();
+
+		RenderAPI::get()->Draw(vehicleNum, 0);
+
+		RenderAPI::get()->GSUnbindShader();
 
 		RenderAPI::get()->ResolveSubresource(resolvedTexture, 0, renderTexture, 0, renderTexture->getFormat());
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
 
-		RenderAPI::get()->OMSetRTV({ doubleRTV->write()->getRTVMip(0) }, nullptr);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
-		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
+		ShaderResourceView* bloomTextureSRV = bloomEffect.process(resolvedTexture);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
-
-		RenderAPI::get()->DrawQuad();
-		doubleRTV->swap();
-
-		ShaderResourceView* bloomTextureSRV = bloomEffect.process(doubleRTV->read());
+		RenderAPI::get()->OMSetBlendState(nullptr);
 
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
-
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
-
-		RenderAPI::get()->DrawQuad();
-
-		ShaderResourceView* const fadedTextureSRV = fadeEffect.process(doubleRTV->read());
-
-		RenderAPI::get()->OMSetRTV({ doubleRTV->write()->getRTVMip(0) }, nullptr);
-		RenderAPI::get()->PSSetSRV({ fadedTextureSRV }, 0);
 
 		RenderAPI::fullScreenVS->use();
 		RenderAPI::fullScreenPS->use();
