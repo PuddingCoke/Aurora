@@ -79,7 +79,7 @@ public:
 	MyGame() :
 		timer(1.f / 60.f),
 		swapTexture(new SwapComputeTexture(simulationWidth, simulationHeight)),
-		rcTexture(new RenderComputeTexture(simulationWidth, simulationHeight, FMT::RGBA8, DirectX::Colors::Black)),
+		rcTexture(new RenderComputeTexture(simulationWidth, simulationHeight, FMT::RGBA8UN, DirectX::Colors::Black)),
 		evolveCS(new Shader("EvolveCS.hlsl", ShaderType::Compute)),
 		randomizeCS(new Shader("RandomizeCS.hlsl", ShaderType::Compute)),
 		visualizeCS(new Shader("VisualizeCS.hlsl", ShaderType::Compute)),

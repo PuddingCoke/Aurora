@@ -38,7 +38,7 @@ public:
 	MyGame() :
 		rayTracingPS(new Shader(Utils::getRootFolder() + "RayTracingPS.cso", ShaderType::Pixel)),
 		displayPS(new Shader("DisplayPS.hlsl", ShaderType::Pixel)),
-		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16)),
+		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN)),
 		cameraParam{ 0.25f,0.0f,12.0f,0.1f },
 		temporalAccumulationParam{ 0u,0.f,{} }
 	{

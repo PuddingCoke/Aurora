@@ -45,13 +45,22 @@ public:
 		RGBA32UI,
 
 		//Unorm
-		R8,
-		RG8,
-		RGBA8,
+		R8UN,
+		RG8UN,
+		RGBA8UN,
 
-		R16,
-		RG16,
-		RGBA16,
+		R16UN,
+		RG16UN,
+		RGBA16UN,
+
+		//Snorm
+		R8SN,
+		RG8SN,
+		RGBA8SN,
+
+		R16SN,
+		RG16SN,
+		RGBA16SN,
 
 		//Float
 		R16F,

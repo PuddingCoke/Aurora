@@ -48,8 +48,8 @@ public:
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	MyGame() :
-		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8, DirectX::Colors::Black, true)),
-		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8, D3D11_USAGE_DEFAULT)),
+		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, DirectX::Colors::Black, true)),
+		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, D3D11_USAGE_DEFAULT)),
 		arrowTexture(new ResourceTexture("arrow.png")),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		stepCS(new Shader("StepCS.hlsl", ShaderType::Compute)),

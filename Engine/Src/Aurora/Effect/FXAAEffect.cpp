@@ -1,8 +1,8 @@
 #include<Aurora/Effect/FXAAEffect.h>
 
 FXAAEffect::FXAAEffect(const UINT& width, const UINT& height) :
-	EffectBase(width, height, FMT::RGBA8), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
-	colorWithLuma(new RenderTexture(width, height, FMT::RGBA8))
+	EffectBase(width, height, FMT::RGBA8UN), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
+	colorWithLuma(new RenderTexture(width, height, FMT::RGBA8UN))
 {
 	compileShaders();
 

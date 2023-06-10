@@ -58,8 +58,8 @@ public:
 
 	MyGame() :
 		pBatch(PrimitiveBatch::create()),
-		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8, DirectX::Colors::Transparent, true)),
-		texture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8, D3D11_USAGE_DEFAULT)),
+		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, DirectX::Colors::Transparent, true)),
+		texture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, D3D11_USAGE_DEFAULT)),
 		curFrame(0),
 		connected(false)
 	{

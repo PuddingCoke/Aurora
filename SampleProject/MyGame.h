@@ -11,7 +11,7 @@ public:
 	ComputeTexture* noiseTexture;
 
 	MyGame() :
-		noiseTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8, FMT::RGBA8, FMT::RGBA8))
+		noiseTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, FMT::RGBA8UN, FMT::RGBA8UN))
 	{
 	}
 
