@@ -55,13 +55,13 @@ void RenderComputeTexture::clearRTV(const float color[4], const UINT& index) con
 	mipArray[index].clearRTV(color);
 }
 
-RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height, const DXGI_FORMAT& format, const float color[4], const UINT& mipLevels, const UINT& arraySize) :
-	Texture2D(width, height, format, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_RENDER_TARGET)
+RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height, const FMT& format, const float color[4], const UINT& mipLevels, const UINT& arraySize) :
+	Texture2D(width, height, FMTCAST(format), D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_RENDER_TARGET)
 {
 	//global srv
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = format;
+		srvDesc.Format = FMTCAST(format);
 
 		if (arraySize > 1)
 		{
@@ -85,11 +85,11 @@ RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height
 		mipArray = new RUSView[mipLevels];
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = format;
+		srvDesc.Format = FMTCAST(format);
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-		rtvDesc.Format = format;
+		rtvDesc.Format = FMTCAST(format);
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-		uavDesc.Format = format;
+		uavDesc.Format = FMTCAST(format);
 
 		if (arraySize > 1)
 		{

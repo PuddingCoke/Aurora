@@ -1,7 +1,7 @@
 #include<Aurora/Effect/HBAOEffect.h>
 
 HBAOEffect::HBAOEffect(const unsigned int& width, const unsigned int& height) :
-	EffectBase(width, height, DXGI_FORMAT_R32_FLOAT), pAOContext(nullptr)
+	EffectBase(width, height, FMT::R32F), pAOContext(nullptr)
 {
 	radius = 2.f;
 	bias = 0.1f;

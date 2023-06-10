@@ -153,8 +153,6 @@ private:
 
 	friend class Aurora;
 
-	static void ini();
-
 	static std::map<Key, Event> keyDownEvents;
 
 	static std::map<Key, Event> keyUpEvents;

@@ -63,16 +63,16 @@ public:
 	} light{};
 
 	GlobalIllumination() :
-		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Black)),
-		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_SNORM, DirectX::Colors::Black)),
-		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
-		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
-		reflectedColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
+		gPosition(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA32F, DirectX::Colors::Black)),
+		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA32F, DirectX::Colors::Black)),
+		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8, DirectX::Colors::Black)),
+		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
+		reflectedColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
 		depthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
-		hiZTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, hiZMipLevel, 1)),
+		hiZTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, FMT::R32F, FMT::R32F, hiZMipLevel, 1)),
 		shadowTexture(new ResDepthTexture(shadowMapRes, shadowMapRes)),
-		radianceCube(new RenderCube(captureResolution, DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		distanceCube(new RenderCube(captureResolution, DXGI_FORMAT_R32_FLOAT)),
+		radianceCube(new RenderCube(captureResolution, FMT::RGBA16F)),
+		distanceCube(new RenderCube(captureResolution, FMT::R32F)),
 		depthCube(new DepthCube(captureResolution)),
 		skybox(new TextureCube(assetPath + "/sky/kloppenheim_05_4k.hdr", skyboxResolution)),
 		deferredVShader(new Shader(Utils::getRootFolder() + "DeferredVShader.cso", ShaderType::Vertex)),
@@ -171,9 +171,9 @@ public:
 			showIrradiance = !showIrradiance;
 			});
 
-		irradianceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, 1, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
-		irradianceBounceCoeff = new ComputeTexture(9, 1, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, 1, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
-		depthOctahedralMap = new ComputeTexture(16, 16, DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT, 1, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
+		irradianceCoeff = new ComputeTexture(9, 1, FMT::RG11B10F, FMT::RG11B10F, FMT::RG11B10F, 1, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
+		irradianceBounceCoeff = new ComputeTexture(9, 1, FMT::RG11B10F, FMT::RG11B10F, FMT::RG11B10F, 1, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
+		depthOctahedralMap = new ComputeTexture(16, 16, FMT::RG16F, FMT::RG16F, FMT::RG16F, 1, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 
 		irradianceVolumeBuffer = new ConstantBuffer(sizeof(IrradianceVolumeParam), D3D11_USAGE_DYNAMIC, &irradianceVolumeParam);
 		ssrParamBuffer = new ConstantBuffer(sizeof(SSRParam), D3D11_USAGE_DYNAMIC, &ssrParam);

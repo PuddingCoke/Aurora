@@ -17,8 +17,8 @@ public:
 	public:
 
 		SwapComputeTexture(const UINT& width, const UINT& height) :
-			cTexture1(new ComputeTexture(width, height, DXGI_FORMAT_R8_UINT, DXGI_FORMAT_R8_UINT, DXGI_FORMAT_R8_UINT)),
-			cTexture2(new ComputeTexture(width, height, DXGI_FORMAT_R8_UINT, DXGI_FORMAT_R8_UINT, DXGI_FORMAT_R8_UINT))
+			cTexture1(new ComputeTexture(width, height, FMT::R8UI, FMT::R8UI, FMT::R8UI)),
+			cTexture2(new ComputeTexture(width, height, FMT::R8UI, FMT::R8UI, FMT::R8UI))
 		{}
 
 		~SwapComputeTexture()
@@ -79,7 +79,7 @@ public:
 	MyGame() :
 		timer(1.f / 60.f),
 		swapTexture(new SwapComputeTexture(simulationWidth, simulationHeight)),
-		rcTexture(new RenderComputeTexture(simulationWidth, simulationHeight, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black)),
+		rcTexture(new RenderComputeTexture(simulationWidth, simulationHeight, FMT::RGBA8, DirectX::Colors::Black)),
 		evolveCS(new Shader("EvolveCS.hlsl", ShaderType::Compute)),
 		randomizeCS(new Shader("RandomizeCS.hlsl", ShaderType::Compute)),
 		visualizeCS(new Shader("VisualizeCS.hlsl", ShaderType::Compute)),

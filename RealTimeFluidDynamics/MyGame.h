@@ -101,7 +101,7 @@ public:
 		pressureGradientSubtractPS(new Shader("PressureGradientSubtractPS.hlsl", ShaderType::Pixel)),
 		viscousDiffusionPS(new Shader("ViscousDiffusionPS.hlsl", ShaderType::Pixel)),
 		vorticityPS(new Shader("VorticityPS.hlsl", ShaderType::Pixel)),
-		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
+		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F)),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		colorChanging(true)
 	{
@@ -128,18 +128,14 @@ public:
 			const DirectX::XMUINT2 simRes = { (UINT)(config.simRes * Graphics::getAspectRatio()), config.simRes };
 
 
-			colorTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(colorRes.x, colorRes.y, DXGI_FORMAT_R16G16B16A16_FLOAT); });
+			colorTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(colorRes.x, colorRes.y, FMT::RGBA16F); });
 
-			velocityTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT_R16G16_FLOAT); });
+			velocityTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(simRes.x, simRes.y, FMT::RG16F); });
 
-			pressureTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT_R16_FLOAT); });
+			pressureTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(simRes.x, simRes.y, FMT::R16F); });
 
-
-			//colorTex = new DoubleRTV(colorRes.x, colorRes.y, DXGI_FORMAT_R16G16B16A16_FLOAT);
-			//velocityTex = new DoubleRTV(simRes.x, simRes.y, DXGI_FORMAT_R16G16_FLOAT);
-			//pressureTex = new DoubleRTV(simRes.x, simRes.y, DXGI_FORMAT_R16_FLOAT);
-			curlTex = new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT_R16_FLOAT);
-			divergenceTex = new RenderTexture(simRes.x, simRes.y, DXGI_FORMAT_R16_FLOAT);
+			curlTex = new RenderTexture(simRes.x, simRes.y, FMT::R16F);
+			divergenceTex = new RenderTexture(simRes.x, simRes.y, FMT::R16F);
 
 			simulationParam =
 			{

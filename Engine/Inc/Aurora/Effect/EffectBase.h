@@ -20,7 +20,7 @@ public:
 
 	void operator=(const EffectBase&) = delete;
 
-	EffectBase(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& outputFormat);
+	EffectBase(const unsigned int& width, const unsigned int& height, const FMT& outputFormat);
 
 	virtual ~EffectBase();
 

@@ -48,8 +48,8 @@ public:
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	MyGame() :
-		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
-		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
+		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8, DirectX::Colors::Black, true)),
+		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8, D3D11_USAGE_DEFAULT)),
 		arrowTexture(new ResourceTexture("arrow.png")),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		stepCS(new Shader("StepCS.hlsl", ShaderType::Compute)),
@@ -124,7 +124,7 @@ public:
 
 		stepCS->use();
 
-		RenderAPI::get()->Dispatch(vehicleNum / 1000 + 1, 1, 1);
+		RenderAPI::get()->Dispatch(((vehicleNum + 999) & ~999) / 1000, 1, 1);
 	}
 
 	void render()

@@ -11,7 +11,7 @@ class ResDepthTexture :public Texture2D, public DepthStencilView, public ShaderR
 {
 public:
 
-	ResDepthTexture(const UINT& width, const UINT& height, const DXGI_FORMAT& texFormat = DXGI_FORMAT_R32_TYPELESS, const DXGI_FORMAT& srvFormat = DXGI_FORMAT_R32_FLOAT, const DXGI_FORMAT& dsvFormat = DXGI_FORMAT_D32_FLOAT);
+	ResDepthTexture(const UINT& width, const UINT& height, const FMT& texFormat = FMT::R32TL, const FMT& srvFormat = FMT::R32F, const FMT& dsvFormat = FMT::D32F);
 
 	virtual void bindDSV() override;
 

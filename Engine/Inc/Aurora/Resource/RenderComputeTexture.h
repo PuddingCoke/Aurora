@@ -10,7 +10,7 @@ class RenderComputeTexture :public Texture2D, public ShaderResourceView
 {
 public:
 
-	RenderComputeTexture(const UINT& width, const UINT& height, const DXGI_FORMAT& format, const float color[4], const UINT& mipLevels = 1, const UINT& arraySize = 1);
+	RenderComputeTexture(const UINT& width, const UINT& height, const FMT& format, const float color[4], const UINT& mipLevels = 1, const UINT& arraySize = 1);
 
 	virtual ~RenderComputeTexture();
 

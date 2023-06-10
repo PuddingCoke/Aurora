@@ -219,6 +219,9 @@
     <ClInclude Include="Inc\Aurora\Resource\ResourceBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\Core\ResourceFormat.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -405,6 +408,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Resource\ResourceBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\Core\ResourceFormat.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

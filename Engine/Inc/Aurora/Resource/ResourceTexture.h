@@ -20,7 +20,7 @@ public:
 
 	ResourceTexture(const unsigned int& width, const unsigned int& height, const TextureType& type);
 
-	ResourceTexture(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format, const bool& enableMSAA = false);
+	ResourceTexture(const unsigned int& width, const unsigned int& height, const FMT& format, const bool& enableMSAA = false);
 
 	virtual ~ResourceTexture();
 

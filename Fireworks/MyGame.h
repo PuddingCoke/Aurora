@@ -28,9 +28,9 @@ public:
 	MyGame() :
 		pBatch(PrimitiveBatch::create()),
 		currentSkyColor{ 0.0f,0.0f,0.0f,1.0f },
-		texture(new RenderTexture(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Black, true)),
-		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT)),
-		doubleRTV(new SwapTexture<RenderTexture>([] {return new RenderTexture(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM); })),
+		texture(new RenderTexture(1920, 1080, FMT::RGBA8, DirectX::Colors::Black, true)),
+		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8, D3D11_USAGE_DEFAULT)),
+		doubleRTV(new SwapTexture<RenderTexture>([] {return new RenderTexture(1920, 1080, FMT::RGBA8); })),
 		effect(1920, 1080)
 	{
 		Star::active = &starActive;

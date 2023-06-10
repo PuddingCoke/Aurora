@@ -8,6 +8,8 @@
 #include<DirectXMath.h>
 #include<iostream>
 
+#include"ResourceFormat.h"
+
 using Microsoft::WRL::ComPtr;
 
 enum class GPUManufacturer

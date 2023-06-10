@@ -29,8 +29,8 @@ public:
 
 	MyGame() :
 		textBatch(new TextBatch("Game_0.png", "Game.fnt", 0.7f)),
-		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)),
-		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT)),
+		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F)),
+		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F)),
 		camera({ 54,0,0 }, { 0,1,0 }, 20.f),
 		effect(Graphics::getWidth(), Graphics::getHeight())
 	{

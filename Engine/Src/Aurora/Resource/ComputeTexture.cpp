@@ -5,13 +5,13 @@ ComputeTexture::~ComputeTexture()
 	delete[] mipArray;
 }
 
-ComputeTexture::ComputeTexture(const UINT& width, const UINT& height, const DXGI_FORMAT& resFmt, const DXGI_FORMAT& srvFmt, const DXGI_FORMAT& uavFmt, const UINT& mipLevels, const UINT& arraySize) :
-	Texture2D(width, height, mipLevels, arraySize, resFmt, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)
+ComputeTexture::ComputeTexture(const UINT& width, const UINT& height, const FMT& resFmt, const FMT& srvFmt, const FMT& uavFmt, const UINT& mipLevels, const UINT& arraySize) :
+	Texture2D(width, height, mipLevels, arraySize, FMTCAST(resFmt), D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)
 {
 	//global srv
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = srvFmt;
+		srvDesc.Format = FMTCAST(srvFmt);
 
 		if (arraySize > 1)
 		{
@@ -35,9 +35,9 @@ ComputeTexture::ComputeTexture(const UINT& width, const UINT& height, const DXGI
 		mipArray = new USView[mipLevels];
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = srvFmt;
+		srvDesc.Format = FMTCAST(srvFmt);
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-		uavDesc.Format = uavFmt;
+		uavDesc.Format = FMTCAST(uavFmt);
 
 		if (arraySize > 1)
 		{

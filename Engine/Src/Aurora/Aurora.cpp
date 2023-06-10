@@ -32,8 +32,6 @@ int Aurora::iniEngine(const Configuration& config, const int& argc, const char* 
 		std::cout << "[class Aurora] enable ImGUI\n";
 	}
 
-	Keyboard::ini();
-
 	UINT screenWidth, screenHeight;
 
 	if (config.usage == Configuration::EngineUsage::Wallpaper)

@@ -1,6 +1,6 @@
 ﻿#include<Aurora/Effect/EffectBase.h>
 
-EffectBase::EffectBase(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& outputFormat) :
+EffectBase::EffectBase(const unsigned int& width, const unsigned int& height, const FMT& outputFormat) :
 	outputRTV(new RenderTexture(width, height, outputFormat)), width(width), height(height)
 {
 }

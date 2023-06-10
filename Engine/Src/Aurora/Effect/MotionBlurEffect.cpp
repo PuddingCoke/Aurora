@@ -1,6 +1,6 @@
 #include<Aurora/Effect/MotionBlurEffect.h>
 
-MotionBlurEffect::MotionBlurEffect(const unsigned int& width, const unsigned int& height, const DXGI_FORMAT& format) :
+MotionBlurEffect::MotionBlurEffect(const unsigned int& width, const unsigned int& height, const FMT& format) :
 	EffectBase(width, height, format)
 {
 	compileShaders();

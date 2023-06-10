@@ -41,12 +41,12 @@ public:
 
 	MyGame() :
 		scene(assetPath + "DNA.obj"),
-		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, true)),
+		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, true)),
 		camera({ 2,0,0 }, { 0,1,0 }),
 		lightBuffer(new ConstantBuffer(sizeof(Light), D3D11_USAGE_DYNAMIC)),
 		brdfGenPS(new Shader("BRDFGenPS.hlsl", ShaderType::Pixel)),
 		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
-		brdfTex(new RenderTexture(512, 512, DXGI_FORMAT_R32G32_FLOAT)),
+		brdfTex(new RenderTexture(512, 512, FMT::RG32F)),
 		envCube(new TextureCube(assetPath + "ParkinglotEnvHDR.dds")),
 		irradianceCube(new TextureCube(assetPath + "ParkinglotDiffuseHDR.dds")),
 		prefilterCube(new TextureCube(assetPath + "ParkinglotSpecularHDR.dds"))

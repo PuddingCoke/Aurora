@@ -1,8 +1,8 @@
 ﻿#include<Aurora/Effect/BloomEffect.h>
 
 BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) :
-	EffectBase(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT), bloomWidth(width), bloomHeight(height), bloomParam{},
-	filterTexture(new RenderTexture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
+	EffectBase(width, height, FMT::RGBA16F), bloomWidth(width), bloomHeight(height), bloomParam{},
+	filterTexture(new RenderTexture(width, height, FMT::RGBA16F, DirectX::Colors::Black)),
 	lensDirtTexture(new ResourceTexture(Utils::getRootFolder() + "bloom_dirt_mask.png"))
 {
 	compileShaders();
@@ -15,7 +15,7 @@ BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) 
 		{
 			resolutions[i] = DirectX::XMUINT2(width >> (i + 1), height >> (i + 1));
 
-			swapTexture[i] = new SwapTexture<RenderComputeTexture>([=] {return new RenderComputeTexture(resolutions[i].x, resolutions[i].y, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black); });
+			swapTexture[i] = new SwapTexture<RenderComputeTexture>([=] {return new RenderComputeTexture(resolutions[i].x, resolutions[i].y, FMT::RGBA16F, DirectX::Colors::Black); });
 
 			blurParam[i].texelSize = DirectX::XMFLOAT2(1.f / resolutions[i].x, 1.f / resolutions[i].y);
 			blurParam[i].iteration = iteration[i];

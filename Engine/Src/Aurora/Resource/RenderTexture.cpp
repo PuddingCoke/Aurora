@@ -33,12 +33,12 @@ void RenderTexture::clearRTV(const float color[4], const UINT& index) const
 	mipArray[index].clearRTV(color);
 }
 
-RenderTexture::RenderTexture(const UINT& width, const UINT& height, const DXGI_FORMAT& format, const float color[4], const bool& enableMSAA) :
-	Texture2D(width, height, format, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET, enableMSAA)
+RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& format, const float color[4], const bool& enableMSAA) :
+	Texture2D(width, height, FMTCAST(format), D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET, enableMSAA)
 {
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = format;
+		srvDesc.Format = FMTCAST(format);
 
 		if (enableMSAA)
 		{
@@ -58,7 +58,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const DXGI_F
 		mipArray = new RSView[1];
 
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-		rtvDesc.Format = format;
+		rtvDesc.Format = FMTCAST(format);
 
 		if (enableMSAA)
 		{
@@ -71,7 +71,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const DXGI_F
 		}
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = format;
+		srvDesc.Format = FMTCAST(format);
 
 		if (enableMSAA)
 		{
@@ -91,13 +91,13 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const DXGI_F
 	mipArray[0].clearRTV(color);
 }
 
-RenderTexture::RenderTexture(const UINT& width, const UINT& height, const DXGI_FORMAT& format, const UINT& mipLevels, const UINT& arraySize, const float color[4]) :
-	Texture2D(width, height, mipLevels, arraySize, format, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET, 0)
+RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& format, const UINT& mipLevels, const UINT& arraySize, const float color[4]) :
+	Texture2D(width, height, mipLevels, arraySize, FMTCAST(format), D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET, 0)
 {
 	//global srv
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = format;
+		srvDesc.Format = FMTCAST(format);
 
 		if (arraySize > 1)
 		{
@@ -121,9 +121,9 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const DXGI_F
 		mipArray = new RSView[mipLevels];
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = format;
+		srvDesc.Format = FMTCAST(format);
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-		rtvDesc.Format = format;
+		rtvDesc.Format = FMTCAST(format);
 
 		if (arraySize > 1)
 		{
