@@ -405,18 +405,7 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 void Aurora::iniStates(const Configuration& config)
 {
 	//初始化一些默认状态，比如Viewport、BlendState等等 
-	switch (config.cameraType)
-	{
-	default:
-	case Configuration::CameraType::Orthogonal:
-		std::cout << "[class Aurora] orthogonal camera\n";
-		Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::getWidth(), 0, (float)Graphics::getHeight(), -1.f, 1.f));
-		break;
-	case Configuration::CameraType::Perspective:
-		std::cout << "[class Aurora] perspective camera\n";
-		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
-		break;
-	}
+	Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::getWidth(), 0, (float)Graphics::getHeight(), -1.f, 1.f));
 
 	RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 

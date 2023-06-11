@@ -63,6 +63,8 @@ public:
 		RenderAPI::get()->DrawQuad();
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 256.f);
+
 		camera.registerEvent();
 	}
 
