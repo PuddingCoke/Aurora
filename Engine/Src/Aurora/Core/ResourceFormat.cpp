@@ -73,7 +73,7 @@ const std::unordered_map<FMT, DXGI_FORMAT> ResourceFormat::formatMap =
 	{RGBA32TL,DXGI_FORMAT_R32G32B32A32_TYPELESS},
 
 	//Depth
-	{D16,DXGI_FORMAT_D16_UNORM},
+	{D16UN,DXGI_FORMAT_D16_UNORM},
 	{D32F,DXGI_FORMAT_D32_FLOAT},
 
 	//Special

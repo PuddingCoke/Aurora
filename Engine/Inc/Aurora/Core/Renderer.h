@@ -8,7 +8,6 @@
 #include<DirectXMath.h>
 #include<iostream>
 #include<comdef.h>
-#include<atlstr.h>
 
 #include"ResourceFormat.h"
 

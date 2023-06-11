@@ -89,7 +89,7 @@ public:
 		RGBA32TL,
 
 		//Depth
-		D16,
+		D16UN,
 		D32F,
 
 		//Special
