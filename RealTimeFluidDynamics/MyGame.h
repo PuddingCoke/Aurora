@@ -120,7 +120,7 @@ public:
 			blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 			blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-			Renderer::getDevice()->CreateBlendState(&blendStateDesc, blendState.ReleaseAndGetAddressOf());
+			Renderer::get()->createBlendState(&blendStateDesc, blendState.ReleaseAndGetAddressOf());
 		}
 
 		{

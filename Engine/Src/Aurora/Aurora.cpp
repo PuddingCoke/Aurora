@@ -43,6 +43,8 @@ int Aurora::iniEngine(const Configuration& config, const int& argc, const char* 
 
 	iniStates(config);
 
+	std::cout << "[class Aurora] initialize engine complete\n";
+
 	return 0;
 }
 

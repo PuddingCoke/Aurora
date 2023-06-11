@@ -138,7 +138,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 			{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 		};
 
-		Renderer::getDevice()->CreateInputLayout(inputLayoutDesc, ARRAYSIZE(inputLayoutDesc), SHADERDATA(oceanVShader), inputLayout.ReleaseAndGetAddressOf());
+		Renderer::get()->createInputLayout(inputLayoutDesc, ARRAYSIZE(inputLayoutDesc), SHADERDATA(oceanVShader), inputLayout.ReleaseAndGetAddressOf());
 	}
 
 	{
@@ -172,7 +172,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 		desc.CullMode = D3D11_CULL_BACK;
 		desc.FillMode = D3D11_FILL_WIREFRAME;
 
-		Renderer::getDevice()->CreateRasterizerState(&desc, wireState.ReleaseAndGetAddressOf());
+		Renderer::get()->createRasterizerState(&desc, wireState.ReleaseAndGetAddressOf());
 	}
 
 	calculatePhillipTexture();

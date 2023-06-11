@@ -27,7 +27,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 		tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 		tDesc.ArraySize = 6;
 		tDesc.MipLevels = 1;
-		Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
+		Renderer::get()->createTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
 	}
 
 	for (unsigned int i = 0; i < 6; i++)
@@ -76,7 +76,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	tDesc.ArraySize = 6;
 	tDesc.MipLevels = mipLevels;
-	Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
+	Renderer::get()->createTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
 
 	const DirectX::XMVECTOR focusPoints[6] =
 	{

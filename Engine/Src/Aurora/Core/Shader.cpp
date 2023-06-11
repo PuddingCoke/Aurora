@@ -70,32 +70,32 @@ Shader::Shader(const std::string& filePath, const ShaderType& type, const std::i
 	{
 	default:
 	case ShaderType::Vertex:
-		Renderer::getDevice()->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.vertexShader);
+		Renderer::get()->createVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &shaderPtr.vertexShader);
 		useFunc = &Shader::vertexUse;
 		releaseFunc = &Shader::vertexRelease;
 		break;
 	case ShaderType::Hull:
-		Renderer::getDevice()->CreateHullShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.hullShader);
+		Renderer::get()->createHullShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &shaderPtr.hullShader);
 		useFunc = &Shader::hullUse;
 		releaseFunc = &Shader::hullRelease;
 		break;
 	case ShaderType::Domain:
-		Renderer::getDevice()->CreateDomainShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.domainShader);
+		Renderer::get()->createDomainShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &shaderPtr.domainShader);
 		useFunc = &Shader::domainUse;
 		releaseFunc = &Shader::domainRelease;
 		break;
 	case ShaderType::Geometry:
-		Renderer::getDevice()->CreateGeometryShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.geometryShader);
+		Renderer::get()->createGeometryShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &shaderPtr.geometryShader);
 		useFunc = &Shader::geometryUse;
 		releaseFunc = &Shader::geometryRelease;
 		break;
 	case ShaderType::Pixel:
-		Renderer::getDevice()->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.pixelShader);
+		Renderer::get()->createPixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &shaderPtr.pixelShader);
 		useFunc = &Shader::pixelUse;
 		releaseFunc = &Shader::pixelRelease;
 		break;
 	case ShaderType::Compute:
-		Renderer::getDevice()->CreateComputeShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), nullptr, &shaderPtr.computeShader);
+		Renderer::get()->createComputeShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &shaderPtr.computeShader);
 		useFunc = &Shader::computeUse;
 		releaseFunc = &Shader::computeRelease;
 		break;
@@ -116,32 +116,32 @@ Shader::Shader(const BYTE* const bytes, const size_t& byteSize, const ShaderType
 	{
 	default:
 	case ShaderType::Vertex:
-		Renderer::getDevice()->CreateVertexShader(bytes, byteSize, nullptr, &shaderPtr.vertexShader);
+		Renderer::get()->createVertexShader(bytes, byteSize, &shaderPtr.vertexShader);
 		useFunc = &Shader::vertexUse;
 		releaseFunc = &Shader::vertexRelease;
 		break;
 	case ShaderType::Hull:
-		Renderer::getDevice()->CreateHullShader(bytes, byteSize, nullptr, &shaderPtr.hullShader);
+		Renderer::get()->createHullShader(bytes, byteSize, &shaderPtr.hullShader);
 		useFunc = &Shader::hullUse;
 		releaseFunc = &Shader::hullRelease;
 		break;
 	case ShaderType::Domain:
-		Renderer::getDevice()->CreateDomainShader(bytes, byteSize, nullptr, &shaderPtr.domainShader);
+		Renderer::get()->createDomainShader(bytes, byteSize, &shaderPtr.domainShader);
 		useFunc = &Shader::domainUse;
 		releaseFunc = &Shader::domainRelease;
 		break;
 	case ShaderType::Geometry:
-		Renderer::getDevice()->CreateGeometryShader(bytes, byteSize, nullptr, &shaderPtr.geometryShader);
+		Renderer::get()->createGeometryShader(bytes, byteSize, &shaderPtr.geometryShader);
 		useFunc = &Shader::geometryUse;
 		releaseFunc = &Shader::geometryRelease;
 		break;
 	case ShaderType::Pixel:
-		Renderer::getDevice()->CreatePixelShader(bytes, byteSize, nullptr, &shaderPtr.pixelShader);
+		Renderer::get()->createPixelShader(bytes, byteSize, &shaderPtr.pixelShader);
 		useFunc = &Shader::pixelUse;
 		releaseFunc = &Shader::pixelRelease;
 		break;
 	case ShaderType::Compute:
-		Renderer::getDevice()->CreateComputeShader(bytes, byteSize, nullptr, &shaderPtr.computeShader);
+		Renderer::get()->createComputeShader(bytes, byteSize, &shaderPtr.computeShader);
 		useFunc = &Shader::computeUse;
 		releaseFunc = &Shader::computeRelease;
 		break;

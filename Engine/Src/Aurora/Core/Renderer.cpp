@@ -17,6 +17,111 @@ const GPUManufacturer& Renderer::getGPUManufacturer()
 	return instance->gpuManufacturer;
 }
 
+Renderer* Renderer::get()
+{
+	return instance;
+}
+
+void Renderer::createBuffer(const D3D11_BUFFER_DESC* desc, const D3D11_SUBRESOURCE_DATA* initialData, ID3D11Buffer** address) const
+{
+	CHECKERROR(device5->CreateBuffer(desc, initialData, address));
+}
+
+void Renderer::createTexture2D(const D3D11_TEXTURE2D_DESC* desc, const D3D11_SUBRESOURCE_DATA* initialData, ID3D11Texture2D** address) const
+{
+	CHECKERROR(device5->CreateTexture2D(desc, initialData, address));
+}
+
+void Renderer::createTexture3D(const D3D11_TEXTURE3D_DESC* desc, const D3D11_SUBRESOURCE_DATA* initialData, ID3D11Texture3D** address) const
+{
+	CHECKERROR(device5->CreateTexture3D(desc, initialData, address));
+}
+
+void Renderer::createDepthStencilView(ID3D11Resource* resource, const D3D11_DEPTH_STENCIL_VIEW_DESC* desc, ID3D11DepthStencilView** address) const
+{
+	CHECKERROR(device5->CreateDepthStencilView(resource, desc, address));
+}
+
+void Renderer::createShaderResourceView(ID3D11Resource* resource, const D3D11_SHADER_RESOURCE_VIEW_DESC* desc, ID3D11ShaderResourceView** address) const
+{
+	CHECKERROR(device5->CreateShaderResourceView(resource, desc, address));
+}
+
+void Renderer::createRenderTargetView(ID3D11Resource* resource, const D3D11_RENDER_TARGET_VIEW_DESC* desc, ID3D11RenderTargetView** address) const
+{
+	CHECKERROR(device5->CreateRenderTargetView(resource, desc, address));
+}
+
+void Renderer::createUnorderedAccessView(ID3D11Resource* resource, const D3D11_UNORDERED_ACCESS_VIEW_DESC* desc, ID3D11UnorderedAccessView** address) const
+{
+	CHECKERROR(device5->CreateUnorderedAccessView(resource, desc, address));
+}
+
+void Renderer::createVertexShader(const void* byteCode, SIZE_T byteCodeLength, ID3D11VertexShader** address) const
+{
+	CHECKERROR(device5->CreateVertexShader(byteCode, byteCodeLength, nullptr, address));
+}
+
+void Renderer::createHullShader(const void* byteCode, SIZE_T byteCodeLength, ID3D11HullShader** address) const
+{
+	CHECKERROR(device5->CreateHullShader(byteCode, byteCodeLength, nullptr, address));
+}
+
+void Renderer::createDomainShader(const void* byteCode, SIZE_T byteCodeLength, ID3D11DomainShader** address) const
+{
+	CHECKERROR(device5->CreateDomainShader(byteCode, byteCodeLength, nullptr, address));
+}
+
+void Renderer::createGeometryShader(const void* byteCode, SIZE_T byteCodeLength, ID3D11GeometryShader** address) const
+{
+	CHECKERROR(device5->CreateGeometryShader(byteCode, byteCodeLength, nullptr, address));
+}
+
+void Renderer::createPixelShader(const void* byteCode, SIZE_T byteCodeLength, ID3D11PixelShader** address) const
+{
+	CHECKERROR(device5->CreatePixelShader(byteCode, byteCodeLength, nullptr, address));
+}
+
+void Renderer::createComputeShader(const void* byteCode, SIZE_T byteCodeLength, ID3D11ComputeShader** address) const
+{
+	CHECKERROR(device5->CreateComputeShader(byteCode, byteCodeLength, nullptr, address));
+}
+
+void Renderer::createSamplerState(const D3D11_SAMPLER_DESC* desc, ID3D11SamplerState** address) const
+{
+	CHECKERROR(device5->CreateSamplerState(desc, address));
+}
+
+void Renderer::createInputLayout(const D3D11_INPUT_ELEMENT_DESC* desc, UINT arraySize, const void* byteCode, SIZE_T byteCodeLength, ID3D11InputLayout** address) const
+{
+	CHECKERROR(device5->CreateInputLayout(desc, arraySize, byteCode, byteCodeLength, address));
+}
+
+void Renderer::createDepthStencilState(const D3D11_DEPTH_STENCIL_DESC* desc, ID3D11DepthStencilState** address) const
+{
+	CHECKERROR(device5->CreateDepthStencilState(desc, address));
+}
+
+void Renderer::createBlendState(const D3D11_BLEND_DESC* desc, ID3D11BlendState** address) const
+{
+	CHECKERROR(device5->CreateBlendState(desc, address));
+}
+
+void Renderer::createRasterizerState(const D3D11_RASTERIZER_DESC* desc, ID3D11RasterizerState** address) const
+{
+	CHECKERROR(device5->CreateRasterizerState(desc, address));
+}
+
+void Renderer::createRasterizerState1(const D3D11_RASTERIZER_DESC1* desc, ID3D11RasterizerState1** address) const
+{
+	CHECKERROR(device5->CreateRasterizerState1(desc, address));
+}
+
+void Renderer::createRasterizerState2(const D3D11_RASTERIZER_DESC2* desc, ID3D11RasterizerState2** address) const
+{
+	CHECKERROR(device5->CreateRasterizerState2(desc, address));
+}
+
 Renderer::Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT& msaaLevel) :
 	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }
 {
@@ -38,13 +143,12 @@ Renderer::Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT&
 		ComPtr<ID3D11Device> device11;
 		ComPtr<ID3D11DeviceContext> context11;
 
-		UINT deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
-
 #ifdef _DEBUG
 		std::cout << "[class Renderer] enable debug\n";
-		deviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
+		UINT deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_DEBUG;
 #else
 		std::cout << "[class Renderer] disable debug\n";
+		UINT deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
 #endif // _DEBUG
 
 		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, ARRAYSIZE(featureLevels),
@@ -65,7 +169,7 @@ Renderer::Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT&
 		dxgiDevice11.As(&dxgiDevice);
 		dxgiAdapter11.As(&dxgiAdapter);
 		dxgiFactory11.As(&dxgiFactory);
-	}
+}
 
 	{
 		DXGI_SWAP_CHAIN_DESC1 sd = {};
@@ -100,7 +204,7 @@ Renderer::Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT&
 		tDesc.Usage = D3D11_USAGE_DEFAULT;
 		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
 
-		Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
+		Renderer::get()->createTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
 	}
 
 #ifdef _DEBUG

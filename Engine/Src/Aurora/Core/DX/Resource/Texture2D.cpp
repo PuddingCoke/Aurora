@@ -41,7 +41,7 @@ Texture2D::Texture2D(const std::string& path) :
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 4u;
 
-			CHECKERROR(Renderer::getDevice()->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf()));
+			Renderer::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 
 			stbi_image_free(pixels);
 		}
@@ -77,7 +77,7 @@ Texture2D::Texture2D(const std::string& path) :
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 16u;
 
-			CHECKERROR(Renderer::getDevice()->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf()));
+			Renderer::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 
 			stbi_image_free(pixels);
 		}
@@ -158,7 +158,7 @@ Texture2D::Texture2D(const UINT& width, const UINT& height, const TextureType& t
 	subresource.pSysMem = colors.data();
 	subresource.SysMemPitch = width * 16u;
 
-	CHECKERROR(Renderer::getDevice()->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf()));
+	Renderer::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 }
 
 Texture2D::Texture2D(const UINT& width, const UINT& height, const FMT& format, const UINT& bindFlags, const bool& enableMSAA) :
@@ -175,7 +175,7 @@ Texture2D::Texture2D(const UINT& width, const UINT& height, const FMT& format, c
 	tDesc.Usage = D3D11_USAGE_DEFAULT;
 	tDesc.BindFlags = bindFlags;
 
-	CHECKERROR(Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf()));
+	Renderer::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 }
 
 Texture2D::Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const FMT& format, const UINT& bindFlags, const UINT& miscFlags) :
@@ -193,7 +193,7 @@ Texture2D::Texture2D(const UINT& width, const UINT& height, const UINT& mipLevel
 	tDesc.BindFlags = bindFlags;
 	tDesc.MiscFlags = miscFlags;
 
-	CHECKERROR(Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf()));
+	Renderer::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 }
 
 Texture2D::~Texture2D()
