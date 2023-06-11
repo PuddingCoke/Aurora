@@ -7,6 +7,8 @@
 #include<wrl/client.h>
 #include<DirectXMath.h>
 #include<iostream>
+#include<comdef.h>
+#include<atlstr.h>
 
 #include"ResourceFormat.h"
 
@@ -115,7 +117,10 @@ HRESULT hr = x;\
 if(FAILED(hr))\
 {\
 std::cout<<__FILE__<<" Line:"<<__LINE__<<"\n";\
+std::cout<<"Function name "<<__FUNCTION__ <<"\n";\
 std::cout<<"Failed with 0x"<<std::hex<<hr<<std::dec<<"\n";\
+_com_error err(hr);\
+std::wcout<<"Failed reason "<<err.ErrorMessage()<<"\n";\
 __debugbreak();\
 }\
 

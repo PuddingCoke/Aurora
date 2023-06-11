@@ -9,6 +9,8 @@ Aurora& Aurora::get()
 
 int Aurora::iniEngine(const Configuration& config, const int& argc, const char* argv[])
 {
+	std::wcout.imbue(std::locale(""));
+
 	{
 		std::string exeRootPath = argv[0];
 
