@@ -1,11 +1,11 @@
 #include<Aurora/Resource/DepthTexture.h>
 
-DepthTexture::DepthTexture(const UINT& width, const UINT& height, const FMT& format, const bool& enableMSAA) :
-	Texture2D(width, height, format, D3D11_BIND_DEPTH_STENCIL, enableMSAA)
+DepthTexture::DepthTexture(const UINT& width, const UINT& height, const FMT& fmt, const bool& enableMSAA) :
+	Texture2D(width, height, fmt, D3D11_BIND_DEPTH_STENCIL, enableMSAA)
 {
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-		dsvDesc.Format = FMTCAST(format);
+		dsvDesc.Format = FMTCAST(fmt);
 
 		if (enableMSAA)
 		{

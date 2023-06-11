@@ -10,7 +10,7 @@ class ComputeVertexBuffer :public VertexBuffer, public UnorderedAccessView
 {
 public:
 
-	ComputeVertexBuffer(const UINT& byteWidth, const void* const data = nullptr);
+	ComputeVertexBuffer(const UINT& byteWidth, const FMT& fmt, const void* const data = nullptr);
 
 	virtual ~ComputeVertexBuffer();
 

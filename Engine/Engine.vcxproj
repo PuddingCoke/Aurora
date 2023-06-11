@@ -145,6 +145,7 @@
     <ClInclude Include="Inc\Aurora\Camera\OrbitCamera.h" />
     <ClInclude Include="Inc\Aurora\Core\ResourceFormat.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\ResourceEssential.h" />
+    <ClInclude Include="Inc\Aurora\Resource\ComputeBuffer.h" />
     <ClInclude Include="Inc\Aurora\Resource\RenderCube.h" />
     <ClInclude Include="Inc\Aurora\Aurora.h" />
     <ClInclude Include="Inc\Aurora\Resource\ComputeVertexBuffer.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="External\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="External\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="Src\Aurora\Core\ResourceFormat.cpp" />
+    <ClCompile Include="Src\Aurora\Resource\ComputeBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Resource\RenderCube.cpp" />
     <ClCompile Include="Src\Aurora\Resource\ComputeVertexBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Camera\FPSCamera.cpp" />

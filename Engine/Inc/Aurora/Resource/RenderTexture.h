@@ -10,9 +10,9 @@ class RenderTexture :public Texture2D, public ShaderResourceView
 {
 public:
 
-	RenderTexture(const UINT& width, const UINT& height, const FMT& format, const float color[4] = DirectX::Colors::Black, const bool& enableMSAA = false);
+	RenderTexture(const UINT& width, const UINT& height, const FMT& fmt, const float color[4] = DirectX::Colors::Black, const bool& enableMSAA = false);
 
-	RenderTexture(const UINT& width, const UINT& height, const FMT& format, const UINT& mipLevels, const UINT& arraySize, const float color[4] = DirectX::Colors::Black);
+	RenderTexture(const UINT& width, const UINT& height, const FMT& fmt, const UINT& mipLevels, const UINT& arraySize, const float color[4] = DirectX::Colors::Black);
 
 	virtual ~RenderTexture();
 

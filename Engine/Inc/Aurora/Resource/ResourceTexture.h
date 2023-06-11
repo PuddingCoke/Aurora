@@ -18,9 +18,9 @@ public:
 
 	ResourceTexture(const std::string& filePath);
 
-	ResourceTexture(const unsigned int& width, const unsigned int& height, const TextureType& type);
+	ResourceTexture(const UINT& width, const UINT& height, const TextureType& type);
 
-	ResourceTexture(const unsigned int& width, const unsigned int& height, const FMT& format, const bool& enableMSAA = false);
+	ResourceTexture(const UINT& width, const UINT& height, const FMT& fmt, const bool& enableMSAA = false);
 
 	virtual ~ResourceTexture();
 

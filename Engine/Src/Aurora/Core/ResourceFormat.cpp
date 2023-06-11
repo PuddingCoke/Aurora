@@ -79,3 +79,82 @@ const std::unordered_map<FMT, DXGI_FORMAT> ResourceFormat::formatMap =
 	//Special
 	{NV12,DXGI_FORMAT_NV12},
 };
+
+const std::unordered_map<FMT, UINT> ResourceFormat::byteSizeMap =
+{
+	//Int
+	{R8I,1},
+	{RG8I,2},
+	{RGBA8I,4},
+
+	{R16I,2},
+	{RG16I,4},
+	{RGBA16I,8},
+
+	{R32I,4},
+	{RG32I,8},
+	{RGBA32I,16},
+
+	//Uint
+	{R8UI,1},
+	{RG8UI,2},
+	{RGBA8UI,4},
+
+	{R16UI,2},
+	{RG16UI,4},
+	{RGBA16UI,8},
+
+	{R32UI,4},
+	{RG32UI,8},
+	{RGBA32UI,16},
+
+	//Unorm
+	{R8UN,1},
+	{RG8UN,2},
+	{RGBA8UN,4},
+
+	{R16UN,2},
+	{RG16UN,4},
+	{RGBA16UN,8},
+
+	//Snorm
+	{R8SN,1},
+	{RG8SN,2},
+	{RGBA8SN,4},
+
+	{R16SN,2},
+	{RG16SN,4},
+	{RGBA16SN,8},
+
+	//Float
+	{R16F,2},
+	{RG16F,4},
+	{RGBA16F,8},
+
+	{R32F,4},
+	{RG32F,8},
+	{RGBA32F,16},
+
+	//Type Less
+	{R8TL,1},
+	{RG8TL,2},
+	{RGBA8TL,4},
+
+	{R16TL,2},
+	{RG16TL,4},
+	{RGBA16TL,8},
+
+	{R32TL,4},
+	{RG32TL,8},
+	{RGBA32TL,16},
+};
+
+DXGI_FORMAT ResourceFormat::cast(const FMT& fmt)
+{
+	return formatMap.at(fmt);
+}
+
+UINT ResourceFormat::byteSize(const FMT& fmt)
+{
+	return byteSizeMap.at(fmt);
+}

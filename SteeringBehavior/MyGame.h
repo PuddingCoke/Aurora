@@ -76,8 +76,8 @@ public:
 			maxSpeedMaxForceArray[i] = DirectX::XMFLOAT4(3.f, 0.1f, 0.f, 0.f);
 		}
 
-		positionVelocity = new ComputeVertexBuffer(sizeof(DirectX::XMFLOAT4) * vehicleNum, positionVelocityArray);
-		maxSpeedMaxForce = new ResourceBuffer(sizeof(DirectX::XMFLOAT4) * vehicleNum, D3D11_USAGE_DEFAULT, maxSpeedMaxForceArray);
+		positionVelocity = new ComputeVertexBuffer(sizeof(DirectX::XMFLOAT4) * vehicleNum, FMT::RGBA32F, positionVelocityArray);
+		maxSpeedMaxForce = new ResourceBuffer(sizeof(DirectX::XMFLOAT4) * vehicleNum, D3D11_USAGE_DEFAULT, FMT::RGBA32F, maxSpeedMaxForceArray);
 
 		delete[] positionVelocityArray;
 		delete[] maxSpeedMaxForceArray;

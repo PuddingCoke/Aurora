@@ -96,19 +96,22 @@ public:
 		NV12,
 	};
 
-	static DXGI_FORMAT cast(const FMT& fmt)
-	{
-		return formatMap.at(fmt);
-	}
+	static DXGI_FORMAT cast(const FMT& fmt);
+
+	static UINT byteSize(const FMT& fmt);
 
 private:
 
 	static const std::unordered_map<FMT, DXGI_FORMAT> formatMap;
+
+	static const std::unordered_map<FMT, UINT> byteSizeMap;
 
 };
 
 using FMT = ResourceFormat::FMT;
 
 #define FMTCAST(f) ResourceFormat::cast(f)
+
+#define FMTBYTESIZE(f) ResourceFormat::byteSize(f)
 
 #endif // !_RESOURCEFORMAT_H_

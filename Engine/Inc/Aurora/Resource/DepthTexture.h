@@ -10,7 +10,7 @@ class DepthTexture :public Texture2D, public DepthStencilView
 {
 public:
 
-	DepthTexture(const UINT& width, const UINT& height, const FMT& format = FMT::D32F, const bool& enableMSAA = false);
+	DepthTexture(const UINT& width, const UINT& height, const FMT& fmt = FMT::D32F, const bool& enableMSAA = false);
 
 };
 

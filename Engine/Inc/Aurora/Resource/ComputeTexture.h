@@ -10,6 +10,8 @@ class ComputeTexture :public Texture2D, public ShaderResourceView
 {
 public:
 
+	ComputeTexture(const UINT& width, const UINT& height, const FMT& fmt, const UINT& mipLevels = 1, const UINT& arraySize = 1);
+
 	ComputeTexture(const UINT& width, const UINT& height, const FMT& resFmt, const FMT& srvFmt, const FMT& uavFmt, const UINT& mipLevels = 1, const UINT& arraySize = 1);
 
 	virtual ~ComputeTexture();

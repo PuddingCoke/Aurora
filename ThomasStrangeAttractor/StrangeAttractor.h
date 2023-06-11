@@ -57,7 +57,7 @@ public:
 		uavDesc.Buffer.Flags = 0;
 		uavDesc.Buffer.NumElements = particleNum;
 
-		particlePosBuffer = new ComputeVertexBuffer(particleNum * sizeof(DirectX::XMFLOAT4), positions);
+		particlePosBuffer = new ComputeVertexBuffer(particleNum * sizeof(DirectX::XMFLOAT4), FMT::RGBA32F, positions);
 		particleColorBuffer = new VertexBuffer(particleNum * sizeof(DirectX::XMFLOAT4), D3D11_USAGE_IMMUTABLE, colors);
 
 		delete[] positions;

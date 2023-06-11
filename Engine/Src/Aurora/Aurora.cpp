@@ -173,7 +173,7 @@ LRESULT Aurora::WallpaperProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 void Aurora::runGame()
 {
-	std::chrono::steady_clock timer;
+	std::chrono::high_resolution_clock timer;
 
 	while (winform->pollEvents())
 	{
