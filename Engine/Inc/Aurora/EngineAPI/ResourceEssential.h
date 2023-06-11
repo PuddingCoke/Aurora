@@ -19,5 +19,7 @@
 #include<Aurora/Resource/ResourceTexture.h>
 #include<Aurora/Resource/StructuredBuffer.h>
 #include<Aurora/Resource/TextureCube.h>
+#include<Aurora/Resource/SwapTexture.h>
+
 
 #endif // !_RESOURCEESSENTIAL_H_

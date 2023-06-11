@@ -116,49 +116,71 @@ Texture2D::Texture2D(const std::string& path) :
 }
 
 Texture2D::Texture2D(const UINT& width, const UINT& height, const TextureType& type) :
-	width(width), height(height), format(DXGI_FORMAT_R32G32B32A32_FLOAT), mipLevels(1), arraySize(1)
+	width(width), height(height), format(type == TextureType::Noise ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_R32G32B32A32_FLOAT), mipLevels(1), arraySize(1)
 {
-	std::vector<DirectX::XMFLOAT4> colors(width * height);
-
 	std::cout << "[class Texture2D] generate " << width << "x" << height << " ";
 
-	switch (type)
+	if (type == TextureType::Noise)
 	{
-	default:
-	case TextureType::Noise:
+		struct Col
+		{
+			unsigned char r, g, b, a;
+		};
+
+		std::vector<Col> colors(width * height);
+
 		std::cout << "noise";
 		for (unsigned int i = 0; i < width * height; i++)
 		{
-			colors[i] = DirectX::XMFLOAT4(Random::Float(), Random::Float(), Random::Float(), Random::Float());
+			colors[i] = { static_cast<unsigned char>(Random::Uint() % 256u), static_cast<unsigned char>(Random::Uint() % 256u), static_cast<unsigned char>(Random::Uint() % 256u), static_cast<unsigned char>(Random::Uint() % 256u) };
 		}
-		break;
-	case TextureType::Gauss:
+
+		D3D11_TEXTURE2D_DESC tDesc = {};
+		tDesc.Width = width;
+		tDesc.Height = height;
+		tDesc.MipLevels = 1;
+		tDesc.ArraySize = 1;
+		tDesc.Format = format;
+		tDesc.SampleDesc.Count = 1;
+		tDesc.SampleDesc.Quality = 0;
+		tDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+		D3D11_SUBRESOURCE_DATA subresource = {};
+		subresource.pSysMem = colors.data();
+		subresource.SysMemPitch = width * 4u;
+
+		Renderer::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
+	}
+	else
+	{
+		std::vector<DirectX::XMFLOAT4> colors(width * height);
+
 		std::cout << "gauss";
 		for (unsigned int i = 0; i < width * height; i++)
 		{
 			colors[i] = DirectX::XMFLOAT4(Random::Gauss(), Random::Gauss(), Random::Gauss(), Random::Gauss());
 		}
-		break;
+
+		D3D11_TEXTURE2D_DESC tDesc = {};
+		tDesc.Width = width;
+		tDesc.Height = height;
+		tDesc.MipLevels = 1;
+		tDesc.ArraySize = 1;
+		tDesc.Format = format;
+		tDesc.SampleDesc.Count = 1;
+		tDesc.SampleDesc.Quality = 0;
+		tDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+		D3D11_SUBRESOURCE_DATA subresource = {};
+		subresource.pSysMem = colors.data();
+		subresource.SysMemPitch = width * 16u;
+
+		Renderer::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 	}
 
 	std::cout << " texture\n";
-
-	D3D11_TEXTURE2D_DESC tDesc = {};
-	tDesc.Width = width;
-	tDesc.Height = height;
-	tDesc.MipLevels = 1;
-	tDesc.ArraySize = 1;
-	tDesc.Format = format;
-	tDesc.SampleDesc.Count = 1;
-	tDesc.SampleDesc.Quality = 0;
-	tDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	D3D11_SUBRESOURCE_DATA subresource = {};
-	subresource.pSysMem = colors.data();
-	subresource.SysMemPitch = width * 16u;
-
-	Renderer::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 }
 
 Texture2D::Texture2D(const UINT& width, const UINT& height, const FMT& format, const UINT& bindFlags, const bool& enableMSAA) :

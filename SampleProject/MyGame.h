@@ -8,10 +8,10 @@ class MyGame :public Game
 {
 public:
 
-	ComputeTexture* noiseTexture;
+	ResourceTexture* noiseTexture;
 
 	MyGame() :
-		noiseTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, FMT::RGBA8UN, FMT::RGBA8UN))
+		noiseTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), Texture2D::TextureType::Noise))
 	{
 	}
 
@@ -27,7 +27,7 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->GenNoise(noiseTexture->getUAVMip(0), Graphics::getWidth(), Graphics::getHeight());
+		//RenderAPI::get()->GenNoise(noiseTexture->getUAVMip(0), Graphics::getWidth(), Graphics::getHeight());
 		RenderAPI::get()->DebugDraw(noiseTexture);
 	}
 
