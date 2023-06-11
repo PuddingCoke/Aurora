@@ -41,7 +41,7 @@ Texture2D::Texture2D(const std::string& path) :
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 4u;
 
-			Renderer::getDevice()->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
+			CHECKERROR(Renderer::getDevice()->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf()));
 
 			stbi_image_free(pixels);
 		}
@@ -77,7 +77,7 @@ Texture2D::Texture2D(const std::string& path) :
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 16u;
 
-			Renderer::getDevice()->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
+			CHECKERROR(Renderer::getDevice()->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf()));
 
 			stbi_image_free(pixels);
 		}
@@ -158,42 +158,42 @@ Texture2D::Texture2D(const UINT& width, const UINT& height, const TextureType& t
 	subresource.pSysMem = colors.data();
 	subresource.SysMemPitch = width * 16u;
 
-	Renderer::getDevice()->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
+	CHECKERROR(Renderer::getDevice()->CreateTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf()));
 }
 
-Texture2D::Texture2D(const UINT& width, const UINT& height, const DXGI_FORMAT& format, const UINT& bindFlags, const bool& enableMSAA) :
-	width(width), height(height), format(format), mipLevels(1), arraySize(1)
+Texture2D::Texture2D(const UINT& width, const UINT& height, const FMT& format, const UINT& bindFlags, const bool& enableMSAA) :
+	width(width), height(height), format(FMTCAST(format)), mipLevels(1), arraySize(1)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 	tDesc.Width = width;
 	tDesc.Height = height;
 	tDesc.MipLevels = 1;
 	tDesc.ArraySize = 1;
-	tDesc.Format = format;
+	tDesc.Format = FMTCAST(format);
 	tDesc.SampleDesc.Count = enableMSAA ? Graphics::getMSAALevel() : 1;
 	tDesc.SampleDesc.Quality = 0;
 	tDesc.Usage = D3D11_USAGE_DEFAULT;
 	tDesc.BindFlags = bindFlags;
 
-	Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+	CHECKERROR(Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf()));
 }
 
-Texture2D::Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const DXGI_FORMAT& format, const UINT& bindFlags, const UINT& miscFlags) :
-	width(width), height(height), format(format), mipLevels(mipLevels), arraySize(arraySize)
+Texture2D::Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const FMT& format, const UINT& bindFlags, const UINT& miscFlags) :
+	width(width), height(height), format(FMTCAST(format)), mipLevels(mipLevels), arraySize(arraySize)
 {
 	D3D11_TEXTURE2D_DESC tDesc = {};
 	tDesc.Width = width;
 	tDesc.Height = height;
 	tDesc.MipLevels = mipLevels;
 	tDesc.ArraySize = arraySize;
-	tDesc.Format = format;
+	tDesc.Format = FMTCAST(format);
 	tDesc.SampleDesc.Count = 1;
 	tDesc.SampleDesc.Quality = 0;
 	tDesc.Usage = D3D11_USAGE_DEFAULT;
 	tDesc.BindFlags = bindFlags;
 	tDesc.MiscFlags = miscFlags;
 
-	Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+	CHECKERROR(Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf()));
 }
 
 Texture2D::~Texture2D()

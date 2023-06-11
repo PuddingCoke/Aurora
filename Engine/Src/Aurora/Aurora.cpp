@@ -19,13 +19,6 @@ int Aurora::iniEngine(const Configuration& config, const int& argc, const char* 
 
 	usage = config.usage;
 	enableImGui = (config.usage == Configuration::EngineUsage::Normal && config.enableImGui);
-	enableDebug = false;
-
-#ifdef _DEBUG
-
-	enableDebug = true;
-
-#endif // DEBUG
 
 	if (enableImGui)
 	{
@@ -307,17 +300,14 @@ void Aurora::destroy()
 		ImGui::DestroyContext();
 	}
 
-	if (enableDebug)
-	{
-		std::cout << "[class Aurora] debug mode press any key to exit\n";
-		Renderer::instance->d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-		delete Renderer::instance;
-		std::cin.get();
-	}
-	else
-	{
-		delete Renderer::instance;
-	}
+#ifdef _DEBUG
+	std::cout << "[class Aurora] debug mode press any key to exit\n";
+	Renderer::instance->d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+	delete Renderer::instance;
+	std::cin.get();
+#else
+	delete Renderer::instance;
+#endif // _DEBUG
 
 	if (usage == Configuration::EngineUsage::Wallpaper)
 	{
@@ -326,7 +316,7 @@ void Aurora::destroy()
 }
 
 Aurora::Aurora() :
-	encodeTexture(nullptr), winform(nullptr), game(nullptr), enableDebug(false), enableImGui(false), usage(Configuration::EngineUsage::Normal)
+	encodeTexture(nullptr), winform(nullptr), game(nullptr), enableImGui(false), usage(Configuration::EngineUsage::Normal)
 {
 
 }
@@ -371,14 +361,7 @@ void Aurora::iniWindow(const std::wstring& title, const UINT& screenWidth, const
 
 void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const UINT& screenHeight)
 {
-	if (usage == Configuration::EngineUsage::AnimationRender)
-	{
-		new Renderer(winform->getHWND(), screenWidth, screenHeight, enableDebug, msaaLevel, D3D11_CREATE_DEVICE_VIDEO_SUPPORT);
-	}
-	else
-	{
-		new Renderer(winform->getHWND(), screenWidth, screenHeight, enableDebug, msaaLevel);
-	}
+	new Renderer(winform->getHWND(), screenWidth, screenHeight, msaaLevel);
 
 	new States();
 
@@ -386,10 +369,9 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 
 	new Camera();
 
-
 	if (usage == Configuration::EngineUsage::AnimationRender)
 	{
-		encodeTexture = new Texture2D(screenWidth, screenHeight, 1, 1, DXGI_FORMAT_B8G8R8A8_UNORM, D3D11_BIND_RENDER_TARGET, 0);
+		encodeTexture = new Texture2D(screenWidth, screenHeight, 1, 1, FMT::BGRA8UN, D3D11_BIND_RENDER_TARGET, 0);
 
 		new RenderAPI(Graphics::getMSAALevel(), encodeTexture->getTexture2D());
 	}
@@ -400,10 +382,9 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 
 	TextureCube::iniShader();
 
-	if (enableDebug)
-	{
-		Renderer::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)Renderer::instance->d3dDebug.ReleaseAndGetAddressOf());
-	}
+#ifdef _DEBUG
+	Renderer::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)Renderer::instance->d3dDebug.ReleaseAndGetAddressOf());
+#endif // _DEBUG
 
 	if (enableImGui)
 	{

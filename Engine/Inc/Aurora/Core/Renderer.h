@@ -48,7 +48,7 @@ private:
 
 	static Renderer* instance;
 
-	Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel, const UINT& extraDeviceFlags = 0);
+	Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT& msaaLevel);
 
 	D3D11_VIEWPORT vp;
 
@@ -67,5 +67,14 @@ private:
 	GPUManufacturer gpuManufacturer;
 
 };
+
+#define CHECKERROR(x) \
+HRESULT hr = x;\
+if(FAILED(hr))\
+{\
+std::cout<<__FILE__<<" Line:"<<__LINE__<<"\n";\
+std::cout<<"Failed with 0x"<<std::hex<<hr<<std::dec<<"\n";\
+__debugbreak();\
+}\
 
 #endif // !_RENDERER_H_

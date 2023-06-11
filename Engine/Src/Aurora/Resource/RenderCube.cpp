@@ -1,7 +1,7 @@
 #include<Aurora/Resource/RenderCube.h>
 
 RenderCube::RenderCube(const UINT& resolution, const FMT& format, const float color[4]) :
-	Texture2D(resolution, resolution, 1, 6, FMTCAST(format), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, D3D11_RESOURCE_MISC_TEXTURECUBE)
+	Texture2D(resolution, resolution, 1, 6, format, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, D3D11_RESOURCE_MISC_TEXTURECUBE)
 {
 	{
 		D3D11_RENDER_TARGET_VIEW_DESC desc = {};

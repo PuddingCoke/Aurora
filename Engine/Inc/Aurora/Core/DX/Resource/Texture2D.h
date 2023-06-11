@@ -38,9 +38,9 @@ public:
 
 	Texture2D(const UINT& width, const UINT& height, const TextureType& type);
 
-	Texture2D(const UINT& width, const UINT& height, const DXGI_FORMAT& format, const UINT& bindFlags, const bool& enableMSAA = false);
+	Texture2D(const UINT& width, const UINT& height, const FMT& format, const UINT& bindFlags, const bool& enableMSAA = false);
 
-	Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const DXGI_FORMAT& format, const UINT& bindFlags, const UINT& miscFlags);
+	Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const FMT& format, const UINT& bindFlags, const UINT& miscFlags);
 
 	virtual ~Texture2D();
 

@@ -61,8 +61,6 @@ private:
 
 	Configuration::EngineUsage usage;
 
-	bool enableDebug;
-
 	bool enableImGui;
 
 	Texture2D* encodeTexture;

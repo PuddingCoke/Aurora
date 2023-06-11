@@ -34,7 +34,7 @@ void RenderTexture::clearRTV(const float color[4], const UINT& index) const
 }
 
 RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& format, const float color[4], const bool& enableMSAA) :
-	Texture2D(width, height, FMTCAST(format), D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET, enableMSAA)
+	Texture2D(width, height, format, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET, enableMSAA)
 {
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -92,7 +92,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 }
 
 RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& format, const UINT& mipLevels, const UINT& arraySize, const float color[4]) :
-	Texture2D(width, height, mipLevels, arraySize, FMTCAST(format), D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET, 0)
+	Texture2D(width, height, mipLevels, arraySize, format, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET, 0)
 {
 	//global srv
 	{

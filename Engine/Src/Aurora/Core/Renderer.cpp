@@ -17,7 +17,7 @@ const GPUManufacturer& Renderer::getGPUManufacturer()
 	return instance->gpuManufacturer;
 }
 
-Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& height, const bool& enableDebug, const unsigned int& msaaLevel, const UINT& extraDeviceFlags) :
+Renderer::Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT& msaaLevel) :
 	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }
 {
 	instance = this;
@@ -38,17 +38,14 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		ComPtr<ID3D11Device> device11;
 		ComPtr<ID3D11DeviceContext> context11;
 
-		UINT deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT | extraDeviceFlags;
+		UINT deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
 
-		if (enableDebug)
-		{
-			std::cout << "[class Renderer] enable debug\n";
-			deviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
-		}
-		else
-		{
-			std::cout << "[class Renderer] disable debug\n";
-		}
+#ifdef _DEBUG
+		std::cout << "[class Renderer] enable debug\n";
+		deviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
+#else
+		std::cout << "[class Renderer] disable debug\n";
+#endif // _DEBUG
 
 		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, ARRAYSIZE(featureLevels),
 			D3D11_SDK_VERSION, device11.ReleaseAndGetAddressOf(), &maxSupportedFeatureLevel, context11.ReleaseAndGetAddressOf());
@@ -106,10 +103,9 @@ Renderer::Renderer(HWND hWnd, const unsigned int& width, const unsigned int& hei
 		Renderer::getDevice()->CreateTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
 	}
 
-	if (enableDebug)
-	{
-		Renderer::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)d3dDebug.ReleaseAndGetAddressOf());
-	}
+#ifdef _DEBUG
+	Renderer::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)d3dDebug.ReleaseAndGetAddressOf());
+#endif // _DEBUG
 
 	DXGI_ADAPTER_DESC2 adapterDesc;
 

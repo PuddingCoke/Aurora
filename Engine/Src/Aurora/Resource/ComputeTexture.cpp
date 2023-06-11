@@ -6,7 +6,7 @@ ComputeTexture::~ComputeTexture()
 }
 
 ComputeTexture::ComputeTexture(const UINT& width, const UINT& height, const FMT& resFmt, const FMT& srvFmt, const FMT& uavFmt, const UINT& mipLevels, const UINT& arraySize) :
-	Texture2D(width, height, mipLevels, arraySize, FMTCAST(resFmt), D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)
+	Texture2D(width, height, mipLevels, arraySize, resFmt, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS, 0)
 {
 	//global srv
 	{

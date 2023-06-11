@@ -56,7 +56,7 @@ void RenderComputeTexture::clearRTV(const float color[4], const UINT& index) con
 }
 
 RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height, const FMT& format, const float color[4], const UINT& mipLevels, const UINT& arraySize) :
-	Texture2D(width, height, FMTCAST(format), D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_RENDER_TARGET)
+	Texture2D(width, height, mipLevels, arraySize, format, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_RENDER_TARGET, 0)
 {
 	//global srv
 	{

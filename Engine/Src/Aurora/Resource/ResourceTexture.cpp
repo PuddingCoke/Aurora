@@ -25,7 +25,7 @@ ResourceTexture::ResourceTexture(const unsigned int& width, const unsigned int& 
 }
 
 ResourceTexture::ResourceTexture(const unsigned int& width, const unsigned int& height, const FMT& format, const bool& enableMSAA) :
-	Texture2D(width, height, FMTCAST(format), D3D11_BIND_SHADER_RESOURCE, enableMSAA)
+	Texture2D(width, height, format, D3D11_BIND_SHADER_RESOURCE, enableMSAA)
 {
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = FMTCAST(format);

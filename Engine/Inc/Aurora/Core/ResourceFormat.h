@@ -49,6 +49,8 @@ public:
 		RG8UN,
 		RGBA8UN,
 
+		BGRA8UN,
+
 		R16UN,
 		RG16UN,
 		RGBA16UN,
