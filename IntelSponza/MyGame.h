@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/Resource/ResDepthTexture.h>
+#include<Aurora/Resource/ResourceDepthTexture.h>
 #include<Aurora/Resource/TextureCube.h>
 #include<Aurora/Camera/FPSCamera.h>
 #include<Aurora/Effect/BloomEffect.h>
@@ -20,7 +20,7 @@ public:
 
 	FPSCamera camera;
 
-	ResDepthTexture* resDepthTexture;
+	ResourceDepthTexture* resDepthTexture;
 
 	Scene* mainScene;
 
@@ -65,7 +65,7 @@ public:
 
 	MyGame() :
 		camera({ 0,10,0 }, { 1,0,0 }, { 0,1,0 }, 10),
-		resDepthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
+		resDepthTexture(new ResourceDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
 		mainScene(new Scene("E:/Assets/SuperSponza/NewSponza_Main_glTF_002.gltf")),
 		//curtainScene(new Scene("E:/Assets/SuperSponza/NewSponza_Curtains_glTF.gltf")),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN)),

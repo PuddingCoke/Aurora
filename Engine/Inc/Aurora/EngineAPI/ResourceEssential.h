@@ -15,7 +15,7 @@
 #include<Aurora/Resource/RenderComputeTexture.h>
 #include<Aurora/Resource/RenderCube.h>
 #include<Aurora/Resource/RenderTexture.h>
-#include<Aurora/Resource/ResDepthTexture.h>
+#include<Aurora/Resource/ResourceDepthTexture.h>
 #include<Aurora/Resource/ResourceTexture.h>
 #include<Aurora/Resource/StructuredBuffer.h>
 #include<Aurora/Resource/TextureCube.h>

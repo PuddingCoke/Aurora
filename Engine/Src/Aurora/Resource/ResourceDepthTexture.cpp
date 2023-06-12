@@ -1,7 +1,7 @@
-#include<Aurora/Resource/ResDepthTexture.h>
+#include<Aurora/Resource/ResourceDepthTexture.h>
 
-ResDepthTexture::ResDepthTexture(const UINT& width, const UINT& height, const FMT& texFmt, const FMT& srvFmt, const FMT& dsvFmt) :
-	Texture2D(width, height, texFmt, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL, false)
+ResourceDepthTexture::ResourceDepthTexture(const UINT& width, const UINT& height, const FMT& resFmt, const FMT& srvFmt, const FMT& dsvFmt) :
+	Texture2D(width, height, resFmt, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL, false)
 {
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -23,12 +23,12 @@ ResDepthTexture::ResDepthTexture(const UINT& width, const UINT& height, const FM
 	}
 }
 
-void ResDepthTexture::bindDSV()
+void ResourceDepthTexture::bindDSV()
 {
 	unbindFromSRV();
 }
 
-void ResDepthTexture::bindSRV()
+void ResourceDepthTexture::bindSRV()
 {
 
 }

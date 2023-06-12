@@ -1,7 +1,7 @@
 #include<Aurora/Resource/DepthCube.h>
 
-DepthCube::DepthCube(const UINT& resolution, const FMT& texFmt, const FMT& srvFmt, const FMT& dsvFmt):
-	Texture2D(resolution, resolution, 1, 6, texFmt, D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE, D3D11_RESOURCE_MISC_TEXTURECUBE)
+DepthCube::DepthCube(const UINT& resolution, const FMT& resFmt, const FMT& srvFmt, const FMT& dsvFmt):
+	Texture2D(resolution, resolution, 1, 6, resFmt, D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE, D3D11_RESOURCE_MISC_TEXTURECUBE)
 {
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};

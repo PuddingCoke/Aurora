@@ -159,7 +159,7 @@
     <ClInclude Include="Inc\Aurora\Resource\DepthTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Resource\ResDepthTexture.h">
+    <ClInclude Include="Inc\Aurora\Resource\ResourceDepthTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Resource\DepthCube.h">
@@ -362,7 +362,7 @@
     <ClCompile Include="Src\Aurora\Resource\DepthTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\Resource\ResDepthTexture.cpp">
+    <ClCompile Include="Src\Aurora\Resource\ResourceDepthTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Resource\DepthCube.cpp">

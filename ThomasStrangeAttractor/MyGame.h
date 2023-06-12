@@ -6,7 +6,6 @@
 #include<Aurora/Input/Event.h>
 #include<Aurora/EngineAPI/States.h>
 #include<Aurora/Resource/RenderTexture.h>
-#include<Aurora/Resource/ResDepthTexture.h>
 #include<Aurora/Resource/DepthTexture.h>
 #include<Aurora/Camera/OrbitCamera.h>
 

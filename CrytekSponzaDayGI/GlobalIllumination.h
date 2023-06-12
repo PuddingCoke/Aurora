@@ -3,7 +3,7 @@
 #include<Aurora/Resource/ComputeTexture.h>
 #include<Aurora/Resource/StructuredBuffer.h>
 #include<Aurora/Resource/RenderTexture.h>
-#include<Aurora/Resource/ResDepthTexture.h>
+#include<Aurora/Resource/ResourceDepthTexture.h>
 #include<Aurora/Resource/RenderCube.h>
 #include<Aurora/Resource/DepthCube.h>
 #include<Aurora/Core/Shader.h>
@@ -68,9 +68,9 @@ public:
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, DirectX::Colors::Black)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
 		reflectedColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
-		depthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
+		depthTexture(new ResourceDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
 		hiZTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, FMT::R32F, FMT::R32F, hiZMipLevel, 1)),
-		shadowTexture(new ResDepthTexture(shadowMapRes, shadowMapRes)),
+		shadowTexture(new ResourceDepthTexture(shadowMapRes, shadowMapRes)),
 		radianceCube(new RenderCube(captureResolution, FMT::RGBA16F)),
 		distanceCube(new RenderCube(captureResolution, FMT::R32F)),
 		depthCube(new DepthCube(captureResolution)),
@@ -624,9 +624,9 @@ private:
 
 	ComPtr<ID3D11InputLayout> modelInputLayout;
 
-	ResDepthTexture* shadowTexture;
+	ResourceDepthTexture* shadowTexture;
 
-	ResDepthTexture* depthTexture;
+	ResourceDepthTexture* depthTexture;
 
 	RenderTexture* gPosition;
 

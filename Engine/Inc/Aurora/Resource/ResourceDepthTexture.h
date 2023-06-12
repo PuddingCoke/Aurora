@@ -7,11 +7,11 @@
 #include<Aurora/Core/DX/View/DepthStencilView.h>
 #include<Aurora/Core/DX/View/ShaderResourceView.h>
 
-class ResDepthTexture :public Texture2D, public DepthStencilView, public ShaderResourceView
+class ResourceDepthTexture :public Texture2D, public DepthStencilView, public ShaderResourceView
 {
 public:
 
-	ResDepthTexture(const UINT& width, const UINT& height, const FMT& texFmt = FMT::R32TL, const FMT& srvFmt = FMT::R32F, const FMT& dsvFmt = FMT::D32F);
+	ResourceDepthTexture(const UINT& width, const UINT& height, const FMT& resFmt = FMT::R32TL, const FMT& srvFmt = FMT::R32F, const FMT& dsvFmt = FMT::D32F);
 
 	virtual void bindDSV() override;
 

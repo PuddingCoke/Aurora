@@ -17,7 +17,7 @@ public:
 
 	ComPtr<ID3D11InputLayout> inputLayout;
 
-	ResDepthTexture* resDepthTexture;
+	ResourceDepthTexture* resDepthTexture;
 
 	RenderTexture* gPosition;
 
@@ -101,7 +101,7 @@ public:
 		gNormalSpecular(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA32F, DirectX::Colors::Black)),
 		gBaseColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, DirectX::Colors::Black)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
-		resDepthTexture(new ResDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
+		resDepthTexture(new ResourceDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
 		scene(Scene::create(assetPath + "/sponza.dae")),
 		voxelVShader(new Shader("VoxelizationVShader.hlsl", ShaderType::Vertex)),
 		voxelGShader(new Shader("VoxelizationGShader.hlsl", ShaderType::Geometry)),

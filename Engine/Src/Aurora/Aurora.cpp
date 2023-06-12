@@ -189,7 +189,7 @@ void Aurora::runGame()
 			ImGui::Text("FrameRate %.1f", ImGui::GetIO().Framerate);
 		}
 
-		const std::chrono::steady_clock::time_point timeStart = timer.now();
+		const std::chrono::high_resolution_clock::time_point timeStart = timer.now();
 
 		game->update(Graphics::getDeltaTime());
 
@@ -219,7 +219,7 @@ void Aurora::runGame()
 		}
 
 		Renderer::instance->swapChain->Present(1, 0);
-		const std::chrono::steady_clock::time_point timeEnd = timer.now();
+		const std::chrono::high_resolution_clock::time_point timeEnd = timer.now();
 		Graphics::instance->deltaTime.deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
 		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
 	}

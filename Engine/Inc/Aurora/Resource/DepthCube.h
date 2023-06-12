@@ -11,7 +11,7 @@ class DepthCube :public Texture2D, public DepthStencilView, public ShaderResourc
 {
 public:
 
-	DepthCube(const UINT& resolution, const FMT& texFmt = FMT::R32TL, const FMT& srvFmt = FMT::R32F, const FMT& dsvFmt = FMT::D32F);
+	DepthCube(const UINT& resolution, const FMT& resFmt = FMT::R32TL, const FMT& srvFmt = FMT::R32F, const FMT& dsvFmt = FMT::D32F);
 
 	virtual void bindDSV() override;
 
