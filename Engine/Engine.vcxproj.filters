@@ -225,6 +225,12 @@
     <ClInclude Include="Inc\Aurora\Resource\ComputeBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\Core\DX\View\Special\RenderOnlyRTV.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Aurora\Effect\SSREffect.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -419,6 +425,12 @@
     <ClCompile Include="Src\Aurora\Resource\ComputeBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Aurora\Core\DX\View\Special\RenderOnlyRTV.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\Effect\SSREffect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Bloom\BloomFilterPS.hlsl" />
@@ -448,6 +460,9 @@
     <FxCompile Include="Shaders\Bloom\BloomKarisAveragePS.hlsl" />
     <FxCompile Include="Shaders\FXAA\FXAA.hlsl" />
     <FxCompile Include="Shaders\FXAA\ColorToLuma.hlsl" />
+    <FxCompile Include="Shaders\SSR\HiZCreateCS.hlsl" />
+    <FxCompile Include="Shaders\SSR\HiZInitializeCS.hlsl" />
+    <FxCompile Include="Shaders\SSR\HiZProcessPS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\FXAA\FXAAHeader.hlsli" />

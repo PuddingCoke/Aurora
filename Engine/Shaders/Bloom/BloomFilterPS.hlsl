@@ -13,7 +13,7 @@ cbuffer BloomParam : register(b1)
 
 float4 main(float2 texCoord : TEXCOORD) : SV_Target
 {
-    const float3 color = max(originTexture.Sample(samplerState, texCoord).rgb, float3(0.0001, 0.0001, 0.0001));
+    const float3 color = max(originTexture.Sample(samplerState, texCoord).rgb, float3(0.0, 0.0, 0.0));
     
     float brightness = max(color.r, max(color.g, color.b));
     

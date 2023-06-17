@@ -1,7 +1,6 @@
 Texture2D<float4> gPosition : register(t0);
 Texture2D<float4> gNormalSpecular : register(t1);
 Texture2D<float> hiZTexture : register(t2);
-Texture2D<float4> originTexture : register(t3);
 
 SamplerState wrapSampler : register(s0);
 SamplerState clampSampler : register(s1);
@@ -20,14 +19,6 @@ cbuffer ViewMatrix : register(b2)
     matrix viewProj;
     matrix normalMatrix;
 };
-
-cbuffer SSRParam : register(b3)
-{
-    float maxDistance;
-    float thickness;
-    float depthBias;
-    float padding;
-}
 
 float3 IntersectDepthPlane(in float3 o, in float3 d, in float t)
 {
@@ -75,11 +66,9 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
     const float4 pos = gPosition.Sample(clampSampler, texCoord);
     
-    float4 color = originTexture.Sample(clampSampler, texCoord);
-    
     if (pos.w < 0.5)
     {
-        return color;
+        return float4(0.0, 0.0, 0.0, 0.0);
     }
     
     const float4 positionFrom = mul(pos, view);
@@ -94,7 +83,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float4 startView = float4(positionFrom.xyz, 1.0);
     
-    float4 endView = float4(positionFrom.xyz + (pivot * maxDistance), 1.0);
+    float4 endView = float4(positionFrom.xyz + (pivot * 150.0), 1.0);
     
     float4 startFrag = mul(startView, proj);
     startFrag /= startFrag.w;
@@ -128,7 +117,9 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     const float3 d = endFrag.xyz - startFrag.xyz;
     
-    const int startLevel = 3;
+    const int maxLevel = 5;
+    
+    const int startLevel = maxLevel;
     
     const int stopLevel = 0;
     
@@ -147,7 +138,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     const float rayDir = isBackwardRay ? -1 : 1;
     
     [unroll]
-    while (level >= stopLevel && ray.z * rayDir <= maxZ * rayDir && iteration < 200)
+    while (level >= stopLevel && ray.z * rayDir <= maxZ * rayDir && iteration < 100)
     {
         const float2 cellCount = GetCellCount(level);
         
@@ -165,7 +156,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
         
         ray = crossed ? IntersectCellBoundary(o, d, oldCellIdx, cellCount, crossStep, crossOffset) : tmpRay;
         
-        level = crossed ? min(3, level + 1) : (level - 1);
+        level = crossed ? min(maxLevel, level + 1) : (level - 1);
         
         iteration++;
     }
@@ -178,11 +169,11 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
         const float visibility =
         saturate((1.0 - max(dot(-unitPositionFrom, pivot), 0))
-        * (1.0 - saturate(length(positionTo - positionFrom) / maxDistance))
+        * (1.0 - saturate(length(positionTo - positionFrom) / 150.0))
         * (dot(hitNormal, pivot) < 0.0 ? 1.0 : 0.0));
         
-        color.rgb += originTexture.Sample(clampSampler, ray.xy).rgb * visibility * normalSpeculr.w;
+        return float4(ray.xy, visibility.xx);
     }
     
-    return color;
+    return float4(0.0, 0.0, 0.0, 0.0);
 }

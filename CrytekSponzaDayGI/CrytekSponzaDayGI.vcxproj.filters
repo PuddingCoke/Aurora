@@ -53,6 +53,7 @@
     <FxCompile Include="SSRPS.hlsl" />
     <FxCompile Include="HiZCreateCS.hlsl" />
     <FxCompile Include="HiZInitializeCS.hlsl" />
+    <FxCompile Include="SSRCombineShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Common.hlsli" />

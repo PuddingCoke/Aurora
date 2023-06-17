@@ -14,6 +14,7 @@
 #include<Aurora/Core/DX/View/UnorderedAccessView.h>
 #include<Aurora/Core/DX/View/ShaderResourceView.h>
 #include<Aurora/Core/DX/View/DepthStencilView.h>
+#include<Aurora/Core/DX/View/Special/RenderOnlyRTV.h>
 
 #include<Aurora/Core/DX/Resource/Buffer.h>
 
@@ -158,21 +159,7 @@ private:
 
 	~RenderAPI();
 
-	class CustomedRTV :public RenderTargetView
-	{
-	public:
-
-		CustomedRTV(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& rtvDesc)
-		{
-			createRTV(resource, rtvDesc);
-		}
-
-		void bindRTV() override
-		{
-
-		}
-
-	}*defRenderTargetView;
+	RenderOnlyRTV* defRenderTargetView;
 
 	ID3D11RenderTargetView* tempRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
 

@@ -14,9 +14,9 @@
 #include<Aurora/Effect/HBAOEffect.h>
 #include<Aurora/Effect/BloomEffect.h>
 #include<Aurora/Effect/FXAAEffect.h>
+#include<Aurora/Effect/SSREffect.h>
 
 #include"Scene.h"
-
 
 class GlobalIllumination
 {
@@ -25,8 +25,6 @@ public:
 	static constexpr UINT captureResolution = 64;
 
 	static constexpr UINT shadowMapRes = 4096;
-
-	static constexpr UINT hiZMipLevel = 4;
 
 	static constexpr UINT skyboxResolution = 1024;
 
@@ -48,14 +46,6 @@ public:
 		UINT probeIndex;
 	} cubeRenderParam;
 
-	struct SSRParam
-	{
-		float maxDistance = 256.f;
-		float thickness = 0.05f;
-		float depthBias = 0.0f;
-		float padding;
-	} ssrParam;
-
 	struct Light
 	{
 		DirectX::XMVECTOR lightDir;
@@ -69,7 +59,6 @@ public:
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
 		reflectedColor(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
 		depthTexture(new ResourceDepthTexture(Graphics::getWidth(), Graphics::getHeight())),
-		hiZTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, FMT::R32F, FMT::R32F, hiZMipLevel, 1)),
 		shadowTexture(new ResourceDepthTexture(shadowMapRes, shadowMapRes)),
 		radianceCube(new RenderCube(captureResolution, FMT::RGBA16F)),
 		distanceCube(new RenderCube(captureResolution, FMT::R32F)),
@@ -88,9 +77,7 @@ public:
 		probeRenderGS(new Shader(Utils::getRootFolder() + "ProbeRenderGS.cso", ShaderType::Geometry)),
 		probeRenderPSDepth(new Shader(Utils::getRootFolder() + "ProbeRenderPSDepth.cso", ShaderType::Pixel)),
 		probeRenderPSIrradiance(new Shader(Utils::getRootFolder() + "ProbeRenderPSIrradiance.cso", ShaderType::Pixel)),
-		ssrPS(new Shader(Utils::getRootFolder() + "SSRPS.cso", ShaderType::Pixel)),
-		hiZInitializeCS(new Shader(Utils::getRootFolder() + "HiZInitializeCS.cso", ShaderType::Compute)),
-		hiZCreateCS(new Shader(Utils::getRootFolder() + "HiZCreateCS.cso", ShaderType::Compute)),
+		ssrCombineShader(new Shader(Utils::getRootFolder() + "SSRCombineShader.cso", ShaderType::Pixel)),
 		cubeRenderBuffer(new ConstantBuffer(sizeof(CubeRenderParam), D3D11_USAGE_DYNAMIC)),
 		lightBuffer(new ConstantBuffer(sizeof(Light), D3D11_USAGE_DYNAMIC)),
 		shadowProjBuffer(new ConstantBuffer(sizeof(DirectX::XMMATRIX), D3D11_USAGE_DYNAMIC)),
@@ -98,6 +85,7 @@ public:
 		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
 		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
 		fxaaEffect(Graphics::getWidth(), Graphics::getHeight()),
+		ssrEffect(Graphics::getWidth(), Graphics::getHeight()),
 		sunAngle(Math::half_pi - 0.01f),
 		showIrradiance(true)
 	{
@@ -176,7 +164,6 @@ public:
 		depthOctahedralMap = new ComputeTexture(16, 16, FMT::RG16F, FMT::RG16F, FMT::RG16F, 1, irradianceVolumeParam.count.x * irradianceVolumeParam.count.y * irradianceVolumeParam.count.z);
 
 		irradianceVolumeBuffer = new ConstantBuffer(sizeof(IrradianceVolumeParam), D3D11_USAGE_DYNAMIC, &irradianceVolumeParam);
-		ssrParamBuffer = new ConstantBuffer(sizeof(SSRParam), D3D11_USAGE_DYNAMIC, &ssrParam);
 
 		updateShadow();
 		updateLightProbe();
@@ -195,7 +182,6 @@ public:
 		delete irradianceCoeff;
 		delete irradianceBounceCoeff;
 		delete depthOctahedralMap;
-		delete hiZTexture;
 
 		delete radianceCube;
 		delete distanceCube;
@@ -215,25 +201,19 @@ public:
 		delete probeRenderGS;
 		delete probeRenderPSDepth;
 		delete probeRenderPSIrradiance;
-		delete ssrPS;
-		delete hiZInitializeCS;
-		delete hiZCreateCS;
+		delete ssrCombineShader;
 
 		delete irradianceVolumeBuffer;
 		delete cubeRenderBuffer;
 		delete lightBuffer;
 		delete shadowProjBuffer;
 		delete irradianceSamples;
-		delete ssrParamBuffer;
 
 		delete scene;
 	}
 
 	void imGUICall()
 	{
-		ImGui::SliderFloat("SSR maxDistance", &ssrParam.maxDistance, 0.f, 300.f);
-		ImGui::SliderFloat("SSR thickness", &ssrParam.thickness, 0.f, 1.f);
-		ImGui::SliderFloat("SSR depthBias", &ssrParam.depthBias, 0.f, 1.f);
 		ImGui::SliderFloat("irradiance distance bias", &irradianceVolumeParam.irradianceDistanceBias, -5.f, 5.f);
 		ImGui::SliderFloat("irradiance variance bias", &irradianceVolumeParam.irradianceVarianceBias, -5.f, 5.f);
 		ImGui::SliderFloat("irradiance chebyshev bias", &irradianceVolumeParam.irradianceChebyshevBias, -5.f, 5.f);
@@ -260,8 +240,6 @@ public:
 			updateLightBounceProbe();
 		}
 
-		memcpy(ssrParamBuffer->map().pData, &ssrParam, sizeof(SSRParam));
-		ssrParamBuffer->unmap();
 	}
 
 	void render()
@@ -302,31 +280,14 @@ public:
 
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->CSSetSRV({ depthTexture }, 0);
-		RenderAPI::get()->CSSetUAV({ hiZTexture->getUAVMip(0) }, 0);
+		ShaderResourceView* const uvVisibilitySRV = ssrEffect.process(depthTexture, gPosition, gNormalSpecular);
 
-		hiZInitializeCS->use();
-
-		RenderAPI::get()->Dispatch(1920 / 16, 1080 / 9, 1);
-
-		hiZCreateCS->use();
-
-		for (UINT i = 0; i < hiZMipLevel - 1; i++)
-		{
-			RenderAPI::get()->CSSetSRV({ hiZTexture->getSRVMip(i) }, 0);
-			RenderAPI::get()->CSSetUAV({ hiZTexture->getUAVMip(i + 1) }, 0);
-
-			RenderAPI::get()->Dispatch((960 >> i) / 16, (540 >> i) / 9, 1);
-		}
-
-		reflectedColor->clearRTV(DirectX::Colors::Black, 0);
 		RenderAPI::get()->OMSetRTV({ reflectedColor->getRTVMip(0) }, nullptr);
-		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,hiZTexture,originTexture }, 0);
-		RenderAPI::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer(),ssrParamBuffer }, 1);
-		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);
+		RenderAPI::get()->PSSetSRV({ originTexture,uvVisibilitySRV,gNormalSpecular }, 0);
+		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler }, 0);
 
 		RenderAPI::fullScreenVS->use();
-		ssrPS->use();
+		ssrCombineShader->use();
 
 		RenderAPI::get()->DrawQuad();
 
@@ -644,8 +605,6 @@ private:
 
 	ComputeTexture* depthOctahedralMap;
 
-	ComputeTexture* hiZTexture;
-
 	RenderCube* radianceCube;
 
 	RenderCube* distanceCube;
@@ -680,11 +639,7 @@ private:
 
 	Shader* probeRenderPSIrradiance;
 
-	Shader* ssrPS;
-
-	Shader* hiZInitializeCS;
-
-	Shader* hiZCreateCS;
+	Shader* ssrCombineShader;
 
 	ConstantBuffer* irradianceVolumeBuffer;
 
@@ -693,8 +648,6 @@ private:
 	ConstantBuffer* lightBuffer;
 
 	ConstantBuffer* shadowProjBuffer;
-
-	ConstantBuffer* ssrParamBuffer;
 
 	StructuredBuffer* irradianceSamples;
 
@@ -709,5 +662,7 @@ private:
 	BloomEffect bloomEffect;
 
 	FXAAEffect fxaaEffect;
+
+	SSREffect ssrEffect;
 
 };

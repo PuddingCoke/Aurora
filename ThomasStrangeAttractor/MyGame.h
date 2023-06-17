@@ -62,7 +62,7 @@ public:
 		memcpy(simulationBuffer->map().pData, &param, sizeof(SimulationParam));
 		simulationBuffer->unmap();
 
-		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 100.f);
+		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.01f, 100.f);
 	}
 
 	~MyGame()
