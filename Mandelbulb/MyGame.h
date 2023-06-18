@@ -79,8 +79,8 @@ public:
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->PSSetConstantBuffer({ simulationBuffer }, 1);
 
-		RenderAPI::fullScreenVS->use();
-		mandelBulbPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(mandelBulbPS);
 
 		RenderAPI::get()->DrawQuad();
 	}

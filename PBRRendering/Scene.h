@@ -39,8 +39,8 @@ public:
 		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		vertexShader->use();
-		pixelShader->use();
+		RenderAPI::get()->BindShader(vertexShader);
+		RenderAPI::get()->BindShader(pixelShader);
 
 		for (unsigned int i = 0; i < models.size(); i++)
 		{

@@ -130,9 +130,9 @@ public:
 
 	void render(Shader* const vertexShader, Shader* const pixelShader)
 	{
-		vertexShader->use();
+		RenderAPI::get()->BindShader(vertexShader);
 		RenderAPI::get()->GSUnbindShader();
-		pixelShader->use();
+		RenderAPI::get()->BindShader(pixelShader);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
@@ -144,9 +144,9 @@ public:
 
 	void renderCube(Shader* const vertexShader, Shader* const pixelShader)
 	{
-		vertexShader->use();
+		RenderAPI::get()->BindShader(vertexShader);
 		RenderAPI::get()->GSUnbindShader();
-		pixelShader->use();
+		RenderAPI::get()->BindShader(pixelShader);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
@@ -158,7 +158,7 @@ public:
 
 	void renderGeometry(Shader* const vertexShader)
 	{
-		vertexShader->use();
+		RenderAPI::get()->BindShader(vertexShader);
 		RenderAPI::get()->GSUnbindShader();
 		RenderAPI::get()->PSUnbindShader();
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

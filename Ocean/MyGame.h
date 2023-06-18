@@ -75,8 +75,8 @@ public:
 		RenderAPI::get()->PSSetSRV({ textureCube }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler }, 0);
 
-		RenderAPI::skyboxVS->use();
-		skyboxPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::skyboxVS);
+		RenderAPI::get()->BindShader(skyboxPS);
 		RenderAPI::get()->HSUnbindShader();
 		RenderAPI::get()->GSUnbindShader();
 
@@ -100,8 +100,8 @@ public:
 		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->DrawQuad();
 	}

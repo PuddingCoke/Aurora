@@ -263,8 +263,8 @@ public:
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,irradianceVolumeBuffer }, 1);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		deferredFinal->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(deferredFinal);
 
 		RenderAPI::get()->DrawQuad();
 
@@ -273,8 +273,8 @@ public:
 		RenderAPI::get()->PSSetSRV({ skybox }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::skyboxVS->use();
-		skyboxPShader->use();
+		RenderAPI::get()->BindShader(RenderAPI::skyboxVS);
+		RenderAPI::get()->BindShader(skyboxPShader);
 
 		RenderAPI::get()->DrawCube();
 
@@ -286,8 +286,8 @@ public:
 		RenderAPI::get()->PSSetSRV({ originTexture,uvVisibilitySRV,gNormalSpecular }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		ssrCombineShader->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(ssrCombineShader);
 
 		RenderAPI::get()->DrawQuad();
 
@@ -300,8 +300,8 @@ public:
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->PSSetSRV({ antiAliasedSRV }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->DrawQuad();
 	}
@@ -504,7 +504,7 @@ private:
 		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
 		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
-		irradianceCompute->use();
+		RenderAPI::get()->BindShader(irradianceCompute);
 
 		RenderAPI::get()->Dispatch(1, 1, 1);
 
@@ -513,7 +513,7 @@ private:
 		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
 		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
-		octahedralEncode->use();
+		RenderAPI::get()->BindShader(octahedralEncode);
 
 		RenderAPI::get()->Dispatch(1, 1, 1);
 	}
@@ -578,7 +578,7 @@ private:
 		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
 		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
-		irradianceCompute->use();
+		RenderAPI::get()->BindShader(irradianceCompute);
 
 		RenderAPI::get()->Dispatch(1, 1, 1);
 	}

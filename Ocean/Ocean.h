@@ -221,14 +221,14 @@ inline void Ocean::calculatePhillipTexture() const
 	RenderAPI::get()->CSSetSRV({ gaussTexture }, 0);
 	RenderAPI::get()->CSSetUAV({ tildeh0k->getUAVMip(0),waveData->getUAVMip(0) }, 0);
 
-	phillipSpectrumShader->use();
+	RenderAPI::get()->BindShader(phillipSpectrumShader);
 
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
 	RenderAPI::get()->CSSetSRV({ tildeh0k }, 0);
 	RenderAPI::get()->CSSetUAV({ tildeh0->getUAVMip(0) }, 0);
 
-	conjugatedCalcCS->use();
+	RenderAPI::get()->BindShader(conjugatedCalcCS);
 
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
@@ -240,16 +240,16 @@ inline void Ocean::IFFT(ComputeTexture* const cTexture) const
 	RenderAPI::get()->CSSetUAV({ tempTexture->getUAVMip(0) }, 0);
 	RenderAPI::get()->CSSetSRV({ cTexture }, 0);
 
-	ifftShader->use();
+	RenderAPI::get()->BindShader(ifftShader);
 	RenderAPI::get()->Dispatch(param.mapResolution, 1u, 1u);
 
 	RenderAPI::get()->CSSetUAV({ cTexture->getUAVMip(0) }, 0);
 	RenderAPI::get()->CSSetSRV({ tempTexture }, 0);
 
-	ifftShader->use();
+	RenderAPI::get()->BindShader(ifftShader);
 	RenderAPI::get()->Dispatch(param.mapResolution, 1u, 1u);
 
-	permutationCS->use();
+	RenderAPI::get()->BindShader(permutationCS);
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 }
 
@@ -260,7 +260,7 @@ inline void Ocean::update() const
 	RenderAPI::get()->CSSetSRV({ tildeh0,waveData }, 0);
 	RenderAPI::get()->CSSetUAV({ Dy->getUAVMip(0),Dx->getUAVMip(0),Dz->getUAVMip(0),Dyx->getUAVMip(0),Dyz->getUAVMip(0),Dxx->getUAVMip(0),Dzz->getUAVMip(0),Dxz->getUAVMip(0) }, 0);
 
-	displacementShader->use();
+	RenderAPI::get()->BindShader(displacementShader);
 
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
@@ -276,7 +276,7 @@ inline void Ocean::update() const
 	RenderAPI::get()->CSSetSRV({ Dy,Dx,Dz,Dyx,Dyz,Dxx,Dzz,Dxz }, 0);
 	RenderAPI::get()->CSSetUAV({ Dxyz->getUAVMip(0),normalJacobian->getUAVMip(0) }, 0);
 
-	waveMergeCS->use();
+	RenderAPI::get()->BindShader(waveMergeCS);
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 }
 
@@ -286,10 +286,10 @@ inline void Ocean::render() const
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
 	RenderAPI::get()->IASetVertexBuffer(0, { patchVertexBuffer }, { sizeof(Vertex) }, { 0 });
 
-	oceanVShader->use();
-	oceanHShader->use();
-	oceanDShader->use();
-	oceanPShader->use();
+	RenderAPI::get()->BindShader(oceanVShader);
+	RenderAPI::get()->BindShader(oceanHShader);
+	RenderAPI::get()->BindShader(oceanDShader);
+	RenderAPI::get()->BindShader(oceanPShader);
 
 	RenderAPI::get()->DSSetSRV({ Dxyz }, 0);
 	RenderAPI::get()->PSSetSRV({ normalJacobian }, 0);

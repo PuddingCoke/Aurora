@@ -225,8 +225,8 @@ public:
 		RenderAPI::get()->PSSetSRV({ texture }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->DrawQuad();
 

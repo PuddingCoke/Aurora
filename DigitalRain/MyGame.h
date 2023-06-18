@@ -104,8 +104,8 @@ public:
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

@@ -21,14 +21,14 @@ ShaderResourceView* FXAAEffect::process(ShaderResourceView* const texture2D) con
 {
 	RenderAPI::get()->OMSetBlendState(nullptr);
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RenderAPI::fullScreenVS->use();
+	RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
 
 	colorWithLuma->clearRTV(DirectX::Colors::Black, 0);
 	RenderAPI::get()->OMSetRTV({ colorWithLuma->getRTVMip(0) }, nullptr);
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
 	RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
 
-	colorToLuma->use();
+	RenderAPI::get()->BindShader(colorToLuma);
 
 	RenderAPI::get()->DrawQuad();
 
@@ -38,7 +38,7 @@ ShaderResourceView* FXAAEffect::process(ShaderResourceView* const texture2D) con
 	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 	RenderAPI::get()->PSSetConstantBuffer({ fxaaParamBuffer }, 1);
 
-	fxaaPS->use();
+	RenderAPI::get()->BindShader(fxaaPS);
 
 	RenderAPI::get()->DrawQuad();
 

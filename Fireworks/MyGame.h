@@ -222,8 +222,8 @@ public:
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->DrawQuad();
 		doubleRTV->swap();
@@ -232,8 +232,8 @@ public:
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->PSSetSRV({ doubleRTV->read() }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->DrawQuad();
 
@@ -242,8 +242,8 @@ public:
 		RenderAPI::get()->OMSetRTV({ doubleRTV->write()->getRTVMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSRV({ fadedTextureSRV }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->DrawQuad();
 	}

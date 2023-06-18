@@ -203,9 +203,9 @@ public:
 		memcpy(textBuffer->map().pData, textArray, sizeof(Text) * idx);
 		textBuffer->unmap();
 
-		spriteVShader->use();
-		spriteGShader->use();
-		spritePShader->use();
+		RenderAPI::get()->BindShader(spriteVShader);
+		RenderAPI::get()->BindShader(spriteGShader);
+		RenderAPI::get()->BindShader(spritePShader);
 
 		RenderAPI::get()->PSSetSRV({ rTexture }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);

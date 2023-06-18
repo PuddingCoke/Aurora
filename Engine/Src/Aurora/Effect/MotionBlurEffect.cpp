@@ -22,8 +22,8 @@ ShaderResourceView* MotionBlurEffect::process(ShaderResourceView* const gPositio
 	RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-	RenderAPI::fullScreenVS->use();
-	motionBlurPS->use();
+	RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+	RenderAPI::get()->BindShader(motionBlurPS);
 
 	RenderAPI::get()->DrawQuad();
 

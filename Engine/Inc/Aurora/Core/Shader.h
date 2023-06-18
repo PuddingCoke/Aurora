@@ -40,8 +40,6 @@ public:
 	//byte code
 	Shader(const BYTE* const bytes, const size_t& byteSize, const ShaderType& type);
 
-	void use() const;
-
 	static constexpr UINT  compileFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
 	const void* getBufferPointer() const;
@@ -50,7 +48,7 @@ public:
 
 private:
 
-	friend class Aurora;
+	friend class RenderAPI;
 
 	ComPtr<ID3DBlob> shaderBlob;
 
@@ -68,21 +66,23 @@ private:
 		ID3D11ComputeShader* computeShader;
 	} shaderPtr;
 
-	void(Shader::* useFunc)() const;
+	void use(ID3D11DeviceContext3* const ctx) const;
+
+	void(Shader::* useFunc)(ID3D11DeviceContext3* const ctx) const;
 
 	void(Shader::* releaseFunc)() const;
 
-	void vertexUse() const;
+	void vertexUse(ID3D11DeviceContext3* const ctx) const;
 
-	void hullUse() const;
+	void hullUse(ID3D11DeviceContext3* const ctx) const;
 
-	void domainUse() const;
+	void domainUse(ID3D11DeviceContext3* const ctx) const;
 
-	void geometryUse() const;
+	void geometryUse(ID3D11DeviceContext3* const ctx) const;
 
-	void pixelUse() const;
+	void pixelUse(ID3D11DeviceContext3* const ctx) const;
 
-	void computeUse() const;
+	void computeUse(ID3D11DeviceContext3* const ctx) const;
 
 	void vertexRelease() const;
 

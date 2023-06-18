@@ -50,9 +50,6 @@
     <FxCompile Include="ProbeRenderPSDepth.hlsl" />
     <FxCompile Include="CubeRenderBouncePS.hlsl" />
     <FxCompile Include="ProbeRenderPSIrradiance.hlsl" />
-    <FxCompile Include="SSRPS.hlsl" />
-    <FxCompile Include="HiZCreateCS.hlsl" />
-    <FxCompile Include="HiZInitializeCS.hlsl" />
     <FxCompile Include="SSRCombineShader.hlsl" />
   </ItemGroup>
   <ItemGroup>

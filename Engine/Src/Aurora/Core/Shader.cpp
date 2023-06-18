@@ -5,9 +5,9 @@ Shader::~Shader()
 	(this->*releaseFunc)();
 }
 
-void Shader::use() const
+void Shader::use(ID3D11DeviceContext3* const ctx) const
 {
-	(this->*useFunc)();
+	(this->*useFunc)(ctx);
 }
 
 const void* Shader::getBufferPointer() const
@@ -150,34 +150,34 @@ Shader::Shader(const BYTE* const bytes, const size_t& byteSize, const ShaderType
 	std::cout << " compile successfully!\n";
 }
 
-void Shader::vertexUse() const
+void Shader::vertexUse(ID3D11DeviceContext3* const ctx) const
 {
-	Renderer::getContext()->VSSetShader(shaderPtr.vertexShader, nullptr, 0);
+	ctx->VSSetShader(shaderPtr.vertexShader, nullptr, 0);
 }
 
-void Shader::hullUse() const
+void Shader::hullUse(ID3D11DeviceContext3* const ctx) const
 {
-	Renderer::getContext()->HSSetShader(shaderPtr.hullShader, nullptr, 0);
+	ctx->HSSetShader(shaderPtr.hullShader, nullptr, 0);
 }
 
-void Shader::domainUse() const
+void Shader::domainUse(ID3D11DeviceContext3* const ctx) const
 {
-	Renderer::getContext()->DSSetShader(shaderPtr.domainShader, nullptr, 0);
+	ctx->DSSetShader(shaderPtr.domainShader, nullptr, 0);
 }
 
-void Shader::geometryUse() const
+void Shader::geometryUse(ID3D11DeviceContext3* const ctx) const
 {
-	Renderer::getContext()->GSSetShader(shaderPtr.geometryShader, nullptr, 0);
+	ctx->GSSetShader(shaderPtr.geometryShader, nullptr, 0);
 }
 
-void Shader::pixelUse() const
+void Shader::pixelUse(ID3D11DeviceContext3* const ctx) const
 {
-	Renderer::getContext()->PSSetShader(shaderPtr.pixelShader, nullptr, 0);
+	ctx->PSSetShader(shaderPtr.pixelShader, nullptr, 0);
 }
 
-void Shader::computeUse() const
+void Shader::computeUse(ID3D11DeviceContext3* const ctx) const
 {
-	Renderer::getContext()->CSSetShader(shaderPtr.computeShader, nullptr, 0);
+	ctx->CSSetShader(shaderPtr.computeShader, nullptr, 0);
 }
 
 void Shader::vertexRelease() const

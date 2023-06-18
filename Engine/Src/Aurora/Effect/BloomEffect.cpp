@@ -70,13 +70,13 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	RenderAPI::get()->GSUnbindShader();
 	RenderAPI::get()->HSUnbindShader();
 	RenderAPI::get()->DSUnbindShader();
-	RenderAPI::fullScreenVS->use();
+	RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
 
 	RenderAPI::get()->OMSetBlendState(nullptr);
 
 	RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
 
-	bloomFilter->use();
+	RenderAPI::get()->BindShader(bloomFilter);
 	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
 	RenderAPI::get()->OMSetRTV({ filterTexture->getRTVMip(0) }, nullptr);
 	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
@@ -84,7 +84,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-	bloomKarisAverage->use();
+	RenderAPI::get()->BindShader(bloomKarisAverage);
 	RenderAPI::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
 	RenderAPI::get()->OMSetRTV({ swapTexture[0]->write()->getRTVMip(0) }, nullptr);
 	RenderAPI::get()->PSSetSRV({ filterTexture }, 0);
@@ -104,13 +104,13 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 
 	RenderAPI::get()->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 1] }, 1);
 
-	bloomHBlur->use();
+	RenderAPI::get()->BindShader(bloomHBlur);
 	RenderAPI::get()->CSSetUAV({ swapTexture[blurSteps - 1]->write()->getUAVMip(0) }, 0);
 	RenderAPI::get()->CSSetSRV({ swapTexture[blurSteps - 1]->read() }, 0);
 	swapTexture[blurSteps - 1]->swap();
 	RenderAPI::get()->Dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
 
-	bloomVBlur->use();
+	RenderAPI::get()->BindShader(bloomVBlur);
 	RenderAPI::get()->CSSetUAV({ swapTexture[blurSteps - 1]->write()->getUAVMip(0) }, 0);
 	RenderAPI::get()->CSSetSRV({ swapTexture[blurSteps - 1]->read() }, 0);
 	swapTexture[blurSteps - 1]->swap();
@@ -120,18 +120,18 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	{
 		RenderAPI::get()->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 2 - i] }, 1);
 
-		bloomHBlur->use();
+		RenderAPI::get()->BindShader(bloomHBlur);
 		RenderAPI::get()->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write()->getUAVMip(0) }, 0);
 		RenderAPI::get()->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
 		RenderAPI::get()->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
 		swapTexture[blurSteps - 2 - i]->swap();
 
-		bloomVBlur->use();
+		RenderAPI::get()->BindShader(bloomVBlur);
 		RenderAPI::get()->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write()->getUAVMip(0) }, 0);
 		RenderAPI::get()->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
 		RenderAPI::get()->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
 
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 		RenderAPI::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
 		RenderAPI::get()->OMSetRTV({ swapTexture[blurSteps - 2 - i]->write()->getRTVMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSRV({ swapTexture[blurSteps - 1 - i]->read() }, 0);
@@ -139,7 +139,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		swapTexture[blurSteps - 2 - i]->swap();
 	}
 
-	bloomFinal->use();
+	RenderAPI::get()->BindShader(bloomFinal);
 	outputRTV->clearRTV(DirectX::Colors::Black, 0);
 	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
 	RenderAPI::get()->OMSetRTV({ outputRTV->getRTVMip(0) }, nullptr);

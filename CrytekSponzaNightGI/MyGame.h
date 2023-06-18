@@ -207,7 +207,7 @@ public:
 
 			delete voxelProjBuffer;
 
-			lightBounceCShader->use();
+			RenderAPI::get()->BindShader(lightBounceCShader);
 
 			RenderAPI::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
 			RenderAPI::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
@@ -318,9 +318,9 @@ public:
 			RenderAPI::get()->GSSetSampler({ States::pointClampSampler }, 0);
 			RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-			visualVShader->use();
-			visualGShader->use();
-			visualPShader->use();
+			RenderAPI::get()->BindShader(visualVShader);
+			RenderAPI::get()->BindShader(visualGShader);
+			RenderAPI::get()->BindShader(visualPShader);
 
 			RenderAPI::get()->Draw(voxelParam.voxelGridRes * voxelParam.voxelGridRes * voxelParam.voxelGridRes, 0);
 		}
@@ -345,16 +345,16 @@ public:
 			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(resDepthTexture->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
 			RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);
 
-			RenderAPI::fullScreenVS->use();
-			deferredFinal->use();
+			RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+			RenderAPI::get()->BindShader(deferredFinal);
 
 			RenderAPI::get()->DrawQuad();
 
 			RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, resDepthTexture);
 			RenderAPI::get()->PSSetSRV({ skybox }, 0);
 
-			RenderAPI::skyboxVS->use();
-			skyboxPShader->use();
+			RenderAPI::get()->BindShader(RenderAPI::skyboxVS);
+			RenderAPI::get()->BindShader(skyboxPShader);
 
 			RenderAPI::get()->DrawCube();
 
@@ -364,8 +364,8 @@ public:
 			RenderAPI::get()->OMSetDefRTV(nullptr);
 			RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
-			RenderAPI::fullScreenVS->use();
-			RenderAPI::fullScreenPS->use();
+			RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+			RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 			RenderAPI::get()->DrawQuad();
 		}

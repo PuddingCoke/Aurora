@@ -218,20 +218,20 @@ public:
 		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
 		RenderAPI::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
 		RenderAPI::get()->OMSetBlendState(blendState.Get());
-		RenderAPI::fullScreenVS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
 
 		//施加颜色和速度
 
 		RenderAPI::get()->RSSetViewport(velocityTex->width, velocityTex->height);
 		RenderAPI::get()->OMSetRTV({ velocityTex->write()->getRTVMip(0) }, nullptr);
-		splatVelocityPS->use();
+		RenderAPI::get()->BindShader(splatVelocityPS);
 		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 		velocityTex->swap();
 
 		RenderAPI::get()->RSSetViewport(colorTex->width, colorTex->height);
 		RenderAPI::get()->OMSetRTV({ colorTex->write()->getRTVMip(0) }, nullptr);
-		splatColorPS->use();
+		RenderAPI::get()->BindShader(splatColorPS);
 		RenderAPI::get()->PSSetSRV({ colorTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 		colorTex->swap();
@@ -244,36 +244,36 @@ public:
 		RenderAPI::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::fullScreenVS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
 
 		//求旋度
 		RenderAPI::get()->OMSetRTV({ curlTex->getRTVMip(0) }, nullptr);
-		curlPS->use();
+		RenderAPI::get()->BindShader(curlPS);
 		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 
 		//通过已经求得的散度对速度图施加漩涡
 		RenderAPI::get()->OMSetRTV({ velocityTex->write()->getRTVMip(0) }, nullptr);
-		vorticityPS->use();
+		RenderAPI::get()->BindShader(vorticityPS);
 		RenderAPI::get()->PSSetSRV({ velocityTex->read(),curlTex }, 0);
 		RenderAPI::get()->DrawQuad();
 		velocityTex->swap();
 
 		//求散度
 		RenderAPI::get()->OMSetRTV({ divergenceTex->getRTVMip(0) }, nullptr);
-		divergencePS->use();
+		RenderAPI::get()->BindShader(divergencePS);
 		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 
 		//对压力图进行消散处理
 		RenderAPI::get()->OMSetRTV({ pressureTex->write()->getRTVMip(0) }, nullptr);
-		pressureDissipationPS->use();
+		RenderAPI::get()->BindShader(pressureDissipationPS);
 		RenderAPI::get()->PSSetSRV({ pressureTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 		pressureTex->swap();
 
 		//进行雅可比迭代
-		viscousDiffusionPS->use();
+		RenderAPI::get()->BindShader(viscousDiffusionPS);
 		for (unsigned int i = 0; i < config.pressureIteraion; i++)
 		{
 			RenderAPI::get()->OMSetRTV({ pressureTex->write()->getRTVMip(0) }, nullptr);
@@ -284,14 +284,14 @@ public:
 
 		//速度图减去它的散度来求得没有散度的速度图
 		RenderAPI::get()->OMSetRTV({ velocityTex->write()->getRTVMip(0) }, nullptr);
-		pressureGradientSubtractPS->use();
+		RenderAPI::get()->BindShader(pressureGradientSubtractPS);
 		RenderAPI::get()->PSSetSRV({ pressureTex->read(),velocityTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 		velocityTex->swap();
 
 		//速度移动并进行消散处理
 		RenderAPI::get()->OMSetRTV({ velocityTex->write()->getRTVMip(0) }, nullptr);
-		velocityAdvectionDissipationPS->use();
+		RenderAPI::get()->BindShader(velocityAdvectionDissipationPS);
 		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 		velocityTex->swap();
@@ -299,7 +299,7 @@ public:
 		//颜色移动并进行消散处理
 		RenderAPI::get()->RSSetViewport(colorTex->width, colorTex->height);
 		RenderAPI::get()->OMSetRTV({ colorTex->write()->getRTVMip(0) }, nullptr);
-		colorAdvectionDissipationPS->use();
+		RenderAPI::get()->BindShader(colorAdvectionDissipationPS);
 		RenderAPI::get()->PSSetSRV({ velocityTex->read(),colorTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 		colorTex->swap();
@@ -346,7 +346,7 @@ public:
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		originTexture->clearRTV(DirectX::Colors::Black, 0);
 		RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, nullptr);
-		fluidFinalPS->use();
+		RenderAPI::get()->BindShader(fluidFinalPS);
 		RenderAPI::get()->PSSetSRV({ colorTex->read() }, 0);
 		RenderAPI::get()->DrawQuad();
 
@@ -359,8 +359,8 @@ public:
 		RenderAPI::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
 		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
 		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->DrawQuad();
 	}

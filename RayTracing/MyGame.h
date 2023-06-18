@@ -95,7 +95,7 @@ public:
 		RenderAPI::get()->PSSetConstantBuffer({ cameraParamBuffer,temporalAccumulationBuffer }, 1);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::fullScreenVS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
 
 		temporalAccumulationParam.frameCount = 0;
 
@@ -103,7 +103,7 @@ public:
 
 		RenderAPI::get()->OMSetRTV({ renderTexture->getRTVMip(0) }, nullptr);
 
-		rayTracingPS->use();
+		RenderAPI::get()->BindShader(rayTracingPS);
 
 		for (unsigned int i = 0; i < 10; i++)
 		{
@@ -123,7 +123,7 @@ public:
 
 		RenderAPI::get()->PSSetSRV({ renderTexture }, 0);
 
-		displayPS->use();
+		RenderAPI::get()->BindShader(displayPS);
 
 		RenderAPI::get()->DrawQuad();
 	}

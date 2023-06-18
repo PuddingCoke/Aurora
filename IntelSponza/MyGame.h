@@ -171,8 +171,8 @@ public:
 		RenderAPI::get()->PSSetSRV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic,hbaoSRV }, 0);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),mainScene->lightBuffer }, 1);
 
-		RenderAPI::fullScreenVS->use();
-		deferredFinal->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(deferredFinal);
 
 		RenderAPI::get()->DrawQuad();
 
@@ -198,8 +198,8 @@ public:
 		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
 		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->DrawQuad();
 
@@ -207,8 +207,8 @@ public:
 		RenderAPI::get()->PSSetSRV({ skybox }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::skyboxVS->use();
-		skyboxPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::skyboxVS);
+		RenderAPI::get()->BindShader(skyboxPS);
 
 		RenderAPI::get()->DrawCube();
 	}

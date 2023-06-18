@@ -95,7 +95,7 @@ public:
 
 	void update(const float& dt) override
 	{
-		computeShader->use();
+		RenderAPI::get()->BindShader(computeShader);
 
 		RenderAPI::get()->CSSetUAV({ particlePosBuffer }, 0);
 
@@ -111,8 +111,8 @@ public:
 
 		RenderAPI::get()->IASetVertexBuffer(0, { particlePosBuffer,particleColorBuffer }, { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) }, { 0,0 });
 
-		displayVShader->use();
-		displayPShader->use();
+		RenderAPI::get()->BindShader(displayVShader);
+		RenderAPI::get()->BindShader(displayPShader);
 
 		RenderAPI::get()->Draw(particleNum, 0);
 	}

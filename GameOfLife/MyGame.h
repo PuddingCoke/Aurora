@@ -118,7 +118,7 @@ public:
 
 		RenderAPI::get()->CSSetUAV({ swapTexture->write()->getUAVMip(0) }, 0);
 
-		randomizeCS->use();
+		RenderAPI::get()->BindShader(randomizeCS);
 
 		RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
 		swapTexture->swap();
@@ -136,7 +136,7 @@ public:
 
 		RenderAPI::get()->CSSetConstantBuffer({ gameBuffer }, 1);
 
-		evolveCS->use();
+		RenderAPI::get()->BindShader(evolveCS);
 
 		RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
 		swapTexture->swap();
@@ -162,7 +162,7 @@ public:
 
 		RenderAPI::get()->CSSetConstantBuffer({ gameBuffer }, 1);
 
-		visualizeCS->use();
+		RenderAPI::get()->BindShader(visualizeCS);
 
 		RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
 
@@ -178,8 +178,8 @@ public:
 		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
 		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->DrawQuad();
 	}

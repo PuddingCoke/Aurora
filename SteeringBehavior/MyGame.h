@@ -122,7 +122,7 @@ public:
 
 		RenderAPI::get()->CSSetConstantBuffer({ simulationParamBuffer }, 1);
 
-		stepCS->use();
+		RenderAPI::get()->BindShader(stepCS);
 
 		RenderAPI::get()->Dispatch(((vehicleNum + 999) & ~999) / 1000, 1, 1);
 	}
@@ -144,9 +144,9 @@ public:
 
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		vehicleVS->use();
-		vehicleGS->use();
-		vehiclePS->use();
+		RenderAPI::get()->BindShader(vehicleVS);
+		RenderAPI::get()->BindShader(vehicleGS);
+		RenderAPI::get()->BindShader(vehiclePS);
 
 		RenderAPI::get()->Draw(vehicleNum, 0);
 
@@ -164,8 +164,8 @@ public:
 		RenderAPI::get()->OMSetDefRTV(nullptr);
 		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
-		RenderAPI::fullScreenVS->use();
-		RenderAPI::fullScreenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
 
 		RenderAPI::get()->DrawQuad();
 	}

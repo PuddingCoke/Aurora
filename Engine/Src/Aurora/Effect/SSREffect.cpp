@@ -20,11 +20,11 @@ ShaderResourceView* SSREffect::process(ShaderResourceView* resDepthTexture, Shad
 	RenderAPI::get()->CSSetSRV({ resDepthTexture }, 0);
 	RenderAPI::get()->CSSetUAV({ hiZTexture->getUAVMip(0) }, 0);
 
-	hiZInitializeCS->use();
+	RenderAPI::get()->BindShader(hiZInitializeCS);
 
 	RenderAPI::get()->Dispatch(width / 16, height / 9, 1);
 
-	hiZCreateCS->use();
+	RenderAPI::get()->BindShader(hiZCreateCS);
 
 	for (UINT i = 0; i < hiZMipLevel - 1; i++)
 	{
@@ -40,8 +40,8 @@ ShaderResourceView* SSREffect::process(ShaderResourceView* resDepthTexture, Shad
 	RenderAPI::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
 	RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);
 
-	RenderAPI::fullScreenVS->use();
-	hiZProcessPS->use();
+	RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+	RenderAPI::get()->BindShader(hiZProcessPS);
 
 	RenderAPI::get()->DrawQuad();
 

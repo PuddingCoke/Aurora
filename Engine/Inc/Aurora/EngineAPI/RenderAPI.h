@@ -45,6 +45,8 @@ public:
 
 	void OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs);
 
+	void BindShader(Shader* const shader);
+
 	void CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const UINT& slot);
 
 	void VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, const UINT& slot);

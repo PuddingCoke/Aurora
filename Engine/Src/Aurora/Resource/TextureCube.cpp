@@ -104,8 +104,8 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	RenderAPI::get()->RSSetViewport(skyboxResolution, skyboxResolution);
 	RenderAPI::get()->VSSetConstantBuffer({ buffer }, 2);
 
-	equirectangularVS->use();
-	equirectangularPS->use();
+	RenderAPI::get()->BindShader(equirectangularVS);
+	RenderAPI::get()->BindShader(equirectangularPS);
 
 	const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 10.f);
 

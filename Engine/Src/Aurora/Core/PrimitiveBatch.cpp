@@ -99,20 +99,20 @@ void PrimitiveBatch::end()
 
 	RenderAPI::get()->IASetInputLayout(primitiveInputLayout.Get());
 
-	lineVS->use();
-	primitivePS->use();
-	lineGS->use();
+	RenderAPI::get()->BindShader(lineVS);
+	RenderAPI::get()->BindShader(primitivePS);
+	RenderAPI::get()->BindShader(lineGS);
 
 	lineRenderer.end();
 
 	RenderAPI::get()->IASetInputLayout(circleInputLayout.Get());
-	circleVS->use();
+	RenderAPI::get()->BindShader(circleVS);
 
 	circleRenderer.end();
 
 	RenderAPI::get()->IASetInputLayout(rcLineInputLayout.Get());
-	rcLineVS->use();
-	rcLineGS->use();
+	RenderAPI::get()->BindShader(rcLineVS);
+	RenderAPI::get()->BindShader(rcLineGS);
 
 	rcLineRenderer.end();
 

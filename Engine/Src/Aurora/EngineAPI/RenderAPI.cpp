@@ -141,6 +141,11 @@ void RenderAPI::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
 	Renderer::getContext()->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, (UINT)uavs.size(), tempUAV, nullptr);
 }
 
+void RenderAPI::BindShader(Shader* const shader)
+{
+	shader->use(Renderer::getContext());
+}
+
 void RenderAPI::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const UINT& slot)
 {
 	for (UINT i = slot; i < slot + uavs.size(); i++)
@@ -679,7 +684,7 @@ void RenderAPI::UnbindPSUAV() const
 
 void RenderAPI::GenNoise(UnorderedAccessView* const uav, const UINT& textureWidth, const UINT& textureHeight)
 {
-	randNoiseCS->use();
+	RenderAPI::get()->BindShader(randNoiseCS);
 	CSSetUAV({ uav }, 0);
 	RenderAPI::get()->Dispatch(textureWidth / 32, textureHeight / 18, 1);
 }
@@ -696,8 +701,8 @@ void RenderAPI::DebugDraw(ShaderResourceView* const srv)
 	PSSetSRV({ srv }, 0);
 	PSSetSampler({ States::pointClampSampler }, 0);
 
-	fullScreenVS->use();
-	fullScreenPS->use();
+	RenderAPI::get()->BindShader(fullScreenVS);
+	RenderAPI::get()->BindShader(fullScreenPS);
 	DSUnbindShader();
 	HSUnbindShader();
 	GSUnbindShader();

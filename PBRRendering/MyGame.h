@@ -57,8 +57,8 @@ public:
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		RenderAPI::get()->OMSetRTV({ brdfTex->getRTVMip(0) }, nullptr);
 
-		RenderAPI::fullScreenVS->use();
-		brdfGenPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		RenderAPI::get()->BindShader(brdfGenPS);
 
 		RenderAPI::get()->DrawQuad();
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
@@ -111,8 +111,8 @@ public:
 		RenderAPI::get()->PSSetSRV({ envCube }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::skyboxVS->use();
-		skyboxPS->use();
+		RenderAPI::get()->BindShader(RenderAPI::skyboxVS);
+		RenderAPI::get()->BindShader(skyboxPS);
 
 		RenderAPI::get()->DrawCube();
 	}
