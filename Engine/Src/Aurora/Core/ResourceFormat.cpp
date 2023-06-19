@@ -97,6 +97,7 @@ const std::unordered_map<FMT, UINT> ResourceFormat::byteSizeMap =
 
 	{R32I,4},
 	{RG32I,8},
+	{RGB32I,12},
 	{RGBA32I,16},
 
 	//Uint
@@ -110,6 +111,7 @@ const std::unordered_map<FMT, UINT> ResourceFormat::byteSizeMap =
 
 	{R32UI,4},
 	{RG32UI,8},
+	{RGB32UI,12},
 	{RGBA32UI,16},
 
 	//Unorm
@@ -137,6 +139,7 @@ const std::unordered_map<FMT, UINT> ResourceFormat::byteSizeMap =
 
 	{R32F,4},
 	{RG32F,8},
+	{RGB32F,12},
 	{RGBA32F,16},
 
 	//Type Less
@@ -150,6 +153,7 @@ const std::unordered_map<FMT, UINT> ResourceFormat::byteSizeMap =
 
 	{R32TL,4},
 	{RG32TL,8},
+	{RGB32TL,12},
 	{RGBA32TL,16},
 };
 

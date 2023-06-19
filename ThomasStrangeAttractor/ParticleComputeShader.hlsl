@@ -26,9 +26,7 @@ void main(in uint3 DTid : SV_DispatchThreadID)
         const float dy = (sin(pos.z) - factor * pos.y) * deltaTime * 0.5;
         const float dz = (sin(pos.x) - factor * pos.z) * deltaTime * 0.5;
 
-        pos.x += dx;
-        pos.y += dy;
-        pos.z += dz;
+        pos += float4(dx, dy, dz, 0.0);
     }
     
     positions[DTid.x] = pos;
