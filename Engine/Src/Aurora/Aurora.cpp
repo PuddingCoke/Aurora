@@ -365,9 +365,9 @@ void Aurora::iniWindow(const std::wstring& title, const UINT& screenWidth, const
 
 void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const UINT& screenHeight)
 {
-	ID3D11DeviceContext4* ctx = nullptr;
+	ComPtr<ID3D11DeviceContext4> ctx;
 
-	new Renderer(winform->getHWND(), screenWidth, screenHeight, msaaLevel, &ctx);
+	new Renderer(winform->getHWND(), screenWidth, screenHeight, msaaLevel, ctx.ReleaseAndGetAddressOf());
 
 	new States();
 

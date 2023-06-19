@@ -29,6 +29,7 @@ public:
 
 		R32I,
 		RG32I,
+		RGB32I,
 		RGBA32I,
 
 		//Uint
@@ -42,6 +43,7 @@ public:
 
 		R32UI,
 		RG32UI,
+		RGB32UI,
 		RGBA32UI,
 
 		//Unorm
@@ -71,6 +73,7 @@ public:
 
 		R32F,
 		RG32F,
+		RGB32F,
 		RGBA32F,
 
 		RG11B10F,
@@ -86,6 +89,7 @@ public:
 
 		R32TL,
 		RG32TL,
+		RGB32TL,
 		RGBA32TL,
 
 		//Depth

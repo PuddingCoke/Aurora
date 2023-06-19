@@ -147,7 +147,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 
 	ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-	equirectangularMap->unbindFromSRV(ImCtx::get()->GetContext());
+	equirectangularMap->unbindFromSRV(ImCtx::GetContext());
 	delete equirectangularMap;
 	delete buffer;
 }

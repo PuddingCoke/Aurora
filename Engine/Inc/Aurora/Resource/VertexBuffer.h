@@ -17,8 +17,6 @@ public:
 
 	virtual ~VertexBuffer();
 
-	int IASlot;
-
 protected:
 
 	bool unbindFromVertexBuffer(ID3D11DeviceContext3* const ctx);
@@ -26,6 +24,8 @@ protected:
 private:
 
 	friend class ImCtx;
+
+	int IASlot;
 
 	static VertexBuffer* curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
