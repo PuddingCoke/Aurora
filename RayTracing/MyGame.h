@@ -101,7 +101,7 @@ public:
 
 		renderTexture->clearRTV(DirectX::Colors::Black, 0);
 
-		RenderAPI::get()->OMSetRTV({ renderTexture->getRTVMip(0) }, nullptr);
+		RenderAPI::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
 
 		RenderAPI::get()->BindShader(rayTracingPS);
 

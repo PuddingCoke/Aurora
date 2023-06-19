@@ -16,7 +16,7 @@ ShaderResourceView* MotionBlurEffect::process(ShaderResourceView* const gPositio
 	RenderAPI::get()->OMSetBlendState(nullptr);
 	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	RenderAPI::get()->OMSetRTV({ outputRTV->getRTVMip(0) }, nullptr);
+	RenderAPI::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
 
 	RenderAPI::get()->PSSetSRV({ gPosition,colorTexture }, 0);
 	RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);

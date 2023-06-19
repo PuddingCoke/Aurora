@@ -5,14 +5,7 @@ RenderTexture::~RenderTexture()
 	delete[] mipArray;
 }
 
-RenderTargetView* RenderTexture::getRTVMip(const UINT& index)
-{
-	unbindFromSRV();
-
-	return &mipArray[index];
-}
-
-ShaderResourceView* RenderTexture::getSRVMip(const UINT& index)
+RSView* RenderTexture::getMip(const UINT& index)
 {
 	return &mipArray[index];
 }
@@ -55,7 +48,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 	}
 
 	{
-		mipArray = new RSView[1];
+		mipArray = new RSViewEx[1];
 
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 		rtvDesc.Format = FMTCAST(fmt);
@@ -86,6 +79,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 
 		mipArray[0].createRTV(texture.Get(), rtvDesc);
 		mipArray[0].createSRV(texture.Get(), srvDesc);
+		mipArray[0].allSRV = this;
 	}
 
 	mipArray[0].clearRTV(color);
@@ -118,7 +112,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 	}
 
 	{
-		mipArray = new RSView[mipLevels];
+		mipArray = new RSViewEx[mipLevels];
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = FMTCAST(fmt);
@@ -143,6 +137,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 
 				mipArray[i].createSRV(texture.Get(), srvDesc);
 				mipArray[i].createRTV(texture.Get(), rtvDesc);
+				mipArray[i].allSRV = this;
 			}
 		}
 		else
@@ -159,6 +154,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 
 				mipArray[i].createSRV(texture.Get(), srvDesc);
 				mipArray[i].createRTV(texture.Get(), rtvDesc);
+				mipArray[i].allSRV = this;
 			}
 		}
 	}
@@ -167,4 +163,16 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 	{
 		mipArray[i].clearRTV(color);
 	}
+}
+
+void RenderTexture::RSViewEx::bindRTV()
+{
+	allSRV->unbindFromSRV();
+
+	unbindFromSRV();
+}
+
+void RenderTexture::RSViewEx::bindSRV()
+{
+	unbindFromRTV();
 }

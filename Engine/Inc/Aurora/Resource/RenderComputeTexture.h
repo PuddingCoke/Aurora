@@ -14,11 +14,7 @@ public:
 
 	virtual ~RenderComputeTexture();
 
-	RenderTargetView* getRTVMip(const UINT& index);
-
-	UnorderedAccessView* getUAVMip(const UINT& index);
-
-	ShaderResourceView* getSRVMip(const UINT& index);
+	RUSView* getMip(const UINT& index);
 
 	virtual void bindSRV() override;
 
@@ -30,7 +26,23 @@ public:
 
 private:
 
-	RUSView* mipArray;
+	class RUSViewEx :public RUSView
+	{
+	public:
+
+		ShaderResourceView* allSRV;
+
+		void bindSRV() override;
+
+		void bindCUAV() override;
+
+		void bindPUAV() override;
+
+		void bindRTV() override;
+
+	}*mipArray;
+
+	//RUSView* mipArray;
 
 };
 

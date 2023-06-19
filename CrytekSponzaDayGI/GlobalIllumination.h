@@ -252,13 +252,13 @@ public:
 		gPosition->clearRTV(DirectX::Colors::Transparent, 0);
 		gNormalSpecular->clearRTV(DirectX::Colors::Transparent, 0);
 
-		RenderAPI::get()->OMSetRTV({ gPosition->getRTVMip(0),gNormalSpecular->getRTVMip(0),gBaseColor->getRTVMip(0) }, depthTexture);
+		RenderAPI::get()->OMSetRTV({ gPosition->getMip(0),gNormalSpecular->getMip(0),gBaseColor->getMip(0) }, depthTexture);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
 		scene->render(deferredVShader, deferredPShader);
 
 		originTexture->clearRTV(DirectX::Colors::Black, 0);
-		RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, nullptr);
+		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(depthTexture->getSRV(), gNormalSpecular->getSRV()),shadowTexture,irradianceBounceCoeff,depthOctahedralMap }, 0);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,irradianceVolumeBuffer }, 1);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
@@ -268,7 +268,7 @@ public:
 
 		RenderAPI::get()->DrawQuad();
 
-		RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, depthTexture);
+		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
 
 		RenderAPI::get()->PSSetSRV({ skybox }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
@@ -282,7 +282,7 @@ public:
 
 		ShaderResourceView* const uvVisibilitySRV = ssrEffect.process(depthTexture, gPosition, gNormalSpecular);
 
-		RenderAPI::get()->OMSetRTV({ reflectedColor->getRTVMip(0) }, nullptr);
+		RenderAPI::get()->OMSetRTV({ reflectedColor->getMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSRV({ originTexture,uvVisibilitySRV,gNormalSpecular }, 0);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler }, 0);
 
@@ -499,7 +499,7 @@ private:
 
 		scene->renderCube(cubeRenderVS, cubeRenderPS);
 
-		RenderAPI::get()->CSSetUAV({ irradianceCoeff->getUAVMip(0) }, 0);
+		RenderAPI::get()->CSSetUAV({ irradianceCoeff->getMip(0) }, 0);
 		RenderAPI::get()->CSSetSRV({ radianceCube,irradianceSamples }, 0);
 		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
 		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
@@ -508,7 +508,7 @@ private:
 
 		RenderAPI::get()->Dispatch(1, 1, 1);
 
-		RenderAPI::get()->CSSetUAV({ depthOctahedralMap->getUAVMip(0) }, 0);
+		RenderAPI::get()->CSSetUAV({ depthOctahedralMap->getMip(0) }, 0);
 		RenderAPI::get()->CSSetSRV({ distanceCube }, 0);
 		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
 		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
@@ -573,7 +573,7 @@ private:
 
 		scene->renderCube(cubeRenderVS, cubeRenderBouncePS);
 
-		RenderAPI::get()->CSSetUAV({ irradianceBounceCoeff->getUAVMip(0) }, 0);
+		RenderAPI::get()->CSSetUAV({ irradianceBounceCoeff->getMip(0) }, 0);
 		RenderAPI::get()->CSSetSRV({ radianceCube,irradianceSamples }, 0);
 		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
 		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);

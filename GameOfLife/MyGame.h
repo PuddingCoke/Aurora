@@ -116,7 +116,7 @@ public:
 		swapTexture->read()->clearUAV(value, 0);
 		swapTexture->write()->clearUAV(value, 0);
 
-		RenderAPI::get()->CSSetUAV({ swapTexture->write()->getUAVMip(0) }, 0);
+		RenderAPI::get()->CSSetUAV({ swapTexture->write()->getMip(0) }, 0);
 
 		RenderAPI::get()->BindShader(randomizeCS);
 
@@ -131,7 +131,7 @@ public:
 
 	void step()
 	{
-		RenderAPI::get()->CSSetUAV({ swapTexture->write()->getUAVMip(0) }, 0);
+		RenderAPI::get()->CSSetUAV({ swapTexture->write()->getMip(0) }, 0);
 		RenderAPI::get()->CSSetSRV({ swapTexture->read() }, 0);
 
 		RenderAPI::get()->CSSetConstantBuffer({ gameBuffer }, 1);
@@ -157,7 +157,7 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->CSSetUAV({ rcTexture->getUAVMip(0) }, 0);
+		RenderAPI::get()->CSSetUAV({ rcTexture->getMip(0) }, 0);
 		RenderAPI::get()->CSSetSRV({ swapTexture->read() }, 0);
 
 		RenderAPI::get()->CSSetConstantBuffer({ gameBuffer }, 1);

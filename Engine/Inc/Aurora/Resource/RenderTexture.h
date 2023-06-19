@@ -16,9 +16,7 @@ public:
 
 	virtual ~RenderTexture();
 
-	RenderTargetView* getRTVMip(const UINT& index);
-
-	ShaderResourceView* getSRVMip(const UINT& index);
+	RSView* getMip(const UINT& index);
 
 	virtual void bindSRV() override;
 
@@ -26,7 +24,19 @@ public:
 
 private:
 
-	RSView* mipArray;
+	class RSViewEx :public RSView
+	{
+	public:
+
+		ShaderResourceView* allSRV;
+
+		void bindRTV() override;
+
+		void bindSRV() override;
+
+	}*mipArray;
+
+	//RSView* mipArray;
 
 };
 

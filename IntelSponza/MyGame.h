@@ -155,7 +155,7 @@ public:
 		gNormal->clearRTV(DirectX::Colors::Black, 0);
 		gRoughnessMetallic->clearRTV(DirectX::Colors::Black, 0);
 
-		RenderAPI::get()->OMSetRTV({ gBaseColor->getRTVMip(0),gPosition->getRTVMip(0),gNormal->getRTVMip(0),gRoughnessMetallic->getRTVMip(0) }, resDepthTexture);
+		RenderAPI::get()->OMSetRTV({ gBaseColor->getMip(0),gPosition->getMip(0),gNormal->getMip(0),gRoughnessMetallic->getMip(0) }, resDepthTexture);
 
 		mainScene->draw(deferredVS, deferredPSHasTex, deferredPSNoTex, deferredPSTrans);
 
@@ -166,7 +166,7 @@ public:
 		ShaderResourceView* hbaoSRV = hbaoEffect.process(resDepthTexture->getSRV(), gNormal->getSRV());
 
 		originTexture->clearRTV(DirectX::Colors::Black, 0);
-		RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, nullptr);
+		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
 
 		RenderAPI::get()->PSSetSRV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic,hbaoSRV }, 0);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),mainScene->lightBuffer }, 1);

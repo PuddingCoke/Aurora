@@ -18,7 +18,7 @@ SSREffect::~SSREffect()
 ShaderResourceView* SSREffect::process(ShaderResourceView* resDepthTexture, ShaderResourceView* gPosition, ShaderResourceView* gNormal) const
 {
 	RenderAPI::get()->CSSetSRV({ resDepthTexture }, 0);
-	RenderAPI::get()->CSSetUAV({ hiZTexture->getUAVMip(0) }, 0);
+	RenderAPI::get()->CSSetUAV({ hiZTexture->getMip(0) }, 0);
 
 	RenderAPI::get()->BindShader(hiZInitializeCS);
 
@@ -28,14 +28,14 @@ ShaderResourceView* SSREffect::process(ShaderResourceView* resDepthTexture, Shad
 
 	for (UINT i = 0; i < hiZMipLevel - 1; i++)
 	{
-		RenderAPI::get()->CSSetSRV({ hiZTexture->getSRVMip(i) }, 0);
-		RenderAPI::get()->CSSetUAV({ hiZTexture->getUAVMip(i + 1) }, 0);
+		RenderAPI::get()->CSSetSRV({ hiZTexture->getMip(i) }, 0);
+		RenderAPI::get()->CSSetUAV({ hiZTexture->getMip(i + 1) }, 0);
 
 		RenderAPI::get()->Dispatch(((width / 2) >> i) / 16 + 1, ((height / 2) >> i) / 9 + 1, 1);
 	}
 
 	outputRTV->clearRTV(DirectX::Colors::Black, 0);
-	RenderAPI::get()->OMSetRTV({ outputRTV->getRTVMip(0) }, nullptr);
+	RenderAPI::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
 	RenderAPI::get()->PSSetSRV({ gPosition,gNormal,hiZTexture }, 0);
 	RenderAPI::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
 	RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);

@@ -5,21 +5,7 @@ RenderComputeTexture::~RenderComputeTexture()
 	delete[] mipArray;
 }
 
-RenderTargetView* RenderComputeTexture::getRTVMip(const UINT& index)
-{
-	unbindFromSRV();
-
-	return &mipArray[index];
-}
-
-UnorderedAccessView* RenderComputeTexture::getUAVMip(const UINT& index)
-{
-	unbindFromSRV();
-
-	return &mipArray[index];
-}
-
-ShaderResourceView* RenderComputeTexture::getSRVMip(const UINT& index)
+RUSView* RenderComputeTexture::getMip(const UINT& index)
 {
 	return &mipArray[index];
 }
@@ -82,7 +68,7 @@ RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height
 	}
 
 	{
-		mipArray = new RUSView[mipLevels];
+		mipArray = new RUSViewEx[mipLevels];
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = FMTCAST(fmt);
@@ -115,6 +101,7 @@ RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height
 				mipArray[i].createSRV(texture.Get(), srvDesc);
 				mipArray[i].createRTV(texture.Get(), rtvDesc);
 				mipArray[i].createUAV(texture.Get(), uavDesc);
+				mipArray[i].allSRV = this;
 			}
 		}
 		else
@@ -135,7 +122,34 @@ RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height
 				mipArray[i].createSRV(texture.Get(), srvDesc);
 				mipArray[i].createRTV(texture.Get(), rtvDesc);
 				mipArray[i].createUAV(texture.Get(), uavDesc);
+				mipArray[i].allSRV = this;
 			}
 		}
 	}
+}
+
+void RenderComputeTexture::RUSViewEx::bindSRV()
+{
+	unbindFromCUAV() || unbindFromPUAV() || unbindFromRTV();
+}
+
+void RenderComputeTexture::RUSViewEx::bindCUAV()
+{
+	allSRV->unbindFromSRV();
+
+	unbindFromSRV() || unbindFromPUAV() || unbindFromRTV();
+}
+
+void RenderComputeTexture::RUSViewEx::bindPUAV()
+{
+	allSRV->unbindFromSRV();
+
+	unbindFromSRV() || unbindFromCUAV() || unbindFromRTV();
+}
+
+void RenderComputeTexture::RUSViewEx::bindRTV()
+{
+	allSRV->unbindFromSRV();
+
+	unbindFromSRV() || unbindFromCUAV() || unbindFromPUAV();
 }

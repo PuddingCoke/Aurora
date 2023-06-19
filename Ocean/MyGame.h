@@ -68,7 +68,7 @@ public:
 		ocean.update();
 
 		originTexture->clearRTV(DirectX::Colors::Black, 0);
-		RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, nullptr);
+		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
 
 		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -83,7 +83,7 @@ public:
 		RenderAPI::get()->DrawCube();
 
 		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
-		RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, depthTexture);
+		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
 
 		RenderAPI::get()->PSSetSRV({ textureCube,perlinTexture }, 1);
 

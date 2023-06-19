@@ -80,7 +80,7 @@ public:
 	{
 		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 		originTexture->clearRTV(DirectX::Colors::Black, 0);
-		RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, depthTexture);
+		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
 
 		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 

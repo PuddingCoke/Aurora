@@ -336,12 +336,12 @@ public:
 			gNormalSpecular->clearRTV(DirectX::Colors::Black, 0);
 			resDepthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 
-			RenderAPI::get()->OMSetRTV({ gPosition->getRTVMip(0),gNormalSpecular->getRTVMip(0),gBaseColor->getRTVMip(0) }, resDepthTexture);
+			RenderAPI::get()->OMSetRTV({ gPosition->getMip(0),gNormalSpecular->getMip(0),gBaseColor->getMip(0) }, resDepthTexture);
 
 			scene->draw(deferredVShader, deferredPShader);
 
 			originTexture->clearRTV(DirectX::Colors::Black, 0);
-			RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, nullptr);
+			RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
 			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(resDepthTexture->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
 			RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);
 
@@ -350,7 +350,7 @@ public:
 
 			RenderAPI::get()->DrawQuad();
 
-			RenderAPI::get()->OMSetRTV({ originTexture->getRTVMip(0) }, resDepthTexture);
+			RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, resDepthTexture);
 			RenderAPI::get()->PSSetSRV({ skybox }, 0);
 
 			RenderAPI::get()->BindShader(RenderAPI::skyboxVS);

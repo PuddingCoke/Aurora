@@ -10,15 +10,11 @@ class ComputeTexture :public Texture2D, public ShaderResourceView
 {
 public:
 
-	ComputeTexture(const UINT& width, const UINT& height, const FMT& fmt, const UINT& mipLevels = 1, const UINT& arraySize = 1);
-
 	ComputeTexture(const UINT& width, const UINT& height, const FMT& resFmt, const FMT& srvFmt, const FMT& uavFmt, const UINT& mipLevels = 1, const UINT& arraySize = 1);
 
 	virtual ~ComputeTexture();
 
-	UnorderedAccessView* getUAVMip(const UINT& index);
-
-	ShaderResourceView* getSRVMip(const UINT& index);
+	USView* getMip(const UINT& index);
 
 	virtual void bindSRV() override;
 
@@ -28,7 +24,21 @@ public:
 
 private:
 
-	USView* mipArray;
+	class USViewEx :public USView
+	{
+	public:
+
+		ShaderResourceView* allSRV;
+
+		void bindSRV() override;
+
+		void bindCUAV() override;
+
+		void bindPUAV() override;
+
+	}*mipArray;
+
+	//USView* mipArray;
 
 };
 

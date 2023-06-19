@@ -100,7 +100,7 @@ public:
 
 		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
 		renderTexture->clearRTV(DirectX::Colors::Black, 0);
-		RenderAPI::get()->OMSetRTV({ renderTexture->getRTVMip(0) }, depthTexture);
+		RenderAPI::get()->OMSetRTV({ renderTexture->getMip(0) }, depthTexture);
 
 		attractor.render();
 

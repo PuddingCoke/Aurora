@@ -219,14 +219,14 @@ inline void Ocean::calculatePhillipTexture() const
 
 	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 	RenderAPI::get()->CSSetSRV({ gaussTexture }, 0);
-	RenderAPI::get()->CSSetUAV({ tildeh0k->getUAVMip(0),waveData->getUAVMip(0) }, 0);
+	RenderAPI::get()->CSSetUAV({ tildeh0k->getMip(0),waveData->getMip(0) }, 0);
 
 	RenderAPI::get()->BindShader(phillipSpectrumShader);
 
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
 	RenderAPI::get()->CSSetSRV({ tildeh0k }, 0);
-	RenderAPI::get()->CSSetUAV({ tildeh0->getUAVMip(0) }, 0);
+	RenderAPI::get()->CSSetUAV({ tildeh0->getMip(0) }, 0);
 
 	RenderAPI::get()->BindShader(conjugatedCalcCS);
 
@@ -237,13 +237,13 @@ inline void Ocean::calculatePhillipTexture() const
 
 inline void Ocean::IFFT(ComputeTexture* const cTexture) const
 {
-	RenderAPI::get()->CSSetUAV({ tempTexture->getUAVMip(0) }, 0);
+	RenderAPI::get()->CSSetUAV({ tempTexture->getMip(0) }, 0);
 	RenderAPI::get()->CSSetSRV({ cTexture }, 0);
 
 	RenderAPI::get()->BindShader(ifftShader);
 	RenderAPI::get()->Dispatch(param.mapResolution, 1u, 1u);
 
-	RenderAPI::get()->CSSetUAV({ cTexture->getUAVMip(0) }, 0);
+	RenderAPI::get()->CSSetUAV({ cTexture->getMip(0) }, 0);
 	RenderAPI::get()->CSSetSRV({ tempTexture }, 0);
 
 	RenderAPI::get()->BindShader(ifftShader);
@@ -258,7 +258,7 @@ inline void Ocean::update() const
 	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 
 	RenderAPI::get()->CSSetSRV({ tildeh0,waveData }, 0);
-	RenderAPI::get()->CSSetUAV({ Dy->getUAVMip(0),Dx->getUAVMip(0),Dz->getUAVMip(0),Dyx->getUAVMip(0),Dyz->getUAVMip(0),Dxx->getUAVMip(0),Dzz->getUAVMip(0),Dxz->getUAVMip(0) }, 0);
+	RenderAPI::get()->CSSetUAV({ Dy->getMip(0),Dx->getMip(0),Dz->getMip(0),Dyx->getMip(0),Dyz->getMip(0),Dxx->getMip(0),Dzz->getMip(0),Dxz->getMip(0) }, 0);
 
 	RenderAPI::get()->BindShader(displacementShader);
 
@@ -274,7 +274,7 @@ inline void Ocean::update() const
 	IFFT(Dxz);
 
 	RenderAPI::get()->CSSetSRV({ Dy,Dx,Dz,Dyx,Dyz,Dxx,Dzz,Dxz }, 0);
-	RenderAPI::get()->CSSetUAV({ Dxyz->getUAVMip(0),normalJacobian->getUAVMip(0) }, 0);
+	RenderAPI::get()->CSSetUAV({ Dxyz->getMip(0),normalJacobian->getMip(0) }, 0);
 
 	RenderAPI::get()->BindShader(waveMergeCS);
 	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
