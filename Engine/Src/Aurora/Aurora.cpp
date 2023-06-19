@@ -209,13 +209,13 @@ void Aurora::runGame()
 			ImGui::End();
 			ImGui::Render();
 
-			RenderAPI::get()->OMSetDefRTV(nullptr);
+			ImCtx::get()->OMSetDefRTV(nullptr);
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		}
 
 		if (Graphics::instance->msaaLevel != 1)
 		{
-			Renderer::getContext()->ResolveSubresource(Renderer::instance->backBuffer.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
+			ImCtx::GetContext()->ResolveSubresource(Renderer::instance->backBuffer.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
 
 		Renderer::instance->swapChain->Present(1, 0);
@@ -254,7 +254,7 @@ void Aurora::runEncode()
 
 		if (Graphics::instance->msaaLevel != 1)
 		{
-			Renderer::getContext()->ResolveSubresource(encodeTexture->getResource(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
+			ImCtx::GetContext()->ResolveSubresource(encodeTexture->getResource(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
 		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
 	} while (nvidiaEncoder.encode());
@@ -269,19 +269,19 @@ void Aurora::runEncode()
 void Aurora::bindCommonCB()
 {
 	//pixel compute shader占用第一个槽位来获取跟时间相关的变量
-	RenderAPI::get()->PSSetConstantBuffer({ Graphics::getDeltaTimeBuffer() }, 0);
-	RenderAPI::get()->CSSetConstantBuffer({ Graphics::getDeltaTimeBuffer() }, 0);
+	ImCtx::get()->PSSetConstantBuffer({ Graphics::getDeltaTimeBuffer() }, 0);
+	ImCtx::get()->CSSetConstantBuffer({ Graphics::getDeltaTimeBuffer() }, 0);
 
 	//vertex geometry hull domain shader占用前两个槽位来获取矩阵信息或者摄像头的信息
-	RenderAPI::get()->VSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
-	RenderAPI::get()->HSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
-	RenderAPI::get()->DSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
-	RenderAPI::get()->GSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
+	ImCtx::get()->VSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
+	ImCtx::get()->HSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
+	ImCtx::get()->DSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
+	ImCtx::get()->GSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 0);
 }
 
 void Aurora::destroy()
 {
-	Renderer::getContext()->ClearState();
+	ImCtx::GetContext()->ClearState();
 
 	delete game;
 
@@ -293,7 +293,7 @@ void Aurora::destroy()
 
 	delete Camera::instance;
 
-	delete RenderAPI::instance;
+	delete ImCtx::instance;
 
 	TextureCube::releaseShader();
 
@@ -365,7 +365,9 @@ void Aurora::iniWindow(const std::wstring& title, const UINT& screenWidth, const
 
 void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const UINT& screenHeight)
 {
-	new Renderer(winform->getHWND(), screenWidth, screenHeight, msaaLevel);
+	ID3D11DeviceContext4* ctx = nullptr;
+
+	new Renderer(winform->getHWND(), screenWidth, screenHeight, msaaLevel, &ctx);
 
 	new States();
 
@@ -377,12 +379,14 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 	{
 		encodeTexture = new Texture2D(screenWidth, screenHeight, 1, 1, FMT::BGRA8UN, D3D11_BIND_RENDER_TARGET, 0);
 
-		new RenderAPI(Graphics::getMSAALevel(), encodeTexture->getTexture2D());
+		new ImCtx(Graphics::getMSAALevel(), encodeTexture->getTexture2D());
 	}
 	else
 	{
-		new RenderAPI(Graphics::getMSAALevel(), Renderer::instance->backBuffer.Get());
+		new ImCtx(Graphics::getMSAALevel(), Renderer::instance->backBuffer.Get());
 	}
+
+	ImCtx::get()->imctx = ctx;
 
 	TextureCube::iniShader();
 
@@ -398,7 +402,7 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 
 		ImGui::StyleColorsDark();
 		ImGui_ImplWin32_Init(winform->getHWND());
-		ImGui_ImplDX11_Init(Renderer::getDevice(), Renderer::getContext());
+		ImGui_ImplDX11_Init(Renderer::getDevice(), ImCtx::GetContext());
 	}
 }
 
@@ -407,15 +411,15 @@ void Aurora::iniStates(const Configuration& config)
 	//初始化一些默认状态，比如Viewport、BlendState等等 
 	Camera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, (float)Graphics::getWidth(), 0, (float)Graphics::getHeight(), -1.f, 1.f));
 
-	RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+	ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-	RenderAPI::get()->OMSetBlendState(States::defBlendState);
+	ImCtx::get()->OMSetBlendState(States::defBlendState);
 
-	RenderAPI::get()->RSSetState(States::rasterCullBack);
+	ImCtx::get()->RSSetState(States::rasterCullBack);
 
-	RenderAPI::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
+	ImCtx::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
 
-	RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+	ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
 
 	bindCommonCB();
 }

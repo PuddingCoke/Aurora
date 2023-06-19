@@ -1,6 +1,6 @@
 #pragma once
 
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 #include<Aurora/EngineAPI/States.h>
 #include<Aurora/Core/Shader.h>
 #include<Aurora/EngineAPI/ResourceEssential.h>
@@ -18,6 +18,8 @@ public:
 	void render() const;
 
 private:
+
+	ResourceTexture* gaussTexture;
 
 	ComputeTexture* tildeh0k;
 
@@ -102,6 +104,7 @@ private:
 inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, const DirectX::XMFLOAT2& wind, const float& phillipParam) :
 	oceanParamBuffer(new ConstantBuffer(sizeof(Param), D3D11_USAGE_DYNAMIC)),
 	param{ mapResolution, mapLength, wind, phillipParam, 9.81f },
+	gaussTexture(new ResourceTexture(mapResolution, mapResolution, Texture2D::TextureType::Gauss)),
 	tildeh0k(new ComputeTexture(mapResolution, mapResolution, FMT::RG32F, FMT::RG32F, FMT::RG32F)),
 	tildeh0(new ComputeTexture(mapResolution, mapResolution, FMT::RGBA32F, FMT::RGBA32F, FMT::RGBA32F)),
 	waveData(new ComputeTexture(mapResolution, mapResolution, FMT::RGBA32F, FMT::RGBA32F, FMT::RGBA32F)),
@@ -128,7 +131,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	oceanPShader(new Shader("OceanPShader.hlsl", ShaderType::Pixel))
 {
 	float clearValue[] = { 999,999,999,999 };
-	RenderAPI::get()->ClearUAV(normalJacobian->getMip(0), clearValue);
+	ImCtx::get()->ClearUAV(normalJacobian->getMip(0), clearValue);
 
 	{
 		D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[2] =
@@ -193,6 +196,7 @@ inline Ocean::~Ocean()
 	delete oceanDShader;
 	delete oceanPShader;
 
+	delete gaussTexture;
 	delete tildeh0k;
 	delete tildeh0;
 	delete waveData;
@@ -211,57 +215,53 @@ inline Ocean::~Ocean()
 
 inline void Ocean::calculatePhillipTexture() const
 {
-	memcpy(oceanParamBuffer->map().pData, &param, sizeof(Param));
-	oceanParamBuffer->unmap();
+	memcpy(ImCtx::get()->Map(oceanParamBuffer,0,D3D11_MAP_WRITE_DISCARD).pData, &param, sizeof(Param));
+	ImCtx::get()->Unmap(oceanParamBuffer, 0);
 
-	ResourceTexture* gaussTexture = new ResourceTexture(param.mapResolution, param.mapResolution, Texture2D::TextureType::Gauss);
+	ImCtx::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
+	ImCtx::get()->CSSetSRV({ gaussTexture }, 0);
+	ImCtx::get()->CSSetUAV({ tildeh0k->getMip(0),waveData->getMip(0) }, 0);
 
-	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
-	RenderAPI::get()->CSSetSRV({ gaussTexture }, 0);
-	RenderAPI::get()->CSSetUAV({ tildeh0k->getMip(0),waveData->getMip(0) }, 0);
+	ImCtx::get()->BindShader(phillipSpectrumShader);
 
-	RenderAPI::get()->BindShader(phillipSpectrumShader);
+	ImCtx::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
-	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
+	ImCtx::get()->CSSetSRV({ tildeh0k }, 0);
+	ImCtx::get()->CSSetUAV({ tildeh0->getMip(0) }, 0);
 
-	RenderAPI::get()->CSSetSRV({ tildeh0k }, 0);
-	RenderAPI::get()->CSSetUAV({ tildeh0->getMip(0) }, 0);
+	ImCtx::get()->BindShader(conjugatedCalcCS);
 
-	RenderAPI::get()->BindShader(conjugatedCalcCS);
-
-	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
-
-	delete gaussTexture;
+	ImCtx::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 }
 
 inline void Ocean::IFFT(ComputeTexture* const cTexture) const
 {
-	RenderAPI::get()->CSSetUAV({ tempTexture->getMip(0) }, 0);
-	RenderAPI::get()->CSSetSRV({ cTexture }, 0);
+	ImCtx::get()->CSSetUAV({ tempTexture->getMip(0) }, 0);
+	ImCtx::get()->CSSetSRV({ cTexture }, 0);
 
-	RenderAPI::get()->BindShader(ifftShader);
-	RenderAPI::get()->Dispatch(param.mapResolution, 1u, 1u);
+	ImCtx::get()->BindShader(ifftShader);
+	ImCtx::get()->Dispatch(param.mapResolution, 1u, 1u);
 
-	RenderAPI::get()->CSSetUAV({ cTexture->getMip(0) }, 0);
-	RenderAPI::get()->CSSetSRV({ tempTexture }, 0);
+	ImCtx::get()->CSSetUAV({ cTexture->getMip(0) }, 0);
+	ImCtx::get()->CSSetSRV({ tempTexture }, 0);
 
-	RenderAPI::get()->BindShader(ifftShader);
-	RenderAPI::get()->Dispatch(param.mapResolution, 1u, 1u);
+	ImCtx::get()->BindShader(ifftShader);
+	ImCtx::get()->Dispatch(param.mapResolution, 1u, 1u);
 
-	RenderAPI::get()->BindShader(permutationCS);
-	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
+	ImCtx::get()->BindShader(permutationCS);
+	ImCtx::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 }
 
 inline void Ocean::update() const
 {
-	RenderAPI::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
+	ImCtx::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
 
-	RenderAPI::get()->CSSetSRV({ tildeh0,waveData }, 0);
-	RenderAPI::get()->CSSetUAV({ Dy->getMip(0),Dx->getMip(0),Dz->getMip(0),Dyx->getMip(0),Dyz->getMip(0),Dxx->getMip(0),Dzz->getMip(0),Dxz->getMip(0) }, 0);
+	ImCtx::get()->CSSetSRV({ tildeh0,waveData }, 0);
+	ImCtx::get()->CSSetUAV({ Dy->getMip(0),Dx->getMip(0),Dz->getMip(0),Dyx->getMip(0),Dyz->getMip(0),Dxx->getMip(0),Dzz->getMip(0),Dxz->getMip(0) }, 0);
 
-	RenderAPI::get()->BindShader(displacementShader);
+	ImCtx::get()->BindShader(displacementShader);
 
-	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
+	ImCtx::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 
 	IFFT(Dy);
 	IFFT(Dx);
@@ -272,35 +272,35 @@ inline void Ocean::update() const
 	IFFT(Dzz);
 	IFFT(Dxz);
 
-	RenderAPI::get()->CSSetSRV({ Dy,Dx,Dz,Dyx,Dyz,Dxx,Dzz,Dxz }, 0);
-	RenderAPI::get()->CSSetUAV({ Dxyz->getMip(0),normalJacobian->getMip(0) }, 0);
+	ImCtx::get()->CSSetSRV({ Dy,Dx,Dz,Dyx,Dyz,Dxx,Dzz,Dxz }, 0);
+	ImCtx::get()->CSSetUAV({ Dxyz->getMip(0),normalJacobian->getMip(0) }, 0);
 
-	RenderAPI::get()->BindShader(waveMergeCS);
-	RenderAPI::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
+	ImCtx::get()->BindShader(waveMergeCS);
+	ImCtx::get()->Dispatch(param.mapResolution / 32u, param.mapResolution / 32u, 1u);
 }
 
 inline void Ocean::render() const
 {
-	RenderAPI::get()->IASetInputLayout(inputLayout.Get());
-	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
-	RenderAPI::get()->IASetVertexBuffer(0, { patchVertexBuffer }, { sizeof(Vertex) }, { 0 });
+	ImCtx::get()->IASetInputLayout(inputLayout.Get());
+	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+	ImCtx::get()->IASetVertexBuffer(0, { patchVertexBuffer }, { sizeof(Vertex) }, { 0 });
 
-	RenderAPI::get()->BindShader(oceanVShader);
-	RenderAPI::get()->BindShader(oceanHShader);
-	RenderAPI::get()->BindShader(oceanDShader);
-	RenderAPI::get()->BindShader(oceanPShader);
+	ImCtx::get()->BindShader(oceanVShader);
+	ImCtx::get()->BindShader(oceanHShader);
+	ImCtx::get()->BindShader(oceanDShader);
+	ImCtx::get()->BindShader(oceanPShader);
 
-	RenderAPI::get()->DSSetSRV({ Dxyz }, 0);
-	RenderAPI::get()->PSSetSRV({ normalJacobian }, 0);
+	ImCtx::get()->DSSetSRV({ Dxyz }, 0);
+	ImCtx::get()->PSSetSRV({ normalJacobian }, 0);
 
-	RenderAPI::get()->PSSetSampler({ States::linearWrapSampler }, 0);
-	RenderAPI::get()->DSSetSampler({ States::linearWrapSampler }, 0);
+	ImCtx::get()->PSSetSampler({ States::linearWrapSampler }, 0);
+	ImCtx::get()->DSSetSampler({ States::linearWrapSampler }, 0);
 
-	RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
+	ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 
-	RenderAPI::get()->Draw(4 * 256 * 256, 0);
+	ImCtx::get()->Draw(4 * 256 * 256, 0);
 
-	RenderAPI::get()->HSUnbindShader();
-	RenderAPI::get()->DSUnbindShader();
+	ImCtx::get()->HSUnbindShader();
+	ImCtx::get()->DSUnbindShader();
 }
 

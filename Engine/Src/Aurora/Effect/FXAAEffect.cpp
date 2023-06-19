@@ -19,28 +19,28 @@ FXAAEffect::~FXAAEffect()
 
 ShaderResourceView* FXAAEffect::process(ShaderResourceView* const texture2D) const
 {
-	RenderAPI::get()->OMSetBlendState(nullptr);
-	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+	ImCtx::get()->OMSetBlendState(nullptr);
+	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ImCtx::get()->BindShader(ImCtx::fullScreenVS);
 
-	RenderAPI::get()->ClearRTV(colorWithLuma->getMip(0), DirectX::Colors::Black);
-	RenderAPI::get()->OMSetRTV({ colorWithLuma->getMip(0) }, nullptr);
-	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
-	RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
+	ImCtx::get()->ClearRTV(colorWithLuma->getMip(0), DirectX::Colors::Black);
+	ImCtx::get()->OMSetRTV({ colorWithLuma->getMip(0) }, nullptr);
+	ImCtx::get()->PSSetSRV({ texture2D }, 0);
+	ImCtx::get()->PSSetSampler({ States::pointClampSampler }, 0);
 
-	RenderAPI::get()->BindShader(colorToLuma);
+	ImCtx::get()->BindShader(colorToLuma);
 
-	RenderAPI::get()->DrawQuad();
+	ImCtx::get()->DrawQuad();
 
-	RenderAPI::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
-	RenderAPI::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
-	RenderAPI::get()->PSSetSRV({ colorWithLuma }, 0);
-	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
-	RenderAPI::get()->PSSetConstantBuffer({ fxaaParamBuffer }, 1);
+	ImCtx::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
+	ImCtx::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
+	ImCtx::get()->PSSetSRV({ colorWithLuma }, 0);
+	ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
+	ImCtx::get()->PSSetConstantBuffer({ fxaaParamBuffer }, 1);
 
-	RenderAPI::get()->BindShader(fxaaPS);
+	ImCtx::get()->BindShader(fxaaPS);
 
-	RenderAPI::get()->DrawQuad();
+	ImCtx::get()->DrawQuad();
 
 	return outputRTV;
 }
@@ -87,8 +87,8 @@ const float& FXAAEffect::getFXAAQualityEdgeThresholdMin() const
 
 void FXAAEffect::applyChange() const
 {
-	memcpy(fxaaParamBuffer->map().pData, &fxaaParam, sizeof(FXAAParam));
-	fxaaParamBuffer->unmap();
+	memcpy(ImCtx::get()->Map(fxaaParamBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &fxaaParam, sizeof(FXAAParam));
+	ImCtx::get()->Unmap(fxaaParamBuffer, 0);
 }
 
 void FXAAEffect::compileShaders()

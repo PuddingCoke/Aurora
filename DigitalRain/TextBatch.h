@@ -2,7 +2,7 @@
 
 #include<unordered_map>
 
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 #include<Aurora/Resource/ResourceTexture.h>
 
 class TextBatch
@@ -200,26 +200,26 @@ public:
 
 	void render()
 	{
-		memcpy(textBuffer->map().pData, textArray, sizeof(Text) * idx);
-		textBuffer->unmap();
+		memcpy(ImCtx::get()->Map(textBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, textArray, sizeof(Text) * idx);
+		ImCtx::get()->Unmap(textBuffer, 0);
 
-		RenderAPI::get()->BindShader(spriteVShader);
-		RenderAPI::get()->BindShader(spriteGShader);
-		RenderAPI::get()->BindShader(spritePShader);
+		ImCtx::get()->BindShader(spriteVShader);
+		ImCtx::get()->BindShader(spriteGShader);
+		ImCtx::get()->BindShader(spritePShader);
 
-		RenderAPI::get()->PSSetSRV({ rTexture }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetSRV({ rTexture }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		RenderAPI::get()->IASetVertexBuffer(0, { textBuffer }, { sizeof(Text) }, { 0 });
+		ImCtx::get()->IASetInputLayout(inputLayout.Get());
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		ImCtx::get()->IASetVertexBuffer(0, { textBuffer }, { sizeof(Text) }, { 0 });
 
-		RenderAPI::get()->Draw(idx, 0);
+		ImCtx::get()->Draw(idx, 0);
 		idx = 0;
 
-		RenderAPI::get()->VSUnbindShader();
-		RenderAPI::get()->GSUnbindShader();
-		RenderAPI::get()->PSUnbindShader();
+		ImCtx::get()->VSUnbindShader();
+		ImCtx::get()->GSUnbindShader();
+		ImCtx::get()->PSUnbindShader();
 	}
 
 	~TextBatch()

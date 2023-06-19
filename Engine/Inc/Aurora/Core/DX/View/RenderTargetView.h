@@ -38,7 +38,7 @@ public:
 
 private:
 
-	friend class RenderAPI;
+	friend class ImCtx;
 
 	static RenderTargetView* curRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
 

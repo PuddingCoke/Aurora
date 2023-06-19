@@ -11,20 +11,20 @@ FadeEffect::FadeEffect(const unsigned int& width, const unsigned int& height) :
 
 ShaderResourceView* FadeEffect::process(ShaderResourceView* const texture2D) const
 {
-	RenderAPI::get()->OMSetBlendState(nullptr);
+	ImCtx::get()->OMSetBlendState(nullptr);
 
-	RenderAPI::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
-	RenderAPI::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
+	ImCtx::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
+	ImCtx::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
 
-	RenderAPI::get()->PSSetConstantBuffer({ fadeBuffer }, 1);
-	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
-	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
+	ImCtx::get()->PSSetConstantBuffer({ fadeBuffer }, 1);
+	ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
+	ImCtx::get()->PSSetSRV({ texture2D }, 0);
 
-	RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-	RenderAPI::get()->BindShader(fadePShader);
+	ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+	ImCtx::get()->BindShader(fadePShader);
 
-	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RenderAPI::get()->DrawQuad();
+	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ImCtx::get()->DrawQuad();
 
 	return outputRTV;
 }
@@ -38,8 +38,8 @@ void FadeEffect::setFadeSpeed(const float& speed)
 {
 	fadeParam.fadeSpeed = speed;
 
-	memcpy(fadeBuffer->map().pData, &fadeParam, sizeof(FadeParam));
-	fadeBuffer->unmap();
+	memcpy(ImCtx::get()->Map(fadeBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &fadeParam, sizeof(FadeParam));
+	ImCtx::get()->Unmap(fadeBuffer, 0);
 }
 
 FadeEffect::~FadeEffect()

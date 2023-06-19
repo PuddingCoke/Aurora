@@ -25,7 +25,7 @@ protected:
 
 private:
 
-	friend class RenderAPI;
+	friend class ImCtx;
 
 	static VertexBuffer* curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 

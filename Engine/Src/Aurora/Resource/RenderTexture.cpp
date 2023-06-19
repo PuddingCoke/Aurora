@@ -77,7 +77,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 		mipArray[0].allSRV = this;
 	}
 
-	RenderAPI::get()->ClearRTV(&mipArray[0], color);
+	ImCtx::get()->ClearRTV(&mipArray[0], color);
 }
 
 RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& fmt, const UINT& mipLevels, const UINT& arraySize, const float color[4]) :
@@ -156,7 +156,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 
 	for (UINT i = 0; i < mipLevels; i++)
 	{
-		RenderAPI::get()->ClearRTV(&mipArray[i], color);
+		ImCtx::get()->ClearRTV(&mipArray[i], color);
 	}
 }
 

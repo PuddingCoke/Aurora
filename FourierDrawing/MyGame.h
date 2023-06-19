@@ -144,8 +144,8 @@ public:
 
 	void render() override
 	{
-		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::White);
+		ImCtx::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::White);
 
 		x = startX;
 		y = startY;
@@ -163,7 +163,7 @@ public:
 		}
 		pBatch->end();
 
-		RenderAPI::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
+		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
 		pBatch->begin();
 		if (curFrame++ == length)
 		{
@@ -216,19 +216,19 @@ public:
 
 		pBatch->end();
 
-		RenderAPI::get()->ResolveSubresource(texture, 0, renderTexture, 0, renderTexture->getFormat());
+		ImCtx::get()->ResolveSubresource(texture, 0, renderTexture, 0, renderTexture->getFormat());
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->PSSetSRV({ texture }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetSRV({ texture }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 
 	}
 };

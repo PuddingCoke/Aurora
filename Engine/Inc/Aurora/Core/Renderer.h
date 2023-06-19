@@ -33,8 +33,6 @@ public:
 
 	static ID3D11Device5* getDevice();
 
-	static ID3D11DeviceContext4* getContext();
-
 	static const GPUManufacturer& getGPUManufacturer();
 
 	static Renderer* get();
@@ -87,17 +85,15 @@ private:
 
 	friend class ResManager;
 
-	friend class RenderAPI;
+	friend class ImCtx;
 
 	static Renderer* instance;
 
-	Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT& msaaLevel);
+	Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT& msaaLevel, ID3D11DeviceContext4** address);
 
 	D3D11_VIEWPORT vp;
 
 	ComPtr<ID3D11Device5> device5;
-
-	ComPtr<ID3D11DeviceContext4> context4;
 
 	ComPtr<IDXGISwapChain4> swapChain;
 

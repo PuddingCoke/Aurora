@@ -117,57 +117,57 @@ public:
 
 	void update(const float& dt) override
 	{
-		RenderAPI::get()->CSSetUAV({ positionVelocity }, 0);
-		RenderAPI::get()->CSSetSRV({ maxSpeedMaxForce }, 0);
+		ImCtx::get()->CSSetUAV({ positionVelocity }, 0);
+		ImCtx::get()->CSSetSRV({ maxSpeedMaxForce }, 0);
 
-		RenderAPI::get()->CSSetConstantBuffer({ simulationParamBuffer }, 1);
+		ImCtx::get()->CSSetConstantBuffer({ simulationParamBuffer }, 1);
 
-		RenderAPI::get()->BindShader(stepCS);
+		ImCtx::get()->BindShader(stepCS);
 
-		RenderAPI::get()->Dispatch(((vehicleNum + 999) & ~999) / 1000, 1, 1);
+		ImCtx::get()->Dispatch(((vehicleNum + 999) & ~999) / 1000, 1, 1);
 	}
 
 	void render()
 	{
-		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
+		ImCtx::get()->OMSetBlendState(States::addtiveBlend);
 
-		RenderAPI::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
+		ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+		ImCtx::get()->IASetInputLayout(inputLayout.Get());
 
-		RenderAPI::get()->IASetVertexBuffer(0, { positionVelocity }, { sizeof(DirectX::XMFLOAT4) }, { 0 });
+		ImCtx::get()->IASetVertexBuffer(0, { positionVelocity }, { sizeof(DirectX::XMFLOAT4) }, { 0 });
 
-		RenderAPI::get()->PSSetSRV({ arrowTexture }, 0);
+		ImCtx::get()->PSSetSRV({ arrowTexture }, 0);
 
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(vehicleVS);
-		RenderAPI::get()->BindShader(vehicleGS);
-		RenderAPI::get()->BindShader(vehiclePS);
+		ImCtx::get()->BindShader(vehicleVS);
+		ImCtx::get()->BindShader(vehicleGS);
+		ImCtx::get()->BindShader(vehiclePS);
 
-		RenderAPI::get()->Draw(vehicleNum, 0);
+		ImCtx::get()->Draw(vehicleNum, 0);
 
-		RenderAPI::get()->GSUnbindShader();
+		ImCtx::get()->GSUnbindShader();
 
-		RenderAPI::get()->ResolveSubresource(resolvedTexture, 0, renderTexture, 0, renderTexture->getFormat());
+		ImCtx::get()->ResolveSubresource(resolvedTexture, 0, renderTexture, 0, renderTexture->getFormat());
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		ShaderResourceView* bloomTextureSRV = bloomEffect.process(resolvedTexture);
 
-		RenderAPI::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->OMSetBlendState(nullptr);
 
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetSRV({ bloomTextureSRV }, 0);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 	}
 
 

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game
@@ -83,49 +83,49 @@ public:
 		cameraParam.radius = Math::lerp(cameraParam.radius, targetRadius, 10.f * dt);
 		//cameraParam.theta += dt * 0.5f;
 
-		memcpy(cameraParamBuffer->map().pData, &cameraParam, sizeof(CameraParam));
-		cameraParamBuffer->unmap();
+		memcpy(ImCtx::get()->Map(cameraParamBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &cameraParam, sizeof(CameraParam));
+		ImCtx::get()->Unmap(cameraParamBuffer, 0);
 	}
 
 	void render()
 	{
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(States::defBlendState);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(States::defBlendState);
 
-		RenderAPI::get()->PSSetConstantBuffer({ cameraParamBuffer,temporalAccumulationBuffer }, 1);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetConstantBuffer({ cameraParamBuffer,temporalAccumulationBuffer }, 1);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
 
 		temporalAccumulationParam.frameCount = 0;
 
-		RenderAPI::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
 
-		RenderAPI::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
+		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
 
-		RenderAPI::get()->BindShader(rayTracingPS);
+		ImCtx::get()->BindShader(rayTracingPS);
 
 		for (unsigned int i = 0; i < 10; i++)
 		{
 			temporalAccumulationParam.frameCount++;
 			temporalAccumulationParam.randomSeed = Random::Float() * 50.f;
 
-			memcpy(temporalAccumulationBuffer->map().pData, &temporalAccumulationParam, sizeof(TemporalAccumulationParam));
-			temporalAccumulationBuffer->unmap();
+			memcpy(ImCtx::get()->Map(temporalAccumulationBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &temporalAccumulationParam, sizeof(TemporalAccumulationParam));
+			ImCtx::get()->Unmap(temporalAccumulationBuffer, 0);
 
-			RenderAPI::get()->DrawQuad();
+			ImCtx::get()->DrawQuad();
 		}
 
-		RenderAPI::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->OMSetBlendState(nullptr);
 
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->PSSetSRV({ renderTexture }, 0);
+		ImCtx::get()->PSSetSRV({ renderTexture }, 0);
 
-		RenderAPI::get()->BindShader(displayPS);
+		ImCtx::get()->BindShader(displayPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 	}
 
 

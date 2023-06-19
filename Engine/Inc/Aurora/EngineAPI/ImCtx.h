@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _RENDERAPI_H_
-#define _RENDERAPI_H_
+#ifndef _IMCTX_H_
+#define _IMCTX_H_
 
 #include<DirectXColors.h>
 
@@ -27,15 +27,15 @@
 #include<Aurora/CompiledShaders/SkyboxVS.h>
 #include<Aurora/CompiledShaders/RandNoiseCS.h>
 
-class RenderAPI
+class ImCtx
 {
 public:
 
-	static RenderAPI* get();
+	static ImCtx* get();
 
-	RenderAPI(const RenderAPI&) = delete;
+	ImCtx(const ImCtx&) = delete;
 
-	void operator=(const RenderAPI&) = delete;
+	void operator=(const ImCtx&) = delete;
 
 	void ClearDefRTV(const float* const color) const;
 
@@ -49,7 +49,7 @@ public:
 
 	void ClearDSV(DepthStencilView* dsv, const UINT& clearFlag, const float& depth = 1.0f, const UINT8& stencil = 0) const;
 
-	void ClearRTV(RenderTargetView* rtv,const float* const color) const;
+	void ClearRTV(RenderTargetView* rtv, const float* const color) const;
 
 	void ClearUAV(UnorderedAccessView* uav, const float* const color) const;
 
@@ -127,6 +127,16 @@ public:
 
 	void DrawInstanced(const UINT& vertexCountPerInstance, const UINT& instanceCount, const UINT& startVertexLocation, const UINT& startInstanceLocation) const;
 
+	D3D11_MAPPED_SUBRESOURCE Map(Resource* const res, const UINT& subresource, const D3D11_MAP& mapType, const UINT& mapFlag = 0) const;
+
+	void Unmap(Resource* const res, const UINT& subresource) const;
+
+	void UpdateSubresource(Resource* const res, const UINT& dstSubresource, const D3D11_BOX* const pDstBox, const void* const data, const UINT& rowPitch, const UINT& depthPitch);
+
+	void GenerateMips(ShaderResourceView* const srv);
+
+	void CopySubresourceRegion(Resource* const pDstResource, const UINT& DstSubresource, const UINT& DstX, const UINT& DstY, const UINT& DstZ, Resource* const pSrcResource, const UINT& SrcSubresource, const D3D11_BOX* const pSrcBox);
+
 	void VSUnbindShader() const;
 
 	void HSUnbindShader() const;
@@ -149,6 +159,8 @@ public:
 
 	void DebugDraw(ShaderResourceView* const srv);
 
+	static ID3D11DeviceContext4* GetContext();
+
 	static Shader* fullScreenVS;
 
 	static Shader* fullScreenPS;
@@ -163,11 +175,13 @@ private:
 
 	friend class Aurora;
 
-	static RenderAPI* instance;
+	static ImCtx* instance;
 
-	RenderAPI(const UINT& msaaLevel, ID3D11Texture2D* const renderTexture);
+	ComPtr<ID3D11DeviceContext4> imctx;
 
-	~RenderAPI();
+	ImCtx(const UINT& msaaLevel, ID3D11Texture2D* const renderTexture);
+
+	~ImCtx();
 
 	RenderOnlyRTV* defRenderTargetView;
 
@@ -189,4 +203,4 @@ private:
 
 };
 
-#endif // !_RENDERAPI_H_
+#endif // !_IMCTX_H_

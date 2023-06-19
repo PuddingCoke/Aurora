@@ -126,7 +126,7 @@
     <ClInclude Include="Inc\Aurora\Core\DX\View\Composition\RUSView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\EngineAPI\RenderAPI.h">
+    <ClInclude Include="Inc\Aurora\EngineAPI\ImCtx.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Aurora\Effect\BloomEffect.h">
@@ -338,7 +338,7 @@
     <ClCompile Include="Src\Aurora\Core\DX\View\Composition\RUSView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Aurora\EngineAPI\RenderAPI.cpp">
+    <ClCompile Include="Src\Aurora\EngineAPI\ImCtx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Effect\EffectBase.cpp">

@@ -53,15 +53,15 @@ public:
 	{
 		light.lightColor = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 
-		RenderAPI::get()->RSSetViewport(512, 512);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetRTV({ brdfTex->getMip(0) }, nullptr);
+		ImCtx::get()->RSSetViewport(512, 512);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetRTV({ brdfTex->getMip(0) }, nullptr);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(brdfGenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(brdfGenPS);
 
-		RenderAPI::get()->DrawQuad();
-		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->DrawQuad();
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 256.f);
 
@@ -89,32 +89,32 @@ public:
 
 		light.lightPos = lightPos;
 
-		memcpy(lightBuffer->map().pData, &light, sizeof(Light));
-		lightBuffer->unmap();
+		memcpy(ImCtx::get()->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &light, sizeof(Light));
+		ImCtx::get()->Unmap(lightBuffer, 0);
 	}
 
 	void render()
 	{
-		RenderAPI::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::CadetBlue);
-		RenderAPI::get()->OMSetDefRTV(depthTexture);
+		ImCtx::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::CadetBlue);
+		ImCtx::get()->OMSetDefRTV(depthTexture);
 
-		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
-		RenderAPI::get()->PSSetConstantBuffer({ lightBuffer }, 3);
-		RenderAPI::get()->PSSetSRV({ brdfTex,irradianceCube,prefilterCube }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
+		ImCtx::get()->PSSetConstantBuffer({ lightBuffer }, 3);
+		ImCtx::get()->PSSetSRV({ brdfTex,irradianceCube,prefilterCube }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		scene.draw();
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->PSSetSRV({ envCube }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetSRV({ envCube }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::skyboxVS);
-		RenderAPI::get()->BindShader(skyboxPS);
+		ImCtx::get()->BindShader(ImCtx::skyboxVS);
+		ImCtx::get()->BindShader(skyboxPS);
 
-		RenderAPI::get()->DrawCube();
+		ImCtx::get()->DrawCube();
 	}
 
 

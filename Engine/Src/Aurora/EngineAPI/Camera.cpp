@@ -44,7 +44,7 @@ void Camera::setProj(const DirectX::XMMATRIX& proj)
 {
 	instance->projMatrix = proj;
 	const DirectX::XMMATRIX projTrans = DirectX::XMMatrixTranspose(proj);
-	instance->projBuffer->updateSubresource(&projTrans);
+	ImCtx::get()->UpdateSubresource(instance->projBuffer, 0, nullptr, &projTrans, 0, 0);
 }
 
 void Camera::setProj(const float& fov, const float& aspectRatio, const float& zNear, const float& zFar)
@@ -61,8 +61,8 @@ void Camera::setView(const DirectX::XMMATRIX& view)
 	instance->viewInfo.viewProj = DirectX::XMMatrixTranspose(instance->viewMatrix * instance->projMatrix);
 	instance->viewInfo.normalMatrix = DirectX::XMMatrixInverse(nullptr, instance->viewMatrix);
 
-	memcpy(instance->viewBuffer->map().pData, &instance->viewInfo, sizeof(ViewInfo));
-	instance->viewBuffer->unmap();
+	memcpy(ImCtx::get()->Map(instance->viewBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &instance->viewInfo, sizeof(ViewInfo));
+	ImCtx::get()->Unmap(instance->viewBuffer, 0);
 }
 
 void Camera::setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up)

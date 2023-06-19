@@ -9,12 +9,12 @@
 #include<Aurora/Utils/Math.h>
 #include<Aurora/Core/Shader.h>
 #include<Aurora/EngineAPI/States.h>
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 
 #include<Aurora/CompiledShaders/EquirectangularVS.h>
 #include<Aurora/CompiledShaders/EquirectangularPS.h>
 
-class TextureCube :public ShaderResourceView
+class TextureCube :public Texture2D, public ShaderResourceView
 {
 public:
 
@@ -48,8 +48,6 @@ private:
 	static void iniShader();
 
 	static void releaseShader();
-
-	ComPtr<ID3D11Texture2D> cubeTexture;
 
 };
 

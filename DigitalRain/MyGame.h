@@ -78,13 +78,13 @@ public:
 
 	void render() override
 	{
-		RenderAPI::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
-		RenderAPI::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
+		ImCtx::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
+		ImCtx::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
 
-		RenderAPI::get()->OMSetBlendState(States::defBlendState);
+		ImCtx::get()->OMSetBlendState(States::defBlendState);
 
-		RenderAPI::get()->RSSetState(States::rasterCullNone);
+		ImCtx::get()->RSSetState(States::rasterCullNone);
 
 		for (int i = 0; i < rains.size(); i++)
 		{
@@ -97,21 +97,21 @@ public:
 
 		textBatch->render();
 
-		RenderAPI::get()->RSSetState(States::rasterCullBack);
+		ImCtx::get()->RSSetState(States::rasterCullBack);
 
 		ShaderResourceView* bloomSRV = effect.process(originTexture);
 
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetSRV({ bloomSRV }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 	}
 };

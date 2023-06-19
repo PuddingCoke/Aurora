@@ -113,14 +113,14 @@ public:
 	void randomize()
 	{
 		const UINT value[] = { 0,0,0,0 };
-		RenderAPI::get()->ClearUAV(swapTexture->read()->getMip(0), value);
-		RenderAPI::get()->ClearUAV(swapTexture->write()->getMip(0), value);
+		ImCtx::get()->ClearUAV(swapTexture->read()->getMip(0), value);
+		ImCtx::get()->ClearUAV(swapTexture->write()->getMip(0), value);
 
-		RenderAPI::get()->CSSetUAV({ swapTexture->write()->getMip(0) }, 0);
+		ImCtx::get()->CSSetUAV({ swapTexture->write()->getMip(0) }, 0);
 
-		RenderAPI::get()->BindShader(randomizeCS);
+		ImCtx::get()->BindShader(randomizeCS);
 
-		RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
+		ImCtx::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
 		swapTexture->swap();
 
 		for (UINT i = 0; i < 60; i++)
@@ -131,14 +131,14 @@ public:
 
 	void step()
 	{
-		RenderAPI::get()->CSSetUAV({ swapTexture->write()->getMip(0) }, 0);
-		RenderAPI::get()->CSSetSRV({ swapTexture->read() }, 0);
+		ImCtx::get()->CSSetUAV({ swapTexture->write()->getMip(0) }, 0);
+		ImCtx::get()->CSSetSRV({ swapTexture->read() }, 0);
 
-		RenderAPI::get()->CSSetConstantBuffer({ gameBuffer }, 1);
+		ImCtx::get()->CSSetConstantBuffer({ gameBuffer }, 1);
 
-		RenderAPI::get()->BindShader(evolveCS);
+		ImCtx::get()->BindShader(evolveCS);
 
-		RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
+		ImCtx::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
 		swapTexture->swap();
 	}
 
@@ -157,31 +157,31 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->CSSetUAV({ rcTexture->getMip(0) }, 0);
-		RenderAPI::get()->CSSetSRV({ swapTexture->read() }, 0);
+		ImCtx::get()->CSSetUAV({ rcTexture->getMip(0) }, 0);
+		ImCtx::get()->CSSetSRV({ swapTexture->read() }, 0);
 
-		RenderAPI::get()->CSSetConstantBuffer({ gameBuffer }, 1);
+		ImCtx::get()->CSSetConstantBuffer({ gameBuffer }, 1);
 
-		RenderAPI::get()->BindShader(visualizeCS);
+		ImCtx::get()->BindShader(visualizeCS);
 
-		RenderAPI::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
+		ImCtx::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
 
 		ShaderResourceView* bloomSRV = bloomEffect.process(rcTexture);
 
-		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
-		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
+		ImCtx::get()->PSSetSRV({ bloomSRV }, 0);
+		ImCtx::get()->PSSetSampler({ States::pointClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 	}
 
 

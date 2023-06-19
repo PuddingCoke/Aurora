@@ -6,7 +6,7 @@
 #include<Aurora/Core/DX/Resource/Texture2D.h>
 #include<Aurora/Core/DX/View/Composition/RSView.h>
 
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 
 class RenderCube :public Texture2D, public RSView
 {

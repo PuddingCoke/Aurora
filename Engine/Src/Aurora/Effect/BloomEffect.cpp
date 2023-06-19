@@ -63,88 +63,88 @@ BloomEffect::~BloomEffect()
 
 ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) const
 {
-	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
-	RenderAPI::get()->PSSetConstantBuffer({ bloomParamBuffer }, 1);
-	RenderAPI::get()->CSSetConstantBuffer({ bloomParamBuffer }, 1);
-	RenderAPI::get()->GSUnbindShader();
-	RenderAPI::get()->HSUnbindShader();
-	RenderAPI::get()->DSUnbindShader();
-	RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ImCtx::get()->CSSetSampler({ States::linearClampSampler }, 0);
+	ImCtx::get()->PSSetConstantBuffer({ bloomParamBuffer }, 1);
+	ImCtx::get()->CSSetConstantBuffer({ bloomParamBuffer }, 1);
+	ImCtx::get()->GSUnbindShader();
+	ImCtx::get()->HSUnbindShader();
+	ImCtx::get()->DSUnbindShader();
+	ImCtx::get()->BindShader(ImCtx::fullScreenVS);
 
-	RenderAPI::get()->OMSetBlendState(nullptr);
+	ImCtx::get()->OMSetBlendState(nullptr);
 
-	RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
+	ImCtx::get()->PSSetSampler({ States::pointClampSampler }, 0);
 
-	RenderAPI::get()->BindShader(bloomFilter);
-	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
-	RenderAPI::get()->OMSetRTV({ filterTexture->getMip(0) }, nullptr);
-	RenderAPI::get()->PSSetSRV({ texture2D }, 0);
-	RenderAPI::get()->DrawQuad();
+	ImCtx::get()->BindShader(bloomFilter);
+	ImCtx::get()->RSSetViewport(bloomWidth, bloomHeight);
+	ImCtx::get()->OMSetRTV({ filterTexture->getMip(0) }, nullptr);
+	ImCtx::get()->PSSetSRV({ texture2D }, 0);
+	ImCtx::get()->DrawQuad();
 
-	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+	ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-	RenderAPI::get()->BindShader(bloomKarisAverage);
-	RenderAPI::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
-	RenderAPI::get()->OMSetRTV({ swapTexture[0]->write()->getMip(0) }, nullptr);
-	RenderAPI::get()->PSSetSRV({ filterTexture }, 0);
-	RenderAPI::get()->DrawQuad();
+	ImCtx::get()->BindShader(bloomKarisAverage);
+	ImCtx::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
+	ImCtx::get()->OMSetRTV({ swapTexture[0]->write()->getMip(0) }, nullptr);
+	ImCtx::get()->PSSetSRV({ filterTexture }, 0);
+	ImCtx::get()->DrawQuad();
 	swapTexture[0]->swap();
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		RenderAPI::get()->RSSetViewport(resolutions[i + 1].x, resolutions[i + 1].y);
-		RenderAPI::get()->OMSetRTV({ swapTexture[i + 1]->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->PSSetSRV({ swapTexture[i]->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->RSSetViewport(resolutions[i + 1].x, resolutions[i + 1].y);
+		ImCtx::get()->OMSetRTV({ swapTexture[i + 1]->write()->getMip(0) }, nullptr);
+		ImCtx::get()->PSSetSRV({ swapTexture[i]->read() }, 0);
+		ImCtx::get()->DrawQuad();
 		swapTexture[i + 1]->swap();
 	}
 
-	RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
+	ImCtx::get()->OMSetBlendState(States::addtiveBlend);
 
-	RenderAPI::get()->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 1] }, 1);
+	ImCtx::get()->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 1] }, 1);
 
-	RenderAPI::get()->BindShader(bloomHBlur);
-	RenderAPI::get()->CSSetUAV({ swapTexture[blurSteps - 1]->write()->getMip(0) }, 0);
-	RenderAPI::get()->CSSetSRV({ swapTexture[blurSteps - 1]->read() }, 0);
+	ImCtx::get()->BindShader(bloomHBlur);
+	ImCtx::get()->CSSetUAV({ swapTexture[blurSteps - 1]->write()->getMip(0) }, 0);
+	ImCtx::get()->CSSetSRV({ swapTexture[blurSteps - 1]->read() }, 0);
 	swapTexture[blurSteps - 1]->swap();
-	RenderAPI::get()->Dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
+	ImCtx::get()->Dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
 
-	RenderAPI::get()->BindShader(bloomVBlur);
-	RenderAPI::get()->CSSetUAV({ swapTexture[blurSteps - 1]->write()->getMip(0) }, 0);
-	RenderAPI::get()->CSSetSRV({ swapTexture[blurSteps - 1]->read() }, 0);
+	ImCtx::get()->BindShader(bloomVBlur);
+	ImCtx::get()->CSSetUAV({ swapTexture[blurSteps - 1]->write()->getMip(0) }, 0);
+	ImCtx::get()->CSSetSRV({ swapTexture[blurSteps - 1]->read() }, 0);
 	swapTexture[blurSteps - 1]->swap();
-	RenderAPI::get()->Dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
+	ImCtx::get()->Dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		RenderAPI::get()->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 2 - i] }, 1);
+		ImCtx::get()->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 2 - i] }, 1);
 
-		RenderAPI::get()->BindShader(bloomHBlur);
-		RenderAPI::get()->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, 0);
-		RenderAPI::get()->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
-		RenderAPI::get()->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
+		ImCtx::get()->BindShader(bloomHBlur);
+		ImCtx::get()->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, 0);
+		ImCtx::get()->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
+		ImCtx::get()->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
 		swapTexture[blurSteps - 2 - i]->swap();
 
-		RenderAPI::get()->BindShader(bloomVBlur);
-		RenderAPI::get()->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, 0);
-		RenderAPI::get()->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
-		RenderAPI::get()->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
+		ImCtx::get()->BindShader(bloomVBlur);
+		ImCtx::get()->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, 0);
+		ImCtx::get()->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
+		ImCtx::get()->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
-		RenderAPI::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
-		RenderAPI::get()->OMSetRTV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->PSSetSRV({ swapTexture[blurSteps - 1 - i]->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
+		ImCtx::get()->OMSetRTV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, nullptr);
+		ImCtx::get()->PSSetSRV({ swapTexture[blurSteps - 1 - i]->read() }, 0);
+		ImCtx::get()->DrawQuad();
 		swapTexture[blurSteps - 2 - i]->swap();
 	}
 
-	RenderAPI::get()->BindShader(bloomFinal);
-	RenderAPI::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
-	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
-	RenderAPI::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
-	RenderAPI::get()->PSSetSRV({ texture2D,swapTexture[0]->read(),lensDirtTexture }, 0);
-	RenderAPI::get()->DrawQuad();
+	ImCtx::get()->BindShader(bloomFinal);
+	ImCtx::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
+	ImCtx::get()->RSSetViewport(bloomWidth, bloomHeight);
+	ImCtx::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
+	ImCtx::get()->PSSetSRV({ texture2D,swapTexture[0]->read(),lensDirtTexture }, 0);
+	ImCtx::get()->DrawQuad();
 
 	return outputRTV;
 }
@@ -210,8 +210,8 @@ void BloomEffect::updateCurve(const unsigned int& index)
 		blurParam[index].offset[(i + 1) / 2] = (g1 * i + g2 * (i + 1)) / (g1 + g2);
 	}
 
-	memcpy(blurParamBuffer[index]->map().pData, &blurParam[index], sizeof(BlurParam));
-	blurParamBuffer[index]->unmap();
+	memcpy(ImCtx::get()->Map(blurParamBuffer[index], 0, D3D11_MAP_WRITE_DISCARD).pData, &blurParam[index], sizeof(BlurParam));
+	ImCtx::get()->Unmap(blurParamBuffer[index], 0);
 }
 
 const float& BloomEffect::getExposure() const
@@ -236,8 +236,8 @@ const float& BloomEffect::getIntensity() const
 
 void BloomEffect::applyChange() const
 {
-	memcpy(bloomParamBuffer->map().pData, &bloomParam, sizeof(BloomParam));
-	bloomParamBuffer->unmap();
+	memcpy(ImCtx::get()->Map(bloomParamBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &bloomParam, sizeof(BloomParam));
+	ImCtx::get()->Unmap(bloomParamBuffer, 0);
 }
 
 void BloomEffect::compileShaders()

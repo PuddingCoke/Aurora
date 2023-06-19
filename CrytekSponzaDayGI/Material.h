@@ -1,6 +1,6 @@
 #pragma once
 
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 #include<Aurora/Resource/ResourceTexture.h>
 
 class Material
@@ -26,7 +26,7 @@ public:
 
 	void use() const
 	{
-		RenderAPI::get()->PSSetSRV({ diffuse,specular,normal }, 0);
+		ImCtx::get()->PSSetSRV({ diffuse,specular,normal }, 0);
 	}
 
 	ResourceTexture* const diffuse;

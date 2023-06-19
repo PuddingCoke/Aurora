@@ -1,5 +1,10 @@
 ﻿#include<Aurora/Core/DX/Resource/Texture2D.h>
 
+Texture2D::Texture2D() :
+	width(0), height(0), format(DXGI_FORMAT_UNKNOWN), mipLevels(0), arraySize(0)
+{
+}
+
 Texture2D::Texture2D(const std::string& path) :
 	width(0), height(0), format(DXGI_FORMAT_UNKNOWN), mipLevels(0), arraySize(0)
 {

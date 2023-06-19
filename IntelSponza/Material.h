@@ -1,6 +1,6 @@
 #pragma once
 
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 #include<Aurora/Resource/ResourceTexture.h>
 
 #include<assimp/Importer.hpp>
@@ -123,15 +123,15 @@ public:
 
 	void use()
 	{
-		RenderAPI::get()->PSSetConstantBuffer({ materialBuffer }, 1);
+		ImCtx::get()->PSSetConstantBuffer({ materialBuffer }, 1);
 
 		switch (type)
 		{
 		case Normal:
-			RenderAPI::get()->PSSetSRV({ baseColor,metallicRoughness,normal }, 0);
+			ImCtx::get()->PSSetSRV({ baseColor,metallicRoughness,normal }, 0);
 			break;
 		case Trans:
-			RenderAPI::get()->PSSetSRV({ baseColor }, 0);
+			ImCtx::get()->PSSetSRV({ baseColor }, 0);
 		}
 	}
 

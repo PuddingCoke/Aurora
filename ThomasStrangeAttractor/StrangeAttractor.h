@@ -95,26 +95,26 @@ public:
 
 	void update(const float& dt) override
 	{
-		RenderAPI::get()->BindShader(computeShader);
+		ImCtx::get()->BindShader(computeShader);
 
-		RenderAPI::get()->CSSetUAV({ particlePosBuffer }, 0);
+		ImCtx::get()->CSSetUAV({ particlePosBuffer }, 0);
 
-		RenderAPI::get()->Dispatch(particleNum / 1000u, 1, 1);
+		ImCtx::get()->Dispatch(particleNum / 1000u, 1, 1);
 	}
 
 	void render() override
 	{
-		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		ImCtx::get()->OMSetBlendState(States::addtiveBlend);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
+		ImCtx::get()->IASetInputLayout(inputLayout.Get());
 
-		RenderAPI::get()->IASetVertexBuffer(0, { particlePosBuffer,particleColorBuffer }, { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) }, { 0,0 });
+		ImCtx::get()->IASetVertexBuffer(0, { particlePosBuffer,particleColorBuffer }, { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) }, { 0,0 });
 
-		RenderAPI::get()->BindShader(displayVShader);
-		RenderAPI::get()->BindShader(displayPShader);
+		ImCtx::get()->BindShader(displayVShader);
+		ImCtx::get()->BindShader(displayPShader);
 
-		RenderAPI::get()->Draw(particleNum, 0);
+		ImCtx::get()->Draw(particleNum, 0);
 	}
 
 

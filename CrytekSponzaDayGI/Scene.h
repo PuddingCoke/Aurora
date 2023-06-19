@@ -130,11 +130,11 @@ public:
 
 	void render(Shader* const vertexShader, Shader* const pixelShader)
 	{
-		RenderAPI::get()->BindShader(vertexShader);
-		RenderAPI::get()->GSUnbindShader();
-		RenderAPI::get()->BindShader(pixelShader);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
+		ImCtx::get()->BindShader(vertexShader);
+		ImCtx::get()->GSUnbindShader();
+		ImCtx::get()->BindShader(pixelShader);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			materials[models[i].materialIndex]->use();
@@ -144,11 +144,11 @@ public:
 
 	void renderCube(Shader* const vertexShader, Shader* const pixelShader)
 	{
-		RenderAPI::get()->BindShader(vertexShader);
-		RenderAPI::get()->GSUnbindShader();
-		RenderAPI::get()->BindShader(pixelShader);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
+		ImCtx::get()->BindShader(vertexShader);
+		ImCtx::get()->GSUnbindShader();
+		ImCtx::get()->BindShader(pixelShader);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			materials[models[i].materialIndex]->use();
@@ -158,11 +158,11 @@ public:
 
 	void renderGeometry(Shader* const vertexShader)
 	{
-		RenderAPI::get()->BindShader(vertexShader);
-		RenderAPI::get()->GSUnbindShader();
-		RenderAPI::get()->PSUnbindShader();
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
+		ImCtx::get()->BindShader(vertexShader);
+		ImCtx::get()->GSUnbindShader();
+		ImCtx::get()->PSUnbindShader();
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			models[i].draw();

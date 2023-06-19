@@ -13,19 +13,19 @@ MotionBlurEffect::~MotionBlurEffect()
 
 ShaderResourceView* MotionBlurEffect::process(ShaderResourceView* const gPosition, ShaderResourceView* const colorTexture)
 {
-	RenderAPI::get()->OMSetBlendState(nullptr);
-	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ImCtx::get()->OMSetBlendState(nullptr);
+	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	RenderAPI::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
+	ImCtx::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
 
-	RenderAPI::get()->PSSetSRV({ gPosition,colorTexture }, 0);
-	RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
-	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+	ImCtx::get()->PSSetSRV({ gPosition,colorTexture }, 0);
+	ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
+	ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-	RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-	RenderAPI::get()->BindShader(motionBlurPS);
+	ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+	ImCtx::get()->BindShader(motionBlurPS);
 
-	RenderAPI::get()->DrawQuad();
+	ImCtx::get()->DrawQuad();
 
 	return outputRTV;
 }

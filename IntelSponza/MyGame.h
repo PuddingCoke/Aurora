@@ -146,71 +146,71 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
-		RenderAPI::get()->PSSetSampler({ States::anisotropicWrapSampler,States::linearClampSampler }, 0);
+		ImCtx::get()->IASetInputLayout(inputLayout.Get());
+		ImCtx::get()->PSSetSampler({ States::anisotropicWrapSampler,States::linearClampSampler }, 0);
 
-		RenderAPI::get()->ClearDSV(resDepthTexture, D3D11_CLEAR_DEPTH);
-		RenderAPI::get()->ClearRTV(gBaseColor->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->ClearRTV(gPosition->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->ClearRTV(gNormal->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->ClearRTV(gRoughnessMetallic->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->ClearDSV(resDepthTexture, D3D11_CLEAR_DEPTH);
+		ImCtx::get()->ClearRTV(gBaseColor->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->ClearRTV(gPosition->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->ClearRTV(gNormal->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->ClearRTV(gRoughnessMetallic->getMip(0), DirectX::Colors::Black);
 
-		RenderAPI::get()->OMSetRTV({ gBaseColor->getMip(0),gPosition->getMip(0),gNormal->getMip(0),gRoughnessMetallic->getMip(0) }, resDepthTexture);
+		ImCtx::get()->OMSetRTV({ gBaseColor->getMip(0),gPosition->getMip(0),gNormal->getMip(0),gRoughnessMetallic->getMip(0) }, resDepthTexture);
 
 		mainScene->draw(deferredVS, deferredPSHasTex, deferredPSNoTex, deferredPSTrans);
 
-		//RenderAPI::get()->RSSetState(States::rasterCullNone);
+		//ImCtx::get()->RSSetState(States::rasterCullNone);
 		//curtainScene->draw(deferredVS, deferredPSHasTex, deferredPSNoTex, deferredPSTrans);
-		//RenderAPI::get()->RSSetState(States::rasterCullBack);
+		//ImCtx::get()->RSSetState(States::rasterCullBack);
 
 		ShaderResourceView* hbaoSRV = hbaoEffect.process(resDepthTexture->getSRV(), gNormal->getSRV());
 
-		RenderAPI::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
+		ImCtx::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
 
-		RenderAPI::get()->PSSetSRV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic,hbaoSRV }, 0);
-		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),mainScene->lightBuffer }, 1);
+		ImCtx::get()->PSSetSRV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic,hbaoSRV }, 0);
+		ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),mainScene->lightBuffer }, 1);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(deferredFinal);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(deferredFinal);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 
 		/*reflectTexture->clearRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ reflectTexture }, nullptr);
-		RenderAPI::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->OMSetRTV({ reflectTexture }, nullptr);
+		ImCtx::get()->OMSetBlendState(nullptr);
 
-		RenderAPI::get()->PSSetSRV({ originTexture,gPosition,gNormal,depthView }, 0);
-		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
-		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
+		ImCtx::get()->PSSetSRV({ originTexture,gPosition,gNormal,depthView }, 0);
+		ImCtx::get()->PSSetSampler({ States::pointClampSampler }, 0);
+		ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 
-		RenderAPI::fullScreenVS->use();
+		ImCtx::fullScreenVS->use();
 		screenSpaceReflection->use();
 
-		RenderAPI::get()->DrawQuad();*/
+		ImCtx::get()->DrawQuad();*/
 
 		ShaderResourceView* bloomSRV = bloomEffect.process(originTexture);
 
-		RenderAPI::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->OMSetBlendState(nullptr);
 
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetSampler({ States::pointClampSampler }, 0);
-		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->PSSetSampler({ States::pointClampSampler }, 0);
+		ImCtx::get()->PSSetSRV({ bloomSRV }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 
-		RenderAPI::get()->OMSetDefRTV(resDepthTexture);
-		RenderAPI::get()->PSSetSRV({ skybox }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->OMSetDefRTV(resDepthTexture);
+		ImCtx::get()->PSSetSRV({ skybox }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::skyboxVS);
-		RenderAPI::get()->BindShader(skyboxPS);
+		ImCtx::get()->BindShader(ImCtx::skyboxVS);
+		ImCtx::get()->BindShader(skyboxPS);
 
-		RenderAPI::get()->DrawCube();
+		ImCtx::get()->DrawCube();
 	}
 
 

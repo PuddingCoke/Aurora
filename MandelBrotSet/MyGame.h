@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game
@@ -50,9 +50,9 @@ public:
 
 		simulationBuffer = new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_DYNAMIC, &param);
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
 	}
 
 	~MyGame()
@@ -69,19 +69,19 @@ public:
 	{
 		param.size = Math::lerp(param.size, targetSize, 10.f * dt);
 
-		memcpy(simulationBuffer->map().pData, &param, sizeof(SimulationParam));
-		simulationBuffer->unmap();
+		memcpy(ImCtx::get()->Map(simulationBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &param, sizeof(SimulationParam));
+		ImCtx::get()->Unmap(simulationBuffer, 0);
 	}
 
 	void render()
 	{
-		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetConstantBuffer({ simulationBuffer }, 1);
+		ImCtx::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->PSSetConstantBuffer({ simulationBuffer }, 1);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(mandelBrotPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(mandelBrotPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 	}
 
 

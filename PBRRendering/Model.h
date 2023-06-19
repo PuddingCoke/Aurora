@@ -1,6 +1,6 @@
 #pragma once
 
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 
 #include<assimp/Importer.hpp>
 #include<assimp/scene.h>
@@ -63,9 +63,9 @@ public:
 
 	void draw()
 	{
-		RenderAPI::get()->PSSetConstantBuffer({ materialBuffer }, 2);
-		RenderAPI::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(Vertex) }, { 0 });
-		RenderAPI::get()->Draw(vertexNum, 0);
+		ImCtx::get()->PSSetConstantBuffer({ materialBuffer }, 2);
+		ImCtx::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(Vertex) }, { 0 });
+		ImCtx::get()->Draw(vertexNum, 0);
 	}
 
 	~Model()

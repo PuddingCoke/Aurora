@@ -3,7 +3,7 @@
 #ifndef _PRIMITIVEBATCH_H_
 #define _PRIMITIVEBATCH_H_
 
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 #include<Aurora/Core/Shader.h>
 
 #include<Aurora/CompiledShaders/PrimitiveBatchLineVS.h>

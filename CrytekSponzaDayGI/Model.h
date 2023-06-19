@@ -1,6 +1,6 @@
 #pragma once
 
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 
 struct Vertex
 {
@@ -34,12 +34,12 @@ public:
 
 	void draw()
 	{
-		RenderAPI::get()->Draw(vertexCount, startVertexLocation);
+		ImCtx::get()->Draw(vertexCount, startVertexLocation);
 	}
 
 	void drawInstance()
 	{
-		RenderAPI::get()->DrawInstanced(vertexCount, 6, startVertexLocation, 0);
+		ImCtx::get()->DrawInstanced(vertexCount, 6, startVertexLocation, 0);
 	}
 
 };

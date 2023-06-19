@@ -190,10 +190,10 @@ public:
 
 	void render() override
 	{
-		RenderAPI::get()->OMSetBlendState(States::defBlendState);
+		ImCtx::get()->OMSetBlendState(States::defBlendState);
 
-		RenderAPI::get()->ClearRTV(texture->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ texture->getMip(0) }, nullptr);
+		ImCtx::get()->ClearRTV(texture->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->OMSetRTV({ texture->getMip(0) }, nullptr);
 
 		pBatch->begin();
 		for (std::list<Star*>::iterator it = Star::active->begin(); it != Star::active->end(); it++)
@@ -213,39 +213,39 @@ public:
 		}
 		pBatch->end();
 
-		RenderAPI::get()->ResolveSubresource(resolvedTexture, 0, texture, 0, texture->getFormat());
+		ImCtx::get()->ResolveSubresource(resolvedTexture, 0, texture, 0, texture->getFormat());
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(States::addtiveBlend);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(States::addtiveBlend);
 
-		RenderAPI::get()->OMSetRTV({ doubleRTV->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
-		RenderAPI::get()->PSSetSRV({ resolvedTexture }, 0);
+		ImCtx::get()->OMSetRTV({ doubleRTV->write()->getMip(0) }, nullptr);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetSRV({ resolvedTexture }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 		doubleRTV->swap();
 
 		colorSky();
-		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetSRV({ doubleRTV->read() }, 0);
+		ImCtx::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->PSSetSRV({ doubleRTV->read() }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 
 		ShaderResourceView* const fadedTextureSRV = effect.process(doubleRTV->read());
 
-		RenderAPI::get()->OMSetRTV({ doubleRTV->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->PSSetSRV({ fadedTextureSRV }, 0);
+		ImCtx::get()->OMSetRTV({ doubleRTV->write()->getMip(0) }, nullptr);
+		ImCtx::get()->PSSetSRV({ fadedTextureSRV }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 	}
 
 	void colorSky()
@@ -296,7 +296,7 @@ public:
 		currentSkyColor.g += (targetSkyColor.g - currentSkyColor.g) / colorChange * speed;
 		currentSkyColor.b += (targetSkyColor.b - currentSkyColor.b) / colorChange * speed;
 
-		RenderAPI::get()->ClearDefRTV(currentSkyColor);
+		ImCtx::get()->ClearDefRTV(currentSkyColor);
 	}
 
 	const float GRAVITY = 0.9f;

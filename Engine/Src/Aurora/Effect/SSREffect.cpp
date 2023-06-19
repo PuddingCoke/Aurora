@@ -17,33 +17,33 @@ SSREffect::~SSREffect()
 
 ShaderResourceView* SSREffect::process(ShaderResourceView* resDepthTexture, ShaderResourceView* gPosition, ShaderResourceView* gNormal) const
 {
-	RenderAPI::get()->CSSetSRV({ resDepthTexture }, 0);
-	RenderAPI::get()->CSSetUAV({ hiZTexture->getMip(0) }, 0);
+	ImCtx::get()->CSSetSRV({ resDepthTexture }, 0);
+	ImCtx::get()->CSSetUAV({ hiZTexture->getMip(0) }, 0);
 
-	RenderAPI::get()->BindShader(hiZInitializeCS);
+	ImCtx::get()->BindShader(hiZInitializeCS);
 
-	RenderAPI::get()->Dispatch(width / 16, height / 9, 1);
+	ImCtx::get()->Dispatch(width / 16, height / 9, 1);
 
-	RenderAPI::get()->BindShader(hiZCreateCS);
+	ImCtx::get()->BindShader(hiZCreateCS);
 
 	for (UINT i = 0; i < hiZMipLevel - 1; i++)
 	{
-		RenderAPI::get()->CSSetSRV({ hiZTexture->getMip(i) }, 0);
-		RenderAPI::get()->CSSetUAV({ hiZTexture->getMip(i + 1) }, 0);
+		ImCtx::get()->CSSetSRV({ hiZTexture->getMip(i) }, 0);
+		ImCtx::get()->CSSetUAV({ hiZTexture->getMip(i + 1) }, 0);
 
-		RenderAPI::get()->Dispatch(((width / 2) >> i) / 16 + 1, ((height / 2) >> i) / 9 + 1, 1);
+		ImCtx::get()->Dispatch(((width / 2) >> i) / 16 + 1, ((height / 2) >> i) / 9 + 1, 1);
 	}
 
-	RenderAPI::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
-	RenderAPI::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
-	RenderAPI::get()->PSSetSRV({ gPosition,gNormal,hiZTexture }, 0);
-	RenderAPI::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
-	RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);
+	ImCtx::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
+	ImCtx::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
+	ImCtx::get()->PSSetSRV({ gPosition,gNormal,hiZTexture }, 0);
+	ImCtx::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
+	ImCtx::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);
 
-	RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-	RenderAPI::get()->BindShader(hiZProcessPS);
+	ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+	ImCtx::get()->BindShader(hiZProcessPS);
 
-	RenderAPI::get()->DrawQuad();
+	ImCtx::get()->DrawQuad();
 
 	return outputRTV;
 }

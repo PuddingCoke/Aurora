@@ -32,10 +32,10 @@ public:
 
 		PrimitiveBatch* pBatch = PrimitiveBatch::create();
 
-		RenderAPI::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::White);
-		RenderAPI::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
+		ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::White);
+		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
 
-		RenderAPI::get()->OMSetBlendState(States::defBlendState);
+		ImCtx::get()->OMSetBlendState(States::defBlendState);
 
 		pBatch->begin();
 
@@ -43,7 +43,7 @@ public:
 
 		pBatch->end();
 
-		RenderAPI::get()->ResolveSubresource(texture, 0, renderTexture, 0, renderTexture->getFormat());
+		ImCtx::get()->ResolveSubresource(texture, 0, renderTexture, 0, renderTexture->getFormat());
 
 		delete pBatch;
 	}
@@ -61,18 +61,18 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::White);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::White);
+		ImCtx::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(States::defBlendState);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(States::defBlendState);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->PSSetSRV({ texture }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->PSSetSRV({ texture }, 0);
+		ImCtx::get()->DrawQuad();
 	}
 
 

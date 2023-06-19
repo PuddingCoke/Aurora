@@ -67,43 +67,43 @@ public:
 	{
 		ocean.update();
 
-		RenderAPI::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
+		ImCtx::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->PSSetSRV({ textureCube }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler }, 0);
+		ImCtx::get()->PSSetSRV({ textureCube }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearWrapSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::skyboxVS);
-		RenderAPI::get()->BindShader(skyboxPS);
-		RenderAPI::get()->HSUnbindShader();
-		RenderAPI::get()->GSUnbindShader();
+		ImCtx::get()->BindShader(ImCtx::skyboxVS);
+		ImCtx::get()->BindShader(skyboxPS);
+		ImCtx::get()->HSUnbindShader();
+		ImCtx::get()->GSUnbindShader();
 
-		RenderAPI::get()->DrawCube();
+		ImCtx::get()->DrawCube();
 
-		RenderAPI::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
-		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
+		ImCtx::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
+		ImCtx::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
 
-		RenderAPI::get()->PSSetSRV({ textureCube,perlinTexture }, 1);
+		ImCtx::get()->PSSetSRV({ textureCube,perlinTexture }, 1);
 
 		ocean.render();
 
 		ShaderResourceView* bloomSRV = effect.process(originTexture);
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(nullptr);
 
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetSRV({ bloomSRV }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 	}
 
 

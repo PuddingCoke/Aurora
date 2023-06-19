@@ -133,10 +133,10 @@ public:
 
 	void draw(Shader* const vertexShader, Shader* const pixelShader)
 	{
-		RenderAPI::get()->BindShader(vertexShader);
-		RenderAPI::get()->BindShader(pixelShader);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
+		ImCtx::get()->BindShader(vertexShader);
+		ImCtx::get()->BindShader(pixelShader);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			materials[models[i].materialIndex]->use();
@@ -146,11 +146,11 @@ public:
 
 	void drawVoxel(Shader* const vertexShader, Shader* const geometryShader, Shader* const pixelShader)
 	{
-		RenderAPI::get()->BindShader(vertexShader);
-		RenderAPI::get()->BindShader(geometryShader);
-		RenderAPI::get()->BindShader(pixelShader);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
+		ImCtx::get()->BindShader(vertexShader);
+		ImCtx::get()->BindShader(geometryShader);
+		ImCtx::get()->BindShader(pixelShader);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			materials[models[i].materialIndex]->use();

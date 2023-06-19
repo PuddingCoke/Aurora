@@ -4,7 +4,7 @@
 #include<Aurora/Game.h>
 
 #include<Aurora/Utils/Color.h>
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 
 class MyGame :public Game
 {
@@ -28,8 +28,8 @@ public:
 
 	void render() override
 	{
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->OMSetDefRTV(nullptr);
 		const Color color = { cosf(sTime),sinf(sTime),1.0 };
-		RenderAPI::get()->ClearDefRTV(color);
+		ImCtx::get()->ClearDefRTV(color);
 	}
 };

@@ -7,7 +7,7 @@
 #include<Aurora/Resource/RenderCube.h>
 #include<Aurora/Resource/DepthCube.h>
 #include<Aurora/Core/Shader.h>
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 #include<Aurora/Utils/Math.h>
 #include<Aurora/Input/Keyboard.h>
 
@@ -149,8 +149,8 @@ public:
 		}
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
-			memcpy(irradianceVolumeBuffer->map().pData, &irradianceVolumeParam, sizeof(IrradianceVolumeParam));
-			irradianceVolumeBuffer->unmap();
+			memcpy(ImCtx::get()->Map(irradianceVolumeBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &irradianceVolumeParam, sizeof(IrradianceVolumeParam));
+			ImCtx::get()->Unmap(irradianceVolumeBuffer, 0);
 			updateLightProbe();
 			updateLightBounceProbe();
 			});
@@ -244,66 +244,66 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-		RenderAPI::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
+		ImCtx::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
 
-		RenderAPI::get()->ClearRTV(gBaseColor->getMip(0), DirectX::Colors::Transparent);
-		RenderAPI::get()->ClearRTV(gPosition->getMip(0), DirectX::Colors::Transparent);
-		RenderAPI::get()->ClearRTV(gNormalSpecular->getMip(0), DirectX::Colors::Transparent);
+		ImCtx::get()->ClearRTV(gBaseColor->getMip(0), DirectX::Colors::Transparent);
+		ImCtx::get()->ClearRTV(gPosition->getMip(0), DirectX::Colors::Transparent);
+		ImCtx::get()->ClearRTV(gNormalSpecular->getMip(0), DirectX::Colors::Transparent);
 
-		RenderAPI::get()->OMSetRTV({ gPosition->getMip(0),gNormalSpecular->getMip(0),gBaseColor->getMip(0) }, depthTexture);
-		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
+		ImCtx::get()->OMSetRTV({ gPosition->getMip(0),gNormalSpecular->getMip(0),gBaseColor->getMip(0) }, depthTexture);
+		ImCtx::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
 		scene->render(deferredVShader, deferredPShader);
 
-		RenderAPI::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
-		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(depthTexture->getSRV(), gNormalSpecular->getSRV()),shadowTexture,irradianceBounceCoeff,depthOctahedralMap }, 0);
-		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,irradianceVolumeBuffer }, 1);
-		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
+		ImCtx::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
+		ImCtx::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(depthTexture->getSRV(), gNormalSpecular->getSRV()),shadowTexture,irradianceBounceCoeff,depthOctahedralMap }, 0);
+		ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,irradianceVolumeBuffer }, 1);
+		ImCtx::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(deferredFinal);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(deferredFinal);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 
-		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
+		ImCtx::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
 
-		RenderAPI::get()->PSSetSRV({ skybox }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetSRV({ skybox }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::skyboxVS);
-		RenderAPI::get()->BindShader(skyboxPShader);
+		ImCtx::get()->BindShader(ImCtx::skyboxVS);
+		ImCtx::get()->BindShader(skyboxPShader);
 
-		RenderAPI::get()->DrawCube();
+		ImCtx::get()->DrawCube();
 
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->OMSetDefRTV(nullptr);
 
 		ShaderResourceView* const uvVisibilitySRV = ssrEffect.process(depthTexture, gPosition, gNormalSpecular);
 
-		RenderAPI::get()->OMSetRTV({ reflectedColor->getMip(0) }, nullptr);
-		RenderAPI::get()->PSSetSRV({ originTexture,uvVisibilitySRV,gNormalSpecular }, 0);
-		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler }, 0);
+		ImCtx::get()->OMSetRTV({ reflectedColor->getMip(0) }, nullptr);
+		ImCtx::get()->PSSetSRV({ originTexture,uvVisibilitySRV,gNormalSpecular }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(ssrCombineShader);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ssrCombineShader);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 
 		ShaderResourceView* const bloomTextureSRV = bloomEffect.process(reflectedColor);
 
 		ShaderResourceView* const antiAliasedSRV = fxaaEffect.process(bloomTextureSRV);
 
-		RenderAPI::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->OMSetBlendState(nullptr);
 
-		RenderAPI::get()->OMSetDefRTV(nullptr);
-		RenderAPI::get()->PSSetSRV({ antiAliasedSRV }, 0);
+		ImCtx::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->PSSetSRV({ antiAliasedSRV }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 	}
 
 
@@ -377,26 +377,26 @@ private:
 		const DirectX::XMMATRIX lightViewMat = DirectX::XMMatrixLookAtLH(lightCamPos, offset, { 0.f,1.f,0.f });
 		const DirectX::XMMATRIX lightMat = DirectX::XMMatrixTranspose(lightViewMat * lightProjMat);
 
-		memcpy(lightBuffer->map().pData, &light, sizeof(Light));
-		lightBuffer->unmap();
+		memcpy(ImCtx::get()->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &light, sizeof(Light));
+		ImCtx::get()->Unmap(lightBuffer, 0);
 
-		memcpy(shadowProjBuffer->map().pData, &lightMat, sizeof(DirectX::XMMATRIX));
-		shadowProjBuffer->unmap();
+		memcpy(ImCtx::get()->Map(shadowProjBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &lightMat, sizeof(DirectX::XMMATRIX));
+		ImCtx::get()->Unmap(shadowProjBuffer, 0);
 
-		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::get()->IASetInputLayout(modelInputLayout.Get());
+		ImCtx::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->IASetInputLayout(modelInputLayout.Get());
 
-		RenderAPI::get()->RSSetState(States::rasterShadow);
-		RenderAPI::get()->RSSetViewport(shadowMapRes, shadowMapRes);
+		ImCtx::get()->RSSetState(States::rasterShadow);
+		ImCtx::get()->RSSetViewport(shadowMapRes, shadowMapRes);
 
-		RenderAPI::get()->ClearDSV(shadowTexture, D3D11_CLEAR_DEPTH);
+		ImCtx::get()->ClearDSV(shadowTexture, D3D11_CLEAR_DEPTH);
 
-		RenderAPI::get()->OMSetRTV({}, shadowTexture);
-		RenderAPI::get()->VSSetConstantBuffer({ shadowProjBuffer }, 2);
+		ImCtx::get()->OMSetRTV({}, shadowTexture);
+		ImCtx::get()->VSSetConstantBuffer({ shadowProjBuffer }, 2);
 
-		scene->renderGeometry(RenderAPI::shadowVS);
+		scene->renderGeometry(ImCtx::shadowVS);
 
-		RenderAPI::get()->RSSetState(States::rasterCullBack);
+		ImCtx::get()->RSSetState(States::rasterCullBack);
 	}
 
 	//光照方向改变
@@ -478,44 +478,44 @@ private:
 		cubeRenderParam.probeLocation = location;
 		cubeRenderParam.probeIndex = probeIndex;
 
-		memcpy(cubeRenderBuffer->map().pData, &cubeRenderParam, sizeof(CubeRenderParam));
-		cubeRenderBuffer->unmap();
+		memcpy(ImCtx::get()->Map(cubeRenderBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &cubeRenderParam, sizeof(CubeRenderParam));
+		ImCtx::get()->Unmap(cubeRenderBuffer, 0);
 
-		RenderAPI::get()->ClearRTV(radianceCube, DirectX::Colors::Black);
+		ImCtx::get()->ClearRTV(radianceCube, DirectX::Colors::Black);
 		float distanceClear[4] = { 512.f,512.f,512.f,512.f };
-		RenderAPI::get()->ClearRTV(distanceCube, distanceClear);
-		RenderAPI::get()->ClearDSV(depthCube, D3D11_CLEAR_DEPTH);
+		ImCtx::get()->ClearRTV(distanceCube, distanceClear);
+		ImCtx::get()->ClearDSV(depthCube, D3D11_CLEAR_DEPTH);
 
-		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::get()->IASetInputLayout(modelInputLayout.Get());
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->IASetInputLayout(modelInputLayout.Get());
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->RSSetViewport(captureResolution, captureResolution);
-		RenderAPI::get()->OMSetRTV({ radianceCube,distanceCube }, depthCube);
-		RenderAPI::get()->VSSetConstantBuffer({ cubeRenderBuffer }, 2);
-		RenderAPI::get()->PSSetSRV({ shadowTexture }, 3);
-		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,cubeRenderBuffer }, 1);
-		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
+		ImCtx::get()->RSSetViewport(captureResolution, captureResolution);
+		ImCtx::get()->OMSetRTV({ radianceCube,distanceCube }, depthCube);
+		ImCtx::get()->VSSetConstantBuffer({ cubeRenderBuffer }, 2);
+		ImCtx::get()->PSSetSRV({ shadowTexture }, 3);
+		ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,cubeRenderBuffer }, 1);
+		ImCtx::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
 		scene->renderCube(cubeRenderVS, cubeRenderPS);
 
-		RenderAPI::get()->CSSetUAV({ irradianceCoeff->getMip(0) }, 0);
-		RenderAPI::get()->CSSetSRV({ radianceCube,irradianceSamples }, 0);
-		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
-		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->CSSetUAV({ irradianceCoeff->getMip(0) }, 0);
+		ImCtx::get()->CSSetSRV({ radianceCube,irradianceSamples }, 0);
+		ImCtx::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
+		ImCtx::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(irradianceCompute);
+		ImCtx::get()->BindShader(irradianceCompute);
 
-		RenderAPI::get()->Dispatch(1, 1, 1);
+		ImCtx::get()->Dispatch(1, 1, 1);
 
-		RenderAPI::get()->CSSetUAV({ depthOctahedralMap->getMip(0) }, 0);
-		RenderAPI::get()->CSSetSRV({ distanceCube }, 0);
-		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
-		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->CSSetUAV({ depthOctahedralMap->getMip(0) }, 0);
+		ImCtx::get()->CSSetSRV({ distanceCube }, 0);
+		ImCtx::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
+		ImCtx::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(octahedralEncode);
+		ImCtx::get()->BindShader(octahedralEncode);
 
-		RenderAPI::get()->Dispatch(1, 1, 1);
+		ImCtx::get()->Dispatch(1, 1, 1);
 	}
 
 	void RenderCubeBounceAt(const DirectX::XMUINT3& probeGridPos)
@@ -554,33 +554,33 @@ private:
 		cubeRenderParam.probeLocation = location;
 		cubeRenderParam.probeIndex = probeIndex;
 
-		memcpy(cubeRenderBuffer->map().pData, &cubeRenderParam, sizeof(CubeRenderParam));
-		cubeRenderBuffer->unmap();
+		memcpy(ImCtx::get()->Map(cubeRenderBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &cubeRenderParam, sizeof(CubeRenderParam));
+		ImCtx::get()->Unmap(cubeRenderBuffer, 0);
 
-		RenderAPI::get()->ClearRTV(radianceCube, DirectX::Colors::Black);
-		RenderAPI::get()->ClearDSV(depthCube, D3D11_CLEAR_DEPTH);
+		ImCtx::get()->ClearRTV(radianceCube, DirectX::Colors::Black);
+		ImCtx::get()->ClearDSV(depthCube, D3D11_CLEAR_DEPTH);
 
-		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::get()->IASetInputLayout(modelInputLayout.Get());
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->IASetInputLayout(modelInputLayout.Get());
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->RSSetViewport(captureResolution, captureResolution);
-		RenderAPI::get()->OMSetRTV({ radianceCube }, depthCube);
-		RenderAPI::get()->VSSetConstantBuffer({ cubeRenderBuffer }, 2);
-		RenderAPI::get()->PSSetSRV({ shadowTexture,irradianceCoeff,depthOctahedralMap }, 3);
-		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,cubeRenderBuffer,irradianceVolumeBuffer }, 1);
-		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
+		ImCtx::get()->RSSetViewport(captureResolution, captureResolution);
+		ImCtx::get()->OMSetRTV({ radianceCube }, depthCube);
+		ImCtx::get()->VSSetConstantBuffer({ cubeRenderBuffer }, 2);
+		ImCtx::get()->PSSetSRV({ shadowTexture,irradianceCoeff,depthOctahedralMap }, 3);
+		ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,cubeRenderBuffer,irradianceVolumeBuffer }, 1);
+		ImCtx::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
 		scene->renderCube(cubeRenderVS, cubeRenderBouncePS);
 
-		RenderAPI::get()->CSSetUAV({ irradianceBounceCoeff->getMip(0) }, 0);
-		RenderAPI::get()->CSSetSRV({ radianceCube,irradianceSamples }, 0);
-		RenderAPI::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
-		RenderAPI::get()->CSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->CSSetUAV({ irradianceBounceCoeff->getMip(0) }, 0);
+		ImCtx::get()->CSSetSRV({ radianceCube,irradianceSamples }, 0);
+		ImCtx::get()->CSSetConstantBuffer({ cubeRenderBuffer }, 1);
+		ImCtx::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
-		RenderAPI::get()->BindShader(irradianceCompute);
+		ImCtx::get()->BindShader(irradianceCompute);
 
-		RenderAPI::get()->Dispatch(1, 1, 1);
+		ImCtx::get()->Dispatch(1, 1, 1);
 	}
 
 	ComPtr<ID3D11InputLayout> modelInputLayout;

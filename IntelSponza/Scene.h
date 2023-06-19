@@ -56,20 +56,20 @@ public:
 
 	void draw(Shader* vertexShader, Shader* pixelHasTex, Shader* pixelNoTex, Shader* pixelTrans)
 	{
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(nullptr);
 
-		RenderAPI::get()->BindShader(vertexShader);
+		ImCtx::get()->BindShader(vertexShader);
 
 		for (Model* model : opaqueModel)
 		{
 			switch (materials[model->materialIndex]->type)
 			{
 			case Material::Normal:
-				RenderAPI::get()->BindShader(pixelHasTex);
+				ImCtx::get()->BindShader(pixelHasTex);
 				break;
 			case Material::NoTex:
-				RenderAPI::get()->BindShader(pixelNoTex);
+				ImCtx::get()->BindShader(pixelNoTex);
 				break;
 			}
 
@@ -77,8 +77,8 @@ public:
 			model->draw();
 		}
 
-		RenderAPI::get()->BindShader(pixelTrans);
-		RenderAPI::get()->OMSetBlendState(States::defBlendState);
+		ImCtx::get()->BindShader(pixelTrans);
+		ImCtx::get()->OMSetBlendState(States::defBlendState);
 
 		for (Model* model : transparentModel)
 		{
@@ -86,7 +86,7 @@ public:
 			model->draw();
 		}
 
-		RenderAPI::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->OMSetBlendState(nullptr);
 
 	}
 

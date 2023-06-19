@@ -1,6 +1,6 @@
 #pragma once
 
-#include<Aurora/EngineAPI/RenderAPI.h>
+#include<Aurora/EngineAPI/ImCtx.h>
 
 #include<assimp/Importer.hpp>
 #include<assimp/scene.h>
@@ -81,9 +81,9 @@ public:
 
 	void draw()
 	{
-		RenderAPI::get()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		RenderAPI::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(Vertex) }, { 0 });
-		RenderAPI::get()->DrawIndexed(indexCount, 0, 0);
+		ImCtx::get()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		ImCtx::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(Vertex) }, { 0 });
+		ImCtx::get()->DrawIndexed(indexCount, 0, 0);
 	}
 
 private:

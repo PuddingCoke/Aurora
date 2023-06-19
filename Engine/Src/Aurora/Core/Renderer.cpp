@@ -7,11 +7,6 @@ ID3D11Device5* Renderer::getDevice()
 	return instance->device5.Get();
 }
 
-ID3D11DeviceContext4* Renderer::getContext()
-{
-	return instance->context4.Get();
-}
-
 const GPUManufacturer& Renderer::getGPUManufacturer()
 {
 	return instance->gpuManufacturer;
@@ -122,7 +117,7 @@ void Renderer::createRasterizerState2(const D3D11_RASTERIZER_DESC2* desc, ID3D11
 	CHECKERROR(device5->CreateRasterizerState2(desc, address));
 }
 
-Renderer::Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT& msaaLevel) :
+Renderer::Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT& msaaLevel, ID3D11DeviceContext4** address) :
 	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }
 {
 	instance = this;
@@ -155,7 +150,7 @@ Renderer::Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT&
 			D3D11_SDK_VERSION, device11.ReleaseAndGetAddressOf(), &maxSupportedFeatureLevel, context11.ReleaseAndGetAddressOf());
 
 		device11.As(&device5);
-		context11.As(&context4);
+		context11->QueryInterface(IID_ID3D11DeviceContext4, (void**)address);
 
 		ComPtr<IDXGIDevice> dxgiDevice11;
 		device11.As(&dxgiDevice11);
@@ -169,7 +164,7 @@ Renderer::Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT&
 		dxgiDevice11.As(&dxgiDevice);
 		dxgiAdapter11.As(&dxgiAdapter);
 		dxgiFactory11.As(&dxgiFactory);
-}
+	}
 
 	{
 		DXGI_SWAP_CHAIN_DESC1 sd = {};

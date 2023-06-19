@@ -211,97 +211,97 @@ public:
 
 	void splat()
 	{
-		memcpy(simulationDeltaBuffer->map().pData, &simulationDelta, sizeof(SimulationDelta));
-		simulationDeltaBuffer->unmap();
+		memcpy(ImCtx::get()->Map(simulationDeltaBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &simulationDelta, sizeof(SimulationDelta));
+		ImCtx::get()->Unmap(simulationDeltaBuffer, 0);
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
-		RenderAPI::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
-		RenderAPI::get()->OMSetBlendState(blendState.Get());
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
+		ImCtx::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
+		ImCtx::get()->OMSetBlendState(blendState.Get());
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
 
 		//施加颜色和速度
 
-		RenderAPI::get()->RSSetViewport(velocityTex->width, velocityTex->height);
-		RenderAPI::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->BindShader(splatVelocityPS);
-		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->RSSetViewport(velocityTex->width, velocityTex->height);
+		ImCtx::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
+		ImCtx::get()->BindShader(splatVelocityPS);
+		ImCtx::get()->PSSetSRV({ velocityTex->read() }, 0);
+		ImCtx::get()->DrawQuad();
 		velocityTex->swap();
 
-		RenderAPI::get()->RSSetViewport(colorTex->width, colorTex->height);
-		RenderAPI::get()->OMSetRTV({ colorTex->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->BindShader(splatColorPS);
-		RenderAPI::get()->PSSetSRV({ colorTex->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->RSSetViewport(colorTex->width, colorTex->height);
+		ImCtx::get()->OMSetRTV({ colorTex->write()->getMip(0) }, nullptr);
+		ImCtx::get()->BindShader(splatColorPS);
+		ImCtx::get()->PSSetSRV({ colorTex->read() }, 0);
+		ImCtx::get()->DrawQuad();
 		colorTex->swap();
 	}
 
 	void step()
 	{
-		RenderAPI::get()->RSSetViewport(velocityTex->width, velocityTex->height);
-		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
-		RenderAPI::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->OMSetBlendState(nullptr);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
+		ImCtx::get()->RSSetViewport(velocityTex->width, velocityTex->height);
+		ImCtx::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
+		ImCtx::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
 
 		//求旋度
-		RenderAPI::get()->OMSetRTV({ curlTex->getMip(0) }, nullptr);
-		RenderAPI::get()->BindShader(curlPS);
-		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->OMSetRTV({ curlTex->getMip(0) }, nullptr);
+		ImCtx::get()->BindShader(curlPS);
+		ImCtx::get()->PSSetSRV({ velocityTex->read() }, 0);
+		ImCtx::get()->DrawQuad();
 
 		//通过已经求得的散度对速度图施加漩涡
-		RenderAPI::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->BindShader(vorticityPS);
-		RenderAPI::get()->PSSetSRV({ velocityTex->read(),curlTex }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
+		ImCtx::get()->BindShader(vorticityPS);
+		ImCtx::get()->PSSetSRV({ velocityTex->read(),curlTex }, 0);
+		ImCtx::get()->DrawQuad();
 		velocityTex->swap();
 
 		//求散度
-		RenderAPI::get()->OMSetRTV({ divergenceTex->getMip(0) }, nullptr);
-		RenderAPI::get()->BindShader(divergencePS);
-		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->OMSetRTV({ divergenceTex->getMip(0) }, nullptr);
+		ImCtx::get()->BindShader(divergencePS);
+		ImCtx::get()->PSSetSRV({ velocityTex->read() }, 0);
+		ImCtx::get()->DrawQuad();
 
 		//对压力图进行消散处理
-		RenderAPI::get()->OMSetRTV({ pressureTex->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->BindShader(pressureDissipationPS);
-		RenderAPI::get()->PSSetSRV({ pressureTex->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->OMSetRTV({ pressureTex->write()->getMip(0) }, nullptr);
+		ImCtx::get()->BindShader(pressureDissipationPS);
+		ImCtx::get()->PSSetSRV({ pressureTex->read() }, 0);
+		ImCtx::get()->DrawQuad();
 		pressureTex->swap();
 
 		//进行雅可比迭代
-		RenderAPI::get()->BindShader(viscousDiffusionPS);
+		ImCtx::get()->BindShader(viscousDiffusionPS);
 		for (unsigned int i = 0; i < config.pressureIteraion; i++)
 		{
-			RenderAPI::get()->OMSetRTV({ pressureTex->write()->getMip(0) }, nullptr);
-			RenderAPI::get()->PSSetSRV({ pressureTex->read(),divergenceTex }, 0);
-			RenderAPI::get()->DrawQuad();
+			ImCtx::get()->OMSetRTV({ pressureTex->write()->getMip(0) }, nullptr);
+			ImCtx::get()->PSSetSRV({ pressureTex->read(),divergenceTex }, 0);
+			ImCtx::get()->DrawQuad();
 			pressureTex->swap();
 		}
 
 		//速度图减去它的散度来求得没有散度的速度图
-		RenderAPI::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->BindShader(pressureGradientSubtractPS);
-		RenderAPI::get()->PSSetSRV({ pressureTex->read(),velocityTex->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
+		ImCtx::get()->BindShader(pressureGradientSubtractPS);
+		ImCtx::get()->PSSetSRV({ pressureTex->read(),velocityTex->read() }, 0);
+		ImCtx::get()->DrawQuad();
 		velocityTex->swap();
 
 		//速度移动并进行消散处理
-		RenderAPI::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->BindShader(velocityAdvectionDissipationPS);
-		RenderAPI::get()->PSSetSRV({ velocityTex->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
+		ImCtx::get()->BindShader(velocityAdvectionDissipationPS);
+		ImCtx::get()->PSSetSRV({ velocityTex->read() }, 0);
+		ImCtx::get()->DrawQuad();
 		velocityTex->swap();
 
 		//颜色移动并进行消散处理
-		RenderAPI::get()->RSSetViewport(colorTex->width, colorTex->height);
-		RenderAPI::get()->OMSetRTV({ colorTex->write()->getMip(0) }, nullptr);
-		RenderAPI::get()->BindShader(colorAdvectionDissipationPS);
-		RenderAPI::get()->PSSetSRV({ velocityTex->read(),colorTex->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->RSSetViewport(colorTex->width, colorTex->height);
+		ImCtx::get()->OMSetRTV({ colorTex->write()->getMip(0) }, nullptr);
+		ImCtx::get()->BindShader(colorAdvectionDissipationPS);
+		ImCtx::get()->PSSetSRV({ velocityTex->read(),colorTex->read() }, 0);
+		ImCtx::get()->DrawQuad();
 		colorTex->swap();
 	}
 
@@ -325,8 +325,8 @@ public:
 
 	void render()
 	{
-		memcpy(simulationParamBuffer->map().pData, &simulationParam, sizeof(SimulationParam));
-		simulationParamBuffer->unmap();
+		memcpy(ImCtx::get()->Map(simulationParamBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &simulationParam, sizeof(SimulationParam));
+		ImCtx::get()->Unmap(simulationParamBuffer, 0);
 
 		//物理模拟
 
@@ -342,27 +342,27 @@ public:
 		step();
 
 		//最后进行简单的渲染
-		RenderAPI::get()->OMSetBlendState(blendState.Get());
-		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
-		RenderAPI::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
-		RenderAPI::get()->BindShader(fluidFinalPS);
-		RenderAPI::get()->PSSetSRV({ colorTex->read() }, 0);
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->OMSetBlendState(blendState.Get());
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
+		ImCtx::get()->BindShader(fluidFinalPS);
+		ImCtx::get()->PSSetSRV({ colorTex->read() }, 0);
+		ImCtx::get()->DrawQuad();
 
 		ShaderResourceView* const bloomSRV = bloomEffect.process(originTexture);
 
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		RenderAPI::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
-		RenderAPI::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
-		RenderAPI::get()->PSSetSRV({ bloomSRV }, 0);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
+		ImCtx::get()->PSSetSRV({ bloomSRV }, 0);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 	}
 
 

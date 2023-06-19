@@ -15,7 +15,6 @@ RenderTargetView::RenderTargetView(ID3D11Resource* const resource, const D3D11_R
 
 RenderTargetView::~RenderTargetView()
 {
-	unbindFromRTV(Renderer::getContext());
 }
 
 ID3D11RenderTargetView* RenderTargetView::getRTV() const

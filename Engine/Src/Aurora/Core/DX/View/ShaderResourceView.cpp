@@ -21,7 +21,6 @@ ShaderResourceView::ShaderResourceView() :
 
 ShaderResourceView::~ShaderResourceView()
 {
-	unbindFromSRV(Renderer::getContext());
 }
 
 ID3D11ShaderResourceView* ShaderResourceView::getSRV() const
@@ -117,9 +116,4 @@ bool ShaderResourceView::unbindFromSRV(ID3D11DeviceContext3* const ctx)
 void ShaderResourceView::createSRV(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc)
 {
 	Renderer::get()->createShaderResourceView(resource, &desc, shaderResourceView.ReleaseAndGetAddressOf());
-}
-
-void ShaderResourceView::generateMips() const
-{
-	Renderer::getContext()->GenerateMips(shaderResourceView.Get());
 }

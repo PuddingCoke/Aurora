@@ -6,6 +6,8 @@
 #include<Aurora/Resource/ConstantBuffer.h>
 #include<Aurora/Utils/Random.h>
 
+#include"ImCtx.h"
+
 class Graphics
 {
 public:

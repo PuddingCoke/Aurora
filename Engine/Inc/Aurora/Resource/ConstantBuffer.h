@@ -17,7 +17,7 @@ protected:
 
 	UINT numConstants;
 
-	friend class RenderAPI;
+	friend class ImCtx;
 
 };
 

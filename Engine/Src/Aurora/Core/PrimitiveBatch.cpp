@@ -95,28 +95,28 @@ void PrimitiveBatch::begin()
 
 void PrimitiveBatch::end()
 {
-	RenderAPI::get()->GSSetConstantBuffer({ lineBuffer }, 2);
+	ImCtx::get()->GSSetConstantBuffer({ lineBuffer }, 2);
 
-	RenderAPI::get()->IASetInputLayout(primitiveInputLayout.Get());
+	ImCtx::get()->IASetInputLayout(primitiveInputLayout.Get());
 
-	RenderAPI::get()->BindShader(lineVS);
-	RenderAPI::get()->BindShader(primitivePS);
-	RenderAPI::get()->BindShader(lineGS);
+	ImCtx::get()->BindShader(lineVS);
+	ImCtx::get()->BindShader(primitivePS);
+	ImCtx::get()->BindShader(lineGS);
 
 	lineRenderer.end();
 
-	RenderAPI::get()->IASetInputLayout(circleInputLayout.Get());
-	RenderAPI::get()->BindShader(circleVS);
+	ImCtx::get()->IASetInputLayout(circleInputLayout.Get());
+	ImCtx::get()->BindShader(circleVS);
 
 	circleRenderer.end();
 
-	RenderAPI::get()->IASetInputLayout(rcLineInputLayout.Get());
-	RenderAPI::get()->BindShader(rcLineVS);
-	RenderAPI::get()->BindShader(rcLineGS);
+	ImCtx::get()->IASetInputLayout(rcLineInputLayout.Get());
+	ImCtx::get()->BindShader(rcLineVS);
+	ImCtx::get()->BindShader(rcLineGS);
 
 	rcLineRenderer.end();
 
-	RenderAPI::get()->GSUnbindShader();
+	ImCtx::get()->GSUnbindShader();
 }
 
 void PrimitiveBatch::drawLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& r, const float& g, const float& b, const float& a)
@@ -141,8 +141,8 @@ void PrimitiveBatch::setLineWidth(const float& width)
 
 void PrimitiveBatch::applyChange() const
 {
-	memcpy(lineBuffer->map().pData, &lineParam, sizeof(LineParam));
-	lineBuffer->unmap();
+	memcpy(ImCtx::get()->Map(lineBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &lineParam, sizeof(LineParam));
+	ImCtx::get()->Unmap(lineBuffer, 0);
 }
 
 PrimitiveBatch::LineRenderer::LineRenderer() :
@@ -166,16 +166,16 @@ void PrimitiveBatch::LineRenderer::end()
 {
 	updateVerticesData();
 
-	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	RenderAPI::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 6 }, { 0 });
+	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	ImCtx::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 6 }, { 0 });
 
-	RenderAPI::get()->Draw(idx / 6, 0);
+	ImCtx::get()->Draw(idx / 6, 0);
 }
 
 void PrimitiveBatch::LineRenderer::updateVerticesData() const
 {
-	memcpy(vertexBuffer->map().pData, vertices, sizeof(float) * idx);
-	vertexBuffer->unmap();
+	memcpy(ImCtx::get()->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, vertices, sizeof(float) * idx);
+	ImCtx::get()->Unmap(vertexBuffer, 0);
 }
 
 void PrimitiveBatch::LineRenderer::addLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& r, const float& g, const float& b, const float& a)
@@ -216,16 +216,16 @@ void PrimitiveBatch::CircleRenderer::end()
 {
 	updateVerticesData();
 
-	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	RenderAPI::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 7u }, { 0 });
+	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	ImCtx::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 7u }, { 0 });
 
-	RenderAPI::get()->DrawInstanced(128, idx / 7, 0, 0);
+	ImCtx::get()->DrawInstanced(128, idx / 7, 0, 0);
 }
 
 void PrimitiveBatch::CircleRenderer::updateVerticesData() const
 {
-	memcpy(vertexBuffer->map().pData, vertices, sizeof(float) * idx);
-	vertexBuffer->unmap();
+	memcpy(ImCtx::get()->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, vertices, sizeof(float) * idx);
+	ImCtx::get()->Unmap(vertexBuffer, 0);
 }
 
 void PrimitiveBatch::CircleRenderer::addCircle(const float& x, const float& y, const float& length, const float& r, const float& g, const float& b, const float& a)
@@ -265,16 +265,16 @@ void PrimitiveBatch::RCLineRenderer::end()
 {
 	updateVerticesData();
 
-	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	RenderAPI::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 7 }, { 0 });
+	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	ImCtx::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 7 }, { 0 });
 
-	RenderAPI::get()->Draw(idx / 7, 0);
+	ImCtx::get()->Draw(idx / 7, 0);
 }
 
 void PrimitiveBatch::RCLineRenderer::updateVerticesData() const
 {
-	memcpy(vertexBuffer->map().pData, vertices, sizeof(float) * idx);
-	vertexBuffer->unmap();
+	memcpy(ImCtx::get()->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, vertices, sizeof(float) * idx);
+	ImCtx::get()->Unmap(vertexBuffer, 0);
 }
 
 void PrimitiveBatch::RCLineRenderer::addRoundCapLine(const float& x1, const float& y1, const float& x2, const float& y2, const float& width, const float& r, const float& g, const float& b, const float& a)

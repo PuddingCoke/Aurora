@@ -36,11 +36,11 @@ public:
 
 	void draw()
 	{
-		RenderAPI::get()->IASetInputLayout(inputLayout.Get());
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetInputLayout(inputLayout.Get());
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->BindShader(vertexShader);
-		RenderAPI::get()->BindShader(pixelShader);
+		ImCtx::get()->BindShader(vertexShader);
+		ImCtx::get()->BindShader(pixelShader);
 
 		for (unsigned int i = 0; i < models.size(); i++)
 		{

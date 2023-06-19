@@ -26,14 +26,12 @@ public:
 	//解决binding hazard的问题
 	virtual void bindSRV(ID3D11DeviceContext3* const ctx) = 0;
 
-	void generateMips() const;
-
 	//返回是否成功解绑
 	bool unbindFromSRV(ID3D11DeviceContext3* const ctx);
 
 private:
 
-	friend class RenderAPI;
+	friend class ImCtx;
 
 	static ShaderResourceView* curVSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT];
 

@@ -187,7 +187,7 @@
     <ClInclude Include="Inc\Aurora\Effect\HBAOEffect.h" />
     <ClInclude Include="Inc\Aurora\Effect\MotionBlurEffect.h" />
     <ClInclude Include="Inc\Aurora\Resource\RenderComputeTexture.h" />
-    <ClInclude Include="Inc\Aurora\EngineAPI\RenderAPI.h" />
+    <ClInclude Include="Inc\Aurora\EngineAPI\ImCtx.h" />
     <ClInclude Include="Inc\Aurora\Resource\ResourceDepthTexture.h" />
     <ClInclude Include="Inc\Aurora\Resource\ResourceTexture.h" />
     <ClInclude Include="Inc\Aurora\Resource\StructuredBuffer.h" />
@@ -249,7 +249,7 @@
     <ClCompile Include="Src\Aurora\Effect\FXAAEffect.cpp" />
     <ClCompile Include="Src\Aurora\Effect\HBAOEffect.cpp" />
     <ClCompile Include="Src\Aurora\Effect\MotionBlurEffect.cpp" />
-    <ClCompile Include="Src\Aurora\EngineAPI\RenderAPI.cpp" />
+    <ClCompile Include="Src\Aurora\EngineAPI\ImCtx.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\ShaderResourceView.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\UnorderedAccessView.cpp" />
     <ClCompile Include="Src\Aurora\Core\Renderer.cpp" />

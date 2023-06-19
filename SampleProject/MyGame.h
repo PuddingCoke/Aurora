@@ -27,8 +27,8 @@ public:
 
 	void render()
 	{
-		RenderAPI::get()->GenNoise(noiseTexture->getMip(0), Graphics::getWidth(), Graphics::getHeight());
-		RenderAPI::get()->DebugDraw(noiseTexture);
+		ImCtx::get()->GenNoise(noiseTexture->getMip(0), Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->DebugDraw(noiseTexture);
 	}
 
 

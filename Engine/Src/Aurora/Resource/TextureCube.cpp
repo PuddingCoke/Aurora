@@ -27,12 +27,12 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 		tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 		tDesc.ArraySize = 6;
 		tDesc.MipLevels = 1;
-		Renderer::get()->createTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
+		Renderer::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 	}
 
 	for (unsigned int i = 0; i < 6; i++)
 	{
-		Renderer::getContext()->CopySubresourceRegion(cubeTexture.Get(), D3D11CalcSubresource(0, i, 1), 0, 0, 0, textures[i]->getResource(), 0, nullptr);
+		ImCtx::get()->CopySubresourceRegion(this, D3D11CalcSubresource(0, i, 1), 0, 0, 0, textures[i], 0, nullptr);
 	}
 
 	{
@@ -42,7 +42,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 		srvDesc.TextureCube.MipLevels = 1;
 		srvDesc.TextureCube.MostDetailedMip = 0;
 
-		createSRV(cubeTexture.Get(), srvDesc);
+		createSRV(texture.Get(), srvDesc);
 	}
 
 	for (unsigned int i = 0; i < 6; i++)
@@ -55,7 +55,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 TextureCube::TextureCube(const std::string& texturePath)
 {
 	const std::wstring wTexturePath(texturePath.begin(), texturePath.end());
-	DirectX::CreateDDSTextureFromFileEx(Renderer::getDevice(), Renderer::getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)cubeTexture.ReleaseAndGetAddressOf(), releaseAndGetSRV());
+	DirectX::CreateDDSTextureFromFileEx(Renderer::getDevice(), ImCtx::GetContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)texture.ReleaseAndGetAddressOf(), releaseAndGetSRV());
 
 	std::cout << "[class TextureCube] " << texturePath << " create successfully!\n";
 }
@@ -76,7 +76,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	tDesc.ArraySize = 6;
 	tDesc.MipLevels = mipLevels;
-	Renderer::get()->createTexture2D(&tDesc, nullptr, cubeTexture.ReleaseAndGetAddressOf());
+	Renderer::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 
 	const DirectX::XMVECTOR focusPoints[6] =
 	{
@@ -97,15 +97,15 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 		{0.0f, 1.0f,  0.0f}
 	};
 
-	RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
-	RenderAPI::get()->PSSetSRV({ equirectangularMap }, 0);
-	RenderAPI::get()->OMSetBlendState(nullptr);
-	RenderAPI::get()->RSSetViewport(skyboxResolution, skyboxResolution);
-	RenderAPI::get()->VSSetConstantBuffer({ buffer }, 2);
+	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
+	ImCtx::get()->PSSetSRV({ equirectangularMap }, 0);
+	ImCtx::get()->OMSetBlendState(nullptr);
+	ImCtx::get()->RSSetViewport(skyboxResolution, skyboxResolution);
+	ImCtx::get()->VSSetConstantBuffer({ buffer }, 2);
 
-	RenderAPI::get()->BindShader(equirectangularVS);
-	RenderAPI::get()->BindShader(equirectangularPS);
+	ImCtx::get()->BindShader(equirectangularVS);
+	ImCtx::get()->BindShader(equirectangularPS);
 
 	const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 10.f);
 
@@ -119,15 +119,16 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	{
 		rtvDesc.Texture2DArray.FirstArraySlice = D3D11CalcSubresource(0, i, mipLevels);
 
-		RenderOnlyRTV* rtv = new RenderOnlyRTV(cubeTexture.Get(), rtvDesc);
+		RenderOnlyRTV* rtv = new RenderOnlyRTV(texture.Get(), rtvDesc);
 
-		RenderAPI::get()->OMSetRTV({ rtv }, nullptr);
+		ImCtx::get()->OMSetRTV({ rtv }, nullptr);
 		const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH({ 0.f,0.f,0.f }, focusPoints[i], upVectors[i]);
 		const DirectX::XMMATRIX viewProj = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
-		memcpy(buffer->map().pData, &viewProj, sizeof(DirectX::XMMATRIX));
-		buffer->unmap();
-		RenderAPI::get()->DrawCube();
+		memcpy(ImCtx::get()->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &viewProj, sizeof(DirectX::XMMATRIX));
+		ImCtx::get()->Unmap(buffer, 0);
+		ImCtx::get()->DrawCube();
 
+		ImCtx::get()->UnbindRTV();
 		delete rtv;
 	}
 
@@ -137,15 +138,16 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	srvDesc.TextureCube.MipLevels = mipLevels;
 	srvDesc.TextureCube.MostDetailedMip = 0;
 
-	createSRV(cubeTexture.Get(), srvDesc);
+	createSRV(texture.Get(), srvDesc);
 
 	if (mipLevels > 1)
 	{
-		generateMips();
+		ImCtx::get()->GenerateMips(this);
 	}
 
-	RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+	ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
+	equirectangularMap->unbindFromSRV(ImCtx::get()->GetContext());
 	delete equirectangularMap;
 	delete buffer;
 }

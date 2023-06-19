@@ -59,9 +59,6 @@ public:
 
 		param.factor = 0.180f;
 
-		memcpy(simulationBuffer->map().pData, &param, sizeof(SimulationParam));
-		simulationBuffer->unmap();
-
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.01f, 100.f);
 	}
 
@@ -82,8 +79,8 @@ public:
 	{
 		//param.factor = 0.1f + 0.01f * sinf(Graphics::getSTime());
 
-		memcpy(simulationBuffer->map().pData, &param, sizeof(SimulationParam));
-		simulationBuffer->unmap();
+		memcpy(ImCtx::get()->Map(simulationBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &param, sizeof(SimulationParam));
+		ImCtx::get()->Unmap(simulationBuffer, 0);
 
 		if (rotating)
 		{
@@ -94,29 +91,29 @@ public:
 
 	void render() override
 	{
-		RenderAPI::get()->CSSetConstantBuffer({ simulationBuffer }, 1);
+		ImCtx::get()->CSSetConstantBuffer({ simulationBuffer }, 1);
 
 		attractor.update(Graphics::getDeltaTime());
 
-		RenderAPI::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
-		RenderAPI::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
-		RenderAPI::get()->OMSetRTV({ renderTexture->getMip(0) }, depthTexture);
+		ImCtx::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
+		ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, depthTexture);
 
 		attractor.render();
 
 		ShaderResourceView* const textureSRV = bloomEffect.process(renderTexture);
 
-		RenderAPI::get()->ClearDefRTV(DirectX::Colors::Black);
-		RenderAPI::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->OMSetDefRTV(nullptr);
 
-		RenderAPI::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		RenderAPI::get()->PSSetSampler({ States::linearClampSampler }, 0);
-		RenderAPI::get()->PSSetSRV({ textureSRV }, 0);
+		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
+		ImCtx::get()->PSSetSRV({ textureSRV }, 0);
 
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenVS);
-		RenderAPI::get()->BindShader(RenderAPI::fullScreenPS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
 
-		RenderAPI::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 	}
 };

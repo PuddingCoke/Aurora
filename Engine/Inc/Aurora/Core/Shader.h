@@ -48,7 +48,7 @@ public:
 
 private:
 
-	friend class RenderAPI;
+	friend class ImCtx;
 
 	ComPtr<ID3DBlob> shaderBlob;
 

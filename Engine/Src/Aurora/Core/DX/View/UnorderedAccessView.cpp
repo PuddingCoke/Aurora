@@ -13,7 +13,6 @@ UnorderedAccessView::UnorderedAccessView() :
 
 UnorderedAccessView::~UnorderedAccessView()
 {
-	unbindFromCUAV(Renderer::getContext()) || unbindFromPUAV(Renderer::getContext());
 }
 
 ID3D11UnorderedAccessView* UnorderedAccessView::getUAV() const
