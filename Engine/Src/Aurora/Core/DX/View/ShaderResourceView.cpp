@@ -21,7 +21,7 @@ ShaderResourceView::ShaderResourceView() :
 
 ShaderResourceView::~ShaderResourceView()
 {
-	unbindFromSRV();
+	unbindFromSRV(Renderer::getContext());
 }
 
 ID3D11ShaderResourceView* ShaderResourceView::getSRV() const
@@ -34,80 +34,80 @@ ID3D11ShaderResourceView** ShaderResourceView::releaseAndGetSRV()
 	return shaderResourceView.ReleaseAndGetAddressOf();
 }
 
-void ShaderResourceView::unbindVSRV()
+void ShaderResourceView::unbindVSRV(ID3D11DeviceContext3* const ctx)
 {
-	Renderer::getContext()->VSSetShaderResources(VSSlot, 1, nullSRV);
+	ctx->VSSetShaderResources(VSSlot, 1, nullSRV);
 	curVSRV[VSSlot] = nullptr;
 	VSSlot = -1;
 }
 
-void ShaderResourceView::unbindHSRV()
+void ShaderResourceView::unbindHSRV(ID3D11DeviceContext3* const ctx)
 {
-	Renderer::getContext()->HSSetShaderResources(HSSlot, 1, nullSRV);
+	ctx->HSSetShaderResources(HSSlot, 1, nullSRV);
 	curHSRV[HSSlot] = nullptr;
 	HSSlot = -1;
 }
 
-void ShaderResourceView::unbindDSRV()
+void ShaderResourceView::unbindDSRV(ID3D11DeviceContext3* const ctx)
 {
-	Renderer::getContext()->DSSetShaderResources(DSSlot, 1, nullSRV);
+	ctx->DSSetShaderResources(DSSlot, 1, nullSRV);
 	curDSRV[DSSlot] = nullptr;
 	DSSlot = -1;
 }
 
-void ShaderResourceView::unbindGSRV()
+void ShaderResourceView::unbindGSRV(ID3D11DeviceContext3* const ctx)
 {
-	Renderer::getContext()->GSSetShaderResources(GSSlot, 1, nullSRV);
+	ctx->GSSetShaderResources(GSSlot, 1, nullSRV);
 	curGSRV[GSSlot] = nullptr;
 	GSSlot = -1;
 }
 
-void ShaderResourceView::unbindPSRV()
+void ShaderResourceView::unbindPSRV(ID3D11DeviceContext3* const ctx)
 {
-	Renderer::getContext()->PSSetShaderResources(PSSlot, 1, nullSRV);
+	ctx->PSSetShaderResources(PSSlot, 1, nullSRV);
 	curPSRV[PSSlot] = nullptr;
 	PSSlot = -1;
 }
 
-void ShaderResourceView::unbindCSRV()
+void ShaderResourceView::unbindCSRV(ID3D11DeviceContext3* const ctx)
 {
-	Renderer::getContext()->CSSetShaderResources(CSSlot, 1, nullSRV);
+	ctx->CSSetShaderResources(CSSlot, 1, nullSRV);
 	curCSRV[CSSlot] = nullptr;
 	CSSlot = -1;
 }
 
-bool ShaderResourceView::unbindFromSRV()
+bool ShaderResourceView::unbindFromSRV(ID3D11DeviceContext3* const ctx)
 {
 	bool success = false;
 
 	if (VSSlot != -1)
 	{
-		unbindVSRV();
+		unbindVSRV(ctx);
 		success = true;
 	}
 	if (HSSlot != -1)
 	{
-		unbindHSRV();
+		unbindHSRV(ctx);
 		success = true;
 	}
 	if (DSSlot != -1)
 	{
-		unbindDSRV();
+		unbindDSRV(ctx);
 		success = true;
 	}
 	if (GSSlot != -1)
 	{
-		unbindGSRV();
+		unbindGSRV(ctx);
 		success = true;
 	}
 	if (PSSlot != -1)
 	{
-		unbindPSRV();
+		unbindPSRV(ctx);
 		success = true;
 	}
 	if (CSSlot != -1)
 	{
-		unbindCSRV();
+		unbindCSRV(ctx);
 		success = true;
 	}
 

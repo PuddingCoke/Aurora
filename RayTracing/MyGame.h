@@ -99,7 +99,7 @@ public:
 
 		temporalAccumulationParam.frameCount = 0;
 
-		renderTexture->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
 
 		RenderAPI::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
 

@@ -16,11 +16,7 @@ public:
 
 	USView* getMip(const UINT& index);
 
-	virtual void bindSRV() override;
-
-	void clearUAV(const float* const color, const UINT& index) const;
-
-	void clearUAV(const unsigned int* const value, const UINT& index) const;
+	virtual void bindSRV(ID3D11DeviceContext3* const ctx) override;
 
 private:
 
@@ -30,11 +26,11 @@ private:
 
 		ShaderResourceView* allSRV;
 
-		void bindSRV() override;
+		void bindSRV(ID3D11DeviceContext3* const ctx) override;
 
-		void bindCUAV() override;
+		void bindCUAV(ID3D11DeviceContext3* const ctx) override;
 
-		void bindPUAV() override;
+		void bindPUAV(ID3D11DeviceContext3* const ctx) override;
 
 	}*mipArray;
 

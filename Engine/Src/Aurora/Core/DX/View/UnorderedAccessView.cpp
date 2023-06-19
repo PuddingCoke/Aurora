@@ -13,7 +13,7 @@ UnorderedAccessView::UnorderedAccessView() :
 
 UnorderedAccessView::~UnorderedAccessView()
 {
-	unbindFromCUAV() || unbindFromPUAV();
+	unbindFromCUAV(Renderer::getContext()) || unbindFromPUAV(Renderer::getContext());
 }
 
 ID3D11UnorderedAccessView* UnorderedAccessView::getUAV() const
@@ -26,7 +26,7 @@ ID3D11UnorderedAccessView** UnorderedAccessView::releaseAndGetUAV()
 	return unorderedAccessView.ReleaseAndGetAddressOf();
 }
 
-void UnorderedAccessView::unbindCUAV()
+void UnorderedAccessView::unbindCUAV(ID3D11DeviceContext3* const ctx)
 {
 	for (unsigned int i = 0; i < D3D11_PS_CS_UAV_REGISTER_COUNT; i++)
 	{
@@ -36,10 +36,10 @@ void UnorderedAccessView::unbindCUAV()
 			curCUAV[i] = nullptr;
 		}
 	}
-	Renderer::getContext()->CSSetUnorderedAccessViews(0, D3D11_PS_CS_UAV_REGISTER_COUNT, nullUAV, nullptr);
+	ctx->CSSetUnorderedAccessViews(0, D3D11_PS_CS_UAV_REGISTER_COUNT, nullUAV, nullptr);
 }
 
-void UnorderedAccessView::unbindPUAV()
+void UnorderedAccessView::unbindPUAV(ID3D11DeviceContext3* const ctx)
 {
 	unsigned int num = 0;
 	for (num = 0; curPUAV[num]; num++)
@@ -47,24 +47,14 @@ void UnorderedAccessView::unbindPUAV()
 		curPUAV[num]->boundOnRTV = false;
 		curPUAV[num] = nullptr;
 	}
-	Renderer::getContext()->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0, num, nullUAV, nullptr);
+	ctx->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0, num, nullUAV, nullptr);
 }
 
-void UnorderedAccessView::clearUAV(const float* const color) const
-{
-	Renderer::getContext()->ClearUnorderedAccessViewFloat(unorderedAccessView.Get(), color);
-}
-
-void UnorderedAccessView::clearUAV(const unsigned int* const value) const
-{
-	Renderer::getContext()->ClearUnorderedAccessViewUint(unorderedAccessView.Get(), value);
-}
-
-bool UnorderedAccessView::unbindFromCUAV()
+bool UnorderedAccessView::unbindFromCUAV(ID3D11DeviceContext3* const ctx)
 {
 	if (CUAVSlot != -1)
 	{
-		Renderer::getContext()->CSSetUnorderedAccessViews(CUAVSlot, 1, nullUAV, nullptr);
+		ctx->CSSetUnorderedAccessViews(CUAVSlot, 1, nullUAV, nullptr);
 		curCUAV[CUAVSlot] = nullptr;
 		CUAVSlot = -1;
 		return true;
@@ -73,11 +63,11 @@ bool UnorderedAccessView::unbindFromCUAV()
 	return false;
 }
 
-bool UnorderedAccessView::unbindFromPUAV()
+bool UnorderedAccessView::unbindFromPUAV(ID3D11DeviceContext3* const ctx)
 {
 	if (boundOnRTV)
 	{
-		unbindPUAV();
+		unbindPUAV(ctx);
 		return true;
 	}
 

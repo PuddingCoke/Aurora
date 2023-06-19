@@ -10,11 +10,11 @@ RUSView* RenderComputeTexture::getMip(const UINT& index)
 	return &mipArray[index];
 }
 
-void RenderComputeTexture::bindSRV()
+void RenderComputeTexture::bindSRV(ID3D11DeviceContext3* const ctx)
 {
 	for (UINT i = 0; i < mipLevels; i++)
 	{
-		if (mipArray[i].unbindFromRTV())
+		if (mipArray[i].unbindFromRTV(ctx))
 		{
 			break;
 		}
@@ -22,23 +22,8 @@ void RenderComputeTexture::bindSRV()
 
 	for (UINT i = 0; i < mipLevels; i++)
 	{
-		mipArray[i].unbindFromCUAV() || mipArray[i].unbindFromPUAV();
+		mipArray[i].unbindFromCUAV(ctx) || mipArray[i].unbindFromPUAV(ctx);
 	}
-}
-
-void RenderComputeTexture::clearUAV(const float* const color, const UINT& index) const
-{
-	mipArray[index].clearUAV(color);
-}
-
-void RenderComputeTexture::clearUAV(const unsigned int* const value, const UINT& index) const
-{
-	mipArray[index].clearUAV(value);
-}
-
-void RenderComputeTexture::clearRTV(const float color[4], const UINT& index) const
-{
-	mipArray[index].clearRTV(color);
 }
 
 RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height, const FMT& fmt, const float color[4], const UINT& mipLevels, const UINT& arraySize) :
@@ -128,28 +113,28 @@ RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height
 	}
 }
 
-void RenderComputeTexture::RUSViewEx::bindSRV()
+void RenderComputeTexture::RUSViewEx::bindSRV(ID3D11DeviceContext3* const ctx)
 {
-	unbindFromCUAV() || unbindFromPUAV() || unbindFromRTV();
+	unbindFromCUAV(ctx) || unbindFromPUAV(ctx) || unbindFromRTV(ctx);
 }
 
-void RenderComputeTexture::RUSViewEx::bindCUAV()
+void RenderComputeTexture::RUSViewEx::bindCUAV(ID3D11DeviceContext3* const ctx)
 {
-	allSRV->unbindFromSRV();
+	allSRV->unbindFromSRV(ctx);
 
-	unbindFromSRV() || unbindFromPUAV() || unbindFromRTV();
+	unbindFromSRV(ctx) || unbindFromPUAV(ctx) || unbindFromRTV(ctx);
 }
 
-void RenderComputeTexture::RUSViewEx::bindPUAV()
+void RenderComputeTexture::RUSViewEx::bindPUAV(ID3D11DeviceContext3* const ctx)
 {
-	allSRV->unbindFromSRV();
+	allSRV->unbindFromSRV(ctx);
 
-	unbindFromSRV() || unbindFromCUAV() || unbindFromRTV();
+	unbindFromSRV(ctx) || unbindFromCUAV(ctx) || unbindFromRTV(ctx);
 }
 
-void RenderComputeTexture::RUSViewEx::bindRTV()
+void RenderComputeTexture::RUSViewEx::bindRTV(ID3D11DeviceContext3* const ctx)
 {
-	allSRV->unbindFromSRV();
+	allSRV->unbindFromSRV(ctx);
 
-	unbindFromSRV() || unbindFromCUAV() || unbindFromPUAV();
+	unbindFromSRV(ctx) || unbindFromCUAV(ctx) || unbindFromPUAV(ctx);
 }

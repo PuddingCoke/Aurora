@@ -85,39 +85,29 @@ USView* ComputeTexture::getMip(const UINT& index)
 	return &mipArray[index];
 }
 
-void ComputeTexture::bindSRV()
+void ComputeTexture::bindSRV(ID3D11DeviceContext3* const ctx)
 {
 	for (UINT i = 0; i < mipLevels; i++)
 	{
-		mipArray[i].unbindFromCUAV() || mipArray[i].unbindFromPUAV();
+		mipArray[i].unbindFromCUAV(ctx) || mipArray[i].unbindFromPUAV(ctx);
 	}
 }
 
-void ComputeTexture::clearUAV(const float* const color, const UINT& index) const
+void ComputeTexture::USViewEx::bindSRV(ID3D11DeviceContext3* const ctx)
 {
-	mipArray[index].clearUAV(color);
+	unbindFromCUAV(ctx) || unbindFromPUAV(ctx);
 }
 
-void ComputeTexture::clearUAV(const unsigned int* const value, const UINT& index) const
+void ComputeTexture::USViewEx::bindCUAV(ID3D11DeviceContext3* const ctx)
 {
-	mipArray[index].clearUAV(value);
+	allSRV->unbindFromSRV(ctx);
+
+	unbindFromPUAV(ctx) || unbindFromSRV(ctx);
 }
 
-void ComputeTexture::USViewEx::bindSRV()
+void ComputeTexture::USViewEx::bindPUAV(ID3D11DeviceContext3* const ctx)
 {
-	unbindFromCUAV() || unbindFromPUAV();
-}
+	allSRV->unbindFromSRV(ctx);
 
-void ComputeTexture::USViewEx::bindCUAV()
-{
-	allSRV->unbindFromSRV();
-
-	unbindFromPUAV() || unbindFromSRV();
-}
-
-void ComputeTexture::USViewEx::bindPUAV()
-{
-	allSRV->unbindFromSRV();
-
-	unbindFromCUAV() || unbindFromSRV();
+	unbindFromCUAV(ctx) || unbindFromSRV(ctx);
 }

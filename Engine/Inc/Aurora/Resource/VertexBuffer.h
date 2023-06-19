@@ -21,7 +21,7 @@ public:
 
 protected:
 
-	bool unbindFromVertexBuffer();
+	bool unbindFromVertexBuffer(ID3D11DeviceContext3* const ctx);
 
 private:
 
@@ -34,7 +34,7 @@ private:
 	static const UINT nullStrides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
 	//解决绑定时的binding hazard
-	virtual void bindVertexBuffer();
+	virtual void bindVertexBuffer(ID3D11DeviceContext3* const ctx);
 
 };
 

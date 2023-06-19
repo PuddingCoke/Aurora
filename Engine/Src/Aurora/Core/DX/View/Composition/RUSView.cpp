@@ -8,22 +8,22 @@ RUSView::~RUSView()
 {
 }
 
-void RUSView::bindRTV()
+void RUSView::bindRTV(ID3D11DeviceContext3* const ctx)
 {
-	unbindFromSRV() || unbindFromCUAV() || unbindFromPUAV();
+	unbindFromSRV(ctx) || unbindFromCUAV(ctx) || unbindFromPUAV(ctx);
 }
 
-void RUSView::bindCUAV()
+void RUSView::bindCUAV(ID3D11DeviceContext3* const ctx)
 {
-	unbindFromSRV() || unbindFromPUAV() || unbindFromRTV();
+	unbindFromSRV(ctx) || unbindFromPUAV(ctx) || unbindFromRTV(ctx);
 }
 
-void RUSView::bindPUAV()
+void RUSView::bindPUAV(ID3D11DeviceContext3* const ctx)
 {
-	unbindFromSRV() || unbindFromCUAV() || unbindFromRTV();
+	unbindFromSRV(ctx) || unbindFromCUAV(ctx) || unbindFromRTV(ctx);
 }
 
-void RUSView::bindSRV()
+void RUSView::bindSRV(ID3D11DeviceContext3* const ctx)
 {
-	unbindFromCUAV() || unbindFromPUAV() || unbindFromRTV();
+	unbindFromCUAV(ctx) || unbindFromPUAV(ctx) || unbindFromRTV(ctx);
 }

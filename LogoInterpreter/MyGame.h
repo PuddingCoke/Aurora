@@ -32,7 +32,7 @@ public:
 
 		PrimitiveBatch* pBatch = PrimitiveBatch::create();
 
-		renderTexture->clearRTV(DirectX::Colors::White, 0);
+		RenderAPI::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::White);
 		RenderAPI::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
 
 		RenderAPI::get()->OMSetBlendState(States::defBlendState);

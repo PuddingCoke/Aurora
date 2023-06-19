@@ -15,12 +15,7 @@ RenderTargetView::RenderTargetView(ID3D11Resource* const resource, const D3D11_R
 
 RenderTargetView::~RenderTargetView()
 {
-	unbindFromRTV();
-}
-
-void RenderTargetView::clearRTV(const float* color)
-{
-	Renderer::getContext()->ClearRenderTargetView(renderTargetView.Get(), color);
+	unbindFromRTV(Renderer::getContext());
 }
 
 ID3D11RenderTargetView* RenderTargetView::getRTV() const
@@ -33,21 +28,21 @@ ID3D11RenderTargetView** RenderTargetView::releaseAndGetRTV()
 	return renderTargetView.ReleaseAndGetAddressOf();
 }
 
-void RenderTargetView::unbindRTV()
+void RenderTargetView::unbindRTV(ID3D11DeviceContext3* const ctx)
 {
 	for (unsigned int i = 0; curRTV[i]; i++)
 	{
 		curRTV[i]->boundOnRTV = false;
 		curRTV[i] = nullptr;
 	}
-	Renderer::getContext()->OMSetRenderTargets(0, nullptr, nullptr);
+	ctx->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
-bool RenderTargetView::unbindFromRTV()
+bool RenderTargetView::unbindFromRTV(ID3D11DeviceContext3* const ctx)
 {
 	if (boundOnRTV)
 	{
-		unbindRTV();
+		unbindRTV(ctx);
 		return true;
 	}
 

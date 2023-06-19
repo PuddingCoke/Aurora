@@ -78,8 +78,8 @@ public:
 
 	void render() override
 	{
-		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
-		originTexture->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
+		RenderAPI::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
 
 		RenderAPI::get()->OMSetBlendState(States::defBlendState);

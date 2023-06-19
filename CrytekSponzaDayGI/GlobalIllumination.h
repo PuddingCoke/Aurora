@@ -246,18 +246,18 @@ public:
 	{
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
+		RenderAPI::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
 
-		gBaseColor->clearRTV(DirectX::Colors::Transparent, 0);
-		gPosition->clearRTV(DirectX::Colors::Transparent, 0);
-		gNormalSpecular->clearRTV(DirectX::Colors::Transparent, 0);
+		RenderAPI::get()->ClearRTV(gBaseColor->getMip(0), DirectX::Colors::Transparent);
+		RenderAPI::get()->ClearRTV(gPosition->getMip(0), DirectX::Colors::Transparent);
+		RenderAPI::get()->ClearRTV(gNormalSpecular->getMip(0), DirectX::Colors::Transparent);
 
 		RenderAPI::get()->OMSetRTV({ gPosition->getMip(0),gNormalSpecular->getMip(0),gBaseColor->getMip(0) }, depthTexture);
 		RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
 		scene->render(deferredVShader, deferredPShader);
 
-		originTexture->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
 		RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(depthTexture->getSRV(), gNormalSpecular->getSRV()),shadowTexture,irradianceBounceCoeff,depthOctahedralMap }, 0);
 		RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,irradianceVolumeBuffer }, 1);
@@ -389,7 +389,7 @@ private:
 		RenderAPI::get()->RSSetState(States::rasterShadow);
 		RenderAPI::get()->RSSetViewport(shadowMapRes, shadowMapRes);
 
-		shadowTexture->clearDSV(D3D11_CLEAR_DEPTH);
+		RenderAPI::get()->ClearDSV(shadowTexture, D3D11_CLEAR_DEPTH);
 
 		RenderAPI::get()->OMSetRTV({}, shadowTexture);
 		RenderAPI::get()->VSSetConstantBuffer({ shadowProjBuffer }, 2);
@@ -481,10 +481,10 @@ private:
 		memcpy(cubeRenderBuffer->map().pData, &cubeRenderParam, sizeof(CubeRenderParam));
 		cubeRenderBuffer->unmap();
 
-		radianceCube->clearRTV(DirectX::Colors::Black);
+		RenderAPI::get()->ClearRTV(radianceCube, DirectX::Colors::Black);
 		float distanceClear[4] = { 512.f,512.f,512.f,512.f };
-		distanceCube->clearRTV(distanceClear);
-		depthCube->clearDSV(D3D11_CLEAR_DEPTH);
+		RenderAPI::get()->ClearRTV(distanceCube, distanceClear);
+		RenderAPI::get()->ClearDSV(depthCube, D3D11_CLEAR_DEPTH);
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 		RenderAPI::get()->IASetInputLayout(modelInputLayout.Get());
@@ -557,8 +557,8 @@ private:
 		memcpy(cubeRenderBuffer->map().pData, &cubeRenderParam, sizeof(CubeRenderParam));
 		cubeRenderBuffer->unmap();
 
-		radianceCube->clearRTV(DirectX::Colors::Black);
-		depthCube->clearDSV(D3D11_CLEAR_DEPTH);
+		RenderAPI::get()->ClearRTV(radianceCube, DirectX::Colors::Black);
+		RenderAPI::get()->ClearDSV(depthCube, D3D11_CLEAR_DEPTH);
 
 		RenderAPI::get()->OMSetBlendState(nullptr);
 		RenderAPI::get()->IASetInputLayout(modelInputLayout.Get());

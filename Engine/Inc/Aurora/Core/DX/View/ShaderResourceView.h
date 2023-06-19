@@ -24,12 +24,12 @@ public:
 	void createSRV(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
 
 	//解决binding hazard的问题
-	virtual void bindSRV() = 0;
+	virtual void bindSRV(ID3D11DeviceContext3* const ctx) = 0;
 
 	void generateMips() const;
 
 	//返回是否成功解绑
-	bool unbindFromSRV();
+	bool unbindFromSRV(ID3D11DeviceContext3* const ctx);
 
 private:
 
@@ -49,17 +49,17 @@ private:
 
 	static ID3D11ShaderResourceView* const nullSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT];
 
-	void unbindVSRV();
+	void unbindVSRV(ID3D11DeviceContext3* const ctx);
 
-	void unbindHSRV();
+	void unbindHSRV(ID3D11DeviceContext3* const ctx);
 
-	void unbindDSRV();
+	void unbindDSRV(ID3D11DeviceContext3* const ctx);
 
-	void unbindGSRV();
+	void unbindGSRV(ID3D11DeviceContext3* const ctx);
 
-	void unbindPSRV();
+	void unbindPSRV(ID3D11DeviceContext3* const ctx);
 
-	void unbindCSRV();
+	void unbindCSRV(ID3D11DeviceContext3* const ctx);
 
 	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 

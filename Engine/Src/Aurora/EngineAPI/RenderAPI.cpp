@@ -60,7 +60,7 @@ RenderAPI::~RenderAPI()
 
 void RenderAPI::ClearDefRTV(const float* const color) const
 {
-	defRenderTargetView->clearRTV(color);
+	ClearRTV(defRenderTargetView, color);
 }
 
 void RenderAPI::OMSetDefRTV(DepthStencilView* const dsv)
@@ -72,7 +72,7 @@ void RenderAPI::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, D
 {
 	if (UnorderedAccessView::curPUAV[0])
 	{
-		UnorderedAccessView::unbindPUAV();
+		UnorderedAccessView::unbindPUAV(Renderer::getContext());
 	}
 
 	for (UINT i = 0; RenderTargetView::curRTV[i]; i++)
@@ -91,14 +91,14 @@ void RenderAPI::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, D
 
 			tempRTV[i] = it[0]->renderTargetView.Get();
 
-			it[0]->bindRTV();
+			it[0]->bindRTV(Renderer::getContext());
 
 			it[0]->boundOnRTV = true;
 		}
 
 		if (dsv)
 		{
-			dsv->bindDSV();
+			dsv->bindDSV(Renderer::getContext());
 			Renderer::getContext()->OMSetRenderTargets((UINT)rtvs.size(), tempRTV, dsv->getDSV());
 		}
 		else
@@ -108,7 +108,7 @@ void RenderAPI::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, D
 	}
 	else
 	{
-		dsv->bindDSV();
+		dsv->bindDSV(Renderer::getContext());
 		Renderer::getContext()->OMSetRenderTargets(0, nullptr, dsv->getDSV());
 	}
 
@@ -118,11 +118,11 @@ void RenderAPI::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
 {
 	if (UnorderedAccessView::curPUAV[0])
 	{
-		UnorderedAccessView::unbindPUAV();
+		UnorderedAccessView::unbindPUAV(Renderer::getContext());
 	}
 	if (RenderTargetView::curRTV[0])
 	{
-		RenderTargetView::unbindRTV();
+		RenderTargetView::unbindRTV(Renderer::getContext());
 	}
 
 	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
@@ -133,7 +133,7 @@ void RenderAPI::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
 
 		tempUAV[i] = it[0]->unorderedAccessView.Get();
 
-		it[0]->bindPUAV();
+		it[0]->bindPUAV(Renderer::getContext());
 
 		it[0]->boundOnRTV = true;
 	}
@@ -141,9 +141,29 @@ void RenderAPI::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
 	Renderer::getContext()->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, (UINT)uavs.size(), tempUAV, nullptr);
 }
 
-void RenderAPI::BindShader(Shader* const shader)
+void RenderAPI::BindShader(Shader* const shader) const
 {
 	shader->use(Renderer::getContext());
+}
+
+void RenderAPI::ClearDSV(DepthStencilView* dsv, const UINT& clearFlag, const float& depth, const UINT8& stencil) const
+{
+	Renderer::getContext()->ClearDepthStencilView(dsv->getDSV(), clearFlag, depth, stencil);
+}
+
+void RenderAPI::ClearRTV(RenderTargetView* rtv, const float* const color) const
+{
+	Renderer::getContext()->ClearRenderTargetView(rtv->getRTV(), color);
+}
+
+void RenderAPI::ClearUAV(UnorderedAccessView* uav, const float* const color) const
+{
+	Renderer::getContext()->ClearUnorderedAccessViewFloat(uav->getUAV(), color);
+}
+
+void RenderAPI::ClearUAV(UnorderedAccessView* uav, const unsigned int* const value) const
+{
+	Renderer::getContext()->ClearUnorderedAccessViewUint(uav->getUAV(), value);
 }
 
 void RenderAPI::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const UINT& slot)
@@ -163,9 +183,9 @@ void RenderAPI::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs
 		UnorderedAccessView::curCUAV[i] = it[0];
 		tempUAV[i - slot] = it[0]->unorderedAccessView.Get();
 
-		if (!it[0]->unbindFromCUAV() || !it[0]->unbindFromPUAV())
+		if (!it[0]->unbindFromCUAV(Renderer::getContext()) || !it[0]->unbindFromPUAV(Renderer::getContext()))
 		{
-			it[0]->bindCUAV();
+			it[0]->bindCUAV(Renderer::getContext());
 		}
 
 		it[0]->CUAVSlot = i;
@@ -193,11 +213,11 @@ void RenderAPI::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 
 		if (it[0]->VSSlot != -1)
 		{
-			it[0]->unbindVSRV();
+			it[0]->unbindVSRV(Renderer::getContext());
 		}
 		else
 		{
-			it[0]->bindSRV();
+			it[0]->bindSRV(Renderer::getContext());
 		}
 
 		it[0]->VSSlot = i;
@@ -225,11 +245,11 @@ void RenderAPI::HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 
 		if (it[0]->HSSlot != -1)
 		{
-			it[0]->unbindHSRV();
+			it[0]->unbindHSRV(Renderer::getContext());
 		}
 		else
 		{
-			it[0]->bindSRV();
+			it[0]->bindSRV(Renderer::getContext());
 		}
 
 		it[0]->HSSlot = i;
@@ -257,11 +277,11 @@ void RenderAPI::DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 
 		if (it[0]->DSSlot != -1)
 		{
-			it[0]->unbindDSRV();
+			it[0]->unbindDSRV(Renderer::getContext());
 		}
 		else
 		{
-			it[0]->bindSRV();
+			it[0]->bindSRV(Renderer::getContext());
 		}
 
 		it[0]->DSSlot = i;
@@ -289,11 +309,11 @@ void RenderAPI::GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 
 		if (it[0]->GSSlot != -1)
 		{
-			it[0]->unbindGSRV();
+			it[0]->unbindGSRV(Renderer::getContext());
 		}
 		else
 		{
-			it[0]->bindSRV();
+			it[0]->bindSRV(Renderer::getContext());
 		}
 
 		it[0]->GSSlot = i;
@@ -321,11 +341,11 @@ void RenderAPI::PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 
 		if (it[0]->PSSlot != -1)
 		{
-			it[0]->unbindPSRV();
+			it[0]->unbindPSRV(Renderer::getContext());
 		}
 		else
 		{
-			it[0]->bindSRV();
+			it[0]->bindSRV(Renderer::getContext());
 		}
 
 		it[0]->PSSlot = i;
@@ -353,11 +373,11 @@ void RenderAPI::CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs,
 
 		if (it[0]->CSSlot != -1)
 		{
-			it[0]->unbindCSRV();
+			it[0]->unbindCSRV(Renderer::getContext());
 		}
 		else
 		{
-			it[0]->bindSRV();
+			it[0]->bindSRV(Renderer::getContext());
 		}
 
 		it[0]->CSSlot = i;
@@ -388,9 +408,9 @@ void RenderAPI::IASetVertexBuffer(const UINT& slot, const std::initializer_list<
 		tempStrides[i - slot] = itStride[0];
 		tempOffsets[i - slot] = itOffset[0];
 
-		if (!it[0]->unbindFromVertexBuffer())
+		if (!it[0]->unbindFromVertexBuffer(Renderer::getContext()))
 		{
-			it[0]->bindVertexBuffer();
+			it[0]->bindVertexBuffer(Renderer::getContext());
 		}
 
 		it[0]->IASlot = i;
@@ -669,17 +689,17 @@ void RenderAPI::CSUnbindShader() const
 
 void RenderAPI::UnbindRTV() const
 {
-	RenderTargetView::unbindRTV();
+	RenderTargetView::unbindRTV(Renderer::getContext());
 }
 
 void RenderAPI::UnbindCSUAV() const
 {
-	UnorderedAccessView::unbindCUAV();
+	UnorderedAccessView::unbindCUAV(Renderer::getContext());
 }
 
 void RenderAPI::UnbindPSUAV() const
 {
-	UnorderedAccessView::unbindPUAV();
+	UnorderedAccessView::unbindPUAV(Renderer::getContext());
 }
 
 void RenderAPI::GenNoise(UnorderedAccessView* const uav, const UINT& textureWidth, const UINT& textureHeight)

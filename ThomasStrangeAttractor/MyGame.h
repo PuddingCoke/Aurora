@@ -98,8 +98,8 @@ public:
 
 		attractor.update(Graphics::getDeltaTime());
 
-		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
-		renderTexture->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
+		RenderAPI::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ renderTexture->getMip(0) }, depthTexture);
 
 		attractor.render();

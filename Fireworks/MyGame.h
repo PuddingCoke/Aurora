@@ -192,7 +192,7 @@ public:
 	{
 		RenderAPI::get()->OMSetBlendState(States::defBlendState);
 
-		texture->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->ClearRTV(texture->getMip(0), DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ texture->getMip(0) }, nullptr);
 
 		pBatch->begin();

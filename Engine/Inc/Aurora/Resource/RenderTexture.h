@@ -6,6 +6,8 @@
 #include<Aurora/Core/DX/Resource/Texture2D.h>
 #include<Aurora/Core/DX/View/Composition/RSView.h>
 
+#include<Aurora/EngineAPI/RenderAPI.h>
+
 class RenderTexture :public Texture2D, public ShaderResourceView
 {
 public:
@@ -18,9 +20,7 @@ public:
 
 	RSView* getMip(const UINT& index);
 
-	virtual void bindSRV() override;
-
-	void clearRTV(const float color[4], const UINT& index) const;
+	virtual void bindSRV(ID3D11DeviceContext3* const ctx) override;
 
 private:
 
@@ -30,9 +30,9 @@ private:
 
 		ShaderResourceView* allSRV;
 
-		void bindRTV() override;
+		void bindRTV(ID3D11DeviceContext3* const ctx) override;
 
-		void bindSRV() override;
+		void bindSRV(ID3D11DeviceContext3* const ctx) override;
 
 	}*mipArray;
 

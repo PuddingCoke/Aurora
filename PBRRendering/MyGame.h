@@ -95,7 +95,7 @@ public:
 
 	void render()
 	{
-		depthTexture->clearDSV(D3D11_CLEAR_DEPTH);
+		RenderAPI::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
 		RenderAPI::get()->ClearDefRTV(DirectX::Colors::CadetBlue);
 		RenderAPI::get()->OMSetDefRTV(depthTexture);
 

@@ -45,7 +45,15 @@ public:
 
 	void OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs);
 
-	void BindShader(Shader* const shader);
+	void BindShader(Shader* const shader) const;
+
+	void ClearDSV(DepthStencilView* dsv, const UINT& clearFlag, const float& depth = 1.0f, const UINT8& stencil = 0) const;
+
+	void ClearRTV(RenderTargetView* rtv,const float* const color) const;
+
+	void ClearUAV(UnorderedAccessView* uav, const float* const color) const;
+
+	void ClearUAV(UnorderedAccessView* uav, const unsigned int* const value) const;
 
 	void CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, const UINT& slot);
 

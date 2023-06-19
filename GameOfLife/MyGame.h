@@ -113,8 +113,8 @@ public:
 	void randomize()
 	{
 		const UINT value[] = { 0,0,0,0 };
-		swapTexture->read()->clearUAV(value, 0);
-		swapTexture->write()->clearUAV(value, 0);
+		RenderAPI::get()->ClearUAV(swapTexture->read()->getMip(0), value);
+		RenderAPI::get()->ClearUAV(swapTexture->write()->getMip(0), value);
 
 		RenderAPI::get()->CSSetUAV({ swapTexture->write()->getMip(0) }, 0);
 

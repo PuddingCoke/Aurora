@@ -13,7 +13,7 @@ ShaderResourceView* FadeEffect::process(ShaderResourceView* const texture2D) con
 {
 	RenderAPI::get()->OMSetBlendState(nullptr);
 
-	outputRTV->clearRTV(DirectX::Colors::Black, 0);
+	RenderAPI::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
 	RenderAPI::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
 
 	RenderAPI::get()->PSSetConstantBuffer({ fadeBuffer }, 1);

@@ -5,6 +5,6 @@ RenderOnlyRTV::RenderOnlyRTV(ID3D11Resource* resource, const D3D11_RENDER_TARGET
 	createRTV(resource, rtvDesc);
 }
 
-void RenderOnlyRTV::bindRTV()
+void RenderOnlyRTV::bindRTV(ID3D11DeviceContext3* const ctx)
 {
 }

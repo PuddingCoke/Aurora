@@ -140,7 +140,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	}
 
 	RenderAPI::get()->BindShader(bloomFinal);
-	outputRTV->clearRTV(DirectX::Colors::Black, 0);
+	RenderAPI::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
 	RenderAPI::get()->RSSetViewport(bloomWidth, bloomHeight);
 	RenderAPI::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
 	RenderAPI::get()->PSSetSRV({ texture2D,swapTexture[0]->read(),lensDirtTexture }, 0);

@@ -34,7 +34,7 @@ ShaderResourceView* SSREffect::process(ShaderResourceView* resDepthTexture, Shad
 		RenderAPI::get()->Dispatch(((width / 2) >> i) / 16 + 1, ((height / 2) >> i) / 9 + 1, 1);
 	}
 
-	outputRTV->clearRTV(DirectX::Colors::Black, 0);
+	RenderAPI::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
 	RenderAPI::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
 	RenderAPI::get()->PSSetSRV({ gPosition,gNormal,hiZTexture }, 0);
 	RenderAPI::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);

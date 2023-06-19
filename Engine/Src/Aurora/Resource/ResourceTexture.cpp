@@ -48,6 +48,6 @@ ResourceTexture::~ResourceTexture()
 {
 }
 
-void ResourceTexture::bindSRV()
+void ResourceTexture::bindSRV(ID3D11DeviceContext3* const ctx)
 {
 }

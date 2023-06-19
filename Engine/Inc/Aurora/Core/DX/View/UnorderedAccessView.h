@@ -24,22 +24,18 @@ public:
 	void createUAV(ID3D11Resource* const resource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc);
 
 	//解决binding hazard的问题
-	virtual void bindCUAV() = 0;
+	virtual void bindCUAV(ID3D11DeviceContext3* const ctx) = 0;
 
-	virtual void bindPUAV() = 0;
+	virtual void bindPUAV(ID3D11DeviceContext3* const ctx) = 0;
 
-	static void unbindCUAV();
+	static void unbindCUAV(ID3D11DeviceContext3* const ctx);
 
-	static void unbindPUAV();
-
-	void clearUAV(const float* const color) const;
-
-	void clearUAV(const unsigned int* const value) const;
+	static void unbindPUAV(ID3D11DeviceContext3* const ctx);
 
 	//是否成功解绑
-	bool unbindFromCUAV();
+	bool unbindFromCUAV(ID3D11DeviceContext3* const ctx);
 
-	bool unbindFromPUAV();
+	bool unbindFromPUAV(ID3D11DeviceContext3* const ctx);
 
 private:
 

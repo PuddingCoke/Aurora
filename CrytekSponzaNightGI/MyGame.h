@@ -189,9 +189,8 @@ public:
 			RenderAPI::get()->OMSetBlendState(nullptr);
 			RenderAPI::get()->IASetInputLayout(inputLayout.Get());
 
-			const unsigned int color[4] = { 0,0,0,0 };
-			voxelTextureColor->clearUAV(color);
-			voxelTextureNormal->clearUAV(color);
+			RenderAPI::get()->ClearUAV(voxelTextureColor, DirectX::Colors::Transparent);
+			RenderAPI::get()->ClearUAV(voxelTextureNormal, DirectX::Colors::Transparent);
 			RenderAPI::get()->OMSetUAV({ voxelTextureColor,voxelTextureNormal });
 
 			RenderAPI::get()->VSSetConstantBuffer({ voxelProjBuffer }, 2);
@@ -309,7 +308,7 @@ public:
 		{
 			RenderAPI::get()->RSSetState(States::rasterCullNone);
 
-			resDepthTexture->clearDSV(D3D11_CLEAR_DEPTH);
+			RenderAPI::get()->ClearDSV(resDepthTexture, D3D11_CLEAR_DEPTH);
 			RenderAPI::get()->OMSetDefRTV(resDepthTexture);
 			RenderAPI::get()->ClearDefRTV(DirectX::Colors::Blue);
 
@@ -331,16 +330,16 @@ public:
 			RenderAPI::get()->GSUnbindShader();
 			RenderAPI::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler }, 0);
 
-			gBaseColor->clearRTV(DirectX::Colors::Black, 0);
-			gPosition->clearRTV(DirectX::Colors::Black, 0);
-			gNormalSpecular->clearRTV(DirectX::Colors::Black, 0);
-			resDepthTexture->clearDSV(D3D11_CLEAR_DEPTH);
+			RenderAPI::get()->ClearRTV(gBaseColor->getMip(0), DirectX::Colors::Black);
+			RenderAPI::get()->ClearRTV(gPosition->getMip(0), DirectX::Colors::Black);
+			RenderAPI::get()->ClearRTV(gNormalSpecular->getMip(0), DirectX::Colors::Black);
+			RenderAPI::get()->ClearDSV(resDepthTexture, D3D11_CLEAR_DEPTH);
 
 			RenderAPI::get()->OMSetRTV({ gPosition->getMip(0),gNormalSpecular->getMip(0),gBaseColor->getMip(0) }, resDepthTexture);
 
 			scene->draw(deferredVShader, deferredPShader);
 
-			originTexture->clearRTV(DirectX::Colors::Black, 0);
+			RenderAPI::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
 			RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
 			RenderAPI::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(resDepthTexture->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
 			RenderAPI::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);

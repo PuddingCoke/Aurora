@@ -25,12 +25,12 @@ DepthCube::DepthCube(const UINT& resolution, const FMT& resFmt, const FMT& srvFm
 	}
 }
 
-void DepthCube::bindDSV()
+void DepthCube::bindDSV(ID3D11DeviceContext3* const ctx)
 {
-	unbindFromSRV();
+	unbindFromSRV(ctx);
 }
 
-void DepthCube::bindSRV()
+void DepthCube::bindSRV(ID3D11DeviceContext3* const ctx)
 {
 
 }

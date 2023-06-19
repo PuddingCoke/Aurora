@@ -19,11 +19,9 @@ public:
 
 	void operator=(const DepthStencilView&) = delete;
 
-	void clearDSV(const UINT& clearFlag, const float& depth = 1.0f, const UINT8& stencil = 0) const;
-
 	ID3D11DepthStencilView* getDSV() const;
 
-	virtual void bindDSV();
+	virtual void bindDSV(ID3D11DeviceContext3* const ctx);
 
 protected:
 

@@ -14,14 +14,13 @@ VertexBuffer::VertexBuffer(const UINT& byteWidth, const D3D11_USAGE& usage, cons
 
 VertexBuffer::~VertexBuffer()
 {
-	unbindFromVertexBuffer();
 }
 
-bool VertexBuffer::unbindFromVertexBuffer()
+bool VertexBuffer::unbindFromVertexBuffer(ID3D11DeviceContext3* const ctx)
 {
 	if (IASlot != -1)
 	{
-		Renderer::getContext()->IASetVertexBuffers(IASlot, 1, nullBuffer, nullStrides, nullStrides);
+		ctx->IASetVertexBuffers(IASlot, 1, nullBuffer, nullStrides, nullStrides);
 		curBuffer[IASlot] = nullptr;
 		IASlot = -1;
 		return true;
@@ -30,6 +29,6 @@ bool VertexBuffer::unbindFromVertexBuffer()
 	return false;
 }
 
-void VertexBuffer::bindVertexBuffer()
+void VertexBuffer::bindVertexBuffer(ID3D11DeviceContext3* const ctx)
 {
 }

@@ -344,7 +344,7 @@ public:
 		//最后进行简单的渲染
 		RenderAPI::get()->OMSetBlendState(blendState.Get());
 		RenderAPI::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
-		originTexture->clearRTV(DirectX::Colors::Black, 0);
+		RenderAPI::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
 		RenderAPI::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
 		RenderAPI::get()->BindShader(fluidFinalPS);
 		RenderAPI::get()->PSSetSRV({ colorTex->read() }, 0);

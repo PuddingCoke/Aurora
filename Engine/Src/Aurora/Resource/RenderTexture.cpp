@@ -10,20 +10,15 @@ RSView* RenderTexture::getMip(const UINT& index)
 	return &mipArray[index];
 }
 
-void RenderTexture::bindSRV()
+void RenderTexture::bindSRV(ID3D11DeviceContext3* const ctx)
 {
 	for (UINT i = 0; i < mipLevels; i++)
 	{
-		if (mipArray[i].unbindFromRTV())
+		if (mipArray[i].unbindFromRTV(ctx))
 		{
 			break;
 		}
 	}
-}
-
-void RenderTexture::clearRTV(const float color[4], const UINT& index) const
-{
-	mipArray[index].clearRTV(color);
 }
 
 RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& fmt, const float color[4], const bool& enableMSAA) :
@@ -82,7 +77,7 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 		mipArray[0].allSRV = this;
 	}
 
-	mipArray[0].clearRTV(color);
+	RenderAPI::get()->ClearRTV(&mipArray[0], color);
 }
 
 RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& fmt, const UINT& mipLevels, const UINT& arraySize, const float color[4]) :
@@ -161,18 +156,18 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 
 	for (UINT i = 0; i < mipLevels; i++)
 	{
-		mipArray[i].clearRTV(color);
+		RenderAPI::get()->ClearRTV(&mipArray[i], color);
 	}
 }
 
-void RenderTexture::RSViewEx::bindRTV()
+void RenderTexture::RSViewEx::bindRTV(ID3D11DeviceContext3* const ctx)
 {
-	allSRV->unbindFromSRV();
+	allSRV->unbindFromSRV(ctx);
 
-	unbindFromSRV();
+	unbindFromSRV(ctx);
 }
 
-void RenderTexture::RSViewEx::bindSRV()
+void RenderTexture::RSViewEx::bindSRV(ID3D11DeviceContext3* const ctx)
 {
-	unbindFromRTV();
+	unbindFromRTV(ctx);
 }

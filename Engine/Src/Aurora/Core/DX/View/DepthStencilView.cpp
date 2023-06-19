@@ -10,11 +10,6 @@ DepthStencilView::DepthStencilView(ID3D11Resource* const resource, const D3D11_D
 	createDSV(resource, desc);
 }
 
-void DepthStencilView::clearDSV(const UINT& clearFlag, const float& depth, const UINT8& stencil) const
-{
-	Renderer::getContext()->ClearDepthStencilView(depthStencilView.Get(), clearFlag, depth, stencil);
-}
-
 ID3D11DepthStencilView* DepthStencilView::getDSV() const
 {
 	return depthStencilView.Get();
@@ -24,7 +19,7 @@ DepthStencilView::~DepthStencilView()
 {
 }
 
-void DepthStencilView::bindDSV()
+void DepthStencilView::bindDSV(ID3D11DeviceContext3* const ctx)
 {
 }
 

@@ -22,7 +22,7 @@ RenderCube::RenderCube(const UINT& resolution, const FMT& fmt, const float color
 		createSRV(texture.Get(), desc);
 	}
 
-	clearRTV(color);
+	RenderAPI::get()->ClearRTV(this, color);
 }
 
 RenderCube::~RenderCube()

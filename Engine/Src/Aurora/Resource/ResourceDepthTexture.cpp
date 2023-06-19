@@ -23,12 +23,12 @@ ResourceDepthTexture::ResourceDepthTexture(const UINT& width, const UINT& height
 	}
 }
 
-void ResourceDepthTexture::bindDSV()
+void ResourceDepthTexture::bindDSV(ID3D11DeviceContext3* const ctx)
 {
-	unbindFromSRV();
+	unbindFromSRV(ctx);
 }
 
-void ResourceDepthTexture::bindSRV()
+void ResourceDepthTexture::bindSRV(ID3D11DeviceContext3* const ctx)
 {
 
 }

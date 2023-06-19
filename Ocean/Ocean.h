@@ -128,8 +128,7 @@ inline Ocean::Ocean(const unsigned int& mapResolution, const float& mapLength, c
 	oceanPShader(new Shader("OceanPShader.hlsl", ShaderType::Pixel))
 {
 	float clearValue[] = { 999,999,999,999 };
-
-	normalJacobian->clearUAV(clearValue, 0);
+	RenderAPI::get()->ClearUAV(normalJacobian->getMip(0), clearValue);
 
 	{
 		D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[2] =

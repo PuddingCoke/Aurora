@@ -15,13 +15,13 @@ public:
 
 	virtual ~RUSView();
 
-	virtual void bindRTV() override;
+	virtual void bindRTV(ID3D11DeviceContext3* const ctx) override;
 
-	virtual void bindCUAV() override;
+	virtual void bindCUAV(ID3D11DeviceContext3* const ctx) override;
 
-	virtual void bindPUAV() override;
+	virtual void bindPUAV(ID3D11DeviceContext3* const ctx) override;
 
-	virtual void bindSRV() override;
+	virtual void bindSRV(ID3D11DeviceContext3* const ctx) override;
 
 };
 

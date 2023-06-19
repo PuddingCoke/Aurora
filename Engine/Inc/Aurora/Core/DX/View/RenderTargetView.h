@@ -21,7 +21,6 @@ public:
 
 	void operator=(const RenderTargetView&) = delete;
 
-	void clearRTV(const float* color);
 
 	ID3D11RenderTargetView* getRTV() const;
 
@@ -30,12 +29,12 @@ public:
 	void createRTV(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc);
 
 	//解决binding hazard的问题
-	virtual void bindRTV() = 0;
+	virtual void bindRTV(ID3D11DeviceContext3* const ctx) = 0;
 
-	static void unbindRTV();
+	static void unbindRTV(ID3D11DeviceContext3* const ctx);
 
 	//是否成功解绑
-	bool unbindFromRTV();
+	bool unbindFromRTV(ID3D11DeviceContext3* const ctx);
 
 private:
 

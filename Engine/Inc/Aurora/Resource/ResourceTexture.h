@@ -24,7 +24,7 @@ public:
 
 	virtual ~ResourceTexture();
 
-	virtual void bindSRV() override;
+	virtual void bindSRV(ID3D11DeviceContext3* const ctx) override;
 
 };
 

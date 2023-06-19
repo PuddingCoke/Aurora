@@ -27,7 +27,7 @@ HBAOEffect::~HBAOEffect()
 
 ShaderResourceView* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV, ID3D11ShaderResourceView* const normalSRV) const
 {
-	outputRTV->unbindFromSRV();
+	outputRTV->unbindFromSRV(Renderer::getContext());
 
 	GFSDK_SSAO_InputData_D3D11 input;
 	input.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;

@@ -168,7 +168,6 @@ void TextureCube::releaseShader()
 	delete equirectangularPS;
 }
 
-void TextureCube::bindSRV()
+void TextureCube::bindSRV(ID3D11DeviceContext3* const ctx)
 {
-
 }
