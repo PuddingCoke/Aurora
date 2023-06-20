@@ -27,7 +27,7 @@ HBAOEffect::~HBAOEffect()
 
 ShaderResourceView* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV, ID3D11ShaderResourceView* const normalSRV) const
 {
-	outputRTV->unbindFromSRV(ImCtx::getContext());
+	outputRTV->unbindFromSRV(ImCtx::get()->getContext(), ImCtx::get()->getStates());
 
 	GFSDK_SSAO_InputData_D3D11 input;
 	input.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;
@@ -63,7 +63,7 @@ ShaderResourceView* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV
 	output.pRenderTargetView = outputRTV->getMip(0)->getRTV();
 	output.Blend.Mode = GFSDK_SSAO_OVERWRITE_RGB;
 
-	pAOContext->RenderAO(ImCtx::getContext(), input, params, output);
+	pAOContext->RenderAO(ImCtx::get()->getContext(), input, params, output);
 
 	return outputRTV;
 }

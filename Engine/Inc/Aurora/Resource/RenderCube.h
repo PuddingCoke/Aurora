@@ -22,8 +22,6 @@ public:
 
 	~RenderCube();
 
-private:
-
 };
 
 #endif // !_RENDERCUBE_H_

@@ -1,17 +1,5 @@
 #include<Aurora/Core/DX/View/ShaderResourceView.h>
 
-ShaderResourceView* ShaderResourceView::curVSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
-
-ShaderResourceView* ShaderResourceView::curHSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
-
-ShaderResourceView* ShaderResourceView::curDSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
-
-ShaderResourceView* ShaderResourceView::curGSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
-
-ShaderResourceView* ShaderResourceView::curPSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
-
-ShaderResourceView* ShaderResourceView::curCSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
-
 ID3D11ShaderResourceView* const ShaderResourceView::nullSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
 
 ShaderResourceView::ShaderResourceView() :
@@ -33,80 +21,80 @@ ID3D11ShaderResourceView** ShaderResourceView::releaseAndGetSRV()
 	return shaderResourceView.ReleaseAndGetAddressOf();
 }
 
-void ShaderResourceView::unbindVSRV(ID3D11DeviceContext3* const ctx)
+void ShaderResourceView::unbindVSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	ctx->VSSetShaderResources(VSSlot, 1, nullSRV);
-	curVSRV[VSSlot] = nullptr;
+	states->curVSRV[VSSlot] = nullptr;
 	VSSlot = -1;
 }
 
-void ShaderResourceView::unbindHSRV(ID3D11DeviceContext3* const ctx)
+void ShaderResourceView::unbindHSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	ctx->HSSetShaderResources(HSSlot, 1, nullSRV);
-	curHSRV[HSSlot] = nullptr;
+	states->curHSRV[HSSlot] = nullptr;
 	HSSlot = -1;
 }
 
-void ShaderResourceView::unbindDSRV(ID3D11DeviceContext3* const ctx)
+void ShaderResourceView::unbindDSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	ctx->DSSetShaderResources(DSSlot, 1, nullSRV);
-	curDSRV[DSSlot] = nullptr;
+	states->curDSRV[DSSlot] = nullptr;
 	DSSlot = -1;
 }
 
-void ShaderResourceView::unbindGSRV(ID3D11DeviceContext3* const ctx)
+void ShaderResourceView::unbindGSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	ctx->GSSetShaderResources(GSSlot, 1, nullSRV);
-	curGSRV[GSSlot] = nullptr;
+	states->curGSRV[GSSlot] = nullptr;
 	GSSlot = -1;
 }
 
-void ShaderResourceView::unbindPSRV(ID3D11DeviceContext3* const ctx)
+void ShaderResourceView::unbindPSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	ctx->PSSetShaderResources(PSSlot, 1, nullSRV);
-	curPSRV[PSSlot] = nullptr;
+	states->curPSRV[PSSlot] = nullptr;
 	PSSlot = -1;
 }
 
-void ShaderResourceView::unbindCSRV(ID3D11DeviceContext3* const ctx)
+void ShaderResourceView::unbindCSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	ctx->CSSetShaderResources(CSSlot, 1, nullSRV);
-	curCSRV[CSSlot] = nullptr;
+	states->curCSRV[CSSlot] = nullptr;
 	CSSlot = -1;
 }
 
-bool ShaderResourceView::unbindFromSRV(ID3D11DeviceContext3* const ctx)
+bool ShaderResourceView::unbindFromSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	bool success = false;
 
 	if (VSSlot != -1)
 	{
-		unbindVSRV(ctx);
+		unbindVSRV(ctx, states);
 		success = true;
 	}
 	if (HSSlot != -1)
 	{
-		unbindHSRV(ctx);
+		unbindHSRV(ctx, states);
 		success = true;
 	}
 	if (DSSlot != -1)
 	{
-		unbindDSRV(ctx);
+		unbindDSRV(ctx, states);
 		success = true;
 	}
 	if (GSSlot != -1)
 	{
-		unbindGSRV(ctx);
+		unbindGSRV(ctx, states);
 		success = true;
 	}
 	if (PSSlot != -1)
 	{
-		unbindPSRV(ctx);
+		unbindPSRV(ctx, states);
 		success = true;
 	}
 	if (CSSlot != -1)
 	{
-		unbindCSRV(ctx);
+		unbindCSRV(ctx, states);
 		success = true;
 	}
 

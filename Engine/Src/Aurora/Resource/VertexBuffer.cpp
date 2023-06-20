@@ -1,7 +1,5 @@
 #include<Aurora/Resource/VertexBuffer.h>
 
-VertexBuffer* VertexBuffer::curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
-
 ID3D11Buffer* const VertexBuffer::nullBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
 
 const UINT VertexBuffer::nullStrides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
@@ -16,12 +14,12 @@ VertexBuffer::~VertexBuffer()
 {
 }
 
-bool VertexBuffer::unbindFromVertexBuffer(ID3D11DeviceContext3* const ctx)
+bool VertexBuffer::unbindFromVertexBuffer(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	if (IASlot != -1)
 	{
 		ctx->IASetVertexBuffers(IASlot, 1, nullBuffer, nullStrides, nullStrides);
-		curBuffer[IASlot] = nullptr;
+		states->curBuffer[IASlot] = nullptr;
 		IASlot = -1;
 		return true;
 	}
@@ -29,6 +27,6 @@ bool VertexBuffer::unbindFromVertexBuffer(ID3D11DeviceContext3* const ctx)
 	return false;
 }
 
-void VertexBuffer::bindVertexBuffer(ID3D11DeviceContext3* const ctx)
+void VertexBuffer::bindVertexBuffer(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 }

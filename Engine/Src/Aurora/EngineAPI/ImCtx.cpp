@@ -5,7 +5,7 @@ RenderOnlyRTV* ImCtx::defRenderTargetView = nullptr;
 
 ImCtx::ImCtx() :
 	tempBuffer{}, tempStartConstants{}, tempNumConstants{}, tempRTV{}, tempUAV{}, tempSRV{}, tempOffsets{}, tempStrides{}, tempSampler{},
-	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }
+	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }, states{}
 {
 	instance = this;
 }
@@ -20,7 +20,7 @@ ImCtx::~ImCtx()
 	delete defRenderTargetView;
 }
 
-void ImCtx::ClearDefRTV(const float* const color) const
+void ImCtx::ClearDefRTV(const float* const color)
 {
 	ClearRTV(defRenderTargetView, color);
 }
@@ -32,15 +32,15 @@ void ImCtx::OMSetDefRTV(DepthStencilView* const dsv)
 
 void ImCtx::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, DepthStencilView* const dsv)
 {
-	if (UnorderedAccessView::curPUAV[0])
+	if (states.curPUAV[0])
 	{
-		UnorderedAccessView::unbindPUAV(getContext());
+		UnorderedAccessView::unbindPUAV(getContext(), &states);
 	}
 
-	for (UINT i = 0; RenderTargetView::curRTV[i]; i++)
+	for (UINT i = 0; states.curRTV[i]; i++)
 	{
-		RenderTargetView::curRTV[i]->boundOnRTV = false;
-		RenderTargetView::curRTV[i] = nullptr;
+		states.curRTV[i]->boundOnRTV = false;
+		states.curRTV[i] = nullptr;
 	}
 
 	if (rtvs.size())
@@ -49,18 +49,18 @@ void ImCtx::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, Depth
 
 		for (UINT i = 0; i < rtvs.size(); i++, it++)
 		{
-			RenderTargetView::curRTV[i] = it[0];
+			states.curRTV[i] = it[0];
 
 			tempRTV[i] = it[0]->renderTargetView.Get();
 
-			it[0]->bindRTV(getContext());
+			it[0]->bindRTV(getContext(), &states);
 
 			it[0]->boundOnRTV = true;
 		}
 
 		if (dsv)
 		{
-			dsv->bindDSV(getContext());
+			dsv->bindDSV(getContext(), &states);
 			getContext()->OMSetRenderTargets((UINT)rtvs.size(), tempRTV, dsv->getDSV());
 		}
 		else
@@ -70,7 +70,7 @@ void ImCtx::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, Depth
 	}
 	else
 	{
-		dsv->bindDSV(getContext());
+		dsv->bindDSV(getContext(), &states);
 		getContext()->OMSetRenderTargets(0, nullptr, dsv->getDSV());
 	}
 
@@ -78,24 +78,24 @@ void ImCtx::OMSetRTV(const std::initializer_list<RenderTargetView*>& rtvs, Depth
 
 void ImCtx::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
 {
-	if (UnorderedAccessView::curPUAV[0])
+	if (states.curPUAV[0])
 	{
-		UnorderedAccessView::unbindPUAV(getContext());
+		UnorderedAccessView::unbindPUAV(getContext(), &states);
 	}
-	if (RenderTargetView::curRTV[0])
+	if (states.curRTV[0])
 	{
-		RenderTargetView::unbindRTV(getContext());
+		RenderTargetView::unbindRTV(getContext(), &states);
 	}
 
 	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
 
 	for (UINT i = 0; i < uavs.size(); i++, it++)
 	{
-		UnorderedAccessView::curPUAV[i] = it[0];
+		states.curPUAV[i] = it[0];
 
 		tempUAV[i] = it[0]->unorderedAccessView.Get();
 
-		it[0]->bindPUAV(getContext());
+		it[0]->bindPUAV(getContext(), &states);
 
 		it[0]->boundOnRTV = true;
 	}
@@ -103,27 +103,27 @@ void ImCtx::OMSetUAV(const std::initializer_list<UnorderedAccessView*> uavs)
 	getContext()->OMSetRenderTargetsAndUnorderedAccessViews(0, nullptr, nullptr, 0, (UINT)uavs.size(), tempUAV, nullptr);
 }
 
-void ImCtx::BindShader(Shader* const shader) const
+void ImCtx::BindShader(Shader* const shader)
 {
 	shader->use(getContext());
 }
 
-void ImCtx::ClearDSV(DepthStencilView* dsv, const UINT& clearFlag, const float& depth, const UINT8& stencil) const
+void ImCtx::ClearDSV(DepthStencilView* dsv, const UINT& clearFlag, const float& depth, const UINT8& stencil)
 {
 	getContext()->ClearDepthStencilView(dsv->getDSV(), clearFlag, depth, stencil);
 }
 
-void ImCtx::ClearRTV(RenderTargetView* rtv, const float* const color) const
+void ImCtx::ClearRTV(RenderTargetView* rtv, const float* const color)
 {
 	getContext()->ClearRenderTargetView(rtv->getRTV(), color);
 }
 
-void ImCtx::ClearUAV(UnorderedAccessView* uav, const float* const color) const
+void ImCtx::ClearUAV(UnorderedAccessView* uav, const float* const color)
 {
 	getContext()->ClearUnorderedAccessViewFloat(uav->getUAV(), color);
 }
 
-void ImCtx::ClearUAV(UnorderedAccessView* uav, const unsigned int* const value) const
+void ImCtx::ClearUAV(UnorderedAccessView* uav, const unsigned int* const value)
 {
 	getContext()->ClearUnorderedAccessViewUint(uav->getUAV(), value);
 }
@@ -132,22 +132,22 @@ void ImCtx::CSSetUAV(const std::initializer_list<UnorderedAccessView*>& uavs, co
 {
 	for (UINT i = slot; i < slot + uavs.size(); i++)
 	{
-		if (UnorderedAccessView::curCUAV[i])
+		if (states.curCUAV[i])
 		{
-			UnorderedAccessView::curCUAV[i]->CUAVSlot = -1;
-			UnorderedAccessView::curCUAV[i] = nullptr;
+			states.curCUAV[i]->CUAVSlot = -1;
+			states.curCUAV[i] = nullptr;
 		}
 	}
 
 	std::initializer_list<UnorderedAccessView*>::iterator it = uavs.begin();
 	for (UINT i = slot; i < slot + uavs.size(); i++, it++)
 	{
-		UnorderedAccessView::curCUAV[i] = it[0];
+		states.curCUAV[i] = it[0];
 		tempUAV[i - slot] = it[0]->unorderedAccessView.Get();
 
-		if (!it[0]->unbindFromCUAV(getContext()) || !it[0]->unbindFromPUAV(getContext()))
+		if (!it[0]->unbindFromCUAV(getContext(), &states) || !it[0]->unbindFromPUAV(getContext(), &states))
 		{
-			it[0]->bindCUAV(getContext());
+			it[0]->bindCUAV(getContext(), &states);
 		}
 
 		it[0]->CUAVSlot = i;
@@ -160,26 +160,26 @@ void ImCtx::VSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, con
 {
 	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
-		if (ShaderResourceView::curVSRV[i])
+		if (states.curVSRV[i])
 		{
-			ShaderResourceView::curVSRV[i]->VSSlot = -1;
-			ShaderResourceView::curVSRV[i] = nullptr;
+			states.curVSRV[i]->VSSlot = -1;
+			states.curVSRV[i] = nullptr;
 		}
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
 	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
-		ShaderResourceView::curVSRV[i] = it[0];
+		states.curVSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
 
 		if (it[0]->VSSlot != -1)
 		{
-			it[0]->unbindVSRV(getContext());
+			it[0]->unbindVSRV(getContext(), &states);
 		}
 		else
 		{
-			it[0]->bindSRV(getContext());
+			it[0]->bindSRV(getContext(), &states);
 		}
 
 		it[0]->VSSlot = i;
@@ -192,26 +192,26 @@ void ImCtx::HSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, con
 {
 	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
-		if (ShaderResourceView::curHSRV[i])
+		if (states.curHSRV[i])
 		{
-			ShaderResourceView::curHSRV[i]->HSSlot = -1;
-			ShaderResourceView::curHSRV[i] = nullptr;
+			states.curHSRV[i]->HSSlot = -1;
+			states.curHSRV[i] = nullptr;
 		}
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
 	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
-		ShaderResourceView::curHSRV[i] = it[0];
+		states.curHSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
 
 		if (it[0]->HSSlot != -1)
 		{
-			it[0]->unbindHSRV(getContext());
+			it[0]->unbindHSRV(getContext(), &states);
 		}
 		else
 		{
-			it[0]->bindSRV(getContext());
+			it[0]->bindSRV(getContext(), &states);
 		}
 
 		it[0]->HSSlot = i;
@@ -224,26 +224,26 @@ void ImCtx::DSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, con
 {
 	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
-		if (ShaderResourceView::curDSRV[i])
+		if (states.curDSRV[i])
 		{
-			ShaderResourceView::curDSRV[i]->DSSlot = -1;
-			ShaderResourceView::curDSRV[i] = nullptr;
+			states.curDSRV[i]->DSSlot = -1;
+			states.curDSRV[i] = nullptr;
 		}
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
 	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
-		ShaderResourceView::curDSRV[i] = it[0];
+		states.curDSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
 
 		if (it[0]->DSSlot != -1)
 		{
-			it[0]->unbindDSRV(getContext());
+			it[0]->unbindDSRV(getContext(), &states);
 		}
 		else
 		{
-			it[0]->bindSRV(getContext());
+			it[0]->bindSRV(getContext(), &states);
 		}
 
 		it[0]->DSSlot = i;
@@ -256,26 +256,26 @@ void ImCtx::GSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, con
 {
 	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
-		if (ShaderResourceView::curGSRV[i])
+		if (states.curGSRV[i])
 		{
-			ShaderResourceView::curGSRV[i]->GSSlot = -1;
-			ShaderResourceView::curGSRV[i] = nullptr;
+			states.curGSRV[i]->GSSlot = -1;
+			states.curGSRV[i] = nullptr;
 		}
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
 	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
-		ShaderResourceView::curGSRV[i] = it[0];
+		states.curGSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
 
 		if (it[0]->GSSlot != -1)
 		{
-			it[0]->unbindGSRV(getContext());
+			it[0]->unbindGSRV(getContext(), &states);
 		}
 		else
 		{
-			it[0]->bindSRV(getContext());
+			it[0]->bindSRV(getContext(), &states);
 		}
 
 		it[0]->GSSlot = i;
@@ -288,26 +288,26 @@ void ImCtx::PSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, con
 {
 	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
-		if (ShaderResourceView::curPSRV[i])
+		if (states.curPSRV[i])
 		{
-			ShaderResourceView::curPSRV[i]->PSSlot = -1;
-			ShaderResourceView::curPSRV[i] = nullptr;
+			states.curPSRV[i]->PSSlot = -1;
+			states.curPSRV[i] = nullptr;
 		}
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
 	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
-		ShaderResourceView::curPSRV[i] = it[0];
+		states.curPSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
 
 		if (it[0]->PSSlot != -1)
 		{
-			it[0]->unbindPSRV(getContext());
+			it[0]->unbindPSRV(getContext(), &states);
 		}
 		else
 		{
-			it[0]->bindSRV(getContext());
+			it[0]->bindSRV(getContext(), &states);
 		}
 
 		it[0]->PSSlot = i;
@@ -320,26 +320,26 @@ void ImCtx::CSSetSRV(const std::initializer_list<ShaderResourceView*>& srvs, con
 {
 	for (UINT i = slot; i < slot + srvs.size(); i++)
 	{
-		if (ShaderResourceView::curCSRV[i])
+		if (states.curCSRV[i])
 		{
-			ShaderResourceView::curCSRV[i]->CSSlot = -1;
-			ShaderResourceView::curCSRV[i] = nullptr;
+			states.curCSRV[i]->CSSlot = -1;
+			states.curCSRV[i] = nullptr;
 		}
 	}
 
 	std::initializer_list<ShaderResourceView*>::iterator it = srvs.begin();
 	for (UINT i = slot; i < slot + srvs.size(); i++, it++)
 	{
-		ShaderResourceView::curCSRV[i] = it[0];
+		states.curCSRV[i] = it[0];
 		tempSRV[i - slot] = it[0]->shaderResourceView.Get();
 
 		if (it[0]->CSSlot != -1)
 		{
-			it[0]->unbindCSRV(getContext());
+			it[0]->unbindCSRV(getContext(), &states);
 		}
 		else
 		{
-			it[0]->bindSRV(getContext());
+			it[0]->bindSRV(getContext(), &states);
 		}
 
 		it[0]->CSSlot = i;
@@ -352,10 +352,10 @@ void ImCtx::IASetVertexBuffer(const UINT& slot, const std::initializer_list<Vert
 {
 	for (UINT i = slot; i < slot + (UINT)buffers.size(); i++)
 	{
-		if (VertexBuffer::curBuffer[i])
+		if (states.curBuffer[i])
 		{
-			VertexBuffer::curBuffer[i]->IASlot = -1;
-			VertexBuffer::curBuffer[i] = nullptr;
+			states.curBuffer[i]->IASlot = -1;
+			states.curBuffer[i] = nullptr;
 		}
 	}
 
@@ -365,14 +365,14 @@ void ImCtx::IASetVertexBuffer(const UINT& slot, const std::initializer_list<Vert
 
 	for (UINT i = slot; i < slot + (UINT)buffers.size(); i++, it++, itStride++, itOffset++)
 	{
-		VertexBuffer::curBuffer[i] = it[0];
+		states.curBuffer[i] = it[0];
 		tempBuffer[i - slot] = it[0]->buffer.Get();
 		tempStrides[i - slot] = itStride[0];
 		tempOffsets[i - slot] = itOffset[0];
 
-		if (!it[0]->unbindFromVertexBuffer(getContext()))
+		if (!it[0]->unbindFromVertexBuffer(getContext(), &states))
 		{
-			it[0]->bindVertexBuffer(getContext());
+			it[0]->bindVertexBuffer(getContext(), &states);
 		}
 
 		it[0]->IASlot = i;
@@ -537,12 +537,12 @@ void ImCtx::CSSetSampler(const std::initializer_list<ID3D11SamplerState*>& sampl
 	getContext()->CSSetSamplers(slot, (UINT)samplers.size(), tempSampler);
 }
 
-void ImCtx::IASetInputLayout(ID3D11InputLayout* const layout) const
+void ImCtx::IASetInputLayout(ID3D11InputLayout* const layout)
 {
 	getContext()->IASetInputLayout(layout);
 }
 
-void ImCtx::IASetIndexBuffer(Buffer* const buffer, const DXGI_FORMAT& format, const UINT& offset) const
+void ImCtx::IASetIndexBuffer(Buffer* const buffer, const DXGI_FORMAT& format, const UINT& offset)
 {
 	getContext()->IASetIndexBuffer(buffer->getBuffer(), format, offset);
 }
@@ -564,22 +564,22 @@ void ImCtx::RSSetViewport(const int& width, const int& height)
 	RSSetViewport((float)width, (float)height);
 }
 
-void ImCtx::IASetTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology) const
+void ImCtx::IASetTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology)
 {
 	getContext()->IASetPrimitiveTopology(topology);
 }
 
-void ImCtx::OMSetBlendState(ID3D11BlendState* const state) const
+void ImCtx::OMSetBlendState(ID3D11BlendState* const state)
 {
 	getContext()->OMSetBlendState(state, nullptr, 0xFFFFFFFF);
 }
 
-void ImCtx::RSSetState(ID3D11RasterizerState* const state) const
+void ImCtx::RSSetState(ID3D11RasterizerState* const state)
 {
 	getContext()->RSSetState(state);
 }
 
-void ImCtx::OMSetDepthStencilState(ID3D11DepthStencilState* const state, const UINT& stencilRef) const
+void ImCtx::OMSetDepthStencilState(ID3D11DepthStencilState* const state, const UINT& stencilRef)
 {
 	getContext()->OMSetDepthStencilState(state, stencilRef);
 }
@@ -589,37 +589,37 @@ void ImCtx::ResolveSubresource(const Resource* const dstResource, const UINT& ds
 	getContext()->ResolveSubresource(dstResource->getResource(), dstSubresource, srcResource->getResource(), srcSubresource, format);
 }
 
-void ImCtx::DrawQuad() const
+void ImCtx::DrawQuad()
 {
 	getContext()->Draw(3, 0);
 }
 
-void ImCtx::DrawCube() const
+void ImCtx::DrawCube()
 {
 	getContext()->Draw(36, 0);
 }
 
-void ImCtx::Dispatch(const UINT& threadGroupCountX, const UINT& threadGroupCountY, const UINT& threadGroupCountZ) const
+void ImCtx::Dispatch(const UINT& threadGroupCountX, const UINT& threadGroupCountY, const UINT& threadGroupCountZ)
 {
 	getContext()->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
 
-void ImCtx::Draw(const UINT& vertexCount, const UINT& startVertexLocation) const
+void ImCtx::Draw(const UINT& vertexCount, const UINT& startVertexLocation)
 {
 	getContext()->Draw(vertexCount, startVertexLocation);
 }
 
-void ImCtx::DrawIndexed(const UINT& indexCount, const UINT& startIndexLocation, const UINT& baseVertexLocation) const
+void ImCtx::DrawIndexed(const UINT& indexCount, const UINT& startIndexLocation, const UINT& baseVertexLocation)
 {
 	getContext()->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
 }
 
-void ImCtx::DrawInstanced(const UINT& vertexCountPerInstance, const UINT& instanceCount, const UINT& startVertexLocation, const UINT& startInstanceLocation) const
+void ImCtx::DrawInstanced(const UINT& vertexCountPerInstance, const UINT& instanceCount, const UINT& startVertexLocation, const UINT& startInstanceLocation)
 {
 	getContext()->DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 }
 
-D3D11_MAPPED_SUBRESOURCE ImCtx::Map(Resource* const res, const UINT& subresource, const D3D11_MAP& mapType, const UINT& mapFlag) const
+D3D11_MAPPED_SUBRESOURCE ImCtx::Map(Resource* const res, const UINT& subresource, const D3D11_MAP& mapType, const UINT& mapFlag)
 {
 	D3D11_MAPPED_SUBRESOURCE data = {};
 
@@ -628,7 +628,7 @@ D3D11_MAPPED_SUBRESOURCE ImCtx::Map(Resource* const res, const UINT& subresource
 	return data;
 }
 
-void ImCtx::Unmap(Resource* const res, const UINT& subresource) const
+void ImCtx::Unmap(Resource* const res, const UINT& subresource)
 {
 	getContext()->Unmap(res->getResource(), subresource);
 }
@@ -648,49 +648,49 @@ void ImCtx::CopySubresourceRegion(Resource* const pDstResource, const UINT& DstS
 	getContext()->CopySubresourceRegion(pDstResource->getResource(), DstSubresource, DstX, DstY, DstZ, pSrcResource->getResource(), SrcSubresource, pSrcBox);
 }
 
-void ImCtx::VSUnbindShader() const
+void ImCtx::VSUnbindShader()
 {
 	getContext()->VSSetShader(nullptr, nullptr, 0);
 }
 
-void ImCtx::HSUnbindShader() const
+void ImCtx::HSUnbindShader()
 {
 	getContext()->HSSetShader(nullptr, nullptr, 0);
 }
 
-void ImCtx::DSUnbindShader() const
+void ImCtx::DSUnbindShader()
 {
 	getContext()->DSSetShader(nullptr, nullptr, 0);
 }
 
-void ImCtx::GSUnbindShader() const
+void ImCtx::GSUnbindShader()
 {
 	getContext()->GSSetShader(nullptr, nullptr, 0);
 }
 
-void ImCtx::PSUnbindShader() const
+void ImCtx::PSUnbindShader()
 {
 	getContext()->PSSetShader(nullptr, nullptr, 0);
 }
 
-void ImCtx::CSUnbindShader() const
+void ImCtx::CSUnbindShader()
 {
 	getContext()->CSSetShader(nullptr, nullptr, 0);
 }
 
-void ImCtx::UnbindRTV() const
+void ImCtx::UnbindRTV()
 {
-	RenderTargetView::unbindRTV(getContext());
+	RenderTargetView::unbindRTV(getContext(), &states);
 }
 
-void ImCtx::UnbindCSUAV() const
+void ImCtx::UnbindCSUAV()
 {
-	UnorderedAccessView::unbindCUAV(getContext());
+	UnorderedAccessView::unbindCUAV(getContext(), &states);
 }
 
-void ImCtx::UnbindPSUAV() const
+void ImCtx::UnbindPSUAV()
 {
-	UnorderedAccessView::unbindPUAV(getContext());
+	UnorderedAccessView::unbindPUAV(getContext(), &states);
 }
 
 void ImCtx::GenNoise(UnorderedAccessView* const uav, const UINT& textureWidth, const UINT& textureHeight)
@@ -718,10 +718,15 @@ void ImCtx::DebugDraw(ShaderResourceView* const srv)
 	HSUnbindShader();
 	GSUnbindShader();
 
-	ImCtx::get()->DrawQuad();
+	DrawQuad();
 }
 
 ID3D11DeviceContext4* ImCtx::getContext()
 {
-	return instance->imctx.Get();
+	return imctx.Get();
+}
+
+GraphicsStates* ImCtx::getStates()
+{
+	return &instance->states;
 }

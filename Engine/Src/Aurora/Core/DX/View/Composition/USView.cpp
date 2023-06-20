@@ -8,17 +8,17 @@ USView::~USView()
 {
 }
 
-void USView::bindCUAV(ID3D11DeviceContext3* const ctx)
+void USView::bindCUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromPUAV(ctx) || unbindFromSRV(ctx);
+	unbindFromPUAV(ctx,states) || unbindFromSRV(ctx,states);
 }
 
-void USView::bindPUAV(ID3D11DeviceContext3* const ctx)
+void USView::bindPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromCUAV(ctx) || unbindFromSRV(ctx);
+	unbindFromCUAV(ctx, states) || unbindFromSRV(ctx, states);
 }
 
-void USView::bindSRV(ID3D11DeviceContext3* const ctx)
+void USView::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromCUAV(ctx) || unbindFromPUAV(ctx);
+	unbindFromCUAV(ctx, states) || unbindFromPUAV(ctx, states);
 }

@@ -12,7 +12,7 @@ StructuredBuffer::StructuredBuffer(const UINT& byteWidth, const UINT& structureB
 	createSRV(getBuffer(), srvDesc);
 }
 
-void StructuredBuffer::bindSRV(ID3D11DeviceContext3* const ctx)
+void StructuredBuffer::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 
 }

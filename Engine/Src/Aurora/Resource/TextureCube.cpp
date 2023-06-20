@@ -1,9 +1,5 @@
 #include<Aurora/Resource/TextureCube.h>
 
-Shader* TextureCube::equirectangularVS;
-
-Shader* TextureCube::equirectangularPS;
-
 TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 {
 	Texture2D* textures[6]{};
@@ -55,7 +51,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 TextureCube::TextureCube(const std::string& texturePath)
 {
 	const std::wstring wTexturePath(texturePath.begin(), texturePath.end());
-	DirectX::CreateDDSTextureFromFileEx(GraphicsDevice::getDevice(), ImCtx::getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)texture.ReleaseAndGetAddressOf(), releaseAndGetSRV());
+	DirectX::CreateDDSTextureFromFileEx(GraphicsDevice::getDevice(), ImCtx::get()->getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)texture.ReleaseAndGetAddressOf(), releaseAndGetSRV());
 
 	std::cout << "[class TextureCube] " << texturePath << " create successfully!\n";
 }
@@ -104,8 +100,8 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	ImCtx::get()->RSSetViewport(skyboxResolution, skyboxResolution);
 	ImCtx::get()->VSSetConstantBuffer({ buffer }, 2);
 
-	ImCtx::get()->BindShader(equirectangularVS);
-	ImCtx::get()->BindShader(equirectangularPS);
+	ImCtx::get()->BindShader(Shader::equirectangularVS);
+	ImCtx::get()->BindShader(Shader::equirectangularPS);
 
 	const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 0.1f, 10.f);
 
@@ -147,7 +143,8 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 
 	ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-	equirectangularMap->unbindFromSRV(ImCtx::getContext());
+	equirectangularMap->unbindFromSRV(ImCtx::get()->getContext(), ImCtx::get()->getStates());
+
 	delete equirectangularMap;
 	delete buffer;
 }
@@ -156,20 +153,6 @@ TextureCube::~TextureCube()
 {
 }
 
-void TextureCube::iniShader()
-{
-	std::cout << "equirectangularVS ";
-	equirectangularVS = new Shader(g_EquirectangularVSBytes, sizeof(g_EquirectangularVSBytes), ShaderType::Vertex);
-	std::cout << "equirectangularPS ";
-	equirectangularPS = new Shader(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes), ShaderType::Pixel);
-}
-
-void TextureCube::releaseShader()
-{
-	delete equirectangularVS;
-	delete equirectangularPS;
-}
-
-void TextureCube::bindSRV(ID3D11DeviceContext3* const ctx)
+void TextureCube::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 }

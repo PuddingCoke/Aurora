@@ -14,11 +14,11 @@ public:
 
 	virtual ~ComputeVertexBuffer();
 
-	virtual void bindVertexBuffer(ID3D11DeviceContext3* const ctx) override;
+	virtual void bindVertexBuffer(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
-	virtual void bindCUAV(ID3D11DeviceContext3* const ctx) override;
+	virtual void bindCUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
-	virtual void bindPUAV(ID3D11DeviceContext3* const ctx) override;
+	virtual void bindPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
 };
 

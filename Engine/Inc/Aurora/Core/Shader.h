@@ -18,6 +18,8 @@
 #include<Aurora/CompiledShaders/ShadowVS.h>
 #include<Aurora/CompiledShaders/SkyboxVS.h>
 #include<Aurora/CompiledShaders/RandNoiseCS.h>
+#include<Aurora/CompiledShaders/EquirectangularVS.h>
+#include<Aurora/CompiledShaders/EquirectangularPS.h>
 
 enum class ShaderType
 {
@@ -62,6 +64,10 @@ public:
 	static Shader* shadowVS;
 
 	static Shader* randNoiseCS;
+
+	static Shader* equirectangularVS;
+
+	static Shader* equirectangularPS;
 
 private:
 

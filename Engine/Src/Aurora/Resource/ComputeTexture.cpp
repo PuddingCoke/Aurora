@@ -85,29 +85,29 @@ USView* ComputeTexture::getMip(const UINT& index)
 	return &mipArray[index];
 }
 
-void ComputeTexture::bindSRV(ID3D11DeviceContext3* const ctx)
+void ComputeTexture::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	for (UINT i = 0; i < mipLevels; i++)
 	{
-		mipArray[i].unbindFromCUAV(ctx) || mipArray[i].unbindFromPUAV(ctx);
+		mipArray[i].unbindFromCUAV(ctx, states) || mipArray[i].unbindFromPUAV(ctx, states);
 	}
 }
 
-void ComputeTexture::USViewEx::bindSRV(ID3D11DeviceContext3* const ctx)
+void ComputeTexture::USViewEx::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromCUAV(ctx) || unbindFromPUAV(ctx);
+	unbindFromCUAV(ctx,states) || unbindFromPUAV(ctx,states);
 }
 
-void ComputeTexture::USViewEx::bindCUAV(ID3D11DeviceContext3* const ctx)
+void ComputeTexture::USViewEx::bindCUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	allSRV->unbindFromSRV(ctx);
+	allSRV->unbindFromSRV(ctx,states);
 
-	unbindFromPUAV(ctx) || unbindFromSRV(ctx);
+	unbindFromPUAV(ctx, states) || unbindFromSRV(ctx, states);
 }
 
-void ComputeTexture::USViewEx::bindPUAV(ID3D11DeviceContext3* const ctx)
+void ComputeTexture::USViewEx::bindPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	allSRV->unbindFromSRV(ctx);
+	allSRV->unbindFromSRV(ctx, states);
 
-	unbindFromCUAV(ctx) || unbindFromSRV(ctx);
+	unbindFromCUAV(ctx, states) || unbindFromSRV(ctx, states);
 }

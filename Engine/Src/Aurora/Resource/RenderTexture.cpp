@@ -10,11 +10,11 @@ RSView* RenderTexture::getMip(const UINT& index)
 	return &mipArray[index];
 }
 
-void RenderTexture::bindSRV(ID3D11DeviceContext3* const ctx)
+void RenderTexture::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	for (UINT i = 0; i < mipLevels; i++)
 	{
-		if (mipArray[i].unbindFromRTV(ctx))
+		if (mipArray[i].unbindFromRTV(ctx, states))
 		{
 			break;
 		}
@@ -160,14 +160,14 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 	}
 }
 
-void RenderTexture::RSViewEx::bindRTV(ID3D11DeviceContext3* const ctx)
+void RenderTexture::RSViewEx::bindRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	allSRV->unbindFromSRV(ctx);
+	allSRV->unbindFromSRV(ctx, states);
 
-	unbindFromSRV(ctx);
+	unbindFromSRV(ctx, states);
 }
 
-void RenderTexture::RSViewEx::bindSRV(ID3D11DeviceContext3* const ctx)
+void RenderTexture::RSViewEx::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromRTV(ctx);
+	unbindFromRTV(ctx, states);
 }

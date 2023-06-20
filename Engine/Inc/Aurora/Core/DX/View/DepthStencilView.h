@@ -5,6 +5,10 @@
 
 #include<Aurora/Core/GraphicsDevice.h>
 
+#include<Aurora/Core/GraphicsStates.h>
+
+struct GraphicsStates;
+
 class DepthStencilView
 {
 public:
@@ -21,7 +25,7 @@ public:
 
 	ID3D11DepthStencilView* getDSV() const;
 
-	virtual void bindDSV(ID3D11DeviceContext3* const ctx);
+	virtual void bindDSV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states);
 
 protected:
 

@@ -14,11 +14,11 @@ public:
 
 	virtual ~USView();
 
-	virtual void bindCUAV(ID3D11DeviceContext3* const ctx) override;
+	virtual void bindCUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
-	virtual void bindPUAV(ID3D11DeviceContext3* const ctx) override;
+	virtual void bindPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
-	virtual void bindSRV(ID3D11DeviceContext3* const ctx) override;
+	virtual void bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
 };
 

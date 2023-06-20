@@ -8,22 +8,22 @@ RUSView::~RUSView()
 {
 }
 
-void RUSView::bindRTV(ID3D11DeviceContext3* const ctx)
+void RUSView::bindRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromSRV(ctx) || unbindFromCUAV(ctx) || unbindFromPUAV(ctx);
+	unbindFromSRV(ctx, states) || unbindFromCUAV(ctx, states) || unbindFromPUAV(ctx, states);
 }
 
-void RUSView::bindCUAV(ID3D11DeviceContext3* const ctx)
+void RUSView::bindCUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromSRV(ctx) || unbindFromPUAV(ctx) || unbindFromRTV(ctx);
+	unbindFromSRV(ctx, states) || unbindFromPUAV(ctx, states) || unbindFromRTV(ctx, states);
 }
 
-void RUSView::bindPUAV(ID3D11DeviceContext3* const ctx)
+void RUSView::bindPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromSRV(ctx) || unbindFromCUAV(ctx) || unbindFromRTV(ctx);
+	unbindFromSRV(ctx, states) || unbindFromCUAV(ctx, states) || unbindFromRTV(ctx, states);
 }
 
-void RUSView::bindSRV(ID3D11DeviceContext3* const ctx)
+void RUSView::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromCUAV(ctx) || unbindFromPUAV(ctx) || unbindFromRTV(ctx);
+	unbindFromCUAV(ctx, states) || unbindFromPUAV(ctx, states) || unbindFromRTV(ctx, states);
 }

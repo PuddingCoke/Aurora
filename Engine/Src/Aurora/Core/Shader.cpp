@@ -5,6 +5,8 @@ Shader* Shader::fullScreenPS = nullptr;
 Shader* Shader::skyboxVS = nullptr;
 Shader* Shader::shadowVS = nullptr;
 Shader* Shader::randNoiseCS = nullptr;
+Shader* Shader::equirectangularVS = nullptr;
+Shader* Shader::equirectangularPS = nullptr;
 
 Shader::~Shader()
 {
@@ -38,6 +40,10 @@ void Shader::createGlobalShader()
 	shadowVS = new Shader(g_ShadowVSBytes, sizeof(g_ShadowVSBytes), ShaderType::Vertex);
 	std::cout << "randNoiseCS ";
 	randNoiseCS = new Shader(g_RandNoiseCSBytes, sizeof(g_RandNoiseCSBytes), ShaderType::Compute);
+	std::cout << "equirectangularVS ";
+	equirectangularVS = new Shader(g_EquirectangularVSBytes, sizeof(g_EquirectangularVSBytes), ShaderType::Vertex);
+	std::cout << "equirectangularPS ";
+	equirectangularPS = new Shader(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes), ShaderType::Pixel);
 }
 
 void Shader::releaseGlobalShader()
@@ -47,6 +53,8 @@ void Shader::releaseGlobalShader()
 	delete skyboxVS;
 	delete shadowVS;
 	delete randNoiseCS;
+	delete equirectangularVS;
+	delete equirectangularPS;
 }
 
 Shader::Shader(const std::string& filePath, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros) :

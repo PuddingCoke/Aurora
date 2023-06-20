@@ -145,6 +145,7 @@
     <ClInclude Include="Inc\Aurora\Camera\OrbitCamera.h" />
     <ClInclude Include="Inc\Aurora\Core\DX\View\Special\RenderOnlyRTV.h" />
     <ClInclude Include="Inc\Aurora\Core\GraphicsDevice.h" />
+    <ClInclude Include="Inc\Aurora\Core\GraphicsStates.h" />
     <ClInclude Include="Inc\Aurora\Core\ResourceFormat.h" />
     <ClInclude Include="Inc\Aurora\Effect\SSREffect.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\ResourceEssential.h" />

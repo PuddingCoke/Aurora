@@ -19,17 +19,17 @@ ComputeVertexBuffer::~ComputeVertexBuffer()
 {
 }
 
-void ComputeVertexBuffer::bindVertexBuffer(ID3D11DeviceContext3* const ctx)
+void ComputeVertexBuffer::bindVertexBuffer(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromCUAV(ctx) || unbindFromPUAV(ctx);
+	unbindFromCUAV(ctx,states) || unbindFromPUAV(ctx,states);
 }
 
-void ComputeVertexBuffer::bindCUAV(ID3D11DeviceContext3* const ctx)
+void ComputeVertexBuffer::bindCUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromVertexBuffer(ctx) || unbindFromPUAV(ctx);
+	unbindFromVertexBuffer(ctx,states) || unbindFromPUAV(ctx,states);
 }
 
-void ComputeVertexBuffer::bindPUAV(ID3D11DeviceContext3* const ctx)
+void ComputeVertexBuffer::bindPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromVertexBuffer(ctx) || unbindFromCUAV(ctx);
+	unbindFromVertexBuffer(ctx, states) || unbindFromCUAV(ctx, states);
 }

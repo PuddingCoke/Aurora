@@ -18,6 +18,6 @@ ResourceBuffer::~ResourceBuffer()
 {
 }
 
-void ResourceBuffer::bindSRV(ID3D11DeviceContext3* const ctx)
+void ResourceBuffer::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 }

@@ -16,7 +16,7 @@ public:
 
 	RUSView* getMip(const UINT& index);
 
-	virtual void bindSRV(ID3D11DeviceContext3* const ctx) override;
+	virtual void bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
 private:
 
@@ -26,13 +26,13 @@ private:
 
 		ShaderResourceView* allSRV;
 
-		void bindSRV(ID3D11DeviceContext3* const ctx) override;
+		void bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
-		void bindCUAV(ID3D11DeviceContext3* const ctx) override;
+		void bindCUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
-		void bindPUAV(ID3D11DeviceContext3* const ctx) override;
+		void bindPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
-		void bindRTV(ID3D11DeviceContext3* const ctx) override;
+		void bindRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
 	}*mipArray;
 

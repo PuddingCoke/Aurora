@@ -10,11 +10,11 @@ RUSView* RenderComputeTexture::getMip(const UINT& index)
 	return &mipArray[index];
 }
 
-void RenderComputeTexture::bindSRV(ID3D11DeviceContext3* const ctx)
+void RenderComputeTexture::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	for (UINT i = 0; i < mipLevels; i++)
 	{
-		if (mipArray[i].unbindFromRTV(ctx))
+		if (mipArray[i].unbindFromRTV(ctx, states))
 		{
 			break;
 		}
@@ -22,7 +22,7 @@ void RenderComputeTexture::bindSRV(ID3D11DeviceContext3* const ctx)
 
 	for (UINT i = 0; i < mipLevels; i++)
 	{
-		mipArray[i].unbindFromCUAV(ctx) || mipArray[i].unbindFromPUAV(ctx);
+		mipArray[i].unbindFromCUAV(ctx, states) || mipArray[i].unbindFromPUAV(ctx, states);
 	}
 }
 
@@ -113,28 +113,28 @@ RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height
 	}
 }
 
-void RenderComputeTexture::RUSViewEx::bindSRV(ID3D11DeviceContext3* const ctx)
+void RenderComputeTexture::RUSViewEx::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromCUAV(ctx) || unbindFromPUAV(ctx) || unbindFromRTV(ctx);
+	unbindFromCUAV(ctx, states) || unbindFromPUAV(ctx, states) || unbindFromRTV(ctx, states);
 }
 
-void RenderComputeTexture::RUSViewEx::bindCUAV(ID3D11DeviceContext3* const ctx)
+void RenderComputeTexture::RUSViewEx::bindCUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	allSRV->unbindFromSRV(ctx);
+	allSRV->unbindFromSRV(ctx, states);
 
-	unbindFromSRV(ctx) || unbindFromPUAV(ctx) || unbindFromRTV(ctx);
+	unbindFromSRV(ctx, states) || unbindFromPUAV(ctx, states) || unbindFromRTV(ctx, states);
 }
 
-void RenderComputeTexture::RUSViewEx::bindPUAV(ID3D11DeviceContext3* const ctx)
+void RenderComputeTexture::RUSViewEx::bindPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	allSRV->unbindFromSRV(ctx);
+	allSRV->unbindFromSRV(ctx, states);
 
-	unbindFromSRV(ctx) || unbindFromCUAV(ctx) || unbindFromRTV(ctx);
+	unbindFromSRV(ctx, states) || unbindFromCUAV(ctx, states) || unbindFromRTV(ctx, states);
 }
 
-void RenderComputeTexture::RUSViewEx::bindRTV(ID3D11DeviceContext3* const ctx)
+void RenderComputeTexture::RUSViewEx::bindRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	allSRV->unbindFromSRV(ctx);
+	allSRV->unbindFromSRV(ctx, states);
 
-	unbindFromSRV(ctx) || unbindFromCUAV(ctx) || unbindFromPUAV(ctx);
+	unbindFromSRV(ctx, states) || unbindFromCUAV(ctx, states) || unbindFromPUAV(ctx, states);
 }

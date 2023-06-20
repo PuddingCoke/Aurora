@@ -11,9 +11,6 @@
 #include<Aurora/EngineAPI/States.h>
 #include<Aurora/EngineAPI/ImCtx.h>
 
-#include<Aurora/CompiledShaders/EquirectangularVS.h>
-#include<Aurora/CompiledShaders/EquirectangularPS.h>
-
 class TextureCube :public Texture2D, public ShaderResourceView
 {
 public:
@@ -35,19 +32,7 @@ public:
 
 	~TextureCube();
 
-	virtual void bindSRV(ID3D11DeviceContext3* const ctx) override;
-
-private:
-
-	friend class Aurora;
-
-	static Shader* equirectangularVS;
-
-	static Shader* equirectangularPS;
-
-	static void iniShader();
-
-	static void releaseShader();
+	virtual void bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
 };
 

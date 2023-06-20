@@ -1,13 +1,11 @@
 #include<Aurora/Core/DX/View/RenderTargetView.h>
 
-RenderTargetView* RenderTargetView::curRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};
-
 RenderTargetView::RenderTargetView() :
 	boundOnRTV(false)
 {
 }
 
-RenderTargetView::RenderTargetView(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc):
+RenderTargetView::RenderTargetView(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc) :
 	boundOnRTV(false)
 {
 	createRTV(resource, desc);
@@ -27,21 +25,21 @@ ID3D11RenderTargetView** RenderTargetView::releaseAndGetRTV()
 	return renderTargetView.ReleaseAndGetAddressOf();
 }
 
-void RenderTargetView::unbindRTV(ID3D11DeviceContext3* const ctx)
+void RenderTargetView::unbindRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	for (unsigned int i = 0; curRTV[i]; i++)
+	for (unsigned int i = 0; states->curRTV[i]; i++)
 	{
-		curRTV[i]->boundOnRTV = false;
-		curRTV[i] = nullptr;
+		states->curRTV[i]->boundOnRTV = false;
+		states->curRTV[i] = nullptr;
 	}
 	ctx->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
-bool RenderTargetView::unbindFromRTV(ID3D11DeviceContext3* const ctx)
+bool RenderTargetView::unbindFromRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	if (boundOnRTV)
 	{
-		unbindRTV(ctx);
+		unbindRTV(ctx, states);
 		return true;
 	}
 

@@ -215,7 +215,7 @@ void Aurora::runGame()
 
 		if (Graphics::instance->msaaLevel != 1)
 		{
-			ImCtx::getContext()->ResolveSubresource(backBuffer.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
+			ImCtx::get()->getContext()->ResolveSubresource(backBuffer.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
 
 		swapChain->Present(1, 0);
@@ -254,7 +254,7 @@ void Aurora::runEncode()
 
 		if (Graphics::instance->msaaLevel != 1)
 		{
-			ImCtx::getContext()->ResolveSubresource(encodeTexture->getResource(), 0, msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
+			ImCtx::get()->getContext()->ResolveSubresource(encodeTexture->getResource(), 0, msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
 		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
 	} while (nvidiaEncoder.encode());
@@ -281,7 +281,7 @@ void Aurora::bindCommonCB()
 
 void Aurora::destroy()
 {
-	ImCtx::getContext()->ClearState();
+	ImCtx::get()->getContext()->ClearState();
 
 	delete game;
 
@@ -296,8 +296,6 @@ void Aurora::destroy()
 	delete Camera::instance;
 
 	delete ImCtx::instance;
-
-	TextureCube::releaseShader();
 
 	if (enableImGui)
 	{
@@ -542,8 +540,6 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 		}
 	}
 
-	TextureCube::iniShader();
-
 #ifdef _DEBUG
 	GraphicsDevice::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)d3dDebug.ReleaseAndGetAddressOf());
 #endif // _DEBUG
@@ -556,7 +552,7 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 
 		ImGui::StyleColorsDark();
 		ImGui_ImplWin32_Init(winform->getHWND());
-		ImGui_ImplDX11_Init(GraphicsDevice::getDevice(), ImCtx::getContext());
+		ImGui_ImplDX11_Init(GraphicsDevice::getDevice(), ImCtx::get()->getContext());
 	}
 }
 

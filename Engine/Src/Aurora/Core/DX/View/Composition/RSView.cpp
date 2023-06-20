@@ -9,12 +9,12 @@ RSView::~RSView()
 {
 }
 
-void RSView::bindRTV(ID3D11DeviceContext3* const ctx)
+void RSView::bindRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromSRV(ctx);
+	unbindFromSRV(ctx, states);
 }
 
-void RSView::bindSRV(ID3D11DeviceContext3* const ctx)
+void RSView::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromRTV(ctx);
+	unbindFromRTV(ctx, states);
 }

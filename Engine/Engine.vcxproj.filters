@@ -231,6 +231,9 @@
     <ClInclude Include="Inc\Aurora\Core\GraphicsDevice.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\Core\GraphicsStates.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
