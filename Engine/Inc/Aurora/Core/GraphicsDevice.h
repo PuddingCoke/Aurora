@@ -1,41 +1,27 @@
 #pragma once
 
-#ifndef _RENDERER_H_
-#define _RENDERER_H_
+#ifndef _GRAPHICSDEVICE_H_
+#define _GRAPHICSDEVICE_H_
 
 #include<d3d11_4.h>
+#include<DirectXColors.h>
 #include<wrl/client.h>
-#include<DirectXMath.h>
-#include<iostream>
 #include<comdef.h>
+#include<iostream>
 
 #include"ResourceFormat.h"
 
 using Microsoft::WRL::ComPtr;
 
-enum class GPUManufacturer
-{
-	NVIDIA,
-	AMD,
-	INTEL,
-	UNKNOWN
-};
-
-class Renderer
+class GraphicsDevice
 {
 public:
 
-	Renderer() = delete;
+	GraphicsDevice(const GraphicsDevice&) = delete;
 
-	Renderer(const Renderer&) = delete;
+	void operator=(const GraphicsDevice&) = delete;
 
-	void operator=(const Renderer&) = delete;
-
-	static ID3D11Device5* getDevice();
-
-	static const GPUManufacturer& getGPUManufacturer();
-
-	static Renderer* get();
+	static GraphicsDevice* get();
 
 	void createBuffer(const D3D11_BUFFER_DESC* desc, const D3D11_SUBRESOURCE_DATA* initialData, ID3D11Buffer** address) const;
 
@@ -77,33 +63,17 @@ public:
 
 	void createRasterizerState2(const D3D11_RASTERIZER_DESC2* desc, ID3D11RasterizerState2** address) const;
 
+	static ID3D11Device5* getDevice();
+
 private:
 
 	friend class Aurora;
 
-	friend class Shader;
+	GraphicsDevice();
 
-	friend class ResManager;
+	static GraphicsDevice* instance;
 
-	friend class ImCtx;
-
-	static Renderer* instance;
-
-	Renderer(HWND hWnd, const UINT& width, const UINT& height, const UINT& msaaLevel, ID3D11DeviceContext4** address);
-
-	D3D11_VIEWPORT vp;
-
-	ComPtr<ID3D11Device5> device5;
-
-	ComPtr<IDXGISwapChain4> swapChain;
-
-	ComPtr<ID3D11Debug> d3dDebug;
-
-	ComPtr<ID3D11Texture2D> backBuffer;
-
-	ComPtr<ID3D11Texture2D> msaaTexture;
-
-	GPUManufacturer gpuManufacturer;
+	ComPtr<ID3D11Device5> device;
 
 };
 
@@ -119,4 +89,4 @@ std::wcout<<"Failed reason "<<err.ErrorMessage()<<"\n";\
 __debugbreak();\
 }\
 
-#endif // !_RENDERER_H_
+#endif // !_GRAPHICSDEVICE_H_

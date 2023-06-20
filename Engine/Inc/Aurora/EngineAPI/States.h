@@ -3,7 +3,7 @@
 #ifndef _STATES_H_
 #define _STATES_H_
 
-#include<Aurora/Core/Renderer.h>
+#include<Aurora/Core/GraphicsDevice.h>
 
 //这里定义了一些有用的状态
 class States

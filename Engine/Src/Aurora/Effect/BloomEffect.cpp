@@ -70,7 +70,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 	ImCtx::get()->GSUnbindShader();
 	ImCtx::get()->HSUnbindShader();
 	ImCtx::get()->DSUnbindShader();
-	ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+	ImCtx::get()->BindShader(Shader::fullScreenVS);
 
 	ImCtx::get()->OMSetBlendState(nullptr);
 
@@ -131,7 +131,7 @@ ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) co
 		ImCtx::get()->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
 		ImCtx::get()->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 		ImCtx::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
 		ImCtx::get()->OMSetRTV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, nullptr);
 		ImCtx::get()->PSSetSRV({ swapTexture[blurSteps - 1 - i]->read() }, 0);

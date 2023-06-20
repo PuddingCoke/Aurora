@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="Inc\Aurora\Camera\OrbitCamera.h" />
     <ClInclude Include="Inc\Aurora\Core\DX\View\Special\RenderOnlyRTV.h" />
+    <ClInclude Include="Inc\Aurora\Core\GraphicsDevice.h" />
     <ClInclude Include="Inc\Aurora\Core\ResourceFormat.h" />
     <ClInclude Include="Inc\Aurora\Effect\SSREffect.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\ResourceEssential.h" />
@@ -202,7 +203,6 @@
     <ClInclude Include="Inc\Aurora\Utils\Timer.h" />
     <ClInclude Include="Inc\Aurora\Utils\Utils.h" />
     <ClInclude Include="Inc\Aurora\Wallpaper\WallpaperHelper.h" />
-    <ClInclude Include="Inc\Aurora\Core\Renderer.h" />
     <ClInclude Include="External\DDSTextureLoader\DDSTextureLoader11.h" />
     <ClInclude Include="External\ImGUI\imconfig.h" />
     <ClInclude Include="External\ImGUI\imgui.h" />
@@ -225,6 +225,7 @@
     <ClCompile Include="External\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="External\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\Special\RenderOnlyRTV.cpp" />
+    <ClCompile Include="Src\Aurora\Core\GraphicsDevice.cpp" />
     <ClCompile Include="Src\Aurora\Core\ResourceFormat.cpp" />
     <ClCompile Include="Src\Aurora\Effect\SSREffect.cpp" />
     <ClCompile Include="Src\Aurora\Resource\ComputeBuffer.cpp" />
@@ -252,7 +253,6 @@
     <ClCompile Include="Src\Aurora\EngineAPI\ImCtx.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\ShaderResourceView.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\UnorderedAccessView.cpp" />
-    <ClCompile Include="Src\Aurora\Core\Renderer.cpp" />
     <ClCompile Include="Src\Aurora\Resource\ResourceBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Resource\StructuredBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Resource\TextureCube.cpp" />

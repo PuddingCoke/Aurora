@@ -15,7 +15,7 @@ PrimitiveBatch::PrimitiveBatch() :
 			{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
-		Renderer::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(lineVS), primitiveInputLayout.ReleaseAndGetAddressOf());
+		GraphicsDevice::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(lineVS), primitiveInputLayout.ReleaseAndGetAddressOf());
 	}
 
 	//初始化circleInputLayout
@@ -27,7 +27,7 @@ PrimitiveBatch::PrimitiveBatch() :
 			{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,12,D3D11_INPUT_PER_INSTANCE_DATA,1}
 		};
 
-		Renderer::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(circleVS), circleInputLayout.ReleaseAndGetAddressOf());
+		GraphicsDevice::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(circleVS), circleInputLayout.ReleaseAndGetAddressOf());
 	}
 
 	//初始化rcLineInputLayout
@@ -39,7 +39,7 @@ PrimitiveBatch::PrimitiveBatch() :
 			{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
-		Renderer::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(rcLineVS), rcLineInputLayout.ReleaseAndGetAddressOf());
+		GraphicsDevice::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(rcLineVS), rcLineInputLayout.ReleaseAndGetAddressOf());
 	}
 
 	setLineWidth(1.f);

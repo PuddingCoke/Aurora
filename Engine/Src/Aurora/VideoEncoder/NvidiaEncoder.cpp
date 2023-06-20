@@ -134,7 +134,7 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 	std::cout << "[class NvidiaEncoder] api instance create status " << ApiCreateInstance(&nvencAPI) << "\n";
 
 	NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS sessionParams = { NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER };
-	sessionParams.device = Renderer::getDevice();
+	sessionParams.device = GraphicsDevice::getDevice();
 	sessionParams.deviceType = NV_ENC_DEVICE_TYPE_DIRECTX;
 	sessionParams.apiVersion = NVENCAPI_VERSION;
 
@@ -181,8 +181,8 @@ NvidiaEncoder::NvidiaEncoder(const UINT& width, const UINT& height, const UINT& 
 
 	std::cout << "[class NvidiaEncoder] create bitstream status " << nvencAPI.nvEncCreateBitstreamBuffer(encoder, &bitstream) << "\n";
 
-	Renderer::getDevice()->QueryInterface(IID_ID3D11VideoDevice2, (void**)videoDevice.ReleaseAndGetAddressOf());
-	ImCtx::GetContext()->QueryInterface(IID_ID3D11VideoContext3, (void**)videoContext.ReleaseAndGetAddressOf());
+	GraphicsDevice::getDevice()->QueryInterface(IID_ID3D11VideoDevice2, (void**)videoDevice.ReleaseAndGetAddressOf());
+	ImCtx::getContext()->QueryInterface(IID_ID3D11VideoContext3, (void**)videoContext.ReleaseAndGetAddressOf());
 
 	D3D11_VIDEO_PROCESSOR_CONTENT_DESC contentDesc =
 	{

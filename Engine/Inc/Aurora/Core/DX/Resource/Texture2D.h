@@ -10,7 +10,6 @@
 
 #include<Aurora/Utils/Utils.h>
 #include<Aurora/Utils/Random.h>
-#include<Aurora/Core/Renderer.h>
 #include<Aurora/EngineAPI/Graphics.h>
 
 #include<stb_image/stb_image.h>

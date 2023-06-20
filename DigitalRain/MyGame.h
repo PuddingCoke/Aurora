@@ -104,8 +104,8 @@ public:
 		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
 		ImCtx::get()->OMSetDefRTV(nullptr);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

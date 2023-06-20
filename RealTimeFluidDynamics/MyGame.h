@@ -120,7 +120,7 @@ public:
 			blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 			blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-			Renderer::get()->createBlendState(&blendStateDesc, blendState.ReleaseAndGetAddressOf());
+			GraphicsDevice::get()->createBlendState(&blendStateDesc, blendState.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -218,7 +218,7 @@ public:
 		ImCtx::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
 		ImCtx::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
 		ImCtx::get()->OMSetBlendState(blendState.Get());
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
 
 		//施加颜色和速度
 
@@ -244,7 +244,7 @@ public:
 		ImCtx::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
 		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		ImCtx::get()->OMSetBlendState(nullptr);
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
 
 		//求旋度
 		ImCtx::get()->OMSetRTV({ curlTex->getMip(0) }, nullptr);
@@ -359,8 +359,8 @@ public:
 		ImCtx::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
 		ImCtx::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
 		ImCtx::get()->PSSetSRV({ bloomSRV }, 0);
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 		ImCtx::get()->DrawQuad();
 	}

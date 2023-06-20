@@ -75,7 +75,7 @@ public:
 		ImCtx::get()->PSSetSRV({ textureCube }, 0);
 		ImCtx::get()->PSSetSampler({ States::linearWrapSampler }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::skyboxVS);
+		ImCtx::get()->BindShader(Shader::skyboxVS);
 		ImCtx::get()->BindShader(skyboxPS);
 		ImCtx::get()->HSUnbindShader();
 		ImCtx::get()->GSUnbindShader();
@@ -100,8 +100,8 @@ public:
 		ImCtx::get()->PSSetSRV({ bloomSRV }, 0);
 		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 		ImCtx::get()->DrawQuad();
 	}

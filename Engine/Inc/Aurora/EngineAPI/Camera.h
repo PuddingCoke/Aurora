@@ -10,7 +10,6 @@
 #include"Graphics.h"
 #include"ImCtx.h"
 
-#include<Aurora/Core/Renderer.h>
 #include<Aurora/Input/Keyboard.h>
 #include<Aurora/Input/Mouse.h>
 

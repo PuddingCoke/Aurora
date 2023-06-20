@@ -57,7 +57,7 @@ public:
 		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		ImCtx::get()->OMSetRTV({ brdfTex->getMip(0) }, nullptr);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
 		ImCtx::get()->BindShader(brdfGenPS);
 
 		ImCtx::get()->DrawQuad();
@@ -111,7 +111,7 @@ public:
 		ImCtx::get()->PSSetSRV({ envCube }, 0);
 		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::skyboxVS);
+		ImCtx::get()->BindShader(Shader::skyboxVS);
 		ImCtx::get()->BindShader(skyboxPS);
 
 		ImCtx::get()->DrawCube();

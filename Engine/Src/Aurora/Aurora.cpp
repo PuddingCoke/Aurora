@@ -215,10 +215,10 @@ void Aurora::runGame()
 
 		if (Graphics::instance->msaaLevel != 1)
 		{
-			ImCtx::GetContext()->ResolveSubresource(Renderer::instance->backBuffer.Get(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
+			ImCtx::getContext()->ResolveSubresource(backBuffer.Get(), 0, msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
 
-		Renderer::instance->swapChain->Present(1, 0);
+		swapChain->Present(1, 0);
 		const std::chrono::high_resolution_clock::time_point timeEnd = timer.now();
 		Graphics::instance->deltaTime.deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() / 1000.f;
 		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
@@ -254,7 +254,7 @@ void Aurora::runEncode()
 
 		if (Graphics::instance->msaaLevel != 1)
 		{
-			ImCtx::GetContext()->ResolveSubresource(encodeTexture->getResource(), 0, Renderer::instance->msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
+			ImCtx::getContext()->ResolveSubresource(encodeTexture->getResource(), 0, msaaTexture.Get(), 0, DXGI_FORMAT_B8G8R8A8_UNORM);
 		}
 		Graphics::instance->deltaTime.sTime += Graphics::instance->deltaTime.deltaTime;
 	} while (nvidiaEncoder.encode());
@@ -281,13 +281,15 @@ void Aurora::bindCommonCB()
 
 void Aurora::destroy()
 {
-	ImCtx::GetContext()->ClearState();
+	ImCtx::getContext()->ClearState();
 
 	delete game;
 
 	delete winform;
 
 	delete Graphics::instance;
+
+	Shader::releaseGlobalShader();
 
 	delete States::instance;
 
@@ -306,11 +308,19 @@ void Aurora::destroy()
 
 #ifdef _DEBUG
 	std::cout << "[class Aurora] debug mode press any key to exit\n";
-	Renderer::instance->d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-	delete Renderer::instance;
+	d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+	swapChain = nullptr;
+	d3dDebug = nullptr;
+	backBuffer = nullptr;
+	msaaTexture = nullptr;
+	delete GraphicsDevice::instance;
 	std::cin.get();
 #else
-	delete Renderer::instance;
+	swapChain = nullptr;
+	d3dDebug = nullptr;
+	backBuffer = nullptr;
+	msaaTexture = nullptr;
+	delete GraphicsDevice::instance;
 #endif // _DEBUG
 
 	if (usage == Configuration::EngineUsage::Wallpaper)
@@ -320,7 +330,7 @@ void Aurora::destroy()
 }
 
 Aurora::Aurora() :
-	encodeTexture(nullptr), winform(nullptr), game(nullptr), enableImGui(false), usage(Configuration::EngineUsage::Normal)
+	encodeTexture(nullptr), winform(nullptr), game(nullptr), enableImGui(false), usage(Configuration::EngineUsage::Normal), manufacturer(GPUManufacturer::UNKNOWN)
 {
 
 }
@@ -365,9 +375,123 @@ void Aurora::iniWindow(const std::wstring& title, const UINT& screenWidth, const
 
 void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const UINT& screenHeight)
 {
-	ComPtr<ID3D11DeviceContext4> ctx;
+	D3D_FEATURE_LEVEL featureLevels[] =
+	{
+		D3D_FEATURE_LEVEL_11_1,
+		D3D_FEATURE_LEVEL_11_0,
+	};
 
-	new Renderer(winform->getHWND(), screenWidth, screenHeight, msaaLevel, ctx.ReleaseAndGetAddressOf());
+	D3D_FEATURE_LEVEL maxSupportedFeatureLevel = D3D_FEATURE_LEVEL_11_0;
+
+	ComPtr<IDXGIDevice4> dxgiDevice;
+	ComPtr<IDXGIAdapter3> dxgiAdapter;
+	ComPtr<IDXGIFactory5> dxgiFactory;
+
+	{
+		ComPtr<ID3D11Device> device11;
+		ComPtr<ID3D11DeviceContext> context11;
+
+#ifdef _DEBUG
+		std::cout << "[class Aurora] enable debug\n";
+		UINT deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_DEBUG;
+#else
+		std::cout << "[class Aurora] disable debug\n";
+		UINT deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
+#endif // _DEBUG
+
+		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, ARRAYSIZE(featureLevels),
+			D3D11_SDK_VERSION, device11.ReleaseAndGetAddressOf(), &maxSupportedFeatureLevel, context11.ReleaseAndGetAddressOf());
+
+		new GraphicsDevice();
+		new ImCtx();
+
+		device11.As(&GraphicsDevice::get()->device);
+		context11.As(&ImCtx::get()->imctx);
+
+		ComPtr<IDXGIDevice> dxgiDevice11;
+		device11.As(&dxgiDevice11);
+
+		ComPtr<IDXGIAdapter> dxgiAdapter11;
+		dxgiDevice11->GetAdapter(dxgiAdapter11.ReleaseAndGetAddressOf());
+
+		ComPtr<IDXGIFactory1> dxgiFactory11;
+		dxgiAdapter11->GetParent(IID_IDXGIFactory1, (void**)dxgiFactory11.ReleaseAndGetAddressOf());
+
+		dxgiDevice11.As(&dxgiDevice);
+		dxgiAdapter11.As(&dxgiAdapter);
+		dxgiFactory11.As(&dxgiFactory);
+	}
+
+	{
+		DXGI_SWAP_CHAIN_DESC1 sd = {};
+		sd.Width = screenWidth;
+		sd.Height = screenHeight;
+		sd.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		sd.SampleDesc.Count = 1;
+		sd.SampleDesc.Quality = 0;
+		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		sd.BufferCount = 16;
+		sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+
+		ComPtr<IDXGISwapChain1> sc;
+		dxgiFactory->CreateSwapChainForHwnd(GraphicsDevice::getDevice(), winform->getHWND(), &sd, nullptr, nullptr, sc.ReleaseAndGetAddressOf());
+		sc.As(&swapChain);
+	}
+
+	dxgiFactory->MakeWindowAssociation(winform->getHWND(), DXGI_MWA_NO_ALT_ENTER);
+
+	swapChain->GetBuffer(0, IID_ID3D11Texture2D, (void**)backBuffer.ReleaseAndGetAddressOf());
+
+	if (msaaLevel > 1)
+	{
+		D3D11_TEXTURE2D_DESC tDesc = {};
+		tDesc.Width = screenWidth;
+		tDesc.Height = screenHeight;
+		tDesc.MipLevels = 1;
+		tDesc.ArraySize = 1;
+		tDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		tDesc.SampleDesc.Count = msaaLevel;
+		tDesc.SampleDesc.Quality = 0;
+		tDesc.Usage = D3D11_USAGE_DEFAULT;
+		tDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+
+		GraphicsDevice::get()->createTexture2D(&tDesc, nullptr, msaaTexture.ReleaseAndGetAddressOf());
+	}
+
+#ifdef _DEBUG
+	GraphicsDevice::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)d3dDebug.ReleaseAndGetAddressOf());
+#endif // _DEBUG
+
+	DXGI_ADAPTER_DESC2 adapterDesc;
+
+	dxgiAdapter->GetDesc2(&adapterDesc);
+
+	UINT vendorID = adapterDesc.VendorId;
+
+	std::cout << "[class Aurora] GPU VendorID 0x" << std::hex << vendorID << std::dec << " Manufacturer:";
+
+	if (vendorID == 0x10DE)
+	{
+		std::cout << "NVIDIA\n";
+		manufacturer = GPUManufacturer::NVIDIA;
+	}
+	else if (vendorID == 0x1002 || vendorID == 0x1022)
+	{
+		std::cout << "AMD\n";
+		manufacturer = GPUManufacturer::AMD;
+	}
+	else if (vendorID == 0x163C || vendorID == 0x8086 || vendorID == 0x8087)
+	{
+		std::cout << "INTEL\n";
+		manufacturer = GPUManufacturer::INTEL;
+	}
+	else
+	{
+		std::cout << "UNKNOWN\n";
+		manufacturer = GPUManufacturer::UNKNOWN;
+	}
+
+	Shader::createGlobalShader();
 
 	new States();
 
@@ -379,19 +503,49 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 	{
 		encodeTexture = new Texture2D(screenWidth, screenHeight, 1, 1, FMT::BGRA8UN, D3D11_BIND_RENDER_TARGET, 0);
 
-		new ImCtx(Graphics::getMSAALevel(), encodeTexture->getTexture2D());
+		if (msaaLevel == 1)
+		{
+			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+			rtvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+			rtvDesc.Texture2D.MipSlice = 0;
+
+			ImCtx::defRenderTargetView = new RenderOnlyRTV(encodeTexture->getTexture2D(), rtvDesc);
+		}
+		else
+		{
+			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+			rtvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+
+			ImCtx::defRenderTargetView = new RenderOnlyRTV(msaaTexture.Get(), rtvDesc);
+		}
 	}
 	else
 	{
-		new ImCtx(Graphics::getMSAALevel(), Renderer::instance->backBuffer.Get());
-	}
+		if (msaaLevel == 1)
+		{
+			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+			rtvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+			rtvDesc.Texture2D.MipSlice = 0;
 
-	ImCtx::get()->imctx = ctx;
+			ImCtx::defRenderTargetView = new RenderOnlyRTV(backBuffer.Get(), rtvDesc);
+		}
+		else
+		{
+			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+			rtvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+
+			ImCtx::defRenderTargetView = new RenderOnlyRTV(msaaTexture.Get(), rtvDesc);
+		}
+	}
 
 	TextureCube::iniShader();
 
 #ifdef _DEBUG
-	Renderer::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)Renderer::instance->d3dDebug.ReleaseAndGetAddressOf());
+	GraphicsDevice::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)d3dDebug.ReleaseAndGetAddressOf());
 #endif // _DEBUG
 
 	if (enableImGui)
@@ -402,7 +556,7 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 
 		ImGui::StyleColorsDark();
 		ImGui_ImplWin32_Init(winform->getHWND());
-		ImGui_ImplDX11_Init(Renderer::getDevice(), ImCtx::GetContext());
+		ImGui_ImplDX11_Init(GraphicsDevice::getDevice(), ImCtx::getContext());
 	}
 }
 

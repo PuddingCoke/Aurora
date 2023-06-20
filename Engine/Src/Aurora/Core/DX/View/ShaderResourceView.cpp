@@ -115,5 +115,5 @@ bool ShaderResourceView::unbindFromSRV(ID3D11DeviceContext3* const ctx)
 
 void ShaderResourceView::createSRV(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc)
 {
-	Renderer::get()->createShaderResourceView(resource, &desc, shaderResourceView.ReleaseAndGetAddressOf());
+	GraphicsDevice::get()->createShaderResourceView(resource, &desc, shaderResourceView.ReleaseAndGetAddressOf());
 }

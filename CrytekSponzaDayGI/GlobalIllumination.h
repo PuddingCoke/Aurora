@@ -145,7 +145,7 @@ public:
 				{"BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			};
 
-			Renderer::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(deferredVShader), modelInputLayout.ReleaseAndGetAddressOf());
+			GraphicsDevice::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(deferredVShader), modelInputLayout.ReleaseAndGetAddressOf());
 		}
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {
@@ -263,7 +263,7 @@ public:
 		ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,shadowProjBuffer,irradianceVolumeBuffer }, 1);
 		ImCtx::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::shadowSampler }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
 		ImCtx::get()->BindShader(deferredFinal);
 
 		ImCtx::get()->DrawQuad();
@@ -273,7 +273,7 @@ public:
 		ImCtx::get()->PSSetSRV({ skybox }, 0);
 		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::skyboxVS);
+		ImCtx::get()->BindShader(Shader::skyboxVS);
 		ImCtx::get()->BindShader(skyboxPShader);
 
 		ImCtx::get()->DrawCube();
@@ -286,7 +286,7 @@ public:
 		ImCtx::get()->PSSetSRV({ originTexture,uvVisibilitySRV,gNormalSpecular }, 0);
 		ImCtx::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
 		ImCtx::get()->BindShader(ssrCombineShader);
 
 		ImCtx::get()->DrawQuad();
@@ -300,8 +300,8 @@ public:
 		ImCtx::get()->OMSetDefRTV(nullptr);
 		ImCtx::get()->PSSetSRV({ antiAliasedSRV }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 		ImCtx::get()->DrawQuad();
 	}
@@ -394,7 +394,7 @@ private:
 		ImCtx::get()->OMSetRTV({}, shadowTexture);
 		ImCtx::get()->VSSetConstantBuffer({ shadowProjBuffer }, 2);
 
-		scene->renderGeometry(ImCtx::shadowVS);
+		scene->renderGeometry(Shader::shadowVS);
 
 		ImCtx::get()->RSSetState(States::rasterCullBack);
 	}

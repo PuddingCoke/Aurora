@@ -3,7 +3,7 @@
 #ifndef _DEPTHSTENCILVIEW_H_
 #define _DEPTHSTENCILVIEW_H_
 
-#include<Aurora/Core/Renderer.h>
+#include<Aurora/Core/GraphicsDevice.h>
 
 class DepthStencilView
 {

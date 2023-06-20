@@ -93,7 +93,7 @@ public:
 			{"VELOCITY",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 		};
 
-		Renderer::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(vehicleVS), inputLayout.ReleaseAndGetAddressOf());
+		GraphicsDevice::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(vehicleVS), inputLayout.ReleaseAndGetAddressOf());
 	}
 
 	~MyGame()
@@ -164,8 +164,8 @@ public:
 		ImCtx::get()->OMSetDefRTV(nullptr);
 		ImCtx::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 		ImCtx::get()->DrawQuad();
 	}

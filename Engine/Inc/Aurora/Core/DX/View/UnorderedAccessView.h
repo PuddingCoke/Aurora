@@ -3,7 +3,7 @@
 #ifndef _UNORDEREDACCESSVIEW_H_
 #define _UNORDEREDACCESSVIEW_H_
 
-#include<Aurora/Core/Renderer.h>
+#include<Aurora/Core/GraphicsDevice.h>
 
 class UnorderedAccessView
 {

@@ -225,8 +225,8 @@ public:
 		ImCtx::get()->PSSetSRV({ texture }, 0);
 		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 		ImCtx::get()->DrawQuad();
 

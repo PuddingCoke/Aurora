@@ -46,7 +46,7 @@ Texture2D::Texture2D(const std::string& path) :
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 4u;
 
-			Renderer::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
+			GraphicsDevice::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 
 			stbi_image_free(pixels);
 		}
@@ -82,7 +82,7 @@ Texture2D::Texture2D(const std::string& path) :
 			subresource.pSysMem = pixels;
 			subresource.SysMemPitch = width * 16u;
 
-			Renderer::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
+			GraphicsDevice::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 
 			stbi_image_free(pixels);
 		}
@@ -95,7 +95,7 @@ Texture2D::Texture2D(const std::string& path) :
 	{
 		std::wstring wFilePath = std::wstring(path.begin(), path.end());
 
-		HRESULT hr = DirectX::CreateDDSTextureFromFile(Renderer::getDevice(), wFilePath.c_str(), (ID3D11Resource**)texture.GetAddressOf(), nullptr);
+		HRESULT hr = DirectX::CreateDDSTextureFromFile(GraphicsDevice::getDevice(), wFilePath.c_str(), (ID3D11Resource**)texture.GetAddressOf(), nullptr);
 
 		if (hr == S_OK)
 		{
@@ -155,7 +155,7 @@ Texture2D::Texture2D(const UINT& width, const UINT& height, const TextureType& t
 		subresource.pSysMem = colors.data();
 		subresource.SysMemPitch = width * 4u;
 
-		Renderer::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
+		GraphicsDevice::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 	}
 	else
 	{
@@ -182,7 +182,7 @@ Texture2D::Texture2D(const UINT& width, const UINT& height, const TextureType& t
 		subresource.pSysMem = colors.data();
 		subresource.SysMemPitch = width * 16u;
 
-		Renderer::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
+		GraphicsDevice::get()->createTexture2D(&tDesc, &subresource, texture.ReleaseAndGetAddressOf());
 	}
 
 	std::cout << " texture\n";
@@ -202,7 +202,7 @@ Texture2D::Texture2D(const UINT& width, const UINT& height, const FMT& format, c
 	tDesc.Usage = D3D11_USAGE_DEFAULT;
 	tDesc.BindFlags = bindFlags;
 
-	Renderer::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+	GraphicsDevice::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 }
 
 Texture2D::Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const FMT& format, const UINT& bindFlags, const UINT& miscFlags) :
@@ -220,7 +220,7 @@ Texture2D::Texture2D(const UINT& width, const UINT& height, const UINT& mipLevel
 	tDesc.BindFlags = bindFlags;
 	tDesc.MiscFlags = miscFlags;
 
-	Renderer::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+	GraphicsDevice::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 }
 
 Texture2D::~Texture2D()

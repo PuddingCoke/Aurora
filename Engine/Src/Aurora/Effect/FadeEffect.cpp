@@ -20,7 +20,7 @@ ShaderResourceView* FadeEffect::process(ShaderResourceView* const texture2D) con
 	ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 	ImCtx::get()->PSSetSRV({ texture2D }, 0);
 
-	ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+	ImCtx::get()->BindShader(Shader::fullScreenVS);
 	ImCtx::get()->BindShader(fadePShader);
 
 	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

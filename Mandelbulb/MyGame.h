@@ -79,7 +79,7 @@ public:
 		ImCtx::get()->OMSetDefRTV(nullptr);
 		ImCtx::get()->PSSetConstantBuffer({ simulationBuffer }, 1);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
 		ImCtx::get()->BindShader(mandelBulbPS);
 
 		ImCtx::get()->DrawQuad();

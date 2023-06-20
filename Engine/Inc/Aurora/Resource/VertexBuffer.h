@@ -23,6 +23,8 @@ protected:
 
 private:
 
+	friend class GraphicsContext;
+
 	friend class ImCtx;
 
 	int IASlot;

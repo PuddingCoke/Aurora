@@ -27,7 +27,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 		tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 		tDesc.ArraySize = 6;
 		tDesc.MipLevels = 1;
-		Renderer::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+		GraphicsDevice::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 	}
 
 	for (unsigned int i = 0; i < 6; i++)
@@ -55,7 +55,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 TextureCube::TextureCube(const std::string& texturePath)
 {
 	const std::wstring wTexturePath(texturePath.begin(), texturePath.end());
-	DirectX::CreateDDSTextureFromFileEx(Renderer::getDevice(), ImCtx::GetContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)texture.ReleaseAndGetAddressOf(), releaseAndGetSRV());
+	DirectX::CreateDDSTextureFromFileEx(GraphicsDevice::getDevice(), ImCtx::getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)texture.ReleaseAndGetAddressOf(), releaseAndGetSRV());
 
 	std::cout << "[class TextureCube] " << texturePath << " create successfully!\n";
 }
@@ -76,7 +76,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 	tDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	tDesc.ArraySize = 6;
 	tDesc.MipLevels = mipLevels;
-	Renderer::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
+	GraphicsDevice::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
 
 	const DirectX::XMVECTOR focusPoints[6] =
 	{
@@ -147,7 +147,7 @@ TextureCube::TextureCube(const std::string& texturePath, const UINT& skyboxResol
 
 	ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
-	equirectangularMap->unbindFromSRV(ImCtx::GetContext());
+	equirectangularMap->unbindFromSRV(ImCtx::getContext());
 	delete equirectangularMap;
 	delete buffer;
 }

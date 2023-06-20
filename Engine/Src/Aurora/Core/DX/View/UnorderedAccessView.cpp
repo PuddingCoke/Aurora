@@ -75,5 +75,5 @@ bool UnorderedAccessView::unbindFromPUAV(ID3D11DeviceContext3* const ctx)
 
 void UnorderedAccessView::createUAV(ID3D11Resource* const resource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc)
 {
-	Renderer::get()->createUnorderedAccessView(resource, &desc, unorderedAccessView.ReleaseAndGetAddressOf());
+	GraphicsDevice::get()->createUnorderedAccessView(resource, &desc, unorderedAccessView.ReleaseAndGetAddressOf());
 }

@@ -9,8 +9,15 @@
 #include<vector>
 #include<iostream>
 
-#include"Renderer.h"
 #include<Aurora/Utils/Utils.h>
+
+#include<Aurora/Core/GraphicsDevice.h>
+
+#include<Aurora/CompiledShaders/FullScreenVS.h>
+#include<Aurora/CompiledShaders/FullScreenPS.h>
+#include<Aurora/CompiledShaders/ShadowVS.h>
+#include<Aurora/CompiledShaders/SkyboxVS.h>
+#include<Aurora/CompiledShaders/RandNoiseCS.h>
 
 enum class ShaderType
 {
@@ -46,9 +53,25 @@ public:
 
 	const size_t& getBufferSize() const;
 
+	static Shader* fullScreenVS;
+
+	static Shader* fullScreenPS;
+
+	static Shader* skyboxVS;
+
+	static Shader* shadowVS;
+
+	static Shader* randNoiseCS;
+
 private:
 
 	friend class ImCtx;
+
+	friend class Aurora;
+
+	static void createGlobalShader();
+
+	static void releaseGlobalShader();
 
 	ComPtr<ID3DBlob> shaderBlob;
 

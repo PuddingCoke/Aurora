@@ -3,7 +3,7 @@
 #ifndef _RESOURCE_H_
 #define _RESOURCE_H_
 
-#include<Aurora/Core/Renderer.h>
+#include<Aurora/Core/GraphicsDevice.h>
 
 class Resource
 {

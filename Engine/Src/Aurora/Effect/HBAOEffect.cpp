@@ -12,7 +12,7 @@ HBAOEffect::HBAOEffect(const unsigned int& width, const unsigned int& height) :
 	customHeap.delete_ = ::operator delete;
 
 	GFSDK_SSAO_Status status;
-	status = GFSDK_SSAO_CreateContext_D3D11(Renderer::getDevice(), &pAOContext, &customHeap);
+	status = GFSDK_SSAO_CreateContext_D3D11(GraphicsDevice::getDevice(), &pAOContext, &customHeap);
 
 	if (status == GFSDK_SSAO_OK)
 	{
@@ -27,7 +27,7 @@ HBAOEffect::~HBAOEffect()
 
 ShaderResourceView* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV, ID3D11ShaderResourceView* const normalSRV) const
 {
-	outputRTV->unbindFromSRV(ImCtx::GetContext());
+	outputRTV->unbindFromSRV(ImCtx::getContext());
 
 	GFSDK_SSAO_InputData_D3D11 input;
 	input.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;
@@ -63,7 +63,7 @@ ShaderResourceView* HBAOEffect::process(ID3D11ShaderResourceView* const depthSRV
 	output.pRenderTargetView = outputRTV->getMip(0)->getRTV();
 	output.Blend.Mode = GFSDK_SSAO_OVERWRITE_RGB;
 
-	pAOContext->RenderAO(ImCtx::GetContext(), input, params, output);
+	pAOContext->RenderAO(ImCtx::getContext(), input, params, output);
 
 	return outputRTV;
 }

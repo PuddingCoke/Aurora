@@ -22,7 +22,7 @@ ShaderResourceView* MotionBlurEffect::process(ShaderResourceView* const gPositio
 	ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 	ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-	ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+	ImCtx::get()->BindShader(Shader::fullScreenVS);
 	ImCtx::get()->BindShader(motionBlurPS);
 
 	ImCtx::get()->DrawQuad();

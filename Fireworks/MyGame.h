@@ -222,8 +222,8 @@ public:
 		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 		ImCtx::get()->PSSetSRV({ resolvedTexture }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 		ImCtx::get()->DrawQuad();
 		doubleRTV->swap();
@@ -232,8 +232,8 @@ public:
 		ImCtx::get()->OMSetDefRTV(nullptr);
 		ImCtx::get()->PSSetSRV({ doubleRTV->read() }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 		ImCtx::get()->DrawQuad();
 
@@ -242,8 +242,8 @@ public:
 		ImCtx::get()->OMSetRTV({ doubleRTV->write()->getMip(0) }, nullptr);
 		ImCtx::get()->PSSetSRV({ fadedTextureSRV }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 		ImCtx::get()->DrawQuad();
 	}

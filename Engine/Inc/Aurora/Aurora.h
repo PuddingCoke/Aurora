@@ -16,8 +16,10 @@
 #include<ImGUI/imgui_impl_win32.h>
 #include<ImGUI/imgui_impl_dx11.h>
 
-#include<Aurora/Configuration.h>
 #include<Aurora/Game.h>
+#include<Aurora/Configuration.h>
+
+#include<Aurora/Core/GraphicsDevice.h>
 
 #include<Aurora/EngineAPI/Camera.h>
 #include<Aurora/EngineAPI/Graphics.h>
@@ -37,6 +39,14 @@
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+enum class GPUManufacturer
+{
+	NVIDIA,
+	AMD,
+	INTEL,
+	UNKNOWN
+};
+
 class Aurora
 {
 public:
@@ -55,6 +65,8 @@ private:
 
 	static Aurora instance;
 
+	GPUManufacturer manufacturer;
+
 	Win32Form* winform;
 
 	Game* game;
@@ -64,6 +76,14 @@ private:
 	bool enableImGui;
 
 	Texture2D* encodeTexture;
+
+	ComPtr<IDXGISwapChain4> swapChain;
+
+	ComPtr<ID3D11Debug> d3dDebug;
+
+	ComPtr<ID3D11Texture2D> backBuffer;
+
+	ComPtr<ID3D11Texture2D> msaaTexture;
 
 	void runGame();
 

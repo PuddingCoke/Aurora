@@ -40,7 +40,7 @@ ShaderResourceView* SSREffect::process(ShaderResourceView* resDepthTexture, Shad
 	ImCtx::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
 	ImCtx::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);
 
-	ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+	ImCtx::get()->BindShader(Shader::fullScreenVS);
 	ImCtx::get()->BindShader(hiZProcessPS);
 
 	ImCtx::get()->DrawQuad();

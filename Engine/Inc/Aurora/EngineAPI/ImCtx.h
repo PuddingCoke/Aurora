@@ -21,12 +21,6 @@
 #include<Aurora/Resource/ConstantBuffer.h>
 #include<Aurora/Resource/VertexBuffer.h>
 
-#include<Aurora/CompiledShaders/FullScreenVS.h>
-#include<Aurora/CompiledShaders/FullScreenPS.h>
-#include<Aurora/CompiledShaders/ShadowVS.h>
-#include<Aurora/CompiledShaders/SkyboxVS.h>
-#include<Aurora/CompiledShaders/RandNoiseCS.h>
-
 class ImCtx
 {
 public:
@@ -99,11 +93,11 @@ public:
 
 	void IASetIndexBuffer(Buffer* const buffer, const DXGI_FORMAT& format, const UINT& offset) const;
 
-	void RSSetViewport(const float& width, const float& height) const;
+	void RSSetViewport(const float& width, const float& height);
 
-	void RSSetViewport(const UINT& width, const UINT& height) const;
+	void RSSetViewport(const UINT& width, const UINT& height);
 
-	void RSSetViewport(const int& width, const int& height) const;
+	void RSSetViewport(const int& width, const int& height);
 
 	void IASetTopology(const D3D11_PRIMITIVE_TOPOLOGY& topology) const;
 
@@ -159,17 +153,7 @@ public:
 
 	void DebugDraw(ShaderResourceView* const srv);
 
-	static ID3D11DeviceContext4* GetContext();
-
-	static Shader* fullScreenVS;
-
-	static Shader* fullScreenPS;
-
-	static Shader* skyboxVS;
-
-	static Shader* shadowVS;
-
-	static Shader* randNoiseCS;
+	static ID3D11DeviceContext4* getContext();
 
 private:
 
@@ -177,13 +161,15 @@ private:
 
 	static ImCtx* instance;
 
+	static RenderOnlyRTV* defRenderTargetView;
+
 	ComPtr<ID3D11DeviceContext4> imctx;
 
-	ImCtx(const UINT& msaaLevel, ID3D11Texture2D* const renderTexture);
+	ImCtx();
 
 	~ImCtx();
 
-	RenderOnlyRTV* defRenderTargetView;
+	D3D11_VIEWPORT vp;
 
 	ID3D11RenderTargetView* tempRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
 

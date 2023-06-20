@@ -95,7 +95,7 @@ public:
 		ImCtx::get()->PSSetConstantBuffer({ cameraParamBuffer,temporalAccumulationBuffer }, 1);
 		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
 
 		temporalAccumulationParam.frameCount = 0;
 

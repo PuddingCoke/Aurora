@@ -100,7 +100,7 @@ public:
 				{"TANGENT", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			};
 
-			Renderer::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(deferredVS), inputLayout.ReleaseAndGetAddressOf());
+			GraphicsDevice::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(deferredVS), inputLayout.ReleaseAndGetAddressOf());
 		}
 
 		camera.registerEvent();
@@ -171,7 +171,7 @@ public:
 		ImCtx::get()->PSSetSRV({ gBaseColor,gPosition,gNormal,gRoughnessMetallic,hbaoSRV }, 0);
 		ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),mainScene->lightBuffer }, 1);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
 		ImCtx::get()->BindShader(deferredFinal);
 
 		ImCtx::get()->DrawQuad();
@@ -184,7 +184,7 @@ public:
 		ImCtx::get()->PSSetSampler({ States::pointClampSampler }, 0);
 		ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 
-		ImCtx::fullScreenVS->use();
+		Shader::fullScreenVS->use();
 		screenSpaceReflection->use();
 
 		ImCtx::get()->DrawQuad();*/
@@ -198,8 +198,8 @@ public:
 		ImCtx::get()->PSSetSampler({ States::pointClampSampler }, 0);
 		ImCtx::get()->PSSetSRV({ bloomSRV }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-		ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+		ImCtx::get()->BindShader(Shader::fullScreenVS);
+		ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 		ImCtx::get()->DrawQuad();
 
@@ -207,7 +207,7 @@ public:
 		ImCtx::get()->PSSetSRV({ skybox }, 0);
 		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
-		ImCtx::get()->BindShader(ImCtx::skyboxVS);
+		ImCtx::get()->BindShader(Shader::skyboxVS);
 		ImCtx::get()->BindShader(skyboxPS);
 
 		ImCtx::get()->DrawCube();

@@ -3,7 +3,7 @@
 #ifndef _SHADERRESOURCEVIEW_H_
 #define _SHADERRESOURCEVIEW_H_
 
-#include<Aurora/Core/Renderer.h>
+#include<Aurora/Core/GraphicsDevice.h>
 
 class ShaderResourceView
 {

@@ -149,7 +149,7 @@ public:
 				{"TANGENT", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			};
 
-			Renderer::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(voxelVShader), inputLayout.ReleaseAndGetAddressOf());
+			GraphicsDevice::get()->createInputLayout(layout, ARRAYSIZE(layout), SHADERDATA(voxelVShader), inputLayout.ReleaseAndGetAddressOf());
 		}
 
 		{
@@ -343,7 +343,7 @@ public:
 			ImCtx::get()->PSSetSRV({ gPosition,gNormalSpecular,gBaseColor,hbaoEffect.process(resDepthTexture->getSRV(), gNormalSpecular->getSRV()),voxelTextureColorFinal }, 0);
 			ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer(),lightBuffer,voxelParamBuffer }, 1);
 
-			ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+			ImCtx::get()->BindShader(Shader::fullScreenVS);
 			ImCtx::get()->BindShader(deferredFinal);
 
 			ImCtx::get()->DrawQuad();
@@ -351,7 +351,7 @@ public:
 			ImCtx::get()->OMSetRTV({ originTexture->getMip(0) }, resDepthTexture);
 			ImCtx::get()->PSSetSRV({ skybox }, 0);
 
-			ImCtx::get()->BindShader(ImCtx::skyboxVS);
+			ImCtx::get()->BindShader(Shader::skyboxVS);
 			ImCtx::get()->BindShader(skyboxPShader);
 
 			ImCtx::get()->DrawCube();
@@ -362,8 +362,8 @@ public:
 			ImCtx::get()->OMSetDefRTV(nullptr);
 			ImCtx::get()->PSSetSRV({ bloomTextureSRV }, 0);
 
-			ImCtx::get()->BindShader(ImCtx::fullScreenVS);
-			ImCtx::get()->BindShader(ImCtx::fullScreenPS);
+			ImCtx::get()->BindShader(Shader::fullScreenVS);
+			ImCtx::get()->BindShader(Shader::fullScreenPS);
 
 			ImCtx::get()->DrawQuad();
 		}

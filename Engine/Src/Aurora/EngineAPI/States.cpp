@@ -39,7 +39,7 @@ States::States()
 		desc.MinLOD = 0.f;
 		desc.MaxLOD = FLT_MAX;
 
-		Renderer::get()->createSamplerState(&desc, &anisotropicClampSampler);
+		GraphicsDevice::get()->createSamplerState(&desc, &anisotropicClampSampler);
 	}
 
 	{
@@ -53,7 +53,7 @@ States::States()
 		desc.MinLOD = 0.f;
 		desc.MaxLOD = FLT_MAX;
 
-		Renderer::get()->createSamplerState(&desc, &anisotropicWrapSampler);
+		GraphicsDevice::get()->createSamplerState(&desc, &anisotropicWrapSampler);
 	}
 
 	//初始化linearClampSampler
@@ -67,7 +67,7 @@ States::States()
 		desc.MinLOD = 0;
 		desc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::get()->createSamplerState(&desc, &linearClampSampler);
+		GraphicsDevice::get()->createSamplerState(&desc, &linearClampSampler);
 	}
 
 	//初始化linearWrapSampler
@@ -81,7 +81,7 @@ States::States()
 		desc.MinLOD = 0;
 		desc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::get()->createSamplerState(&desc, &linearWrapSampler);
+		GraphicsDevice::get()->createSamplerState(&desc, &linearWrapSampler);
 	}
 
 	//初始化pointClampSampler
@@ -95,7 +95,7 @@ States::States()
 		desc.MinLOD = 0;
 		desc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::get()->createSamplerState(&desc, &pointClampSampler);
+		GraphicsDevice::get()->createSamplerState(&desc, &pointClampSampler);
 	}
 
 	//初始化pointWrapSampler
@@ -109,7 +109,7 @@ States::States()
 		desc.MinLOD = 0;
 		desc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		Renderer::get()->createSamplerState(&desc, &pointWrapSampler);
+		GraphicsDevice::get()->createSamplerState(&desc, &pointWrapSampler);
 	}
 
 	{
@@ -123,7 +123,7 @@ States::States()
 		desc.MinLOD = 0.f;
 		desc.MaxLOD = FLT_MAX;
 
-		Renderer::get()->createSamplerState(&desc, &shadowSampler);
+		GraphicsDevice::get()->createSamplerState(&desc, &shadowSampler);
 	}
 
 	//初始化defBlendState
@@ -144,7 +144,7 @@ States::States()
 		blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-		Renderer::get()->createBlendState(&blendStateDesc, &defBlendState);
+		GraphicsDevice::get()->createBlendState(&blendStateDesc, &defBlendState);
 	}
 
 	//初始化addtiveBlend
@@ -165,7 +165,7 @@ States::States()
 		blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 		blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
-		Renderer::get()->createBlendState(&blendStateDesc, &addtiveBlend);
+		GraphicsDevice::get()->createBlendState(&blendStateDesc, &addtiveBlend);
 	}
 
 	{
@@ -176,7 +176,7 @@ States::States()
 		rasterizerDesc.DepthBias = 16;
 		rasterizerDesc.SlopeScaledDepthBias = 4.f;
 
-		Renderer::get()->createRasterizerState(&rasterizerDesc, &rasterShadow);
+		GraphicsDevice::get()->createRasterizerState(&rasterizerDesc, &rasterShadow);
 	}
 
 	//初始化rasterCullBack
@@ -186,7 +186,7 @@ States::States()
 		rasterizerDesc.CullMode = D3D11_CULL_BACK;
 		rasterizerDesc.DepthClipEnable = TRUE;
 
-		Renderer::get()->createRasterizerState(&rasterizerDesc, &rasterCullBack);
+		GraphicsDevice::get()->createRasterizerState(&rasterizerDesc, &rasterCullBack);
 	}
 
 	//初始化rasterCullFront
@@ -196,7 +196,7 @@ States::States()
 		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
 		rasterizerDesc.DepthClipEnable = TRUE;
 
-		Renderer::get()->createRasterizerState(&rasterizerDesc, &rasterCullFront);
+		GraphicsDevice::get()->createRasterizerState(&rasterizerDesc, &rasterCullFront);
 	}
 
 	//初始化rasterCullNone
@@ -206,7 +206,7 @@ States::States()
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
 		rasterizerDesc.DepthClipEnable = TRUE;
 
-		Renderer::get()->createRasterizerState(&rasterizerDesc, &rasterCullNone);
+		GraphicsDevice::get()->createRasterizerState(&rasterizerDesc, &rasterCullNone);
 	}
 
 	//初始化rasterConserve
@@ -218,7 +218,7 @@ States::States()
 		rasterizerDesc.ForcedSampleCount = 8;
 		rasterizerDesc.ConservativeRaster = D3D11_CONSERVATIVE_RASTERIZATION_MODE_ON;
 
-		Renderer::get()->createRasterizerState2(&rasterizerDesc, &rasterConserve);
+		GraphicsDevice::get()->createRasterizerState2(&rasterizerDesc, &rasterConserve);
 	}
 
 	//初始化defDepthStencilState
@@ -242,7 +242,7 @@ States::States()
 		dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 		dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
-		Renderer::get()->createDepthStencilState(&dsDesc, &defDepthStencilState);
+		GraphicsDevice::get()->createDepthStencilState(&dsDesc, &defDepthStencilState);
 	}
 
 	//初始化depthStencilDisable
@@ -251,7 +251,7 @@ States::States()
 		dsDesc.DepthEnable = false;
 		dsDesc.StencilEnable = false;
 
-		Renderer::get()->createDepthStencilState(&dsDesc, &depthStencilDisable);
+		GraphicsDevice::get()->createDepthStencilState(&dsDesc, &depthStencilDisable);
 	}
 }
 

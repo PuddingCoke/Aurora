@@ -21,7 +21,7 @@ ShaderResourceView* FXAAEffect::process(ShaderResourceView* const texture2D) con
 {
 	ImCtx::get()->OMSetBlendState(nullptr);
 	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ImCtx::get()->BindShader(ImCtx::fullScreenVS);
+	ImCtx::get()->BindShader(Shader::fullScreenVS);
 
 	ImCtx::get()->ClearRTV(colorWithLuma->getMip(0), DirectX::Colors::Black);
 	ImCtx::get()->OMSetRTV({ colorWithLuma->getMip(0) }, nullptr);

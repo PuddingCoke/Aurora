@@ -17,6 +17,8 @@ protected:
 
 	UINT numConstants;
 
+	friend class GraphicsContext;
+
 	friend class ImCtx;
 
 };

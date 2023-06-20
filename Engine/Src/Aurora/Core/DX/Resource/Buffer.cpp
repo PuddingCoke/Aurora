@@ -20,11 +20,11 @@ Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& 
 		D3D11_SUBRESOURCE_DATA subresource = {};
 		subresource.pSysMem = data;
 
-		Renderer::get()->createBuffer(&bd, &subresource, buffer.ReleaseAndGetAddressOf());
+		GraphicsDevice::get()->createBuffer(&bd, &subresource, buffer.ReleaseAndGetAddressOf());
 	}
 	else
 	{
-		Renderer::get()->createBuffer(&bd, nullptr, buffer.ReleaseAndGetAddressOf());
+		GraphicsDevice::get()->createBuffer(&bd, nullptr, buffer.ReleaseAndGetAddressOf());
 	}
 }
 

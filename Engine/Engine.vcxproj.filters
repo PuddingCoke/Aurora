@@ -84,9 +84,6 @@
     <ClInclude Include="Inc\Aurora\EngineAPI\Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Aurora\Core\Renderer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Aurora\Camera\FPSCamera.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -231,6 +228,9 @@
     <ClInclude Include="Inc\Aurora\Effect\SSREffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\Core\GraphicsDevice.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -294,9 +294,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Resource\TextureCube.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Aurora\Core\Renderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Camera\FPSCamera.cpp">
@@ -429,6 +426,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Effect\SSREffect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\Core\GraphicsDevice.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
