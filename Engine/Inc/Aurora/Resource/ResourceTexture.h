@@ -12,10 +12,6 @@ public:
 
 	ResourceTexture() = delete;
 
-	ResourceTexture(const ResourceTexture&) = delete;
-
-	void operator=(const ResourceTexture&) = delete;
-
 	ResourceTexture(const std::string& filePath);
 
 	ResourceTexture(const UINT& width, const UINT& height, const TextureType& type);

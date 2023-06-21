@@ -113,6 +113,25 @@ RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height
 	}
 }
 
+RenderComputeTexture::RenderComputeTexture(const RenderComputeTexture& t)
+{
+	width = t.width;
+	height = t.height;
+	arraySize = t.arraySize;
+	mipLevels = t.mipLevels;
+	format = t.format;
+	texture = t.texture;
+
+	shaderResourceView = t.shaderResourceView;
+
+	mipArray = new RUSViewEx[t.mipLevels];
+
+	for (UINT i = 0; i < mipLevels; i++)
+	{
+		mipArray[i] = t.mipArray[i];
+	}
+}
+
 void RenderComputeTexture::RUSViewEx::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	unbindFromCUAV(ctx, states) || unbindFromPUAV(ctx, states) || unbindFromRTV(ctx, states);

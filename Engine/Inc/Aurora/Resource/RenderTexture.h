@@ -16,6 +16,8 @@ public:
 
 	RenderTexture(const UINT& width, const UINT& height, const FMT& fmt, const UINT& mipLevels, const UINT& arraySize, const float color[4] = DirectX::Colors::Black);
 
+	RenderTexture(const RenderTexture&);
+
 	virtual ~RenderTexture();
 
 	RSView* getMip(const UINT& index);
@@ -35,8 +37,6 @@ private:
 		void bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
 	}*mipArray;
-
-	//RSView* mipArray;
 
 };
 

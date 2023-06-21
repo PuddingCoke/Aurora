@@ -12,6 +12,8 @@ public:
 
 	ComputeTexture(const UINT& width, const UINT& height, const FMT& resFmt, const FMT& srvFmt, const FMT& uavFmt, const UINT& mipLevels = 1, const UINT& arraySize = 1);
 
+	ComputeTexture(const ComputeTexture&);
+
 	virtual ~ComputeTexture();
 
 	USView* getMip(const UINT& index);
@@ -33,8 +35,6 @@ private:
 		void bindPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
 	}*mipArray;
-
-	//USView* mipArray;
 
 };
 

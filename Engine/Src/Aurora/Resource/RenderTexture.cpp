@@ -160,6 +160,25 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 	}
 }
 
+RenderTexture::RenderTexture(const RenderTexture& t)
+{
+	width = t.width;
+	height = t.height;
+	arraySize = t.arraySize;
+	mipLevels = t.mipLevels;
+	format = t.format;
+	texture = t.texture;
+
+	shaderResourceView = t.shaderResourceView;
+
+	mipArray = new RSViewEx[t.mipLevels];
+
+	for (UINT i = 0; i < mipLevels; i++)
+	{
+		mipArray[i] = t.mipArray[i];
+	}
+}
+
 void RenderTexture::RSViewEx::bindRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	allSRV->unbindFromSRV(ctx, states);

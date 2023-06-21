@@ -12,6 +12,8 @@ public:
 
 	RenderComputeTexture(const UINT& width, const UINT& height, const FMT& fmt, const float color[4], const UINT& mipLevels = 1, const UINT& arraySize = 1);
 
+	RenderComputeTexture(const RenderComputeTexture&);
+
 	virtual ~RenderComputeTexture();
 
 	RUSView* getMip(const UINT& index);
@@ -35,8 +37,6 @@ private:
 		void bindRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 
 	}*mipArray;
-
-	//RUSView* mipArray;
 
 };
 

@@ -19,10 +19,6 @@ public:
 
 	virtual ~DepthStencilView();
 
-	DepthStencilView(const DepthStencilView&) = delete;
-
-	void operator=(const DepthStencilView&) = delete;
-
 	ID3D11DepthStencilView* getDSV() const;
 
 	virtual void bindDSV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states);

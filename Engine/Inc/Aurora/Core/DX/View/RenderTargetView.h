@@ -19,11 +19,6 @@ public:
 
 	virtual ~RenderTargetView();
 
-	RenderTargetView(const RenderTargetView&) = delete;
-
-	void operator=(const RenderTargetView&) = delete;
-
-
 	ID3D11RenderTargetView* getRTV() const;
 
 	ID3D11RenderTargetView** releaseAndGetRTV();
@@ -38,7 +33,7 @@ public:
 	//是否成功解绑
 	bool unbindFromRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states);
 
-private:
+protected:
 
 	friend class GraphicsContext;
 

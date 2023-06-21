@@ -14,10 +14,6 @@ public:
 
 	RenderCube() = delete;
 
-	RenderCube(const RenderCube&) = delete;
-
-	void operator=(const RenderCube&) = delete;
-
 	RenderCube(const UINT& resolution, const FMT& fmt, const float color[4] = DirectX::Colors::Black);
 
 	~RenderCube();

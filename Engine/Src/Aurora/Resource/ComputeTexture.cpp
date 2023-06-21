@@ -80,6 +80,25 @@ ComputeTexture::ComputeTexture(const UINT& width, const UINT& height, const FMT&
 	}
 }
 
+ComputeTexture::ComputeTexture(const ComputeTexture& t)
+{
+	width = t.width;
+	height = t.height;
+	arraySize = t.arraySize;
+	mipLevels = t.mipLevels;
+	format = t.format;
+	texture = t.texture;
+
+	shaderResourceView = t.shaderResourceView;
+
+	mipArray = new USViewEx[t.mipLevels];
+
+	for (UINT i = 0; i < mipLevels; i++)
+	{
+		mipArray[i] = t.mipArray[i];
+	}
+}
+
 USView* ComputeTexture::getMip(const UINT& index)
 {
 	return &mipArray[index];

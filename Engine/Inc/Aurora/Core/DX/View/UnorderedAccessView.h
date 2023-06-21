@@ -17,10 +17,6 @@ public:
 
 	virtual ~UnorderedAccessView();
 
-	UnorderedAccessView(const UnorderedAccessView&) = delete;
-
-	void operator=(const UnorderedAccessView&) = delete;
-
 	ID3D11UnorderedAccessView* getUAV() const;
 
 	ID3D11UnorderedAccessView** releaseAndGetUAV();
@@ -41,7 +37,7 @@ public:
 
 	bool unbindFromPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states);
 
-private:
+protected:
 
 	friend class GraphicsContext;
 

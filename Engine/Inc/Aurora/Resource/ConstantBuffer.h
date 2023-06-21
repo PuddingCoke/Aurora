@@ -13,13 +13,11 @@ public:
 
 protected:
 
+	friend class GraphicsContext;
+
 	UINT startConstants;
 
 	UINT numConstants;
-
-	friend class GraphicsContext;
-
-	friend class ImCtx;
 
 };
 

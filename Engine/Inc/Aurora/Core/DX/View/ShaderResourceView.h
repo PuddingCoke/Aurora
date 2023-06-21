@@ -17,10 +17,6 @@ public:
 
 	virtual ~ShaderResourceView();
 
-	ShaderResourceView(const ShaderResourceView&) = delete;
-
-	void operator=(const ShaderResourceView&) = delete;
-
 	ID3D11ShaderResourceView* getSRV() const;
 
 	ID3D11ShaderResourceView** releaseAndGetSRV();
@@ -33,7 +29,7 @@ public:
 	//返回是否成功解绑
 	bool unbindFromSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states);
 
-private:
+protected:
 
 	friend class GraphicsContext;
 

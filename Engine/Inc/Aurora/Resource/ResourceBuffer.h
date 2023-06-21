@@ -12,10 +12,6 @@ public:
 
 	ResourceBuffer() = delete;
 
-	ResourceBuffer(const ResourceBuffer&) = delete;
-
-	void operator=(const ResourceBuffer&) = delete;
-
 	ResourceBuffer(const UINT& byteWidth, const D3D11_USAGE& usage, const FMT& srvFmt,const void* const data = nullptr);
 
 	~ResourceBuffer();
