@@ -40,7 +40,7 @@ public:
 
 private:
 
-	friend class ImCtx;
+	friend class GraphicsContext;
 
 	ComPtr<ID3D11RenderTargetView> renderTargetView;
 

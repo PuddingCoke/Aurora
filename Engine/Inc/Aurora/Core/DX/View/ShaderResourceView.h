@@ -35,7 +35,7 @@ public:
 
 private:
 
-	friend class ImCtx;
+	friend class GraphicsContext;
 
 	static ID3D11ShaderResourceView* const nullSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT];
 

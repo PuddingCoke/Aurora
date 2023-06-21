@@ -43,7 +43,7 @@ public:
 
 private:
 
-	friend class ImCtx;
+	friend class GraphicsContext;
 
 	static ID3D11UnorderedAccessView* const nullUAV[D3D11_PS_CS_UAV_REGISTER_COUNT];
 

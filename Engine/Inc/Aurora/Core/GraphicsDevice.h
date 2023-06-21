@@ -63,6 +63,8 @@ public:
 
 	void createRasterizerState2(const D3D11_RASTERIZER_DESC2* desc, ID3D11RasterizerState2** address) const;
 
+	void createDeferredContext3(const UINT& createFlags, ID3D11DeviceContext3** address) const;
+
 	static ID3D11Device5* getDevice();
 
 private:

@@ -107,6 +107,11 @@ void GraphicsDevice::createRasterizerState2(const D3D11_RASTERIZER_DESC2* desc, 
 	CHECKERROR(device->CreateRasterizerState2(desc, address));
 }
 
+void GraphicsDevice::createDeferredContext3(const UINT& createFlags, ID3D11DeviceContext3** address) const
+{
+	CHECKERROR(device->CreateDeferredContext3(createFlags, address));
+}
+
 ID3D11Device5* GraphicsDevice::getDevice()
 {
 	return instance->device.Get();

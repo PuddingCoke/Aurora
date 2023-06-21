@@ -71,9 +71,9 @@ public:
 
 private:
 
-	friend class ImCtx;
-
 	friend class Aurora;
+
+	friend class GraphicsContext;
 
 	static void createGlobalShader();
 

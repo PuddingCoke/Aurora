@@ -391,20 +391,20 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 
 #ifdef _DEBUG
 		std::cout << "[class Aurora] enable debug\n";
-		UINT deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_DEBUG;
+		UINT deviceFlag = D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_DEBUG;
 #else
 		std::cout << "[class Aurora] disable debug\n";
-		UINT deviceFlag = D3D11_CREATE_DEVICE_SINGLETHREADED | D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
+		UINT deviceFlag = D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
 #endif // _DEBUG
 
 		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, ARRAYSIZE(featureLevels),
 			D3D11_SDK_VERSION, device11.ReleaseAndGetAddressOf(), &maxSupportedFeatureLevel, context11.ReleaseAndGetAddressOf());
 
 		new GraphicsDevice();
-		new ImCtx();
-
 		device11.As(&GraphicsDevice::get()->device);
-		context11.As(&ImCtx::get()->imctx);
+
+		new ImCtx();
+		context11.As(&ImCtx::get()->context);
 
 		ComPtr<IDXGIDevice> dxgiDevice11;
 		device11.As(&dxgiDevice11);
@@ -424,7 +424,7 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 		DXGI_SWAP_CHAIN_DESC1 sd = {};
 		sd.Width = screenWidth;
 		sd.Height = screenHeight;
-		sd.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		sd.Format = FMTCAST(backBufferFmt);
 		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -447,7 +447,7 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 		tDesc.Height = screenHeight;
 		tDesc.MipLevels = 1;
 		tDesc.ArraySize = 1;
-		tDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		tDesc.Format = FMTCAST(backBufferFmt);
 		tDesc.SampleDesc.Count = msaaLevel;
 		tDesc.SampleDesc.Quality = 0;
 		tDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -497,52 +497,35 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 
 	new Camera();
 
-	if (usage == Configuration::EngineUsage::AnimationRender)
+	if (msaaLevel > 1)
 	{
-		encodeTexture = new Texture2D(screenWidth, screenHeight, 1, 1, FMT::BGRA8UN, D3D11_BIND_RENDER_TARGET, 0);
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = FMTCAST(backBufferFmt);
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 
-		if (msaaLevel == 1)
-		{
-			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-			rtvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-			rtvDesc.Texture2D.MipSlice = 0;
-
-			ImCtx::defRenderTargetView = new RenderOnlyRTV(encodeTexture->getTexture2D(), rtvDesc);
-		}
-		else
-		{
-			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-			rtvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
-
-			ImCtx::defRenderTargetView = new RenderOnlyRTV(msaaTexture.Get(), rtvDesc);
-		}
+		GraphicsContext::defRenderTargetView = new RenderOnlyRTV(msaaTexture.Get(), rtvDesc);
 	}
 	else
 	{
-		if (msaaLevel == 1)
+		if (usage == Configuration::EngineUsage::AnimationRender)
 		{
 			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-			rtvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+			rtvDesc.Format = FMTCAST(backBufferFmt);
 			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 			rtvDesc.Texture2D.MipSlice = 0;
 
-			ImCtx::defRenderTargetView = new RenderOnlyRTV(backBuffer.Get(), rtvDesc);
+			GraphicsContext::defRenderTargetView = new RenderOnlyRTV(encodeTexture->getTexture2D(), rtvDesc);
 		}
 		else
 		{
 			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-			rtvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+			rtvDesc.Format = FMTCAST(backBufferFmt);
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+			rtvDesc.Texture2D.MipSlice = 0;
 
-			ImCtx::defRenderTargetView = new RenderOnlyRTV(msaaTexture.Get(), rtvDesc);
+			GraphicsContext::defRenderTargetView = new RenderOnlyRTV(backBuffer.Get(), rtvDesc);
 		}
 	}
-
-#ifdef _DEBUG
-	GraphicsDevice::getDevice()->QueryInterface(IID_ID3D11Debug, (void**)d3dDebug.ReleaseAndGetAddressOf());
-#endif // _DEBUG
 
 	if (enableImGui)
 	{

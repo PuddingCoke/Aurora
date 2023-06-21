@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Aurora\Camera\OrbitCamera.h" />
+    <ClInclude Include="Inc\Aurora\Core\GraphicsContext.h" />
     <ClInclude Include="Inc\Aurora\Core\DX\View\Special\RenderOnlyRTV.h" />
     <ClInclude Include="Inc\Aurora\Core\GraphicsDevice.h" />
     <ClInclude Include="Inc\Aurora\Core\GraphicsStates.h" />
@@ -226,6 +227,7 @@
     <ClCompile Include="External\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="External\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\Special\RenderOnlyRTV.cpp" />
+    <ClCompile Include="Src\Aurora\Core\GraphicsContext.cpp" />
     <ClCompile Include="Src\Aurora\Core\GraphicsDevice.cpp" />
     <ClCompile Include="Src\Aurora\Core\ResourceFormat.cpp" />
     <ClCompile Include="Src\Aurora\Effect\SSREffect.cpp" />

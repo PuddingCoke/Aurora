@@ -105,6 +105,8 @@ private:
 
 	static constexpr DWORD wallpaperWndStyle = WS_POPUP;
 
+	static constexpr FMT backBufferFmt = FMT::BGRA8UN;
+
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	static LRESULT CALLBACK WallpaperProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
