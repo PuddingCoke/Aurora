@@ -2,6 +2,7 @@
 
 #include<Aurora/Game.h>
 #include<Aurora/EngineAPI/ImCtx.h>
+#include<Aurora/Utils/Math.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game
@@ -66,8 +67,7 @@ public:
 
 		param.radius = Math::lerp(param.radius, targetRadius, 10.f * dt);
 
-		memcpy(ImCtx::get()->Map(simulationBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &param, sizeof(SimulationParam));
-		ImCtx::get()->Unmap(simulationBuffer, 0);
+		BufferUpdate::pushBufferUpdateParam(simulationBuffer, &param, sizeof(SimulationParam));
 	}
 
 	void render()

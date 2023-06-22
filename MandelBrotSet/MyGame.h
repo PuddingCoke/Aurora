@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
+#include<Aurora/Utils/Math.h>
 #include<Aurora/EngineAPI/ImCtx.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可

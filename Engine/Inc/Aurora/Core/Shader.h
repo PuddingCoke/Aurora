@@ -6,7 +6,6 @@
 #include<d3d11_4.h>
 #include<d3dcompiler.h>
 #include<string>
-#include<vector>
 #include<iostream>
 
 #include<Aurora/Utils/Utils.h>

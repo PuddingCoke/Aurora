@@ -5,6 +5,7 @@
 #include<Aurora/Game.h>
 #include<Aurora/Core/PrimitiveBatch.h>
 #include<Aurora/Resource/RenderTexture.h>
+#include<Aurora/Resource/ResourceTexture.h>
 
 #include"Logo.h"
 

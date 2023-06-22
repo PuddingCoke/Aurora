@@ -53,8 +53,3 @@ BufferUpdate::~BufferUpdate()
 {
 	delete ctx;
 }
-
-BufferUpdate* BufferUpdate::get()
-{
-	return instance;
-}

@@ -4,7 +4,6 @@
 #define _EFFECTBASE_H_
 
 #include<Aurora/EngineAPI/ResourceEssential.h>
-#include<Aurora/Core/Shader.h>
 #include<Aurora/EngineAPI/States.h>
 #include<Aurora/EngineAPI/Camera.h>
 #include<Aurora/EngineAPI/Graphics.h>

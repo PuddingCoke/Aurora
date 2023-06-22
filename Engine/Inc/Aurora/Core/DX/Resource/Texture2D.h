@@ -3,10 +3,9 @@
 #ifndef _TEXTURE2D_H_
 #define _TEXTURE2D_H_
 
+#include<iostream>
 #include<string>
 #include<d3d11_4.h>
-#include<iostream>
-#include<vector>
 
 #include<Aurora/Utils/Utils.h>
 #include<Aurora/Utils/Random.h>

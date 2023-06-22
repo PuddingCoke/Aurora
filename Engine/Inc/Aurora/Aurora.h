@@ -8,8 +8,8 @@
 
 #include"Window/Win32Form.h"
 
-#include<chrono>
 #include<iostream>
+#include<chrono>
 #include<future>
 #include<windowsx.h>
 
@@ -27,14 +27,6 @@
 #include<Aurora/EngineAPI/States.h>
 #include<Aurora/EngineAPI/ImCtx.h>
 #include<Aurora/EngineAPI/BufferUpdate.h>
-
-#include<Aurora/Input/Keyboard.h>
-#include<Aurora/Input/Mouse.h>
-
-#include<Aurora/Utils/Math.h>
-#include<Aurora/Utils/Utils.h>
-
-#include<Aurora/Resource/TextureCube.h>
 
 #include<Aurora/VideoEncoder/NvidiaEncoder.h>
 #include<Aurora/Wallpaper/WallpaperHelper.h>

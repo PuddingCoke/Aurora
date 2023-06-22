@@ -8,6 +8,7 @@
 #include<Aurora/EngineAPI/States.h>
 #include<Aurora/Core/PrimitiveBatch.h>
 #include<Aurora/Resource/RenderTexture.h>
+#include<Aurora/Resource/ResourceTexture.h>
 #include<Aurora/Utils/Color.h>
 #include<Aurora/Input/Event.h>
 

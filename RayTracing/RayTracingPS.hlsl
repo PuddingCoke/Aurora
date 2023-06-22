@@ -289,7 +289,7 @@ float3 Radiance(Ray ray)
     HitRecord rec;
     
     [unroll]
-    for (uint i = 0; i < 8; i++)
+    for (uint i = 0; i < 7; i++)
     {
         if (Trace(ray, rec))
         {

@@ -20,8 +20,6 @@ private:
 
 	~BufferUpdate();
 
-	static BufferUpdate* get();
-
 	static BufferUpdate* instance;
 
 	static void updateBuffer();
