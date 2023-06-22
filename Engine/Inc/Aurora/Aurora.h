@@ -10,6 +10,7 @@
 
 #include<chrono>
 #include<iostream>
+#include<future>
 #include<windowsx.h>
 
 #include<ImGUI/imgui.h>
@@ -25,6 +26,7 @@
 #include<Aurora/EngineAPI/Graphics.h>
 #include<Aurora/EngineAPI/States.h>
 #include<Aurora/EngineAPI/ImCtx.h>
+#include<Aurora/EngineAPI/BufferUpdate.h>
 
 #include<Aurora/Input/Keyboard.h>
 #include<Aurora/Input/Mouse.h>

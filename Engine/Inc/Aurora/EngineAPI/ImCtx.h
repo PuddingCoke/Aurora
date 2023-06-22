@@ -15,6 +15,10 @@ public:
 
 	void operator=(const ImCtx&) = delete;
 
+	D3D11_MAPPED_SUBRESOURCE Map(Resource* const res, const UINT& subresource, const D3D11_MAP& mapType, const UINT& mapFlag = 0);
+
+	void ExecuteCommandList(ID3D11CommandList* const list);
+
 private:
 
 	friend class Aurora;

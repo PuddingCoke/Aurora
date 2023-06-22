@@ -146,6 +146,9 @@ public:
 	{
 		ImCtx::get()->OMSetDefRTV(nullptr);
 		ImCtx::get()->ClearDefRTV(DirectX::Colors::White);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(States::defBlendState);
 
 		x = startX;
 		y = startY;

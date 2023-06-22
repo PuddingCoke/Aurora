@@ -8,7 +8,7 @@
 #include<DirectXMath.h>
 
 #include"Graphics.h"
-#include"ImCtx.h"
+#include"BufferUpdate.h"
 
 #include<Aurora/Input/Keyboard.h>
 #include<Aurora/Input/Mouse.h>
@@ -52,6 +52,8 @@ private:
 	static void setProj(const DirectX::XMMATRIX& proj);
 
 	static void setView(const DirectX::XMMATRIX& view);
+
+	void updateViewBuffer();
 
 	ConstantBuffer* projBuffer;
 

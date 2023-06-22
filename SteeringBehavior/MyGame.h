@@ -133,6 +133,7 @@ public:
 
 		ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
 		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
 		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 

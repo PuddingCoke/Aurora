@@ -2,7 +2,7 @@
 
 RenderOnlyRTV* GraphicsContext::defRenderTargetView = nullptr;
 
-GraphicsContext::GraphicsContext():
+GraphicsContext::GraphicsContext() :
 	tempBuffer{}, tempStartConstants{}, tempNumConstants{}, tempRTV{}, tempUAV{}, tempSRV{}, tempOffsets{}, tempStrides{}, tempSampler{},
 	vp{ 0.f,0.f,0.f,0.f,0.f,1.f }, states{}
 {
@@ -614,13 +614,9 @@ void GraphicsContext::DrawInstanced(const UINT& vertexCountPerInstance, const UI
 	getContext()->DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 }
 
-D3D11_MAPPED_SUBRESOURCE GraphicsContext::Map(Resource* const res, const UINT& subresource, const D3D11_MAP& mapType, const UINT& mapFlag)
+void GraphicsContext::Map(Resource* const res, const UINT& subresource, const D3D11_MAP& mapType, const UINT& mapFlag, D3D11_MAPPED_SUBRESOURCE* const mappedSubresource)
 {
-	D3D11_MAPPED_SUBRESOURCE data = {};
-
-	getContext()->Map(res->getResource(), subresource, mapType, mapFlag, &data);
-
-	return data;
+	getContext()->Map(res->getResource(), subresource, mapType, mapFlag, mappedSubresource);
 }
 
 void GraphicsContext::Unmap(Resource* const res, const UINT& subresource)
@@ -631,6 +627,11 @@ void GraphicsContext::Unmap(Resource* const res, const UINT& subresource)
 void GraphicsContext::UpdateSubresource(Resource* res, const UINT& dstSubresource, const D3D11_BOX* const pDstBox, const void* const data, const UINT& rowPitch, const UINT& depthPitch)
 {
 	getContext()->UpdateSubresource(res->getResource(), dstSubresource, pDstBox, data, rowPitch, depthPitch);
+}
+
+void GraphicsContext::FinishCommandList(ID3D11CommandList** commandList)
+{
+	getContext()->FinishCommandList(false, commandList);
 }
 
 void GraphicsContext::GenerateMips(ShaderResourceView* const srv)
@@ -671,6 +672,11 @@ void GraphicsContext::PSUnbindShader()
 void GraphicsContext::CSUnbindShader()
 {
 	getContext()->CSSetShader(nullptr, nullptr, 0);
+}
+
+void GraphicsContext::ClearState()
+{
+	getContext()->ClearState();
 }
 
 void GraphicsContext::UnbindRTV()

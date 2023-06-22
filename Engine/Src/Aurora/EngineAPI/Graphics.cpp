@@ -44,7 +44,7 @@ const unsigned int& Graphics::getMSAALevel()
 }
 
 Graphics::Graphics(const int& width, const int& height, const unsigned int& msaaLevel) :
-	width(width), height(height), msaaLevel(msaaLevel), aspectRatio((float)width / (float)height), deltaTime{ 0,0,0,0 }, recordConfig{ 3600,60 },
+	width(width), height(height), msaaLevel(msaaLevel), aspectRatio((float)width / (float)height), deltaTime{ 1.f / 60.f,0,0,0 }, recordConfig{ 3600,60 },
 	deltaTimeBuffer(new ConstantBuffer(sizeof(DeltaTime), D3D11_USAGE_DYNAMIC))
 {
 	instance = this;
@@ -63,6 +63,5 @@ void Graphics::updateDeltaTimeBuffer()
 {
 	deltaTime.uintSeed = Random::Uint();
 	deltaTime.floatSeed = Random::Float();
-	memcpy(ImCtx::get()->Map(deltaTimeBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &deltaTime, sizeof(DeltaTime));
-	ImCtx::get()->Unmap(deltaTimeBuffer, 0);
+	BufferUpdate::pushBufferUpdateParam(deltaTimeBuffer, &deltaTime, sizeof(DeltaTime));
 }

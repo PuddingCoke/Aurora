@@ -211,9 +211,6 @@ public:
 
 	void splat()
 	{
-		memcpy(ImCtx::get()->Map(simulationDeltaBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &simulationDelta, sizeof(SimulationDelta));
-		ImCtx::get()->Unmap(simulationDeltaBuffer, 0);
-
 		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		ImCtx::get()->PSSetConstantBuffer({ simulationParamBuffer,simulationDeltaBuffer }, 1);
 		ImCtx::get()->PSSetSampler({ States::pointClampSampler,States::linearClampSampler }, 0);
@@ -321,13 +318,12 @@ public:
 
 	void update(const float& dt) override
 	{
+		BufferUpdate::pushBufferUpdateParam(simulationParamBuffer, &simulationParam, sizeof(SimulationParam));
+		BufferUpdate::pushBufferUpdateParam(simulationDeltaBuffer, &simulationDelta, sizeof(SimulationDelta));
 	}
 
 	void render()
 	{
-		memcpy(ImCtx::get()->Map(simulationParamBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &simulationParam, sizeof(SimulationParam));
-		ImCtx::get()->Unmap(simulationParamBuffer, 0);
-
 		//物理模拟
 
 		if (colorUpdateTimer.update(Graphics::getDeltaTime() * config.colorChangeSpeed))

@@ -303,6 +303,13 @@ public:
 
 	void render()
 	{
+		ImCtx::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->IASetInputLayout(inputLayout.Get());
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->RSSetState(States::rasterCullBack);
+		ImCtx::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
+
 		if (displayMode)
 		{
 			ImCtx::get()->RSSetState(States::rasterCullNone);

@@ -95,9 +95,13 @@ public:
 
 	void render()
 	{
+		ImCtx::get()->RSSetState(States::rasterCullBack);
+		ImCtx::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
+
 		ImCtx::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
 		ImCtx::get()->ClearDefRTV(DirectX::Colors::CadetBlue);
 		ImCtx::get()->OMSetDefRTV(depthTexture);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
 		ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 		ImCtx::get()->PSSetConstantBuffer({ lightBuffer }, 3);

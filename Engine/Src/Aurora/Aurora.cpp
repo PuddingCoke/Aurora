@@ -191,6 +191,7 @@ void Aurora::runGame()
 
 		const std::chrono::high_resolution_clock::time_point timeStart = timer.now();
 
+		//游戏逻辑更新
 		game->update(Graphics::getDeltaTime());
 
 		if (enableImGui)
@@ -198,7 +199,15 @@ void Aurora::runGame()
 			game->imGUICall();
 		}
 
-		Graphics::instance->updateDeltaTimeBuffer();
+		BufferUpdate::pushBufferUpdateParam(Graphics::getDeltaTimeBuffer(), &Graphics::instance->deltaTime, sizeof(Graphics::DeltaTime));
+		BufferUpdate::pushBufferUpdateParam(Camera::getViewBuffer(), &Camera::instance->viewInfo, sizeof(Camera::ViewInfo));
+
+		//更新需要更新的缓冲
+		std::future<void> bufferUpdater = std::async(std::launch::async, BufferUpdate::updateBuffer);
+
+		bufferUpdater.get();
+
+		BufferUpdate::executeCommandList();
 
 		bindCommonCB();
 
@@ -281,7 +290,7 @@ void Aurora::bindCommonCB()
 
 void Aurora::destroy()
 {
-	ImCtx::get()->getContext()->ClearState();
+	ImCtx::get()->ClearState();
 
 	delete game;
 
@@ -292,6 +301,8 @@ void Aurora::destroy()
 	Shader::releaseGlobalShader();
 
 	delete States::instance;
+
+	delete BufferUpdate::instance;
 
 	delete Camera::instance;
 
@@ -492,6 +503,8 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 	Shader::createGlobalShader();
 
 	new States();
+
+	new BufferUpdate();
 
 	new Graphics(screenWidth, screenHeight, msaaLevel);
 

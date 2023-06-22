@@ -67,8 +67,12 @@ public:
 	{
 		ocean.update();
 
+		ImCtx::get()->RSSetState(States::rasterCullBack);
+		ImCtx::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
+
 		ImCtx::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
 		ImCtx::get()->OMSetRTV({ originTexture->getMip(0) }, nullptr);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
 		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

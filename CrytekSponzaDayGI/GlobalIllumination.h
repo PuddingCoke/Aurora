@@ -244,7 +244,12 @@ public:
 
 	void render()
 	{
+		ImCtx::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->RSSetState(States::rasterCullBack);
+		ImCtx::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
 		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->IASetInputLayout(modelInputLayout.Get());
 
 		ImCtx::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
 

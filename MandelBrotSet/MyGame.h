@@ -76,6 +76,8 @@ public:
 	void render()
 	{
 		ImCtx::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		ImCtx::get()->PSSetConstantBuffer({ simulationBuffer }, 1);
 
 		ImCtx::get()->BindShader(Shader::fullScreenVS);

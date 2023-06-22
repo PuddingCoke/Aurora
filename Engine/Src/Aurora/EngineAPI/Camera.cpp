@@ -60,9 +60,11 @@ void Camera::setView(const DirectX::XMMATRIX& view)
 	instance->viewInfo.view = DirectX::XMMatrixTranspose(instance->viewMatrix);
 	instance->viewInfo.viewProj = DirectX::XMMatrixTranspose(instance->viewMatrix * instance->projMatrix);
 	instance->viewInfo.normalMatrix = DirectX::XMMatrixInverse(nullptr, instance->viewMatrix);
+}
 
-	memcpy(ImCtx::get()->Map(instance->viewBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &instance->viewInfo, sizeof(ViewInfo));
-	ImCtx::get()->Unmap(instance->viewBuffer, 0);
+void Camera::updateViewBuffer()
+{
+	BufferUpdate::pushBufferUpdateParam(viewBuffer, &viewInfo, sizeof(ViewInfo));
 }
 
 void Camera::setView(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up)

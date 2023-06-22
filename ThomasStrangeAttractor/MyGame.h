@@ -97,6 +97,7 @@ public:
 
 		ImCtx::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
 		ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, depthTexture);
 
 		attractor.render();

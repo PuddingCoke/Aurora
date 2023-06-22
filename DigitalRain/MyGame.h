@@ -81,6 +81,10 @@ public:
 		ImCtx::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
 		ImCtx::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);
 		ImCtx::get()->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->RSSetState(States::rasterCullBack);
+		ImCtx::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
 
 		ImCtx::get()->OMSetBlendState(States::defBlendState);
 

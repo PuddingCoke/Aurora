@@ -114,11 +114,13 @@ public:
 
 	void DrawInstanced(const UINT& vertexCountPerInstance, const UINT& instanceCount, const UINT& startVertexLocation, const UINT& startInstanceLocation);
 
-	D3D11_MAPPED_SUBRESOURCE Map(Resource* const res, const UINT& subresource, const D3D11_MAP& mapType, const UINT& mapFlag = 0);
+	void Map(Resource* const res, const UINT& subresource, const D3D11_MAP& mapType, const UINT& mapFlag, D3D11_MAPPED_SUBRESOURCE* const mappedSubresource);
 
 	void Unmap(Resource* const res, const UINT& subresource);
 
 	void UpdateSubresource(Resource* const res, const UINT& dstSubresource, const D3D11_BOX* const pDstBox, const void* const data, const UINT& rowPitch, const UINT& depthPitch);
+
+	void FinishCommandList(ID3D11CommandList** commandList);
 
 	void GenerateMips(ShaderResourceView* const srv);
 
@@ -135,6 +137,8 @@ public:
 	void PSUnbindShader();
 
 	void CSUnbindShader();
+
+	void ClearState();
 
 	void UnbindRTV();
 

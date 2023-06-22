@@ -194,6 +194,8 @@ public:
 
 		ImCtx::get()->ClearRTV(texture->getMip(0), DirectX::Colors::Black);
 		ImCtx::get()->OMSetRTV({ texture->getMip(0) }, nullptr);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->OMSetBlendState(States::defBlendState);
 
 		pBatch->begin();
 		for (std::list<Star*>::iterator it = Star::active->begin(); it != Star::active->end(); it++)

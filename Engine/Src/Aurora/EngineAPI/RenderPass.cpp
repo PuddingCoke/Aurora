@@ -16,7 +16,7 @@ void RenderPass::finishRecord()
 	context->UnbindRTV();
 	context->UnbindPSUAV();
 	context->UnbindCSUAV();
-	context->getContext()->FinishCommandList(false, &commandList);
+	context->FinishCommandList(&commandList);
 }
 
 ID3D11CommandList* RenderPass::getCommandList() const

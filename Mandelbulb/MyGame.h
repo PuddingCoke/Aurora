@@ -44,10 +44,6 @@ public:
 			});
 
 		simulationBuffer = new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_DYNAMIC, &param);
-
-		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		ImCtx::get()->OMSetBlendState(nullptr);
-		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
 	}
 
 	~MyGame()
@@ -76,7 +72,12 @@ public:
 
 	void render()
 	{
+		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ImCtx::get()->OMSetBlendState(nullptr);
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+
 		ImCtx::get()->OMSetDefRTV(nullptr);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		ImCtx::get()->PSSetConstantBuffer({ simulationBuffer }, 1);
 
 		ImCtx::get()->BindShader(Shader::fullScreenVS);

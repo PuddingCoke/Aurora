@@ -146,6 +146,10 @@ public:
 
 	void render()
 	{
+		ImCtx::get()->RSSetState(States::rasterCullBack);
+
+		ImCtx::get()->OMSetDepthStencilState(States::defDepthStencilState, 0);
+
 		ImCtx::get()->IASetInputLayout(inputLayout.Get());
 		ImCtx::get()->PSSetSampler({ States::anisotropicWrapSampler,States::linearClampSampler }, 0);
 
@@ -156,6 +160,7 @@ public:
 		ImCtx::get()->ClearRTV(gRoughnessMetallic->getMip(0), DirectX::Colors::Black);
 
 		ImCtx::get()->OMSetRTV({ gBaseColor->getMip(0),gPosition->getMip(0),gNormal->getMip(0),gRoughnessMetallic->getMip(0) }, resDepthTexture);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 
 		mainScene->draw(deferredVS, deferredPSHasTex, deferredPSNoTex, deferredPSTrans);
 

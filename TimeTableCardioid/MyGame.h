@@ -67,6 +67,7 @@ public:
 		ImCtx::get()->OMSetBlendState(States::addtiveBlend);
 		ImCtx::get()->OMSetDefRTV(nullptr);
 		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		pBatch->begin();
 		pBatch->drawCircle(c.center.x, c.center.y, c.radius, color.r / 2.f, color.g / 2.f, color.b / 2.f, 1);
 		for (size_t i = 0; i < c.points.size(); i++)
