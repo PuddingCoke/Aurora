@@ -210,8 +210,7 @@ void BloomEffect::updateCurve(const unsigned int& index)
 		blurParam[index].offset[(i + 1) / 2] = (g1 * i + g2 * (i + 1)) / (g1 + g2);
 	}
 
-	memcpy(ImCtx::get()->Map(blurParamBuffer[index], 0, D3D11_MAP_WRITE_DISCARD).pData, &blurParam[index], sizeof(BlurParam));
-	ImCtx::get()->Unmap(blurParamBuffer[index], 0);
+	BufferUpdate::pushBufferUpdateParam(blurParamBuffer[index], &blurParam[index], sizeof(BlurParam));
 }
 
 const float& BloomEffect::getExposure() const
@@ -236,8 +235,7 @@ const float& BloomEffect::getIntensity() const
 
 void BloomEffect::applyChange() const
 {
-	memcpy(ImCtx::get()->Map(bloomParamBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &bloomParam, sizeof(BloomParam));
-	ImCtx::get()->Unmap(bloomParamBuffer, 0);
+	BufferUpdate::pushBufferUpdateParam(bloomParamBuffer, &bloomParam, sizeof(BloomParam));
 }
 
 void BloomEffect::compileShaders()

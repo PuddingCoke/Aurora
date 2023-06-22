@@ -38,8 +38,7 @@ void FadeEffect::setFadeSpeed(const float& speed)
 {
 	fadeParam.fadeSpeed = speed;
 
-	memcpy(ImCtx::get()->Map(fadeBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &fadeParam, sizeof(FadeParam));
-	ImCtx::get()->Unmap(fadeBuffer, 0);
+	BufferUpdate::pushBufferUpdateParam(fadeBuffer, &fadeParam, sizeof(FadeParam));
 }
 
 FadeEffect::~FadeEffect()

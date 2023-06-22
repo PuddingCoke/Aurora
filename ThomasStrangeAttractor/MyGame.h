@@ -79,8 +79,7 @@ public:
 	{
 		//param.factor = 0.1f + 0.01f * sinf(Graphics::getSTime());
 
-		memcpy(ImCtx::get()->Map(simulationBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &param, sizeof(SimulationParam));
-		ImCtx::get()->Unmap(simulationBuffer, 0);
+		BufferUpdate::pushBufferUpdateParam(simulationBuffer, &param, sizeof(SimulationParam));
 
 		if (rotating)
 		{

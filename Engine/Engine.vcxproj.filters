@@ -452,6 +452,9 @@
     <ClCompile Include="Src\Aurora\EngineAPI\BufferUpdate.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Aurora\Core\GraphicsStates.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Bloom\BloomFilterPS.hlsl" />

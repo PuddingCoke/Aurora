@@ -231,6 +231,7 @@
     <ClCompile Include="Src\Aurora\Core\DX\View\Special\RenderOnlyRTV.cpp" />
     <ClCompile Include="Src\Aurora\Core\GraphicsContext.cpp" />
     <ClCompile Include="Src\Aurora\Core\GraphicsDevice.cpp" />
+    <ClCompile Include="Src\Aurora\Core\GraphicsStates.cpp" />
     <ClCompile Include="Src\Aurora\Core\ResourceFormat.cpp" />
     <ClCompile Include="Src\Aurora\Effect\SSREffect.cpp" />
     <ClCompile Include="Src\Aurora\EngineAPI\BufferUpdate.cpp" />

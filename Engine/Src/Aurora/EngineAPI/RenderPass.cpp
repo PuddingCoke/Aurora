@@ -13,10 +13,8 @@ RenderPass::~RenderPass()
 
 void RenderPass::finishRecord()
 {
-	context->UnbindRTV();
-	context->UnbindPSUAV();
-	context->UnbindCSUAV();
 	context->FinishCommandList(&commandList);
+	context->getStates()->resetStates();
 }
 
 ID3D11CommandList* RenderPass::getCommandList() const

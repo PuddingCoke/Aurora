@@ -31,4 +31,7 @@ struct GraphicsStates
 	UnorderedAccessView* curPUAV[D3D11_PS_CS_UAV_REGISTER_COUNT];
 
 	VertexBuffer* curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+
+	void resetStates();
+
 };

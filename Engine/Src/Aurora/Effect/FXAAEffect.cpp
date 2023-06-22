@@ -87,8 +87,7 @@ const float& FXAAEffect::getFXAAQualityEdgeThresholdMin() const
 
 void FXAAEffect::applyChange() const
 {
-	memcpy(ImCtx::get()->Map(fxaaParamBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &fxaaParam, sizeof(FXAAParam));
-	ImCtx::get()->Unmap(fxaaParamBuffer, 0);
+	BufferUpdate::pushBufferUpdateParam(fxaaParamBuffer, &fxaaParam, sizeof(FXAAParam));
 }
 
 void FXAAEffect::compileShaders()
