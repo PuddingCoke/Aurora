@@ -212,7 +212,7 @@ public:
 
 		ImCtx::get()->IASetInputLayout(inputLayout.Get());
 		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		ImCtx::get()->IASetVertexBuffer(0, { textBuffer }, { sizeof(Text) }, { 0 });
+		ImCtx::get()->IASetVertexBuffer( { textBuffer }, { sizeof(Text) }, { 0 });
 
 		ImCtx::get()->Draw(idx, 0);
 		idx = 0;
