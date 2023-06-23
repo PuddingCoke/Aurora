@@ -37,6 +37,8 @@ protected:
 
 	friend class GraphicsContext;
 
+	static ID3D11RenderTargetView* const nullRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
+
 	ComPtr<ID3D11RenderTargetView> renderTargetView;
 
 	bool boundOnRTV;

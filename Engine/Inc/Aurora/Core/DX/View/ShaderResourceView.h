@@ -51,6 +51,10 @@ protected:
 
 	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 
+	bool isManaged;
+
+	std::list<ShaderResourceView*>::iterator loc;
+
 	int VSSlot;
 
 	int HSSlot;

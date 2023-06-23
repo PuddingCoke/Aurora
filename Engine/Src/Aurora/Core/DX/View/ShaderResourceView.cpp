@@ -3,7 +3,7 @@
 ID3D11ShaderResourceView* const ShaderResourceView::nullSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
 
 ShaderResourceView::ShaderResourceView() :
-	VSSlot(-1), HSSlot(-1), DSSlot(-1), GSSlot(-1), PSSlot(-1), CSSlot(-1)
+	VSSlot(-1), HSSlot(-1), DSSlot(-1), GSSlot(-1), PSSlot(-1), CSSlot(-1), isManaged(false), loc()
 {
 }
 
@@ -100,7 +100,9 @@ bool ShaderResourceView::unbindFromSRV(ID3D11DeviceContext3* const ctx, Graphics
 
 	if (success)
 	{
-		states->managedSRV.erase(std::remove(states->managedSRV.begin(), states->managedSRV.end(), this));
+		states->managedSRV.erase(loc);
+		isManaged = false;
+		loc = std::list<ShaderResourceView*>::iterator();
 	}
 
 	return success;
@@ -113,10 +115,11 @@ void ShaderResourceView::createSRV(ID3D11Resource* const resource, const D3D11_S
 
 void ShaderResourceView::pushToManagedSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	std::list<ShaderResourceView*>::iterator it = std::find(states->managedSRV.begin(), states->managedSRV.end(), this);
-
-	if (it == states->managedSRV.end())
+	if (!isManaged)
 	{
 		states->managedSRV.push_back(this);
+		isManaged = true;
+		loc = states->managedSRV.end();
+		--loc;
 	}
 }

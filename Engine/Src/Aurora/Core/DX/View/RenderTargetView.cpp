@@ -1,5 +1,7 @@
 #include<Aurora/Core/DX/View/RenderTargetView.h>
 
+ID3D11RenderTargetView* const RenderTargetView::nullRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};
+
 RenderTargetView::RenderTargetView() :
 	boundOnRTV(false)
 {
@@ -27,12 +29,22 @@ ID3D11RenderTargetView** RenderTargetView::releaseAndGetRTV()
 
 void RenderTargetView::unbindRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	for (unsigned int i = 0; states->curRTV[i]; i++)
+	UINT num = 0;
+
+	for (; num < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; num++)
 	{
-		states->curRTV[i]->boundOnRTV = false;
-		states->curRTV[i] = nullptr;
+		if (states->curRTV[num])
+		{
+			states->curRTV[num]->boundOnRTV = false;
+			states->curRTV[num] = nullptr;
+		}
+		else
+		{
+			break;
+		}
 	}
-	ctx->OMSetRenderTargets(0, nullptr, nullptr);
+
+	ctx->OMSetRenderTargets(num, nullRTV, nullptr);
 }
 
 bool RenderTargetView::unbindFromRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)

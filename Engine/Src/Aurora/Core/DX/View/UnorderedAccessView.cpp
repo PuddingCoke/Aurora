@@ -36,12 +36,21 @@ void UnorderedAccessView::unbindCUAV(ID3D11DeviceContext3* const ctx, GraphicsSt
 
 void UnorderedAccessView::unbindPUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unsigned int num = 0;
-	for (num = 0; states->curPUAV[num]; num++)
+	UINT num = 0;
+
+	for (; num < D3D11_PS_CS_UAV_REGISTER_COUNT; num++)
 	{
-		states->curPUAV[num]->boundOnRTV = false;
-		states->curPUAV[num] = nullptr;
+		if (states->curPUAV[num])
+		{
+			states->curPUAV[num]->boundOnRTV = false;
+			states->curPUAV[num] = nullptr;
+		}
+		else
+		{
+			break;
+		}
 	}
+
 	ctx->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0, num, nullUAV, nullptr);
 }
 

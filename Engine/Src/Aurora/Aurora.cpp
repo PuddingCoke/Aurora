@@ -199,8 +199,8 @@ void Aurora::runGame()
 			game->imGUICall();
 		}
 
-		BufferUpdate::pushBufferUpdateParam(Graphics::getDeltaTimeBuffer(), &Graphics::instance->deltaTime, sizeof(Graphics::DeltaTime));
-		BufferUpdate::pushBufferUpdateParam(Camera::getViewBuffer(), &Camera::instance->viewInfo, sizeof(Camera::ViewInfo));
+		Graphics::instance->updateDeltaTimeBuffer();
+		Camera::instance->updateViewBuffer();
 
 		//更新需要更新的缓冲
 		std::future<void> bufferUpdater = std::async(std::launch::async, BufferUpdate::updateBuffer);

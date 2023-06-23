@@ -27,12 +27,22 @@ bool VertexBuffer::unbindFromVertexBuffer(ID3D11DeviceContext3* const ctx, Graph
 
 void VertexBuffer::unbindVertexBuffer(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	for (unsigned int i = 0; states->curBuffer[i]; i++)
+	UINT num = 0;
+
+	for (; num < D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT; num++)
 	{
-		states->curBuffer[i]->IASlot = -1;
-		states->curBuffer[i] = nullptr;
+		if (states->curBuffer[num])
+		{
+			states->curBuffer[num]->IASlot = -1;
+			states->curBuffer[num] = nullptr;
+		}
+		else
+		{
+			break;
+		}
 	}
-	ctx->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
+
+	ctx->IASetVertexBuffers(0, num, nullBuffer, nullStrides, nullStrides);
 }
 
 void VertexBuffer::bindVertexBuffer(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)

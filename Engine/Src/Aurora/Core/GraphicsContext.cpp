@@ -32,10 +32,17 @@ void GraphicsContext::OMSetRTV(const std::initializer_list<RenderTargetView*>& r
 		UnorderedAccessView::unbindPUAV(getContext(), &states);
 	}
 
-	for (UINT i = 0; states.curRTV[i]; i++)
+	for (UINT i = 0; i < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; i++)
 	{
-		states.curRTV[i]->boundOnRTV = false;
-		states.curRTV[i] = nullptr;
+		if (states.curRTV[i])
+		{
+			states.curRTV[i]->boundOnRTV = false;
+			states.curRTV[i] = nullptr;
+		}
+		else
+		{
+			break;
+		}
 	}
 
 	if (rtvs.size())
