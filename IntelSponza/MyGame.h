@@ -80,8 +80,8 @@ public:
 		deferredPSTrans(new Shader("DeferredPSTrans.hlsl", ShaderType::Pixel)),
 		debugPS(new Shader("DebugPS.hlsl", ShaderType::Pixel)),
 		deferredFinal(new Shader("DeferredFinal.hlsl", ShaderType::Pixel)),
-		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
+		bloomEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
+		hbaoEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
 		skybox(new TextureCube("E:/Assets/SpaceShip/360-Space-Panorama-III.hdr", 2048)),
 		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
 		screenSpaceReflection(new Shader("SSR.hlsl", ShaderType::Pixel))

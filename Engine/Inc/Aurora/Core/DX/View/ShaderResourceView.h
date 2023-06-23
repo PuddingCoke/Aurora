@@ -21,8 +21,6 @@ public:
 
 	void createSRV(ID3D11Resource* const resource, const D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
 
-	void pushToManagedSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states);
-
 	//解决binding hazard的问题
 	virtual void bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) = 0;
 
@@ -48,10 +46,6 @@ protected:
 	void unbindCSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states);
 
 	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
-
-	bool isManaged;
-
-	std::list<ShaderResourceView*>::iterator loc;
 
 	int VSSlot;
 

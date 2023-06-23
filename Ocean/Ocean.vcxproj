@@ -140,6 +140,8 @@
   <ItemGroup>
     <ClInclude Include="MyGame.h" />
     <ClInclude Include="Ocean.h" />
+    <ClInclude Include="OceanRenderPass.h" />
+    <ClInclude Include="PostProcessPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

@@ -15,17 +15,11 @@ public:
 
 	virtual void recordCommand() = 0;
 
-	virtual void unbindResource() = 0;
-
-	void finishRecord();
-
-	ID3D11CommandList* getCommandList() const;
+	ID3D11CommandList* finishRecord();
 
 protected:
 
 	GraphicsContext* context;
-
-	ComPtr<ID3D11CommandList> commandList;
 
 };
 

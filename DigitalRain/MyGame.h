@@ -32,7 +32,7 @@ public:
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F)),
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F)),
 		camera({ 54,0,0 }, { 0,1,0 }, 20.f),
-		effect(Graphics::getWidth(), Graphics::getHeight())
+		effect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight())
 	{
 		effect.setExposure(1.f);
 		effect.setGamma(1.f);

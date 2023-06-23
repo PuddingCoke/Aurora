@@ -20,7 +20,7 @@ public:
 
 	void operator=(const HBAOEffect&) = delete;
 
-	HBAOEffect(const unsigned int& width, const unsigned int& height);
+	HBAOEffect(GraphicsContext* const ctx, const unsigned int& width, const unsigned int& height);
 
 	~HBAOEffect();
 

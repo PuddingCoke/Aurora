@@ -31,7 +31,7 @@ public:
 		texture(new RenderTexture(1920, 1080, FMT::RGBA8UN, DirectX::Colors::Black, true)),
 		resolvedTexture(new ResourceTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, D3D11_USAGE_DEFAULT)),
 		doubleRTV(new SwapTexture<RenderTexture>([] {return new RenderTexture(1920, 1080, FMT::RGBA8UN); })),
-		effect(1920, 1080)
+		effect(ImCtx::get(), 1920, 1080)
 	{
 		Star::active = &starActive;
 		Star::pool = &starPool;

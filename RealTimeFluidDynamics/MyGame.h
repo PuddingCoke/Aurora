@@ -102,7 +102,7 @@ public:
 		viscousDiffusionPS(new Shader("ViscousDiffusionPS.hlsl", ShaderType::Pixel)),
 		vorticityPS(new Shader("VorticityPS.hlsl", ShaderType::Pixel)),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F)),
-		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
+		bloomEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
 		colorChanging(true)
 	{
 		bloomEffect.setThreshold(0.f);

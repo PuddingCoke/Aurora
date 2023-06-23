@@ -11,7 +11,7 @@ class MotionBlurEffect :public EffectBase
 {
 public:
 
-	MotionBlurEffect(const unsigned int& width, const unsigned int& height, const FMT& format);
+	MotionBlurEffect(GraphicsContext* const ctx, const unsigned int& width, const unsigned int& height, const FMT& format);
 
 	~MotionBlurEffect();
 

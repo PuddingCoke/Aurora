@@ -82,10 +82,10 @@ public:
 		lightBuffer(new ConstantBuffer(sizeof(Light), D3D11_USAGE_DYNAMIC)),
 		shadowProjBuffer(new ConstantBuffer(sizeof(DirectX::XMMATRIX), D3D11_USAGE_DYNAMIC)),
 		scene(Scene::create(assetPath + "/sponza.dae")),
-		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
-		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
-		fxaaEffect(Graphics::getWidth(), Graphics::getHeight()),
-		ssrEffect(Graphics::getWidth(), Graphics::getHeight()),
+		hbaoEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
+		bloomEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
+		fxaaEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
+		ssrEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
 		sunAngle(Math::half_pi - 0.01f),
 		showIrradiance(true)
 	{

@@ -26,7 +26,9 @@
 #include<Aurora/EngineAPI/Graphics.h>
 #include<Aurora/EngineAPI/States.h>
 #include<Aurora/EngineAPI/ImCtx.h>
+
 #include<Aurora/EngineAPI/BufferUpdate.h>
+#include<Aurora/EngineAPI/CommandListArray.h>
 
 #include<Aurora/VideoEncoder/NvidiaEncoder.h>
 #include<Aurora/Wallpaper/WallpaperHelper.h>

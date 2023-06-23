@@ -1,6 +1,6 @@
 #include<Aurora/EngineAPI/RenderPass.h>
 
-RenderPass::RenderPass():
+RenderPass::RenderPass() :
 	context(new GraphicsContext())
 {
 
@@ -11,13 +11,13 @@ RenderPass::~RenderPass()
 	delete context;
 }
 
-void RenderPass::finishRecord()
+ID3D11CommandList* RenderPass::finishRecord()
 {
-	context->FinishCommandList(&commandList);
-	context->ResetStates();
-}
+	ID3D11CommandList* list;
 
-ID3D11CommandList* RenderPass::getCommandList() const
-{
-	return commandList.Get();
+	context->FinishCommandList(&list);
+
+	context->ResetStates();
+
+	return list;
 }

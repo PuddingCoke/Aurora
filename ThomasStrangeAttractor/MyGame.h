@@ -42,7 +42,7 @@ public:
 	MyGame() :
 		attractor(2000000),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
-		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
+		bloomEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F)),
 		camera({ 4,4,-11 }, { -1,-1,-1 }, 2.f),
 		simulationBuffer(new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_DYNAMIC))

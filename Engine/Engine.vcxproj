@@ -150,6 +150,7 @@
     <ClInclude Include="Inc\Aurora\Core\ResourceFormat.h" />
     <ClInclude Include="Inc\Aurora\Effect\SSREffect.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\BufferUpdate.h" />
+    <ClInclude Include="Inc\Aurora\EngineAPI\CommandListArray.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\RenderPass.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\ResourceEssential.h" />
     <ClInclude Include="Inc\Aurora\Resource\ComputeBuffer.h" />
@@ -235,6 +236,7 @@
     <ClCompile Include="Src\Aurora\Core\ResourceFormat.cpp" />
     <ClCompile Include="Src\Aurora\Effect\SSREffect.cpp" />
     <ClCompile Include="Src\Aurora\EngineAPI\BufferUpdate.cpp" />
+    <ClCompile Include="Src\Aurora\EngineAPI\CommandListArray.cpp" />
     <ClCompile Include="Src\Aurora\EngineAPI\RenderPass.cpp" />
     <ClCompile Include="Src\Aurora\Resource\ComputeBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Resource\RenderCube.cpp" />

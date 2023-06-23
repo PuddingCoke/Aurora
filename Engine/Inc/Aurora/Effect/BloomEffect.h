@@ -40,7 +40,7 @@ public:
 
 	static constexpr DirectX::XMUINT2 workGroupSize = { 60,16 };
 
-	BloomEffect(const unsigned int& width, const unsigned int& height);
+	BloomEffect(GraphicsContext* const ctx, const unsigned int& width, const unsigned int& height);
 
 	~BloomEffect();
 

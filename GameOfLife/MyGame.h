@@ -83,7 +83,7 @@ public:
 		evolveCS(new Shader("EvolveCS.hlsl", ShaderType::Compute)),
 		randomizeCS(new Shader("RandomizeCS.hlsl", ShaderType::Compute)),
 		visualizeCS(new Shader("VisualizeCS.hlsl", ShaderType::Compute)),
-		bloomEffect(simulationWidth, simulationHeight)
+		bloomEffect(ImCtx::get(), simulationWidth, simulationHeight)
 	{
 		gameParam.mapSize = DirectX::XMUINT2(simulationWidth, simulationHeight);
 

@@ -11,7 +11,7 @@ class FadeEffect :public EffectBase
 {
 public:
 
-	FadeEffect(const unsigned int& width, const unsigned int& height);
+	FadeEffect(GraphicsContext* const ctx, const unsigned int& width, const unsigned int& height);
 
 	ShaderResourceView* process(ShaderResourceView* const texture2D) const;
 

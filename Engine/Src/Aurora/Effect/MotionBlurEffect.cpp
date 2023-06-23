@@ -1,7 +1,7 @@
 #include<Aurora/Effect/MotionBlurEffect.h>
 
-MotionBlurEffect::MotionBlurEffect(const unsigned int& width, const unsigned int& height, const FMT& format) :
-	EffectBase(width, height, format)
+MotionBlurEffect::MotionBlurEffect(GraphicsContext* const ctx, const unsigned int& width, const unsigned int& height, const FMT& format) :
+	EffectBase(ctx, width, height, format)
 {
 	compileShaders();
 }
@@ -13,19 +13,19 @@ MotionBlurEffect::~MotionBlurEffect()
 
 ShaderResourceView* MotionBlurEffect::process(ShaderResourceView* const gPosition, ShaderResourceView* const colorTexture)
 {
-	ImCtx::get()->OMSetBlendState(nullptr);
-	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ctx->OMSetBlendState(nullptr);
+	ctx->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	ImCtx::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
+	ctx->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
 
-	ImCtx::get()->PSSetSRV({ gPosition,colorTexture }, 0);
-	ImCtx::get()->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
-	ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
+	ctx->PSSetSRV({ gPosition,colorTexture }, 0);
+	ctx->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
+	ctx->PSSetSampler({ States::linearClampSampler }, 0);
 
-	ImCtx::get()->BindShader(Shader::fullScreenVS);
-	ImCtx::get()->BindShader(motionBlurPS);
+	ctx->BindShader(Shader::fullScreenVS);
+	ctx->BindShader(motionBlurPS);
 
-	ImCtx::get()->DrawQuad();
+	ctx->DrawQuad();
 
 	return outputRTV;
 }

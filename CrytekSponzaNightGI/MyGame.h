@@ -115,8 +115,8 @@ public:
 		lightBounceCShader(new Shader("LightBounceCShader.hlsl", ShaderType::Compute)),
 		skyboxPShader(new Shader("SkyboxPShader.hlsl", ShaderType::Pixel)),
 		skybox(new TextureCube({ assetPath + "/sky/SkyEarlyDusk_Right.png",assetPath + "/sky/SkyEarlyDusk_Left.png",assetPath + "/sky/SkyEarlyDusk_Top.png",assetPath + "/sky/SkyEarlyDusk_Bottom.png",assetPath + "/sky/SkyEarlyDusk_Front.png",assetPath + "/sky/SkyEarlyDusk_Back.png" })),
-		hbaoEffect(Graphics::getWidth(), Graphics::getHeight()),
-		bloomEffect(Graphics::getWidth(), Graphics::getHeight()),
+		hbaoEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
+		bloomEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
 		camera({ 0.0f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f),
 		displayMode(false)
 	{

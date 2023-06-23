@@ -186,7 +186,6 @@ void GraphicsContext::VSSetSRV(const std::initializer_list<ShaderResourceView*>&
 		}
 
 		it[0]->VSSlot = i;
-		it[0]->pushToManagedSRV(getContext(), &states);
 	}
 
 	getContext()->VSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
@@ -219,7 +218,6 @@ void GraphicsContext::HSSetSRV(const std::initializer_list<ShaderResourceView*>&
 		}
 
 		it[0]->HSSlot = i;
-		it[0]->pushToManagedSRV(getContext(), &states);
 	}
 
 	getContext()->HSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
@@ -252,7 +250,6 @@ void GraphicsContext::DSSetSRV(const std::initializer_list<ShaderResourceView*>&
 		}
 
 		it[0]->DSSlot = i;
-		it[0]->pushToManagedSRV(getContext(), &states);
 	}
 
 	getContext()->DSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
@@ -285,7 +282,6 @@ void GraphicsContext::GSSetSRV(const std::initializer_list<ShaderResourceView*>&
 		}
 
 		it[0]->GSSlot = i;
-		it[0]->pushToManagedSRV(getContext(), &states);
 	}
 
 	getContext()->GSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
@@ -318,7 +314,6 @@ void GraphicsContext::PSSetSRV(const std::initializer_list<ShaderResourceView*>&
 		}
 
 		it[0]->PSSlot = i;
-		it[0]->pushToManagedSRV(getContext(), &states);
 	}
 
 	getContext()->PSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
@@ -351,7 +346,6 @@ void GraphicsContext::CSSetSRV(const std::initializer_list<ShaderResourceView*>&
 		}
 
 		it[0]->CSSlot = i;
-		it[0]->pushToManagedSRV(getContext(), &states);
 	}
 
 	getContext()->CSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
@@ -757,17 +751,53 @@ void GraphicsContext::ResetStates()
 		}
 	}
 
-	for (ShaderResourceView* const srv : states.managedSRV)
+	for (UINT i = 0; i < D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT; i++)
 	{
-		srv->VSSlot = -1;
-		srv->HSSlot = -1;
-		srv->DSSlot = -1;
-		srv->GSSlot = -1;
-		srv->PSSlot = -1;
-		srv->CSSlot = -1;
+		if (states.curVSRV[i])
+		{
+			states.curVSRV[i]->VSSlot = -1;
+		}
 	}
 
-	states.managedSRV.clear();
+	for (UINT i = 0; i < D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT; i++)
+	{
+		if (states.curHSRV[i])
+		{
+			states.curHSRV[i]->HSSlot = -1;
+		}
+	}
+
+	for (UINT i = 0; i < D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT; i++)
+	{
+		if (states.curDSRV[i])
+		{
+			states.curDSRV[i]->DSSlot = -1;
+		}
+	}
+
+	for (UINT i = 0; i < D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT; i++)
+	{
+		if (states.curGSRV[i])
+		{
+			states.curGSRV[i]->GSSlot = -1;
+		}
+	}
+
+	for (UINT i = 0; i < D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT; i++)
+	{
+		if (states.curPSRV[i])
+		{
+			states.curPSRV[i]->PSSlot = -1;
+		}
+	}
+
+	for (UINT i = 0; i < D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT; i++)
+	{
+		if (states.curCSRV[i])
+		{
+			states.curCSRV[i]->CSSlot = -1;
+		}
+	}
 
 	states.resetStates();
 }

@@ -243,6 +243,9 @@
     <ClInclude Include="Inc\Aurora\EngineAPI\BufferUpdate.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\EngineAPI\CommandListArray.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -453,6 +456,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Core\GraphicsStates.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\EngineAPI\CommandListArray.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿#include<Aurora/Effect/BloomEffect.h>
 
-BloomEffect::BloomEffect(const unsigned int& width, const unsigned int& height) :
-	EffectBase(width, height, FMT::RGBA16F), bloomWidth(width), bloomHeight(height), bloomParam{},
+BloomEffect::BloomEffect(GraphicsContext* const ctx, const unsigned int& width, const unsigned int& height) :
+	EffectBase(ctx, width, height, FMT::RGBA16F), bloomWidth(width), bloomHeight(height), bloomParam{},
 	filterTexture(new RenderTexture(width, height, FMT::RGBA16F, DirectX::Colors::Black)),
 	lensDirtTexture(new ResourceTexture(Utils::getRootFolder() + "bloom_dirt_mask.png"))
 {
@@ -63,88 +63,88 @@ BloomEffect::~BloomEffect()
 
 ShaderResourceView* BloomEffect::process(ShaderResourceView* const texture2D) const
 {
-	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ImCtx::get()->CSSetSampler({ States::linearClampSampler }, 0);
-	ImCtx::get()->PSSetConstantBuffer({ bloomParamBuffer }, 1);
-	ImCtx::get()->CSSetConstantBuffer({ bloomParamBuffer }, 1);
-	ImCtx::get()->GSUnbindShader();
-	ImCtx::get()->HSUnbindShader();
-	ImCtx::get()->DSUnbindShader();
-	ImCtx::get()->BindShader(Shader::fullScreenVS);
+	ctx->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ctx->CSSetSampler({ States::linearClampSampler }, 0);
+	ctx->PSSetConstantBuffer({ bloomParamBuffer }, 1);
+	ctx->CSSetConstantBuffer({ bloomParamBuffer }, 1);
+	ctx->GSUnbindShader();
+	ctx->HSUnbindShader();
+	ctx->DSUnbindShader();
+	ctx->BindShader(Shader::fullScreenVS);
 
-	ImCtx::get()->OMSetBlendState(nullptr);
+	ctx->OMSetBlendState(nullptr);
 
-	ImCtx::get()->PSSetSampler({ States::pointClampSampler }, 0);
+	ctx->PSSetSampler({ States::pointClampSampler }, 0);
 
-	ImCtx::get()->BindShader(bloomFilter);
-	ImCtx::get()->RSSetViewport(bloomWidth, bloomHeight);
-	ImCtx::get()->OMSetRTV({ filterTexture->getMip(0) }, nullptr);
-	ImCtx::get()->PSSetSRV({ texture2D }, 0);
-	ImCtx::get()->DrawQuad();
+	ctx->BindShader(bloomFilter);
+	ctx->RSSetViewport(bloomWidth, bloomHeight);
+	ctx->OMSetRTV({ filterTexture->getMip(0) }, nullptr);
+	ctx->PSSetSRV({ texture2D }, 0);
+	ctx->DrawQuad();
 
-	ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
+	ctx->PSSetSampler({ States::linearClampSampler }, 0);
 
-	ImCtx::get()->BindShader(bloomKarisAverage);
-	ImCtx::get()->RSSetViewport(resolutions[0].x, resolutions[0].y);
-	ImCtx::get()->OMSetRTV({ swapTexture[0]->write()->getMip(0) }, nullptr);
-	ImCtx::get()->PSSetSRV({ filterTexture }, 0);
-	ImCtx::get()->DrawQuad();
+	ctx->BindShader(bloomKarisAverage);
+	ctx->RSSetViewport(resolutions[0].x, resolutions[0].y);
+	ctx->OMSetRTV({ swapTexture[0]->write()->getMip(0) }, nullptr);
+	ctx->PSSetSRV({ filterTexture }, 0);
+	ctx->DrawQuad();
 	swapTexture[0]->swap();
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		ImCtx::get()->RSSetViewport(resolutions[i + 1].x, resolutions[i + 1].y);
-		ImCtx::get()->OMSetRTV({ swapTexture[i + 1]->write()->getMip(0) }, nullptr);
-		ImCtx::get()->PSSetSRV({ swapTexture[i]->read() }, 0);
-		ImCtx::get()->DrawQuad();
+		ctx->RSSetViewport(resolutions[i + 1].x, resolutions[i + 1].y);
+		ctx->OMSetRTV({ swapTexture[i + 1]->write()->getMip(0) }, nullptr);
+		ctx->PSSetSRV({ swapTexture[i]->read() }, 0);
+		ctx->DrawQuad();
 		swapTexture[i + 1]->swap();
 	}
 
-	ImCtx::get()->OMSetBlendState(States::addtiveBlend);
+	ctx->OMSetBlendState(States::addtiveBlend);
 
-	ImCtx::get()->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 1] }, 1);
+	ctx->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 1] }, 1);
 
-	ImCtx::get()->BindShader(bloomHBlur);
-	ImCtx::get()->CSSetUAV({ swapTexture[blurSteps - 1]->write()->getMip(0) }, 0);
-	ImCtx::get()->CSSetSRV({ swapTexture[blurSteps - 1]->read() }, 0);
+	ctx->BindShader(bloomHBlur);
+	ctx->CSSetUAV({ swapTexture[blurSteps - 1]->write()->getMip(0) }, 0);
+	ctx->CSSetSRV({ swapTexture[blurSteps - 1]->read() }, 0);
 	swapTexture[blurSteps - 1]->swap();
-	ImCtx::get()->Dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
+	ctx->Dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
 
-	ImCtx::get()->BindShader(bloomVBlur);
-	ImCtx::get()->CSSetUAV({ swapTexture[blurSteps - 1]->write()->getMip(0) }, 0);
-	ImCtx::get()->CSSetSRV({ swapTexture[blurSteps - 1]->read() }, 0);
+	ctx->BindShader(bloomVBlur);
+	ctx->CSSetUAV({ swapTexture[blurSteps - 1]->write()->getMip(0) }, 0);
+	ctx->CSSetSRV({ swapTexture[blurSteps - 1]->read() }, 0);
 	swapTexture[blurSteps - 1]->swap();
-	ImCtx::get()->Dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
+	ctx->Dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
 
 	for (unsigned int i = 0; i < blurSteps - 1; i++)
 	{
-		ImCtx::get()->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 2 - i] }, 1);
+		ctx->CSSetConstantBuffer({ blurParamBuffer[blurSteps - 2 - i] }, 1);
 
-		ImCtx::get()->BindShader(bloomHBlur);
-		ImCtx::get()->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, 0);
-		ImCtx::get()->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
-		ImCtx::get()->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
+		ctx->BindShader(bloomHBlur);
+		ctx->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, 0);
+		ctx->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
+		ctx->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
 		swapTexture[blurSteps - 2 - i]->swap();
 
-		ImCtx::get()->BindShader(bloomVBlur);
-		ImCtx::get()->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, 0);
-		ImCtx::get()->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
-		ImCtx::get()->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
+		ctx->BindShader(bloomVBlur);
+		ctx->CSSetUAV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, 0);
+		ctx->CSSetSRV({ swapTexture[blurSteps - 2 - i]->read() }, 0);
+		ctx->Dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
 
-		ImCtx::get()->BindShader(Shader::fullScreenPS);
-		ImCtx::get()->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
-		ImCtx::get()->OMSetRTV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, nullptr);
-		ImCtx::get()->PSSetSRV({ swapTexture[blurSteps - 1 - i]->read() }, 0);
-		ImCtx::get()->DrawQuad();
+		ctx->BindShader(Shader::fullScreenPS);
+		ctx->RSSetViewport(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
+		ctx->OMSetRTV({ swapTexture[blurSteps - 2 - i]->write()->getMip(0) }, nullptr);
+		ctx->PSSetSRV({ swapTexture[blurSteps - 1 - i]->read() }, 0);
+		ctx->DrawQuad();
 		swapTexture[blurSteps - 2 - i]->swap();
 	}
 
-	ImCtx::get()->BindShader(bloomFinal);
-	ImCtx::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
-	ImCtx::get()->RSSetViewport(bloomWidth, bloomHeight);
-	ImCtx::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
-	ImCtx::get()->PSSetSRV({ texture2D,swapTexture[0]->read(),lensDirtTexture }, 0);
-	ImCtx::get()->DrawQuad();
+	ctx->BindShader(bloomFinal);
+	ctx->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
+	ctx->RSSetViewport(bloomWidth, bloomHeight);
+	ctx->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
+	ctx->PSSetSRV({ texture2D,swapTexture[0]->read(),lensDirtTexture }, 0);
+	ctx->DrawQuad();
 
 	return outputRTV;
 }

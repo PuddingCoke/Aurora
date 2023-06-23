@@ -1,7 +1,7 @@
 #include<Aurora/Effect/FXAAEffect.h>
 
-FXAAEffect::FXAAEffect(const UINT& width, const UINT& height) :
-	EffectBase(width, height, FMT::RGBA8UN), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
+FXAAEffect::FXAAEffect(GraphicsContext* const ctx, const UINT& width, const UINT& height) :
+	EffectBase(ctx, width, height, FMT::RGBA8UN), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
 	colorWithLuma(new RenderTexture(width, height, FMT::RGBA8UN))
 {
 	compileShaders();
@@ -19,28 +19,28 @@ FXAAEffect::~FXAAEffect()
 
 ShaderResourceView* FXAAEffect::process(ShaderResourceView* const texture2D) const
 {
-	ImCtx::get()->OMSetBlendState(nullptr);
-	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ImCtx::get()->BindShader(Shader::fullScreenVS);
+	ctx->OMSetBlendState(nullptr);
+	ctx->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ctx->BindShader(Shader::fullScreenVS);
 
-	ImCtx::get()->ClearRTV(colorWithLuma->getMip(0), DirectX::Colors::Black);
-	ImCtx::get()->OMSetRTV({ colorWithLuma->getMip(0) }, nullptr);
-	ImCtx::get()->PSSetSRV({ texture2D }, 0);
-	ImCtx::get()->PSSetSampler({ States::pointClampSampler }, 0);
+	ctx->ClearRTV(colorWithLuma->getMip(0), DirectX::Colors::Black);
+	ctx->OMSetRTV({ colorWithLuma->getMip(0) }, nullptr);
+	ctx->PSSetSRV({ texture2D }, 0);
+	ctx->PSSetSampler({ States::pointClampSampler }, 0);
 
-	ImCtx::get()->BindShader(colorToLuma);
+	ctx->BindShader(colorToLuma);
 
-	ImCtx::get()->DrawQuad();
+	ctx->DrawQuad();
 
-	ImCtx::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
-	ImCtx::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
-	ImCtx::get()->PSSetSRV({ colorWithLuma }, 0);
-	ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
-	ImCtx::get()->PSSetConstantBuffer({ fxaaParamBuffer }, 1);
+	ctx->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
+	ctx->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
+	ctx->PSSetSRV({ colorWithLuma }, 0);
+	ctx->PSSetSampler({ States::linearClampSampler }, 0);
+	ctx->PSSetConstantBuffer({ fxaaParamBuffer }, 1);
 
-	ImCtx::get()->BindShader(fxaaPS);
+	ctx->BindShader(fxaaPS);
 
-	ImCtx::get()->DrawQuad();
+	ctx->DrawQuad();
 
 	return outputRTV;
 }

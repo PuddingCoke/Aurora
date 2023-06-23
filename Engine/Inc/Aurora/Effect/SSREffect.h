@@ -13,7 +13,7 @@ class SSREffect :public EffectBase
 {
 public:
 
-	SSREffect(const UINT& width, const UINT& height);
+	SSREffect(GraphicsContext* const ctx, const UINT& width, const UINT& height);
 
 	~SSREffect();
 

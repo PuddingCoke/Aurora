@@ -1,7 +1,7 @@
 #include<Aurora/Effect/SSREffect.h>
 
-SSREffect::SSREffect(const UINT& width, const UINT& height) :
-	EffectBase(width, height, FMT::RGBA16UN),
+SSREffect::SSREffect(GraphicsContext* const ctx, const UINT& width, const UINT& height) :
+	EffectBase(ctx, width, height, FMT::RGBA16UN),
 	hiZTexture(new ComputeTexture(width, height, FMT::R32F, FMT::R32F, FMT::R32F, hiZMipLevel, 1))
 {
 	compileShaders();
@@ -17,33 +17,33 @@ SSREffect::~SSREffect()
 
 ShaderResourceView* SSREffect::process(ShaderResourceView* resDepthTexture, ShaderResourceView* gPosition, ShaderResourceView* gNormal) const
 {
-	ImCtx::get()->CSSetSRV({ resDepthTexture }, 0);
-	ImCtx::get()->CSSetUAV({ hiZTexture->getMip(0) }, 0);
+	ctx->CSSetSRV({ resDepthTexture }, 0);
+	ctx->CSSetUAV({ hiZTexture->getMip(0) }, 0);
 
-	ImCtx::get()->BindShader(hiZInitializeCS);
+	ctx->BindShader(hiZInitializeCS);
 
-	ImCtx::get()->Dispatch(width / 16, height / 9, 1);
+	ctx->Dispatch(width / 16, height / 9, 1);
 
-	ImCtx::get()->BindShader(hiZCreateCS);
+	ctx->BindShader(hiZCreateCS);
 
 	for (UINT i = 0; i < hiZMipLevel - 1; i++)
 	{
-		ImCtx::get()->CSSetSRV({ hiZTexture->getMip(i) }, 0);
-		ImCtx::get()->CSSetUAV({ hiZTexture->getMip(i + 1) }, 0);
+		ctx->CSSetSRV({ hiZTexture->getMip(i) }, 0);
+		ctx->CSSetUAV({ hiZTexture->getMip(i + 1) }, 0);
 
-		ImCtx::get()->Dispatch(((width / 2) >> i) / 16 + 1, ((height / 2) >> i) / 9 + 1, 1);
+		ctx->Dispatch(((width / 2) >> i) / 16 + 1, ((height / 2) >> i) / 9 + 1, 1);
 	}
 
-	ImCtx::get()->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
-	ImCtx::get()->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
-	ImCtx::get()->PSSetSRV({ gPosition,gNormal,hiZTexture }, 0);
-	ImCtx::get()->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
-	ImCtx::get()->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);
+	ctx->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
+	ctx->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
+	ctx->PSSetSRV({ gPosition,gNormal,hiZTexture }, 0);
+	ctx->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
+	ctx->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);
 
-	ImCtx::get()->BindShader(Shader::fullScreenVS);
-	ImCtx::get()->BindShader(hiZProcessPS);
+	ctx->BindShader(Shader::fullScreenVS);
+	ctx->BindShader(hiZProcessPS);
 
-	ImCtx::get()->DrawQuad();
+	ctx->DrawQuad();
 
 	return outputRTV;
 }

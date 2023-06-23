@@ -181,6 +181,7 @@ void Aurora::runGame()
 		{
 			ImGui_ImplDX11_NewFrame();
 			ImGui_ImplWin32_NewFrame();
+
 			ImGui::NewFrame();
 
 			ImGui::Begin("Debug Window");
@@ -213,9 +214,12 @@ void Aurora::runGame()
 
 		game->render();
 
+		CommandListArray::executeCommandLists();
+
 		if (enableImGui)
 		{
 			ImGui::End();
+
 			ImGui::Render();
 
 			ImCtx::get()->OMSetDefRTV(nullptr);
@@ -303,6 +307,8 @@ void Aurora::destroy()
 	delete States::instance;
 
 	delete BufferUpdate::instance;
+
+	delete CommandListArray::instance;
 
 	delete Camera::instance;
 
@@ -505,6 +511,8 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 	new States();
 
 	new BufferUpdate();
+
+	new CommandListArray();
 
 	new Graphics(screenWidth, screenHeight, msaaLevel);
 

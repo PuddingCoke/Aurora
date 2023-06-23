@@ -21,6 +21,12 @@
     <ClInclude Include="Ocean.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcessPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="OceanRenderPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

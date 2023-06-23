@@ -15,7 +15,7 @@ class FXAAEffect :public EffectBase
 {
 public:
 
-	FXAAEffect(const UINT& width, const UINT& height);
+	FXAAEffect(GraphicsContext* const ctx, const UINT& width, const UINT& height);
 
 	~FXAAEffect();
 
