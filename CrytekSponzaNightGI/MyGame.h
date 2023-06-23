@@ -189,8 +189,9 @@ public:
 			ImCtx::get()->OMSetBlendState(nullptr);
 			ImCtx::get()->IASetInputLayout(inputLayout.Get());
 
-			ImCtx::get()->ClearUAV(voxelTextureColor, DirectX::Colors::Transparent);
-			ImCtx::get()->ClearUAV(voxelTextureNormal, DirectX::Colors::Transparent);
+			UINT clearValue = 0;
+			ImCtx::get()->ClearUAV(voxelTextureColor, &clearValue);
+			ImCtx::get()->ClearUAV(voxelTextureNormal, &clearValue);
 			ImCtx::get()->OMSetUAV({ voxelTextureColor,voxelTextureNormal });
 
 			ImCtx::get()->VSSetConstantBuffer({ voxelProjBuffer }, 2);

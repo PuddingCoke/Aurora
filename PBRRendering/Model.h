@@ -18,7 +18,7 @@ public:
 
 	const unsigned int vertexNum;
 
-	Model(const aiScene* const scene,const aiMesh* const mesh) :
+	Model(const aiScene* const scene, const aiMesh* const mesh) :
 		vertexNum(mesh->mNumVertices)
 	{
 		{
@@ -64,7 +64,7 @@ public:
 	void draw()
 	{
 		ImCtx::get()->PSSetConstantBuffer({ materialBuffer }, 2);
-		ImCtx::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(Vertex) }, { 0 });
+		ImCtx::get()->IASetVertexBuffer({ vertexBuffer }, { sizeof(Vertex) }, { 0 });
 		ImCtx::get()->Draw(vertexNum, 0);
 	}
 

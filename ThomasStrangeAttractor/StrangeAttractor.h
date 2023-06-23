@@ -109,7 +109,7 @@ public:
 
 		ImCtx::get()->IASetInputLayout(inputLayout.Get());
 
-		ImCtx::get()->IASetVertexBuffer(0, { particlePosBuffer,particleColorBuffer }, { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) }, { 0,0 });
+		ImCtx::get()->IASetVertexBuffer({ particlePosBuffer,particleColorBuffer }, { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) }, { 0,0 });
 
 		ImCtx::get()->BindShader(displayVShader);
 		ImCtx::get()->BindShader(displayPShader);

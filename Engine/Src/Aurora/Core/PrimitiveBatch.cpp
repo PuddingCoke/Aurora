@@ -167,7 +167,7 @@ void PrimitiveBatch::LineRenderer::end()
 	updateVerticesData();
 
 	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	ImCtx::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 6 }, { 0 });
+	ImCtx::get()->IASetVertexBuffer( { vertexBuffer }, { sizeof(float) * 6 }, { 0 });
 
 	ImCtx::get()->Draw(idx / 6, 0);
 }
@@ -217,7 +217,7 @@ void PrimitiveBatch::CircleRenderer::end()
 	updateVerticesData();
 
 	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	ImCtx::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 7u }, { 0 });
+	ImCtx::get()->IASetVertexBuffer( { vertexBuffer }, { sizeof(float) * 7u }, { 0 });
 
 	ImCtx::get()->DrawInstanced(128, idx / 7, 0, 0);
 }
@@ -266,7 +266,7 @@ void PrimitiveBatch::RCLineRenderer::end()
 	updateVerticesData();
 
 	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	ImCtx::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(float) * 7 }, { 0 });
+	ImCtx::get()->IASetVertexBuffer( { vertexBuffer }, { sizeof(float) * 7 }, { 0 });
 
 	ImCtx::get()->Draw(idx / 7, 0);
 }

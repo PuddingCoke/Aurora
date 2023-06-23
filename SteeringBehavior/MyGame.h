@@ -139,7 +139,7 @@ public:
 
 		ImCtx::get()->IASetInputLayout(inputLayout.Get());
 
-		ImCtx::get()->IASetVertexBuffer(0, { positionVelocity }, { sizeof(DirectX::XMFLOAT4) }, { 0 });
+		ImCtx::get()->IASetVertexBuffer({ positionVelocity }, { sizeof(DirectX::XMFLOAT4) }, { 0 });
 
 		ImCtx::get()->PSSetSRV({ arrowTexture }, 0);
 

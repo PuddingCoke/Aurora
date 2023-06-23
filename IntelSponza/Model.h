@@ -82,7 +82,7 @@ public:
 	void draw()
 	{
 		ImCtx::get()->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		ImCtx::get()->IASetVertexBuffer(0, { vertexBuffer }, { sizeof(Vertex) }, { 0 });
+		ImCtx::get()->IASetVertexBuffer({ vertexBuffer }, { sizeof(Vertex) }, { 0 });
 		ImCtx::get()->DrawIndexed(indexCount, 0, 0);
 	}
 

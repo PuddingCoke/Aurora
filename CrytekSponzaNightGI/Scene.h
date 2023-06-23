@@ -68,7 +68,7 @@ public:
 			{
 				normalPath = assetPath + "/sponza/dummy_ddn.dds";
 			}
-			
+
 			materials.push_back(new Material(diffusePath, specularPath, normalPath));
 		}
 
@@ -136,7 +136,7 @@ public:
 		ImCtx::get()->BindShader(vertexShader);
 		ImCtx::get()->BindShader(pixelShader);
 		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		ImCtx::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
+		ImCtx::get()->IASetVertexBuffer({ modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			materials[models[i].materialIndex]->use();
@@ -150,7 +150,7 @@ public:
 		ImCtx::get()->BindShader(geometryShader);
 		ImCtx::get()->BindShader(pixelShader);
 		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		ImCtx::get()->IASetVertexBuffer(0, { modelBuffer }, { stride }, { offset });
+		ImCtx::get()->IASetVertexBuffer({ modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
 			materials[models[i].materialIndex]->use();

@@ -215,7 +215,7 @@ inline Ocean::~Ocean()
 
 inline void Ocean::calculatePhillipTexture() const
 {
-	memcpy(ImCtx::get()->Map(oceanParamBuffer,0,D3D11_MAP_WRITE_DISCARD).pData, &param, sizeof(Param));
+	memcpy(ImCtx::get()->Map(oceanParamBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &param, sizeof(Param));
 	ImCtx::get()->Unmap(oceanParamBuffer, 0);
 
 	ImCtx::get()->CSSetConstantBuffer({ oceanParamBuffer }, 1);
@@ -283,7 +283,7 @@ inline void Ocean::render() const
 {
 	ImCtx::get()->IASetInputLayout(inputLayout.Get());
 	ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
-	ImCtx::get()->IASetVertexBuffer(0, { patchVertexBuffer }, { sizeof(Vertex) }, { 0 });
+	ImCtx::get()->IASetVertexBuffer({ patchVertexBuffer }, { sizeof(Vertex) }, { 0 });
 
 	ImCtx::get()->BindShader(oceanVShader);
 	ImCtx::get()->BindShader(oceanHShader);

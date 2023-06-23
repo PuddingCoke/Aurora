@@ -357,14 +357,18 @@ void GraphicsContext::CSSetSRV(const std::initializer_list<ShaderResourceView*>&
 	getContext()->CSSetShaderResources(slot, (UINT)srvs.size(), tempSRV);
 }
 
-void GraphicsContext::IASetVertexBuffer(const UINT& slot, const std::initializer_list<VertexBuffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
+void GraphicsContext::IASetVertexBuffer(const std::initializer_list<VertexBuffer*>& buffers, const std::initializer_list<UINT>& strides, const std::initializer_list<UINT>& offsets)
 {
-	for (UINT i = slot; i < slot + (UINT)buffers.size(); i++)
+	for (UINT i = 0; i < (UINT)buffers.size(); i++)
 	{
 		if (states.curBuffer[i])
 		{
 			states.curBuffer[i]->IASlot = -1;
 			states.curBuffer[i] = nullptr;
+		}
+		else
+		{
+			break;
 		}
 	}
 
@@ -372,12 +376,12 @@ void GraphicsContext::IASetVertexBuffer(const UINT& slot, const std::initializer
 	std::initializer_list<UINT>::iterator itStride = strides.begin();
 	std::initializer_list<UINT>::iterator itOffset = offsets.begin();
 
-	for (UINT i = slot; i < slot + (UINT)buffers.size(); i++, it++, itStride++, itOffset++)
+	for (UINT i = 0; i < (UINT)buffers.size(); i++, it++, itStride++, itOffset++)
 	{
 		states.curBuffer[i] = it[0];
-		tempBuffer[i - slot] = it[0]->buffer.Get();
-		tempStrides[i - slot] = itStride[0];
-		tempOffsets[i - slot] = itOffset[0];
+		tempBuffer[i] = it[0]->buffer.Get();
+		tempStrides[i] = itStride[0];
+		tempOffsets[i] = itOffset[0];
 
 		if (!it[0]->unbindFromVertexBuffer(getContext(), &states))
 		{
@@ -387,7 +391,7 @@ void GraphicsContext::IASetVertexBuffer(const UINT& slot, const std::initializer
 		it[0]->IASlot = i;
 	}
 
-	getContext()->IASetVertexBuffers(slot, (UINT)buffers.size(), tempBuffer, tempStrides, tempOffsets);
+	getContext()->IASetVertexBuffers(0, (UINT)buffers.size(), tempBuffer, tempStrides, tempOffsets);
 }
 
 void GraphicsContext::VSSetConstantBuffer(const std::initializer_list<ConstantBuffer*>& constantBuffers, const UINT& slot)
