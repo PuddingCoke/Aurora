@@ -17,10 +17,6 @@ public:
 
 	TextureCube() = delete;
 
-	TextureCube(const TextureCube&) = delete;
-
-	void operator=(const TextureCube&) = delete;
-
 	//从6个贴图创建天空盒 xp xn yp yn zp zn
 	TextureCube(std::initializer_list<std::string> texturesPath);
 

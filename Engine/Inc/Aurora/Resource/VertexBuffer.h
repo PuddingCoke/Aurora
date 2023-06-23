@@ -21,6 +21,8 @@ protected:
 
 	bool unbindFromVertexBuffer(ID3D11DeviceContext3* const ctx, GraphicsStates* const states);
 
+	static void unbindVertexBuffer(ID3D11DeviceContext3* const ctx, GraphicsStates* const states);
+
 private:
 
 	friend class GraphicsContext;

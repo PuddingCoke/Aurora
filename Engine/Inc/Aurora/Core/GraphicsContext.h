@@ -148,6 +148,8 @@ public:
 
 	void GenNoise(UnorderedAccessView* const uav, const UINT& textureWidth, const UINT& textureHeight);
 
+	void ResetStates();
+
 	ID3D11DeviceContext3* getContext();
 
 	GraphicsStates* getStates();

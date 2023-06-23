@@ -14,7 +14,7 @@ RenderPass::~RenderPass()
 void RenderPass::finishRecord()
 {
 	context->FinishCommandList(&commandList);
-	context->getStates()->resetStates();
+	context->ResetStates();
 }
 
 ID3D11CommandList* RenderPass::getCommandList() const

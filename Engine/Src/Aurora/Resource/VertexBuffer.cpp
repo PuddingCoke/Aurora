@@ -18,13 +18,21 @@ bool VertexBuffer::unbindFromVertexBuffer(ID3D11DeviceContext3* const ctx, Graph
 {
 	if (IASlot != -1)
 	{
-		ctx->IASetVertexBuffers(IASlot, 1, nullBuffer, nullStrides, nullStrides);
-		states->curBuffer[IASlot] = nullptr;
-		IASlot = -1;
+		unbindVertexBuffer(ctx, states);
 		return true;
 	}
 
 	return false;
+}
+
+void VertexBuffer::unbindVertexBuffer(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
+{
+	for (unsigned int i = 0; states->curBuffer[i]; i++)
+	{
+		states->curBuffer[i]->IASlot = -1;
+		states->curBuffer[i] = nullptr;
+	}
+	ctx->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
 }
 
 void VertexBuffer::bindVertexBuffer(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
