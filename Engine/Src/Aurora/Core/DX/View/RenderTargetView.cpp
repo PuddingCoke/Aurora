@@ -22,11 +22,6 @@ ID3D11RenderTargetView* RenderTargetView::getRTV() const
 	return renderTargetView.Get();
 }
 
-ID3D11RenderTargetView** RenderTargetView::releaseAndGetRTV()
-{
-	return renderTargetView.ReleaseAndGetAddressOf();
-}
-
 void RenderTargetView::unbindRTV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	UINT num = 0;

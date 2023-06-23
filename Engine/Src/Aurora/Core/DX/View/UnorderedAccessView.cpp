@@ -16,11 +16,6 @@ ID3D11UnorderedAccessView* UnorderedAccessView::getUAV() const
 	return unorderedAccessView.Get();
 }
 
-ID3D11UnorderedAccessView** UnorderedAccessView::releaseAndGetUAV()
-{
-	return unorderedAccessView.ReleaseAndGetAddressOf();
-}
-
 void UnorderedAccessView::unbindCUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	for (unsigned int i = 0; i < D3D11_PS_CS_UAV_REGISTER_COUNT; i++)

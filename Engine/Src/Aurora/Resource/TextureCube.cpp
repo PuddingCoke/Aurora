@@ -51,7 +51,7 @@ TextureCube::TextureCube(std::initializer_list<std::string> texturesPath)
 TextureCube::TextureCube(const std::string& texturePath)
 {
 	const std::wstring wTexturePath(texturePath.begin(), texturePath.end());
-	DirectX::CreateDDSTextureFromFileEx(GraphicsDevice::getDevice(), ImCtx::get()->getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)texture.ReleaseAndGetAddressOf(), releaseAndGetSRV());
+	DirectX::CreateDDSTextureFromFileEx(GraphicsDevice::getDevice(), ImCtx::get()->getContext(), wTexturePath.c_str(), 0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_TEXTURECUBE, DirectX::DDS_LOADER_DEFAULT, (ID3D11Resource**)texture.ReleaseAndGetAddressOf(), shaderResourceView.ReleaseAndGetAddressOf());
 
 	std::cout << "[class TextureCube] " << texturePath << " create successfully!\n";
 }

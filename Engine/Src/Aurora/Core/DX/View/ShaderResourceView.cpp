@@ -16,11 +16,6 @@ ID3D11ShaderResourceView* ShaderResourceView::getSRV() const
 	return shaderResourceView.Get();
 }
 
-ID3D11ShaderResourceView** ShaderResourceView::releaseAndGetSRV()
-{
-	return shaderResourceView.ReleaseAndGetAddressOf();
-}
-
 void ShaderResourceView::unbindVSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 	ctx->VSSetShaderResources(VSSlot, 1, nullSRV);

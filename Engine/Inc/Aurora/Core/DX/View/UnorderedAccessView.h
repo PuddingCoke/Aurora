@@ -19,8 +19,6 @@ public:
 
 	ID3D11UnorderedAccessView* getUAV() const;
 
-	ID3D11UnorderedAccessView** releaseAndGetUAV();
-
 	void createUAV(ID3D11Resource* const resource, const D3D11_UNORDERED_ACCESS_VIEW_DESC& desc);
 
 	//解决binding hazard的问题

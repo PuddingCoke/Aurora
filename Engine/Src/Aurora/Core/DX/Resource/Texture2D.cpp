@@ -95,7 +95,7 @@ Texture2D::Texture2D(const std::string& path) :
 	{
 		std::wstring wFilePath = std::wstring(path.begin(), path.end());
 
-		HRESULT hr = DirectX::CreateDDSTextureFromFile(GraphicsDevice::getDevice(), wFilePath.c_str(), (ID3D11Resource**)texture.GetAddressOf(), nullptr);
+		HRESULT hr = DirectX::CreateDDSTextureFromFile(GraphicsDevice::getDevice(), wFilePath.c_str(), (ID3D11Resource**)texture.ReleaseAndGetAddressOf(), nullptr);
 
 		if (hr == S_OK)
 		{
