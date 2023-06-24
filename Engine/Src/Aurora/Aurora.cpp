@@ -538,6 +538,8 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 	{
 		if (usage == Configuration::EngineUsage::AnimationRender)
 		{
+			encodeTexture = new Texture2D(screenWidth, screenHeight, backBufferFmt, D3D11_BIND_RENDER_TARGET, false);
+
 			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 			rtvDesc.Format = FMTCAST(backBufferFmt);
 			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
