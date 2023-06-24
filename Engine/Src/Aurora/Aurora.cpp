@@ -203,7 +203,6 @@ void Aurora::runGame()
 		Graphics::instance->updateDeltaTimeBuffer();
 		Camera::instance->updateViewBuffer();
 
-		//更新需要更新的缓冲
 		std::future<void> bufferUpdater = std::async(std::launch::async, BufferUpdate::updateBuffer);
 
 		bufferUpdater.get();
@@ -260,10 +259,19 @@ void Aurora::runEncode()
 		game->update(Graphics::getDeltaTime());
 
 		Graphics::instance->updateDeltaTimeBuffer();
+		Camera::instance->updateViewBuffer();
+
+		std::future<void> bufferUpdater = std::async(std::launch::async, BufferUpdate::updateBuffer);
+
+		bufferUpdater.get();
+
+		BufferUpdate::executeCommandList();
 
 		bindCommonCB();
 
 		game->render();
+
+		CommandListArray::executeCommandLists();
 
 		if (Graphics::instance->msaaLevel != 1)
 		{

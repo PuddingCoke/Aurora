@@ -49,27 +49,13 @@ public:
 
 	void render() override
 	{
-		std::future<void> pass0 = std::async(std::launch::async, [&]()
-			{
-				oceanRenderPass->recordCommand();
-			});
+		auto pass0 = oceanRenderPass->GetPassResult();
 
-		std::future<void> pass1 = std::async(std::launch::async, [&]()
-			{
-				postProcessPass->recordCommand();
-			});
+		auto pass1 = postProcessPass->GetPassResult();
 
-		pass0.get();
+		CommandListArray::pushCommandList(pass0.get());
 
-		ID3D11CommandList* cmd0 = oceanRenderPass->finishRecord();
-
-		CommandListArray::pushCommandList(cmd0);
-
-		pass1.get();
-
-		ID3D11CommandList* cmd1 = postProcessPass->finishRecord();
-
-		CommandListArray::pushCommandList(cmd1);
+		CommandListArray::pushCommandList(pass1.get());
 	}
 
 
