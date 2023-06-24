@@ -32,8 +32,6 @@ struct GraphicsStates
 
 	VertexBuffer* curBuffer[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 
-	std::list<ShaderResourceView*> managedSRV;
-
 	void resetStates();
 
 };

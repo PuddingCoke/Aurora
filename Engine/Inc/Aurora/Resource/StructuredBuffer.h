@@ -10,7 +10,7 @@ class StructuredBuffer :public Buffer, public ShaderResourceView
 {
 public:
 
-	StructuredBuffer(const UINT& byteWidth, const UINT& structureByteStride, const D3D11_USAGE& usage, const void* const data = nullptr, const UINT& CPUAccessFlags = 0);
+	StructuredBuffer(const UINT& byteWidth, const UINT& structureByteStride, const D3D11_USAGE& usage, const void* const data = nullptr);
 
 	virtual void bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states) override;
 

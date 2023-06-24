@@ -10,7 +10,7 @@ class ComputeBuffer :public Buffer, public USView
 {
 public:
 
-	ComputeBuffer(const UINT& byteWidth, const FMT& fmt, const void* const data);
+	ComputeBuffer(const UINT& byteWidth, const FMT& fmt, const void* const data = nullptr);
 
 	virtual ~ComputeBuffer();
 

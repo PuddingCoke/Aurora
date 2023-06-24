@@ -18,9 +18,6 @@
     <ClInclude Include="MyGame.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Ocean.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="PostProcessPass.h">
       <Filter>头文件</Filter>
     </ClInclude>

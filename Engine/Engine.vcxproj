@@ -154,6 +154,7 @@
     <ClInclude Include="Inc\Aurora\EngineAPI\RenderPass.h" />
     <ClInclude Include="Inc\Aurora\EngineAPI\ResourceEssential.h" />
     <ClInclude Include="Inc\Aurora\Resource\ComputeBuffer.h" />
+    <ClInclude Include="Inc\Aurora\Resource\ComputeStructuredBuffer.h" />
     <ClInclude Include="Inc\Aurora\Resource\RenderCube.h" />
     <ClInclude Include="Inc\Aurora\Aurora.h" />
     <ClInclude Include="Inc\Aurora\Resource\ComputeVertexBuffer.h" />
@@ -239,6 +240,7 @@
     <ClCompile Include="Src\Aurora\EngineAPI\CommandListArray.cpp" />
     <ClCompile Include="Src\Aurora\EngineAPI\RenderPass.cpp" />
     <ClCompile Include="Src\Aurora\Resource\ComputeBuffer.cpp" />
+    <ClCompile Include="Src\Aurora\Resource\ComputeStructuredBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Resource\RenderCube.cpp" />
     <ClCompile Include="Src\Aurora\Resource\ComputeVertexBuffer.cpp" />
     <ClCompile Include="Src\Aurora\Camera\FPSCamera.cpp" />
