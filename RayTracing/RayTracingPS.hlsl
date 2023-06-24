@@ -4,8 +4,7 @@
 #define PI         3.1415926535
 #define TWO_PI     6.2831853071
 
-Texture2D historyTex : register(t0);
-SamplerState linearSampler : register(s0);
+Texture2D<uint> randomTexture : register(t0);
 
 cbuffer DeltaTime : register(b0)
 {
@@ -21,13 +20,6 @@ cbuffer SimulationParam : register(b1)
     float theta;
     float RADIUS;
     float POWER;
-}
-
-cbuffer TemporalAccumulationParam : register(b2)
-{
-    uint frameCount;
-    float randomSeed;
-    float2 padding;
 }
 
 static float hashSeed = 0.0;
@@ -316,7 +308,7 @@ float3 Radiance(Ray ray)
 
 float4 main(float2 texCoord : TEXCOORD, float4 pixelCoord : SV_POSITION) : SV_TARGET
 {
-    hashSeed = float(BaseHash(asuint(pixelCoord.xy))) / float(0xffffffffU) + randomSeed;
+    hashSeed = float(BaseHash(asuint(pixelCoord.xy))) / float(0xffffffffU) + float(randomTexture[uint2(0, 0)]) * 0.02;
     
     float2 planePos = (floor(pixelCoord.xy) + Hash2(hashSeed)) / float2(1920.0, 1080.0) * 2.0 - 1.0;
     planePos.x *= 16.0 / 9.0;
@@ -333,5 +325,5 @@ float4 main(float2 texCoord : TEXCOORD, float4 pixelCoord : SV_POSITION) : SV_TA
     
     Ray ray = CreateRay(rayOrigin, rayDir);
     
-    return float4(Radiance(ray), 1.0 / float(frameCount));
+    return float4(Radiance(ray), 1.0 / float(randomTexture[uint2(0, 0)]));
 }
