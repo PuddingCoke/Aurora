@@ -40,7 +40,7 @@ public:
 	} param;
 
 	MyGame() :
-		attractor(200000),
+		attractor(100000),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
 		bloomEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F)),
@@ -98,6 +98,8 @@ public:
 		ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
 		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, depthTexture);
+
+		ImCtx::get()->GSSetConstantBuffer({ simulationBuffer }, 3);
 
 		attractor.render();
 
