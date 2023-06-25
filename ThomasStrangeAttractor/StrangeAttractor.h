@@ -17,6 +17,8 @@ public:
 	VertexBuffer* particleColorBuffer;
 
 	Shader* displayVShader;
+	
+	Shader* displayGShader;
 
 	Shader* displayPShader;
 
@@ -50,13 +52,6 @@ public:
 			}
 		}
 
-		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-		uavDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-		uavDesc.Buffer.FirstElement = 0;
-		uavDesc.Buffer.Flags = 0;
-		uavDesc.Buffer.NumElements = particleNum;
-
 		particlePosBuffer = new ComputeVertexBuffer(particleNum * sizeof(DirectX::XMFLOAT4), FMT::RGBA32F, positions);
 		particleColorBuffer = new VertexBuffer(particleNum * sizeof(DirectX::XMFLOAT4), D3D11_USAGE_IMMUTABLE, colors);
 
@@ -82,6 +77,7 @@ public:
 		delete particlePosBuffer;
 		delete particleColorBuffer;
 		delete displayVShader;
+		delete displayGShader;
 		delete displayPShader;
 		delete computeShader;
 	}
@@ -89,6 +85,7 @@ public:
 	void compileShaders() override
 	{
 		displayVShader = new Shader("ParticleVertexShader.hlsl", ShaderType::Vertex);
+		displayGShader = new Shader("ParticleGeometryShader.hlsl", ShaderType::Geometry);
 		displayPShader = new Shader("ParticlePixelShader.hlsl", ShaderType::Pixel);
 		computeShader = new Shader("ParticleComputeShader.hlsl", ShaderType::Compute);
 	}
@@ -111,10 +108,15 @@ public:
 
 		ImCtx::get()->IASetVertexBuffer({ particlePosBuffer,particleColorBuffer }, { sizeof(DirectX::XMFLOAT4),sizeof(DirectX::XMFLOAT4) }, { 0,0 });
 
+		ImCtx::get()->GSSetConstantBuffer({ Graphics::getDeltaTimeBuffer(), }, 2);
+
 		ImCtx::get()->BindShader(displayVShader);
+		ImCtx::get()->BindShader(displayGShader);
 		ImCtx::get()->BindShader(displayPShader);
 
 		ImCtx::get()->Draw(particleNum, 0);
+
+		ImCtx::get()->GSUnbindShader();
 	}
 
 

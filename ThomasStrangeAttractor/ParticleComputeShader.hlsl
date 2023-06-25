@@ -20,11 +20,11 @@ void main(in uint3 DTid : SV_DispatchThreadID)
     float4 pos = positions[DTid.x];
     
     [unroll]
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 5; i++)
     {
-        const float dx = (sin(pos.y) - factor * pos.x) * deltaTime * 0.5;
-        const float dy = (sin(pos.z) - factor * pos.y) * deltaTime * 0.5;
-        const float dz = (sin(pos.x) - factor * pos.z) * deltaTime * 0.5;
+        const float dx = (sin(pos.y) - factor * pos.x) * deltaTime;
+        const float dy = (sin(pos.z) - factor * pos.y) * deltaTime;
+        const float dz = (sin(pos.x) - factor * pos.z) * deltaTime;
 
         pos += float4(dx, dy, dz, 0.0);
     }

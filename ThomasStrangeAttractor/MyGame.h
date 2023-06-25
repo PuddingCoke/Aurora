@@ -40,7 +40,7 @@ public:
 	} param;
 
 	MyGame() :
-		attractor(2000000),
+		attractor(200000),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
 		bloomEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F)),

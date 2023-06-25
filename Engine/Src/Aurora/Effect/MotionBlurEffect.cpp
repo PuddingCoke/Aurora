@@ -16,6 +16,7 @@ ShaderResourceView* MotionBlurEffect::process(ShaderResourceView* const gPositio
 	ctx->OMSetBlendState(nullptr);
 	ctx->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	ctx->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
 	ctx->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
 
 	ctx->PSSetSRV({ gPosition,colorTexture }, 0);

@@ -131,7 +131,7 @@ public:
 				}
 			}
 
-			irradianceSamples = new StructuredBuffer((UINT)(sizeof(Sample) * samples.size()), sizeof(Sample), D3D11_USAGE_IMMUTABLE, samples.data(), 0);
+			irradianceSamples = new StructuredBuffer((UINT)(sizeof(Sample) * samples.size()), sizeof(Sample), D3D11_USAGE_IMMUTABLE, samples.data());
 		}
 
 		//≥ı ºªØInputLayout

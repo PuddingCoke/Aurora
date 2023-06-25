@@ -26,7 +26,7 @@ cbuffer ViewMatrix : register(b1)
 VertexOuput main(VertexInput input)
 {
     VertexOuput output;
-    output.position = mul(input.position, viewProj);
     output.color = input.color;
+    output.position = input.position;
     return output;
 }

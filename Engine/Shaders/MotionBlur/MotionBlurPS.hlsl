@@ -10,7 +10,7 @@ cbuffer ViewInfo : register(b1)
     matrix prevViewProj;
 }
 
-static const uint g_numSamples = 10;
+static const uint g_numSamples = 5;
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
@@ -25,15 +25,15 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float4 color = colorTexture.Sample(samplerState, texCoord);
     
-    if(pos.w<0.1)
+    if (pos.w < 0.1)
     {
         return color;
     }
     
-    texCoord += velocity;
+    texCoord += float2(velocity.x, -velocity.y);
     
     [unroll]
-    for (uint i = 1; i < g_numSamples; ++i, texCoord += velocity)
+    for (uint i = 1; i < g_numSamples; ++i, texCoord += float2(velocity.x, -velocity.y))
     {
         float4 currentColor = colorTexture.Sample(samplerState, texCoord);
         color += currentColor;
