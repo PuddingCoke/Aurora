@@ -1,4 +1,4 @@
-RWTexture2D<uint> curState : register(u0);
+RWTexture2D<float> curState : register(u0);
 
 cbuffer DeltaTime : register(b0)
 {
@@ -33,18 +33,10 @@ uint hash(uint2 x)
     return hash;
 }
 
-[numthreads(32, 18, 1)]
-void main(uint3 DTid : SV_DispatchThreadID)
+[numthreads(16, 9, 1)]
+void main(uint2 DTid : SV_DispatchThreadID)
 {
-    uint hashValue = hash(DTid.xy);
+    uint hashValue = hash(DTid);
     float value = float(hashValue) / float(0xffffffffU);
-    
-    if(value>0.5)
-    {
-        curState[DTid.xy] = 255;
-    }
-    else
-    {
-        curState[DTid.xy] = 0;
-    }
+    curState[DTid] = value * 0.75;
 }

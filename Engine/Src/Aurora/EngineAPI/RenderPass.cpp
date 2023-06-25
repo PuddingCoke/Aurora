@@ -13,7 +13,7 @@ RenderPass::~RenderPass()
 
 std::future<ID3D11CommandList*> RenderPass::GetPassResult()
 {
-	return std::async(std::launch::async, [&]()
+	return std::async(std::launch::async, [&]
 		{
 			recordCommand();
 

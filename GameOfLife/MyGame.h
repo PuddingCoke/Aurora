@@ -1,94 +1,47 @@
 ﻿#pragma once
 
 #include<Aurora/Game.h>
-#include<Aurora/Resource/ComputeTexture.h>
-#include<Aurora/Resource/RenderComputeTexture.h>
+#include<Aurora/EngineAPI/ResourceEssential.h>
 #include<Aurora/Utils/Timer.h>
 
 #include<Aurora/Effect/BloomEffect.h>
+#include<Aurora/Effect/FXAAEffect.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game
 {
 public:
 
-	class SwapComputeTexture
-	{
-	public:
+	SwapTexture<ComputeTexture>* swapTexture;
 
-		SwapComputeTexture(const UINT& width, const UINT& height) :
-			cTexture1(new ComputeTexture(width, height, FMT::R8UI, FMT::R8UI, FMT::R8UI)),
-			cTexture2(new ComputeTexture(width, height, FMT::R8UI, FMT::R8UI, FMT::R8UI))
-		{}
-
-		~SwapComputeTexture()
-		{
-			delete cTexture1;
-			delete cTexture2;
-		}
-
-		void swap()
-		{
-			ComputeTexture* temp = cTexture1;
-			cTexture1 = cTexture2;
-			cTexture2 = temp;
-		}
-
-		ComputeTexture* read()
-		{
-			return cTexture1;
-		}
-
-		ComputeTexture* write()
-		{
-			return cTexture2;
-		}
-
-	private:
-
-		ComputeTexture* cTexture1;
-
-		ComputeTexture* cTexture2;
-
-	} *swapTexture;
-
-	RenderComputeTexture* rcTexture;
-
-	Shader* evolveCS;
+	ComputeTexture* outputTexture;
 
 	Shader* randomizeCS;
 
+	Shader* evolveCS;
+
 	Shader* visualizeCS;
-
-	struct GameParam
-	{
-		DirectX::XMUINT2 mapSize;
-		DirectX::XMFLOAT2 padding;
-	} gameParam;
-
-	ConstantBuffer* gameBuffer;
 
 	Timer timer;
 
 	BloomEffect bloomEffect;
 
-	static constexpr UINT simulationHeight = 270;
+	FXAAEffect fxaaEffect;
+
+	static constexpr UINT simulationHeight = 1080;
 
 	static constexpr UINT simulationWidth = simulationHeight * 16 / 9;
 
 	MyGame() :
 		timer(1.f / 60.f),
-		swapTexture(new SwapComputeTexture(simulationWidth, simulationHeight)),
-		rcTexture(new RenderComputeTexture(simulationWidth, simulationHeight, FMT::RGBA8UN, DirectX::Colors::Black)),
-		evolveCS(new Shader("EvolveCS.hlsl", ShaderType::Compute)),
-		randomizeCS(new Shader("RandomizeCS.hlsl", ShaderType::Compute)),
-		visualizeCS(new Shader("VisualizeCS.hlsl", ShaderType::Compute)),
-		bloomEffect(ImCtx::get(), simulationWidth, simulationHeight)
+		swapTexture(new SwapTexture<ComputeTexture>([=] {return new ComputeTexture(simulationWidth, simulationHeight, FMT::R16F, FMT::R16F, FMT::R16F); })),
+		outputTexture(new ComputeTexture(simulationWidth, simulationHeight, FMT::RGBA8UN, FMT::RGBA8UN, FMT::RGBA8UN)),
+		randomizeCS(new Shader(Utils::getRootFolder() + "RandomizeCS.cso", ShaderType::Compute)),
+		evolveCS(new Shader(Utils::getRootFolder() + "EvolveCS.cso", ShaderType::Compute)),
+		visualizeCS(new Shader(Utils::getRootFolder() + "VisualizeCS.cso", ShaderType::Compute)),
+		bloomEffect(ImCtx::get(), simulationWidth, simulationHeight),
+		fxaaEffect(ImCtx::get(), simulationWidth, simulationHeight)
 	{
-		gameParam.mapSize = DirectX::XMUINT2(simulationWidth, simulationHeight);
-
-		gameBuffer = new ConstantBuffer(sizeof(GameParam), D3D11_USAGE_IMMUTABLE, &gameParam);
-
 		randomize();
 
 		Keyboard::addKeyDownEvent(Keyboard::K, [this]()
@@ -97,22 +50,22 @@ public:
 			});
 
 		bloomEffect.setThreshold(0.f);
+		bloomEffect.setIntensity(0.6f);
 		bloomEffect.applyChange();
 	}
 
 	~MyGame()
 	{
 		delete swapTexture;
-		delete rcTexture;
-		delete evolveCS;
 		delete randomizeCS;
+		delete evolveCS;
 		delete visualizeCS;
-		delete gameBuffer;
+		delete outputTexture;
 	}
 
 	void randomize()
 	{
-		const UINT value[] = { 0,0,0,0 };
+		const float value[] = { 0,0,0,0 };
 		ImCtx::get()->ClearUAV(swapTexture->read()->getMip(0), value);
 		ImCtx::get()->ClearUAV(swapTexture->write()->getMip(0), value);
 
@@ -120,25 +73,19 @@ public:
 
 		ImCtx::get()->BindShader(randomizeCS);
 
-		ImCtx::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
+		ImCtx::get()->Dispatch(simulationWidth / 16, simulationHeight / 9, 1);
 		swapTexture->swap();
-
-		for (UINT i = 0; i < 60; i++)
-		{
-			step();
-		}
 	}
 
-	void step()
+	void evolve()
 	{
 		ImCtx::get()->CSSetUAV({ swapTexture->write()->getMip(0) }, 0);
 		ImCtx::get()->CSSetSRV({ swapTexture->read() }, 0);
-
-		ImCtx::get()->CSSetConstantBuffer({ gameBuffer }, 1);
+		ImCtx::get()->CSSetSampler({ States::pointWrapSampler }, 0);
 
 		ImCtx::get()->BindShader(evolveCS);
 
-		ImCtx::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
+		ImCtx::get()->Dispatch(simulationWidth / 16, simulationHeight / 9, 1);
 		swapTexture->swap();
 	}
 
@@ -146,7 +93,7 @@ public:
 	{
 		while (timer.update(dt))
 		{
-			step();
+			evolve();
 		}
 	}
 
@@ -157,16 +104,16 @@ public:
 
 	void render()
 	{
-		ImCtx::get()->CSSetUAV({ rcTexture->getMip(0) }, 0);
+		ImCtx::get()->CSSetUAV({ outputTexture->getMip(0) }, 0);
 		ImCtx::get()->CSSetSRV({ swapTexture->read() }, 0);
-
-		ImCtx::get()->CSSetConstantBuffer({ gameBuffer }, 1);
 
 		ImCtx::get()->BindShader(visualizeCS);
 
-		ImCtx::get()->Dispatch(simulationWidth / 32, simulationHeight / 18, 1);
+		ImCtx::get()->Dispatch(simulationWidth / 16, simulationHeight / 9, 1);
 
-		ShaderResourceView* bloomSRV = bloomEffect.process(rcTexture);
+		ShaderResourceView* bloomSRV = bloomEffect.process(outputTexture);
+
+		ShaderResourceView* antialiasedSRV = fxaaEffect.process(bloomSRV);
 
 		ImCtx::get()->OMSetBlendState(nullptr);
 		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
@@ -175,7 +122,7 @@ public:
 		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
 		ImCtx::get()->OMSetDefRTV(nullptr);
 
-		ImCtx::get()->PSSetSRV({ bloomSRV }, 0);
+		ImCtx::get()->PSSetSRV({ antialiasedSRV }, 0);
 		ImCtx::get()->PSSetSampler({ States::pointClampSampler }, 0);
 
 		ImCtx::get()->BindShader(Shader::fullScreenVS);
