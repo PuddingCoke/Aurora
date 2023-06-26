@@ -26,8 +26,9 @@ cbuffer SimulationParam : register(b3)
 
 void GetNextPosition(inout float4 pos)
 {
+    //iteration number decide trail length
     [unroll]
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 30; i++)
     {
         const float dx = (sin(pos.y) - factor * pos.x) * dt;
         const float dy = (sin(pos.z) - factor * pos.y) * dt;
@@ -44,11 +45,12 @@ void main(
 )
 {
     GSOutput o;
-    o.color = input[0].color;
     float4 position = input[0].svPosition;
+    //iteration number decide how precise the trail will be
     [unroll]
     for (uint i = 0; i < 6; i++)
     {
+        o.color = float4(input[0].color.rgb * float(i + 1) / 6.0, 1.0);
         o.svPosition = mul(position, viewProj);
         output.Append(o);
         GetNextPosition(position);

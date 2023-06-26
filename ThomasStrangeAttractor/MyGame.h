@@ -40,10 +40,10 @@ public:
 	} param;
 
 	MyGame() :
-		attractor(100000),
+		attractor(300000),
+		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F)),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
 		bloomEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
-		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F)),
 		camera({ 4,4,-11 }, { -1,-1,-1 }, 2.f),
 		simulationBuffer(new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_DYNAMIC))
 	{
@@ -64,8 +64,8 @@ public:
 
 	~MyGame()
 	{
-		delete renderTexture;
 		delete depthTexture;
+		delete renderTexture;
 		delete simulationBuffer;
 	}
 

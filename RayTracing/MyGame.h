@@ -35,7 +35,7 @@ public:
 		rayTracingPS(new Shader(Utils::getRootFolder() + "RayTracingPS.cso", ShaderType::Pixel)),
 		displayPS(new Shader("DisplayPS.hlsl", ShaderType::Pixel)),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN)),
-		randomTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::R32UI, FMT::R32UI, FMT::R32UI, 1, 1)),
+		randomTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RG32F, FMT::RG32F, FMT::RG32F, 1, 1)),
 		cameraParam{ 0.25f,0.0f,12.0f,0.1f }
 	{
 		targetRadius = cameraParam.radius;
@@ -100,9 +100,9 @@ public:
 
 		ImCtx::get()->BindShader(rayTracingPS);
 
-		for (UINT i = 0; i < 10; i++)
+		for (UINT i = 0; i < 4; i++)
 		{
-			UINT clearValue[4] = { i + 1,i + 1,i + 1,i + 1 };
+			const float clearValue[4] = { i + 1,Random::Float() * 100.f,0.f,0.f };
 
 			ImCtx::get()->ClearUAV(randomTexture->getMip(0), clearValue);
 
