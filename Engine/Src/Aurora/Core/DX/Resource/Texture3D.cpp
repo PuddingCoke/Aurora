@@ -4,8 +4,13 @@ Texture3D::~Texture3D()
 {
 }
 
+Texture3D::Texture3D(const Texture3D& t) :
+	width(t.width), height(t.height), depth(t.depth), mipLevels(t.mipLevels), texture(t.texture)
+{
+}
+
 Texture3D::Texture3D(const UINT& width, const UINT& height, const UINT& depth, const FMT& format, const UINT& bindFlags, const UINT& miscFlags, const UINT& mipLevels) :
-	width(width), height(height), depth(depth)
+	width(width), height(height), depth(depth), mipLevels(mipLevels)
 {
 	D3D11_TEXTURE3D_DESC desc = {};
 	desc.Width = width;

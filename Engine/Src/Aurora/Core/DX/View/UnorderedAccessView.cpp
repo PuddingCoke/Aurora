@@ -7,6 +7,11 @@ UnorderedAccessView::UnorderedAccessView() :
 {
 }
 
+UnorderedAccessView::UnorderedAccessView(const UnorderedAccessView& uav) :
+	CUAVSlot(-1), boundOnRTV(false), unorderedAccessView(uav.unorderedAccessView)
+{
+}
+
 UnorderedAccessView::~UnorderedAccessView()
 {
 }

@@ -4,12 +4,6 @@ DepthStencilView::DepthStencilView()
 {
 }
 
-DepthStencilView::DepthStencilView(ID3D11Resource* const resource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc):
-	DepthStencilView()
-{
-	createDSV(resource, desc);
-}
-
 ID3D11DepthStencilView* DepthStencilView::getDSV() const
 {
 	return depthStencilView.Get();

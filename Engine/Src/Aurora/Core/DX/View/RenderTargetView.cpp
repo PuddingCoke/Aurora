@@ -7,10 +7,9 @@ RenderTargetView::RenderTargetView() :
 {
 }
 
-RenderTargetView::RenderTargetView(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc) :
-	boundOnRTV(false)
+RenderTargetView::RenderTargetView(const RenderTargetView& rtv) :
+	boundOnRTV(false), renderTargetView(rtv.renderTargetView)
 {
-	createRTV(resource, desc);
 }
 
 RenderTargetView::~RenderTargetView()

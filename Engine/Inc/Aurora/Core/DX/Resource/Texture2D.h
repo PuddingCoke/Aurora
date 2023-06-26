@@ -26,11 +26,11 @@ public:
 		Gauss
 	};
 
-	Texture2D();
+	virtual ~Texture2D();
 
-	Texture2D(const Texture2D&) = delete;
+	Texture2D() = delete;
 
-	void operator=(const Texture2D&) = delete;
+	Texture2D(const Texture2D&);
 
 	Texture2D(const std::string& filePath);
 
@@ -39,8 +39,6 @@ public:
 	Texture2D(const UINT& width, const UINT& height, const FMT& format, const UINT& bindFlags, const bool& enableMSAA = false);
 
 	Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const FMT& format, const UINT& bindFlags, const UINT& miscFlags);
-
-	virtual ~Texture2D();
 
 	const UINT& getWidth() const;
 

@@ -15,8 +15,6 @@ public:
 
 	DepthStencilView();
 
-	DepthStencilView(ID3D11Resource* const resource, const D3D11_DEPTH_STENCIL_VIEW_DESC& desc);
-
 	virtual ~DepthStencilView();
 
 	ID3D11DepthStencilView* getDSV() const;

@@ -7,6 +7,11 @@ ShaderResourceView::ShaderResourceView() :
 {
 }
 
+ShaderResourceView::ShaderResourceView(const ShaderResourceView& srv) :
+	VSSlot(-1), HSSlot(-1), DSSlot(-1), GSSlot(-1), PSSlot(-1), CSSlot(-1), shaderResourceView(srv.shaderResourceView)
+{
+}
+
 ShaderResourceView::~ShaderResourceView()
 {
 }

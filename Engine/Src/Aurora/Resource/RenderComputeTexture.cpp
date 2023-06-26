@@ -113,17 +113,9 @@ RenderComputeTexture::RenderComputeTexture(const UINT& width, const UINT& height
 	}
 }
 
-RenderComputeTexture::RenderComputeTexture(const RenderComputeTexture& t)
+RenderComputeTexture::RenderComputeTexture(const RenderComputeTexture& t) :
+	Texture2D(t), ShaderResourceView(t)
 {
-	width = t.width;
-	height = t.height;
-	arraySize = t.arraySize;
-	mipLevels = t.mipLevels;
-	format = t.format;
-	texture = t.texture;
-
-	shaderResourceView = t.shaderResourceView;
-
 	mipArray = new RUSViewEx[t.mipLevels];
 
 	for (UINT i = 0; i < mipLevels; i++)

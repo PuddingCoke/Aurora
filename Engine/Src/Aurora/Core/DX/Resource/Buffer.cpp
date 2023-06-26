@@ -1,8 +1,7 @@
 #include<Aurora/Core/DX/Resource/Buffer.h>
 
-ID3D11Buffer* Buffer::getBuffer() const
+Buffer::~Buffer()
 {
-	return buffer.Get();
 }
 
 Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage, const void* const data, const UINT& CPUAccessFlags, const UINT& miscFlags, const UINT& structureByteStride)
@@ -28,11 +27,12 @@ Buffer::Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& 
 	}
 }
 
-Buffer::~Buffer()
+ID3D11Resource* Buffer::getResource() const
 {
+	return buffer.Get();
 }
 
-ID3D11Resource* Buffer::getResource() const
+ID3D11Buffer* Buffer::getBuffer() const
 {
 	return buffer.Get();
 }

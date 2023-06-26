@@ -9,21 +9,21 @@ class Texture3D :public Resource
 {
 public:
 
+	virtual ~Texture3D();
+
 	Texture3D() = delete;
 
-	Texture3D(const Texture3D&) = delete;
-
-	void operator=(const Texture3D&) = delete;
-
-	virtual ~Texture3D();
+	Texture3D(const Texture3D&);
 
 	Texture3D(const UINT& width, const UINT& height, const UINT& depth, const FMT& format, const UINT& bindFlags, const UINT& miscFlags = 0, const UINT& mipLevels = 1);
 
-	const UINT width;
+	UINT width;
 
-	const UINT height;
+	UINT height;
 
-	const UINT depth;
+	UINT depth;
+
+	UINT mipLevels;
 
 	ID3D11Resource* getResource() const override;
 

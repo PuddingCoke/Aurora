@@ -153,6 +153,11 @@ TextureCube::~TextureCube()
 {
 }
 
+ID3D11Resource* TextureCube::getResource() const
+{
+	return texture.Get();
+}
+
 void TextureCube::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
 }

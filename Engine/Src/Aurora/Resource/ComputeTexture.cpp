@@ -80,17 +80,9 @@ ComputeTexture::ComputeTexture(const UINT& width, const UINT& height, const FMT&
 	}
 }
 
-ComputeTexture::ComputeTexture(const ComputeTexture& t)
+ComputeTexture::ComputeTexture(const ComputeTexture& t) :
+	Texture2D(t), ShaderResourceView(t)
 {
-	width = t.width;
-	height = t.height;
-	arraySize = t.arraySize;
-	mipLevels = t.mipLevels;
-	format = t.format;
-	texture = t.texture;
-
-	shaderResourceView = t.shaderResourceView;
-
 	mipArray = new USViewEx[t.mipLevels];
 
 	for (UINT i = 0; i < mipLevels; i++)
@@ -114,12 +106,12 @@ void ComputeTexture::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* co
 
 void ComputeTexture::USViewEx::bindSRV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	unbindFromCUAV(ctx,states) || unbindFromPUAV(ctx,states);
+	unbindFromCUAV(ctx, states) || unbindFromPUAV(ctx, states);
 }
 
 void ComputeTexture::USViewEx::bindCUAV(ID3D11DeviceContext3* const ctx, GraphicsStates* const states)
 {
-	allSRV->unbindFromSRV(ctx,states);
+	allSRV->unbindFromSRV(ctx, states);
 
 	unbindFromPUAV(ctx, states) || unbindFromSRV(ctx, states);
 }

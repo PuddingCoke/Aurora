@@ -9,16 +9,12 @@ class Buffer :public Resource
 {
 public:
 
+	virtual ~Buffer();
+
 	Buffer() = delete;
-
-	Buffer(const Buffer&) = delete;
-
-	void operator=(const Buffer&) = delete;
 
 	Buffer(const UINT& byteWidth, const UINT& bindFlags, const D3D11_USAGE& usage,
 		const void* const data, const UINT& CPUAccessFlags, const UINT& miscFlags, const UINT& structureByteStride);
-
-	virtual ~Buffer();
 
 	ID3D11Resource* getResource() const override;
 

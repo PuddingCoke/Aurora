@@ -15,6 +15,8 @@ public:
 
 	ShaderResourceView();
 
+	ShaderResourceView(const ShaderResourceView&);
+
 	virtual ~ShaderResourceView();
 
 	ID3D11ShaderResourceView* getSRV() const;

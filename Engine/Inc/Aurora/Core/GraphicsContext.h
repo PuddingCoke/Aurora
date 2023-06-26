@@ -24,6 +24,10 @@ public:
 
 	~GraphicsContext();
 
+	GraphicsContext(const GraphicsContext&) = delete;
+
+	void operator=(const GraphicsContext&) = delete;
+
 	void ClearDefRTV(const float* const color);
 
 	void OMSetDefRTV(DepthStencilView* const dsv);

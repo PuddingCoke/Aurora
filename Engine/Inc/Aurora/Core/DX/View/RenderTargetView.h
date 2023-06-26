@@ -15,7 +15,7 @@ public:
 
 	RenderTargetView();
 
-	RenderTargetView(ID3D11Resource* const resource, const D3D11_RENDER_TARGET_VIEW_DESC& desc);
+	RenderTargetView(const RenderTargetView&);
 
 	virtual ~RenderTargetView();
 

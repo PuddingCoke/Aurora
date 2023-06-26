@@ -160,17 +160,9 @@ RenderTexture::RenderTexture(const UINT& width, const UINT& height, const FMT& f
 	}
 }
 
-RenderTexture::RenderTexture(const RenderTexture& t)
+RenderTexture::RenderTexture(const RenderTexture& t) :
+	Texture2D(t), ShaderResourceView(t)
 {
-	width = t.width;
-	height = t.height;
-	arraySize = t.arraySize;
-	mipLevels = t.mipLevels;
-	format = t.format;
-	texture = t.texture;
-
-	shaderResourceView = t.shaderResourceView;
-
 	mipArray = new RSViewEx[t.mipLevels];
 
 	for (UINT i = 0; i < mipLevels; i++)

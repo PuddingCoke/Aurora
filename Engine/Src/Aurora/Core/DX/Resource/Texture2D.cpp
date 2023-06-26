@@ -1,7 +1,11 @@
 ﻿#include<Aurora/Core/DX/Resource/Texture2D.h>
 
-Texture2D::Texture2D() :
-	width(0), height(0), format(DXGI_FORMAT_UNKNOWN), mipLevels(0), arraySize(0)
+Texture2D::~Texture2D()
+{
+}
+
+Texture2D::Texture2D(const Texture2D& t) :
+	width(t.width), height(t.height), format(t.format), mipLevels(t.mipLevels), arraySize(t.arraySize), texture(t.texture)
 {
 }
 
@@ -221,10 +225,6 @@ Texture2D::Texture2D(const UINT& width, const UINT& height, const UINT& mipLevel
 	tDesc.MiscFlags = miscFlags;
 
 	GraphicsDevice::get()->createTexture2D(&tDesc, nullptr, texture.ReleaseAndGetAddressOf());
-}
-
-Texture2D::~Texture2D()
-{
 }
 
 const UINT& Texture2D::getWidth() const

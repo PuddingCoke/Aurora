@@ -15,6 +15,8 @@ public:
 
 	UnorderedAccessView();
 
+	UnorderedAccessView(const UnorderedAccessView&);
+
 	virtual ~UnorderedAccessView();
 
 	ID3D11UnorderedAccessView* getUAV() const;

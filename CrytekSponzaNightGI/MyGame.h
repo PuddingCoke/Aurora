@@ -133,7 +133,7 @@ public:
 			voxelParam.voxelSize = voxelParam.voxelGridLength / (float)voxelParam.voxelGridRes;
 
 			voxelTextureColor = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, FMT::RGBA8TL, FMT::RGBA8UN, FMT::R32UI, D3D11_BIND_RENDER_TARGET, D3D11_RESOURCE_MISC_GENERATE_MIPS, 5);
-			voxelTextureColorFinal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, FMT::RGBA8UN, D3D11_BIND_RENDER_TARGET, D3D11_RESOURCE_MISC_GENERATE_MIPS, 5);
+			voxelTextureColorFinal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, FMT::RGBA8UN, FMT::RGBA8UN, FMT::RGBA8UN, D3D11_BIND_RENDER_TARGET, D3D11_RESOURCE_MISC_GENERATE_MIPS, 5);
 			voxelTextureNormal = new ComputeTexture3D(voxelParam.voxelGridRes, voxelParam.voxelGridRes, voxelParam.voxelGridRes, FMT::RGBA8TL, FMT::RGBA8UN, FMT::R32UI);
 
 			voxelParamBuffer = new ConstantBuffer(sizeof(VoxelParam), D3D11_USAGE_IMMUTABLE, &voxelParam);
@@ -190,9 +190,9 @@ public:
 			ImCtx::get()->IASetInputLayout(inputLayout.Get());
 
 			UINT clearValue = 0;
-			ImCtx::get()->ClearUAV(voxelTextureColor, &clearValue);
-			ImCtx::get()->ClearUAV(voxelTextureNormal, &clearValue);
-			ImCtx::get()->OMSetUAV({ voxelTextureColor,voxelTextureNormal });
+			ImCtx::get()->ClearUAV(voxelTextureColor->getMip(0), &clearValue);
+			ImCtx::get()->ClearUAV(voxelTextureNormal->getMip(0), &clearValue);
+			ImCtx::get()->OMSetUAV({ voxelTextureColor->getMip(0),voxelTextureNormal->getMip(0) });
 
 			ImCtx::get()->VSSetConstantBuffer({ voxelProjBuffer }, 2);
 			ImCtx::get()->PSSetConstantBuffer({ lightBuffer,Camera::getViewBuffer(),voxelParamBuffer }, 1);
@@ -210,7 +210,7 @@ public:
 			ImCtx::get()->BindShader(lightBounceCShader);
 
 			ImCtx::get()->CSSetSRV({ voxelTextureColor,voxelTextureNormal }, 0);
-			ImCtx::get()->CSSetUAV({ voxelTextureColorFinal }, 0);
+			ImCtx::get()->CSSetUAV({ voxelTextureColorFinal->getMip(0) }, 0);
 			ImCtx::get()->CSSetConstantBuffer({ voxelParamBuffer }, 1);
 			ImCtx::get()->CSSetSampler({ States::linearClampSampler }, 0);
 
