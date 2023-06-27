@@ -27,7 +27,13 @@
     <ClInclude Include="Scene.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GlobalIllumination.h">
+    <ClInclude Include="LightProbeUpdatePass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneRenderPass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessPass.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

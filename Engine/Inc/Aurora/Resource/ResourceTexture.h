@@ -10,8 +10,6 @@ class ResourceTexture :public Texture2D, public ShaderResourceView
 {
 public:
 
-	ResourceTexture() = delete;
-
 	ResourceTexture(const std::string& filePath);
 
 	ResourceTexture(const UINT& width, const UINT& height, const TextureType& type);

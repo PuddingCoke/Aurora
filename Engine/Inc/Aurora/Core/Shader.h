@@ -36,11 +36,7 @@ public:
 
 	Shader() = delete;
 
-	Shader(const Shader&) = delete;
-
 	~Shader();
-
-	void operator=(const Shader&) = delete;
 
 	//hlsl or cso
 	Shader(const std::string& filePath, const ShaderType& type, const std::initializer_list<D3D_SHADER_MACRO>& macros = {});

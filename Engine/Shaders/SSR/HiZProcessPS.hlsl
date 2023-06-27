@@ -117,7 +117,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     const float3 d = endFrag.xyz - startFrag.xyz;
     
-    const int maxLevel = 5;
+    const int maxLevel = 4;
     
     const int startLevel = maxLevel;
     

@@ -109,7 +109,7 @@ public:
 				vertices.push_back(vert);
 			}
 
-			models.push_back(Model(scene->mMeshes[j]->mMaterialIndex, vertexCount, startVertexLocation));
+			models.push_back(new Model(scene->mMeshes[j]->mMaterialIndex, vertexCount, startVertexLocation));
 
 			startVertexLocation += vertexCount;
 		}
@@ -118,60 +118,80 @@ public:
 
 	}
 
+	Scene(const Scene& s)
+	{
+		for (UINT i = 0; i < s.materials.size(); i++)
+		{
+			materials.push_back(new Material(*s.materials[i]));
+		}
+
+		for (UINT i = 0; i < s.models.size(); i++)
+		{
+			models.push_back(new Model(*s.models[i]));
+		}
+
+		modelBuffer = new VertexBuffer(*s.modelBuffer);
+	}
+
 	~Scene()
 	{
 		delete modelBuffer;
 
-		for (unsigned int i = 0; i < materials.size(); i++)
+		for (UINT i = 0; i < materials.size(); i++)
 		{
 			delete materials[i];
 		}
-	}
 
-	void render(Shader* const vertexShader, Shader* const pixelShader)
-	{
-		ImCtx::get()->BindShader(vertexShader);
-		ImCtx::get()->GSUnbindShader();
-		ImCtx::get()->BindShader(pixelShader);
-		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		ImCtx::get()->IASetVertexBuffer({ modelBuffer }, { stride }, { offset });
-		for (unsigned int i = 0; i < models.size(); i++)
+		for (UINT i = 0; i < models.size(); i++)
 		{
-			materials[models[i].materialIndex]->use();
-			models[i].draw();
+			delete models[i];
 		}
 	}
 
-	void renderCube(Shader* const vertexShader, Shader* const pixelShader)
+	void render(GraphicsContext* const ctx, Shader* const vertexShader, Shader* const pixelShader)
 	{
-		ImCtx::get()->BindShader(vertexShader);
-		ImCtx::get()->GSUnbindShader();
-		ImCtx::get()->BindShader(pixelShader);
-		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		ImCtx::get()->IASetVertexBuffer({ modelBuffer }, { stride }, { offset });
+		ctx->BindShader(vertexShader);
+		ctx->GSUnbindShader();
+		ctx->BindShader(pixelShader);
+		ctx->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ctx->IASetVertexBuffer({ modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
-			materials[models[i].materialIndex]->use();
-			models[i].drawInstance();
+			materials[models[i]->materialIndex]->use(ctx);
+			models[i]->draw(ctx);
 		}
 	}
 
-	void renderGeometry(Shader* const vertexShader)
+	void renderCube(GraphicsContext* const ctx, Shader* const vertexShader, Shader* const pixelShader)
 	{
-		ImCtx::get()->BindShader(vertexShader);
-		ImCtx::get()->GSUnbindShader();
-		ImCtx::get()->PSUnbindShader();
-		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		ImCtx::get()->IASetVertexBuffer({ modelBuffer }, { stride }, { offset });
+		ctx->BindShader(vertexShader);
+		ctx->GSUnbindShader();
+		ctx->BindShader(pixelShader);
+		ctx->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ctx->IASetVertexBuffer({ modelBuffer }, { stride }, { offset });
 		for (unsigned int i = 0; i < models.size(); i++)
 		{
-			models[i].draw();
+			materials[models[i]->materialIndex]->use(ctx);
+			models[i]->drawInstance(ctx);
+		}
+	}
+
+	void renderGeometry(GraphicsContext* const ctx, Shader* const vertexShader)
+	{
+		ctx->BindShader(vertexShader);
+		ctx->GSUnbindShader();
+		ctx->PSUnbindShader();
+		ctx->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ctx->IASetVertexBuffer({ modelBuffer }, { stride }, { offset });
+		for (unsigned int i = 0; i < models.size(); i++)
+		{
+			models[i]->draw(ctx);
 		}
 	}
 
 	std::vector<Material*> materials;
 
-	std::vector<Model> models;
+	std::vector<Model*> models;
 
 	VertexBuffer* modelBuffer;
 

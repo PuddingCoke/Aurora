@@ -10,8 +10,6 @@ class RenderCube :public Texture2D, public RSView
 {
 public:
 
-	RenderCube() = delete;
-
 	RenderCube(const UINT& resolution, const FMT& fmt, const float color[4] = DirectX::Colors::Black);
 
 	~RenderCube();

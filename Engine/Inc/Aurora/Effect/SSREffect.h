@@ -32,7 +32,7 @@ private:
 
 	ComputeTexture* hiZTexture;
 
-	static constexpr UINT hiZMipLevel = 6;
+	static constexpr UINT hiZMipLevel = 5;
 
 };
 

@@ -34,8 +34,11 @@ ShaderResourceView* SSREffect::process(ShaderResourceView* resDepthTexture, Shad
 		ctx->Dispatch(((width / 2) >> i) / 16 + 1, ((height / 2) >> i) / 9 + 1, 1);
 	}
 
+	ctx->OMSetBlendState(nullptr);
+	ctx->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	ctx->ClearRTV(outputRTV->getMip(0), DirectX::Colors::Black);
 	ctx->OMSetRTV({ outputRTV->getMip(0) }, nullptr);
+	ctx->RSSetViewport(width, height);
 	ctx->PSSetSRV({ gPosition,gNormal,hiZTexture }, 0);
 	ctx->PSSetConstantBuffer({ Camera::getProjBuffer(),Camera::getViewBuffer() }, 1);
 	ctx->PSSetSampler({ States::linearWrapSampler,States::linearClampSampler,States::pointClampSampler }, 0);

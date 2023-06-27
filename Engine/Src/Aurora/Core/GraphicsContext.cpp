@@ -706,6 +706,11 @@ void GraphicsContext::UnbindPSUAV()
 	UnorderedAccessView::unbindPUAV(getContext(), &states);
 }
 
+void GraphicsContext::UnbindSRV(ShaderResourceView* const srv)
+{
+	srv->unbindFromSRV(getContext(), &states);
+}
+
 void GraphicsContext::GenNoise(UnorderedAccessView* const uav, const UINT& textureWidth, const UINT& textureHeight)
 {
 	BindShader(Shader::randNoiseCS);
@@ -805,9 +810,4 @@ void GraphicsContext::ResetStates()
 ID3D11DeviceContext3* GraphicsContext::getContext()
 {
 	return context.Get();
-}
-
-GraphicsStates* GraphicsContext::getStates()
-{
-	return &states;
 }

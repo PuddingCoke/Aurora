@@ -17,6 +17,14 @@ public:
 
 	}
 
+	Material(const Material& m) :
+		diffuse(new ResourceTexture(*m.diffuse)),
+		specular(new ResourceTexture(*m.specular)),
+		normal(new ResourceTexture(*m.normal))
+	{
+
+	}
+
 	~Material()
 	{
 		delete diffuse;
@@ -24,9 +32,9 @@ public:
 		delete normal;
 	}
 
-	void use() const
+	void use(GraphicsContext* const ctx) const
 	{
-		ImCtx::get()->PSSetSRV({ diffuse,specular,normal }, 0);
+		ctx->PSSetSRV({ diffuse,specular,normal }, 0);
 	}
 
 	ResourceTexture* const diffuse;

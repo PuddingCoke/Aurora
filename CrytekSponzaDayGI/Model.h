@@ -28,18 +28,24 @@ public:
 	{
 	}
 
+	Model(const Model& m) :
+		materialIndex(m.materialIndex), vertexCount(m.vertexCount), startVertexLocation(m.startVertexLocation)
+	{
+
+	}
+
 	~Model()
 	{
 	}
 
-	void draw()
+	void draw(GraphicsContext* const ctx)
 	{
-		ImCtx::get()->Draw(vertexCount, startVertexLocation);
+		ctx->Draw(vertexCount, startVertexLocation);
 	}
 
-	void drawInstance()
+	void drawInstance(GraphicsContext* const ctx)
 	{
-		ImCtx::get()->DrawInstanced(vertexCount, 6, startVertexLocation, 0);
+		ctx->DrawInstanced(vertexCount, 6, startVertexLocation, 0);
 	}
 
 };
