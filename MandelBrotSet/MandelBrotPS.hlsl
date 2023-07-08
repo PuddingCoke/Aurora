@@ -2077,20 +2077,21 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     double2 z = double2(0.0, 0.0);
     
     [loop]
-    for (uint i = 0; i < MAXITERATION && (z.x * z.x + z.y * z.y) < double(64.0); i++)
+    for (uint i = 0; i < MAXITERATION && (z.x * z.x + z.y * z.y) < double(1024.0); i++)
     {
         z = ComplexSquare(z) + curPos;
     }
     
     float nsmoothed = i + 1 - log(log(length(z))) / log(2);
     
-    nsmoothed /= float(MAXITERATION);
+    nsmoothed /= float(MAXITERATION) - log(log(length(1024.0))) / log(2);
     
     nsmoothed = saturate(nsmoothed);
     
     float index = nsmoothed * 2046;
   
     int ci = int(floor(index));
+    
     int cj = int(ceil(index));
     
     float f = index - ci;
