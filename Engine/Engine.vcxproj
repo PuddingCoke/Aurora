@@ -230,6 +230,7 @@
     <ClCompile Include="External\ImGUI\imgui_impl_win32.cpp" />
     <ClCompile Include="External\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="External\ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="Src\Aurora\Core\DX\Resource\Resource.cpp" />
     <ClCompile Include="Src\Aurora\Core\DX\View\Special\RenderOnlyRTV.cpp" />
     <ClCompile Include="Src\Aurora\Core\GraphicsContext.cpp" />
     <ClCompile Include="Src\Aurora\Core\GraphicsDevice.cpp" />

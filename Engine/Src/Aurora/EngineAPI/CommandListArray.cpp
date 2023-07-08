@@ -9,11 +9,9 @@ void CommandListArray::pushCommandList(ID3D11CommandList* const commandList)
 
 void CommandListArray::executeCommandLists()
 {
-	ID3D11CommandList* list;
-
 	while (!instance->commandListArray.empty())
 	{
-		list = instance->commandListArray.front();
+		ID3D11CommandList* list = instance->commandListArray.front();
 		instance->commandListArray.pop();
 		ImCtx::get()->ExecuteCommandList(list);
 		list->Release();

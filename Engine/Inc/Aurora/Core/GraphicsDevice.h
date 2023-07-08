@@ -80,6 +80,7 @@ private:
 };
 
 #define CHECKERROR(x) \
+{\
 HRESULT hr = x;\
 if(FAILED(hr))\
 {\
@@ -89,6 +90,7 @@ std::cout<<"Failed with 0x"<<std::hex<<hr<<std::dec<<"\n";\
 _com_error err(hr);\
 std::wcout<<"Failed reason "<<err.ErrorMessage()<<"\n";\
 __debugbreak();\
+}\
 }\
 
 #endif // !_GRAPHICSDEVICE_H_

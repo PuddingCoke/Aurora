@@ -9,6 +9,8 @@ class Resource
 {
 public:
 
+	virtual ~Resource();
+
 	virtual ID3D11Resource* getResource() const = 0;
 
 };

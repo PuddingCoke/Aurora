@@ -90,13 +90,14 @@ public:
 			lightProbeUpdatePass->shadowTexture = new ResourceDepthTexture(*shadowTexture);
 			lightProbeUpdatePass->irradianceBounceCoeff = new ComputeTexture(*irradianceBounceCoeff);
 			lightProbeUpdatePass->depthOctahedralMap = new ComputeTexture(*depthOctahedralMap);
-			lightProbeUpdatePass->irradianceVolumeBuffer = new ConstantBuffer(*irradianceVolumeBuffer);
-			lightProbeUpdatePass->lightBuffer = new ConstantBuffer(*lightBuffer);
-			lightProbeUpdatePass->shadowProjBuffer = new ConstantBuffer(*shadowProjBuffer);
+			lightProbeUpdatePass->irradianceVolumeBuffer = irradianceVolumeBuffer;
+			lightProbeUpdatePass->lightBuffer = lightBuffer;
+			lightProbeUpdatePass->shadowProjBuffer = shadowProjBuffer;
 		}
 
 		{
 			sceneRenderPass->modelInputLayout = modelInputLayout;
+			sceneRenderPass->scene = new Scene(*scene);
 			sceneRenderPass->shadowTexture = new ResourceDepthTexture(*shadowTexture);
 			sceneRenderPass->depthTexture = new ResourceDepthTexture(*depthTexture);
 			sceneRenderPass->gPosition = new RenderTexture(*gPosition);
@@ -104,10 +105,9 @@ public:
 			sceneRenderPass->originTexture = new RenderTexture(*originTexture);
 			sceneRenderPass->irradianceBounceCoeff = new ComputeTexture(*irradianceBounceCoeff);
 			sceneRenderPass->depthOctahedralMap = new ComputeTexture(*depthOctahedralMap);
-			sceneRenderPass->irradianceVolumeBuffer = new ConstantBuffer(*irradianceVolumeBuffer);
-			sceneRenderPass->lightBuffer = new ConstantBuffer(*lightBuffer);
-			sceneRenderPass->shadowProjBuffer = new ConstantBuffer(*shadowProjBuffer);
-			sceneRenderPass->scene = new Scene(*scene);
+			sceneRenderPass->irradianceVolumeBuffer = irradianceVolumeBuffer;
+			sceneRenderPass->lightBuffer = lightBuffer;
+			sceneRenderPass->shadowProjBuffer = shadowProjBuffer;
 		}
 
 		{
@@ -118,13 +118,9 @@ public:
 		}
 
 		updateShadow();
-
 		auto pass0 = lightProbeUpdatePass->GetPassResult();
-
 		auto cmd0 = pass0.get();
-
 		ImCtx::get()->ExecuteCommandList(cmd0);
-
 		cmd0->Release();
 	}
 
@@ -169,12 +165,20 @@ public:
 			sunAngle += dt;
 			sunAngle = Math::clamp(sunAngle, Math::half_pi - 0.365f, Math::half_pi + 0.365f);
 			updateShadow();
+			auto pass0 = lightProbeUpdatePass->GetPassResult();
+			auto cmd0 = pass0.get();
+			ImCtx::get()->ExecuteCommandList(cmd0);
+			cmd0->Release();
 		}
 		else if (Keyboard::getKeyDown(Keyboard::E))
 		{
 			sunAngle -= dt;
 			sunAngle = Math::clamp(sunAngle, Math::half_pi - 0.365f, Math::half_pi + 0.365f);
 			updateShadow();
+			auto pass0 = lightProbeUpdatePass->GetPassResult();
+			auto cmd0 = pass0.get();
+			ImCtx::get()->ExecuteCommandList(cmd0);
+			cmd0->Release();
 		}
 	}
 

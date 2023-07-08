@@ -147,9 +147,6 @@ public:
 		delete irradianceCoeff;
 		delete irradianceBounceCoeff;
 		delete depthOctahedralMap;
-		delete irradianceVolumeBuffer;
-		delete lightBuffer;
-		delete shadowProjBuffer;
 		delete irradianceSamples;
 		delete cubeRenderVS;
 		delete cubeRenderBouncePS;

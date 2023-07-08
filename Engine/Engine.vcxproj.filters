@@ -467,6 +467,9 @@
     <ClCompile Include="Src\Aurora\Resource\ComputeStructuredBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Aurora\Core\DX\Resource\Resource.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Bloom\BloomFilterPS.hlsl" />

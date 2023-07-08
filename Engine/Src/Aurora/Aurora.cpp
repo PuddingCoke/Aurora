@@ -422,27 +422,27 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 		UINT deviceFlag = D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
 #endif // _DEBUG
 
-		D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, ARRAYSIZE(featureLevels),
-			D3D11_SDK_VERSION, device11.ReleaseAndGetAddressOf(), &maxSupportedFeatureLevel, context11.ReleaseAndGetAddressOf());
+		CHECKERROR(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, deviceFlag, featureLevels, ARRAYSIZE(featureLevels),
+			D3D11_SDK_VERSION, device11.ReleaseAndGetAddressOf(), &maxSupportedFeatureLevel, context11.ReleaseAndGetAddressOf()));
 
 		new GraphicsDevice();
-		device11.As(&GraphicsDevice::get()->device);
+		CHECKERROR(device11.As(&GraphicsDevice::get()->device));
 
 		new ImCtx();
-		context11.As(&ImCtx::get()->context);
+		CHECKERROR(context11.As(&ImCtx::get()->context));
 
 		ComPtr<IDXGIDevice> dxgiDevice11;
-		device11.As(&dxgiDevice11);
+		CHECKERROR(device11.As(&dxgiDevice11));
 
 		ComPtr<IDXGIAdapter> dxgiAdapter11;
-		dxgiDevice11->GetAdapter(dxgiAdapter11.ReleaseAndGetAddressOf());
+		CHECKERROR(dxgiDevice11->GetAdapter(dxgiAdapter11.ReleaseAndGetAddressOf()));
 
 		ComPtr<IDXGIFactory1> dxgiFactory11;
-		dxgiAdapter11->GetParent(IID_IDXGIFactory1, (void**)dxgiFactory11.ReleaseAndGetAddressOf());
+		CHECKERROR(dxgiAdapter11->GetParent(IID_IDXGIFactory1, (void**)dxgiFactory11.ReleaseAndGetAddressOf()));
 
-		dxgiDevice11.As(&dxgiDevice);
-		dxgiAdapter11.As(&dxgiAdapter);
-		dxgiFactory11.As(&dxgiFactory);
+		CHECKERROR(dxgiDevice11.As(&dxgiDevice));
+		CHECKERROR(dxgiAdapter11.As(&dxgiAdapter));
+		CHECKERROR(dxgiFactory11.As(&dxgiFactory));
 	}
 
 	{

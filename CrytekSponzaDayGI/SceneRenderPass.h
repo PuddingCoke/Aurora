@@ -54,9 +54,6 @@ public:
 		delete deferredPShader;
 		delete deferredFinal;
 		delete skyboxPShader;
-		delete irradianceVolumeBuffer;
-		delete lightBuffer;
-		delete shadowProjBuffer;
 		delete scene;
 	}
 
@@ -95,6 +92,8 @@ public:
 	ConstantBuffer* shadowProjBuffer;
 
 	Scene* scene;
+
+	HBAOEffect hbaoEffect;
 
 private:
 
@@ -150,13 +149,6 @@ private:
 		context->BindShader(skyboxPShader);
 
 		context->DrawCube();
-
-		context->OMSetDefRTV(nullptr);
-
-		context->OMSetBlendState(nullptr);
-
-		context->OMSetDefRTV(nullptr);
 	}
 
-	HBAOEffect hbaoEffect;
 };

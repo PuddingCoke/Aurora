@@ -55,7 +55,7 @@ public:
 
 	void imGUICall() override
 	{
-		ImGui::SliderFloat("POWER", &param.POWER, 3.f, 8.f);
+		ImGui::SliderFloat("POWER", &param.POWER, 1.f, 8.f);
 	}
 
 	void update(const float& dt) override

@@ -13,27 +13,28 @@ public:
 
 	ConstantBuffer* simulationBuffer;
 
-	float targetSize;
+	double targetSize;
 
 	struct SimulationParam
 	{
-		DirectX::XMFLOAT2 pos;
-		float size;
-		float aspectRatio;
+		double x;
+		double y;
+		double size;
+		double aspectRatio;
 	} param;
 
 	MyGame() :
 		mandelBrotPS(new Shader("MandelBrotPS.hlsl", ShaderType::Pixel)),
-		param{ {0.f,0.f},10.f,Graphics::getAspectRatio() },
-		targetSize(10.f)
+		param{ 0.0,0.0,7.0,(double)Graphics::getAspectRatio() },
+		targetSize(6.0)
 	{
 
 		Mouse::addMoveEvent([this]()
 			{
 				if (Mouse::getLeftDown())
 				{
-					param.pos.x -= Mouse::getDX() * param.size * 0.005f;
-					param.pos.y += Mouse::getDY() * param.size * 0.005f;
+					param.x -= (double)Mouse::getDX() * param.size * 0.005;
+					param.y += (double)Mouse::getDY() * param.size * 0.005;
 				}
 			});
 
@@ -41,12 +42,21 @@ public:
 			{
 				if (Mouse::getWheelDelta() < 0.f)
 				{
-					targetSize *= 1.2f;
+					targetSize *= 1.2;
 				}
 				else
 				{
-					targetSize *= 0.8f;
+					targetSize *= 0.8;
 				}
+
+				/*if (targetSize < 2e-6)
+				{
+					targetSize = 2e-6;
+				}
+				else if (targetSize > 6.0)
+				{
+					targetSize = 6.0;
+				}*/
 			});
 
 		simulationBuffer = new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_DYNAMIC, &param);
@@ -68,7 +78,7 @@ public:
 
 	void update(const float& dt) override
 	{
-		param.size = Math::lerp(param.size, targetSize, 10.f * dt);
+		param.size = param.size * (1.0 - 10.0 * dt) + targetSize * 10.0 * dt;
 
 		memcpy(ImCtx::get()->Map(simulationBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &param, sizeof(SimulationParam));
 		ImCtx::get()->Unmap(simulationBuffer, 0);
