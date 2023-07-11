@@ -23,8 +23,6 @@ public:
 
 	TextureCube* textureCube;
 
-	ResourceTexture* perlinTexture;
-
 	ResourceTexture* gaussTexture;
 
 	ComputeTexture* tildeh0k;
@@ -124,7 +122,6 @@ public:
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, false)),
 		skyboxPS(new Shader("SkyboxPS.hlsl", ShaderType::Pixel)),
 		textureCube(new TextureCube("ColdSunsetEquirect.png", 2048)),
-		perlinTexture(new ResourceTexture("PerlinNoise.dds")),
 		oceanParamBuffer(new ConstantBuffer(sizeof(Param), D3D11_USAGE_DYNAMIC)),
 		gaussTexture(new ResourceTexture(1024, 1024, Texture2D::TextureType::Gauss)),
 		tildeh0k(new ComputeTexture(1024, 1024, FMT::RG32F, FMT::RG32F, FMT::RG32F)),
@@ -202,7 +199,6 @@ public:
 		delete originTexture;
 		delete depthTexture;
 		delete textureCube;
-		delete perlinTexture;
 
 		delete oceanParamBuffer;
 		delete patchVertexBuffer;
@@ -291,8 +287,6 @@ public:
 		context->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
 		context->OMSetRTV({ originTexture->getMip(0) }, depthTexture);
 
-		context->PSSetSRV({ textureCube,perlinTexture }, 1);
-
 		context->IASetInputLayout(inputLayout.Get());
 		context->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
 		context->IASetVertexBuffer({ patchVertexBuffer }, { sizeof(Vertex) }, { 0 });
@@ -303,7 +297,7 @@ public:
 		context->BindShader(oceanPShader);
 
 		context->DSSetSRV({ Dxyz }, 0);
-		context->PSSetSRV({ normalJacobian }, 0);
+		context->PSSetSRV({ normalJacobian,textureCube }, 0);
 
 		context->PSSetSampler({ States::linearWrapSampler }, 0);
 		context->DSSetSampler({ States::linearWrapSampler }, 0);
