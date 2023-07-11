@@ -20,7 +20,7 @@ public:
 	PostProcessPass* postProcessPass;
 
 	MyGame() :
-		camera({ 1024,100,3584 }, { 0,-0.2f,-1.f }, { 0,1,0 }, 100),
+		camera({ 512,100,512 }, { 0,-0.2f,-1.f }, { 0,1,0 }, 100),
 		originTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F)),
 		oceanRenderPass(new OceanRenderPass(originTexture)),
 		postProcessPass(new PostProcessPass(originTexture))

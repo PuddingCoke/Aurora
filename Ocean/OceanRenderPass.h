@@ -174,9 +174,9 @@ public:
 				return Vertex{ {xPos,0.f,zPos},{u,v} };
 			};
 
-			for (int z = 0; z < 256; z++)
+			for (int z = 0; z < 128; z++)
 			{
-				for (int x = 0; x < 256; x++)
+				for (int x = 0; x < 128; x++)
 				{
 					vertices.push_back(getVertexAt(x, z));
 					vertices.push_back(getVertexAt(x, z + 1));
@@ -304,7 +304,7 @@ public:
 
 		context->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 
-		context->Draw(4 * 256 * 256, 0);
+		context->Draw(4 * 128 * 128, 0);
 
 		context->HSUnbindShader();
 		context->DSUnbindShader();
