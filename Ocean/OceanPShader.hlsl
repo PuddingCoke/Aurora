@@ -26,15 +26,10 @@ Texture2D prelinTexture : register(t2);
 
 SamplerState linearSampler : register(s0);
 
-#define ONE_OVER_4PI 0.0795774715459476
-
 static const float3 L = normalize(float3(1.0, 1.0, 1.0));
 static const float3 oceanColor = float3(0.0000, 0.3307, 0.3613);
-static const float3 sunColor = float3(1.0, 1.0, 1.0);
 static const float3 perlinFrequency = float3(1.12, 0.59, 0.23);
 static const float3 perlinGradient = float3(0.014, 0.016, 0.022);
-
-#define PI 3.14159265358979323846264
 
 float4 main(PixelInput input) : SV_TARGET
 {
@@ -63,33 +58,21 @@ float4 main(PixelInput input) : SV_TARGET
     
     float3 N = normalize(NJ.xyz);
     float3 V = normalize(viewPos.xyz - input.position.xyz);
-    float3 R = reflect(-V, N);
+    float3 R = normalize(reflect(-V, N));
+    float3 H = normalize(V + R);
     
     float F0 = 0.020018673;
-    float F = F0 + (1.0 - F0) * pow(1.0 - dot(N, R), 5.0);
+    float F = F0 + (1.0 - F0) * pow(saturate(1.0 - dot(H, V)), 5.0);
     
-    float3 refl = skyTexture.Sample(linearSampler, R).rgb;
+    float3 reflectColor = skyTexture.Sample(linearSampler, R).rgb;
     
     float turbulence = max(1.6 - NJ.w, 0.0);
     
-    float color_mod = lerp(1.0, 1.0 + 3.0 * smoothstep(1.2, 1.8, turbulence), factor);
+    //add more highlight when surface is steep.
+    //and also blend this with factor.when distance is far highlight should not be visible. 
+    float highlightMul = lerp(1.0, 1.0 + 3.0 * smoothstep(1.2, 1.8, turbulence), factor);
     
-    float rho = 0.3;
-    float ax = 0.2;
-    float ay = 0.1;
-
-    float3 h = normalize(L + V);
-    float3 x = cross(L, N);
-    float3 y = cross(x, N);
-
-    float mult = (ONE_OVER_4PI * rho / (ax * ay * sqrt(max(1e-5, dot(L, N) * dot(V, N)))));
-    float hdotx = dot(h, x) / ax;
-    float hdoty = dot(h, y) / ay;
-    float hdotn = dot(h, N);
-
-    float spec = mult * exp(-((hdotx * hdotx) + (hdoty * hdoty)) / (hdotn * hdotn));
-    
-    float3 color = lerp(oceanColor, refl * color_mod, F) + sunColor * spec;
+    float3 color = lerp(oceanColor, reflectColor * highlightMul, F);
     
     return float4(color, 1.0);
 }
