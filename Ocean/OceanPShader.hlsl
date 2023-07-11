@@ -25,7 +25,6 @@ SamplerState linearSampler : register(s0);
 
 static const float3 L = normalize(float3(1.0, 1.0, 1.0));
 static const float3 oceanColor = float3(0.0000, 0.3307, 0.3613);
-static const float3 fogColor = float3(0.55, 0.58, 0.64);
 
 float4 main(PixelInput input) : SV_TARGET
 {
@@ -53,7 +52,11 @@ float4 main(PixelInput input) : SV_TARGET
     
     float fogFactor = distance(viewPos.xz, input.position.xz);
     
-    fogFactor = smoothstep(0.0, 2048.0, fogFactor);
+    float2 fogTexcoord = normalize(input.position.xz - viewPos.xz);
+    
+    float3 fogColor = skyTexture.Sample(linearSampler, float3(fogTexcoord.x, 0.0, fogTexcoord.y)).rgb;
+    
+    fogFactor = smoothstep(0.0, 1536.0, fogFactor);
     
     return float4(color * (1.0 - fogFactor) + fogColor * fogFactor, 1.0);
 }
