@@ -40,7 +40,7 @@ float4 main(PixelInput input) : SV_TARGET
     
     float F0 = 0.020018673;
     
-    float F = F0 + (1.0 - F0) * pow(saturate(1.0 - dot(H, V)), 5.0);
+    float F = F0 + (1.0 - F0) * pow(saturate(1.0 - dot(N, V)), 5.0);
     
     float3 reflectColor = skyTexture.Sample(linearSampler, R).rgb;
     
@@ -56,7 +56,7 @@ float4 main(PixelInput input) : SV_TARGET
     
     float3 fogColor = skyTexture.Sample(linearSampler, float3(fogTexcoord.x, 0.0, fogTexcoord.y)).rgb;
     
-    fogFactor = smoothstep(0.0, 1536.0, fogFactor);
+    fogFactor = smoothstep(0.0, 1024.0, fogFactor);
     
     return float4(color * (1.0 - fogFactor) + fogColor * fogFactor, 1.0);
 }

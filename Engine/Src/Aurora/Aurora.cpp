@@ -54,6 +54,8 @@ void Aurora::iniGame(Game* const game)
 {
 	this->game = game;
 
+	ImCtx::get()->ClearState();
+
 	switch (usage)
 	{
 	default:

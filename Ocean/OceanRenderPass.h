@@ -189,8 +189,6 @@ public:
 		}
 
 		calculatePhillipTexture();
-
-		ImCtx::get()->ResetStates();
 	}
 
 	~OceanRenderPass()

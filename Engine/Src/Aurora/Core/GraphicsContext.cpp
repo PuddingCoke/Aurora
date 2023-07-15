@@ -689,6 +689,8 @@ void GraphicsContext::CSUnbindShader()
 void GraphicsContext::ClearState()
 {
 	getContext()->ClearState();
+
+	ResetStates();
 }
 
 void GraphicsContext::UnbindRTV()

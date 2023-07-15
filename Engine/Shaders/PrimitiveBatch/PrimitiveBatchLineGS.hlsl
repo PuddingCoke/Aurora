@@ -23,7 +23,7 @@ cbuffer LineBuffer : register(b2)
 	float v3;
 };
 
-[maxvertexcount(6)]
+[maxvertexcount(4)]
 void main(
 	line GeometryInput input[2],
 	inout TriangleStream<GeometryOutput> outputs
@@ -36,16 +36,12 @@ void main(
     GeometryOutput rect;
     
     rect.color = input[0].color;
-    rect.pos = mul(input[0].pos + float4(v, 0.0, 0.0), proj);
-    outputs.Append(rect);
-    rect.pos = mul(input[1].pos + float4(v, 0.0, 0.0), proj);
-    outputs.Append(rect);
     rect.pos = mul(input[0].pos - float4(v, 0.0, 0.0), proj);
     outputs.Append(rect);
-    rect.pos = mul(input[1].pos + float4(v, 0.0, 0.0), proj);
+    rect.pos = mul(input[0].pos + float4(v, 0.0, 0.0), proj);
     outputs.Append(rect);
     rect.pos = mul(input[1].pos - float4(v, 0.0, 0.0), proj);
     outputs.Append(rect);
-    rect.pos = mul(input[0].pos - float4(v, 0.0, 0.0), proj);
+    rect.pos = mul(input[1].pos + float4(v, 0.0, 0.0), proj);
     outputs.Append(rect);
 }

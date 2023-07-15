@@ -29,7 +29,7 @@ cbuffer ViewMatrix : register(b1)
     matrix viewProj;
 }
 
-[maxvertexcount(6)]
+[maxvertexcount(4)]
 void main(
 	point GSInput input[1],
 	inout TriangleStream<GSOutput> outputs
@@ -49,19 +49,11 @@ void main(
     output.texCoord = float2(input[0].uvLeft, input[0].uvTop);
     outputs.Append(output);
     
-    output.pos = mul(input[0].position + float4(cameraRight * 0.5 * input[0].size.x + cameraUp * 0.5 * input[0].size.y, 0.0), viewProj);
-    output.texCoord = float2(input[0].uvRight, input[0].uvTop);
-    outputs.Append(output);
-    
-    output.pos = mul(input[0].position + float4(cameraRight * 0.5 * input[0].size.x + cameraUp * 0.5 * input[0].size.y, 0.0), viewProj);
-    output.texCoord = float2(input[0].uvRight, input[0].uvTop);
-    outputs.Append(output);
-    
     output.pos = mul(input[0].position + float4(cameraRight * 0.5 * input[0].size.x + cameraUp * -0.5 * input[0].size.y, 0.0), viewProj);
     output.texCoord = float2(input[0].uvRight, input[0].uvBottom);
     outputs.Append(output);
     
-    output.pos = mul(input[0].position + float4(cameraRight * -0.5 * input[0].size.x + cameraUp * -0.5 * input[0].size.y, 0.0), viewProj);
-    output.texCoord = float2(input[0].uvLeft, input[0].uvBottom);
+    output.pos = mul(input[0].position + float4(cameraRight * 0.5 * input[0].size.x + cameraUp * 0.5 * input[0].size.y, 0.0), viewProj);
+    output.texCoord = float2(input[0].uvRight, input[0].uvTop);
     outputs.Append(output);
 }
