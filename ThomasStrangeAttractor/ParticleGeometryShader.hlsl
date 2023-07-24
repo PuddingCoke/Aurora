@@ -67,7 +67,7 @@ void main(
         
         float factor = 1.0 - float(i + 1) / 6.0;
         
-        float width = 0.005 * factor;
+        float width = 0.01 * factor;
         
         o.color = float4(input[0].color.rgb * factor, 1.0);
         

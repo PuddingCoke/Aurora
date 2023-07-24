@@ -2,8 +2,7 @@
 
 cbuffer SimulationParam : register(b1)
 {
-    double x;
-    double y;
+    double2 pos;
     double size;
     double aspectRatio;
 }
@@ -2066,37 +2065,46 @@ static const float3 colorPalette[2048] =
     { 0.00194949, 0.00912681, 0 },
 };
 
+#define PI 3.1415926535
+
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    float2 planePos = texCoord - 0.5;
+    double2 planePos = double2(texCoord - 0.5);
     
     planePos.x *= aspectRatio;
     
-    const double2 curPos = double2(x, y) + double2(planePos * size);
+    const double2 curPos = pos + planePos * size;
     
     double2 z = double2(0.0, 0.0);
     
+    double2 dz = double2(1.0, 0.0);
+    
     [loop]
-    for (uint i = 0; i < MAXITERATION && (z.x * z.x + z.y * z.y) < double(1024.0); i++)
+    for (uint i = 0; i < MAXITERATION; i++)
     {
+        dz = 2.0 * double2(z.x * dz.x - z.y * dz.y, z.x * dz.y + z.y * dz.x) + double2(1.0, 0.0);
+        
         z = ComplexSquare(z) + curPos;
+        
+        if ((z.x * z.x + z.y * z.y) > double(64.0))
+        {
+            break;
+        }
     }
     
-    float nsmoothed = i + 1 - log(log(length(z))) / log(2);
+    float d = sqrt(dot(z, z) / dot(dz, dz)) * log(dot(z, z));
     
-    nsmoothed /= float(MAXITERATION) - log(log(length(1024.0))) / log(2);
+    d = sqrt(saturate(100.0 / size * d));
     
-    nsmoothed = saturate(nsmoothed);
+    float index = clamp(d * 2048.0 - 1, 0.0, 2047.0);
     
-    float index = nsmoothed * 2046;
-  
-    int ci = int(floor(index));
+    uint prevIndex = floor(index);
     
-    int cj = int(ceil(index));
+    uint nextIndex = clamp(ceil(index), 0.0, 2047.0);
     
-    float f = index - ci;
-  
-    float3 color = lerp(colorPalette[ci], colorPalette[cj], f);
+    float factor = frac(index);
+    
+    float3 color = lerp(colorPalette[prevIndex], colorPalette[nextIndex], factor);
     
     return float4(color, 1.0);
 }

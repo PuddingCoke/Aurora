@@ -25,8 +25,8 @@ public:
 
 	MyGame() :
 		mandelBrotPS(new Shader("MandelBrotPS.hlsl", ShaderType::Pixel)),
-		param{ 0.0,0.0,7.0,(double)Graphics::getAspectRatio() },
-		targetSize(6.0)
+		param{ 0.0,0.0,3.0,(double)Graphics::getAspectRatio() },
+		targetSize(3.0)
 	{
 
 		Mouse::addMoveEvent([this]()
@@ -49,14 +49,14 @@ public:
 					targetSize *= 0.8;
 				}
 
-				/*if (targetSize < 2e-6)
+				if (targetSize < 1e-12)
 				{
-					targetSize = 2e-6;
+					targetSize = 1e-12;
 				}
-				else if (targetSize > 6.0)
+				else if (targetSize > 3.0)
 				{
-					targetSize = 6.0;
-				}*/
+					targetSize = 3.0;
+				}
 			});
 
 		simulationBuffer = new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_DYNAMIC, &param);

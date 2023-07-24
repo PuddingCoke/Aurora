@@ -13,6 +13,8 @@ class OceanRenderPass :public RenderPass
 {
 public:
 
+	static constexpr UINT tildeNum = 6;
+
 	ComPtr<ID3D11InputLayout> inputLayout;
 
 	Shader* skyboxPS;
@@ -83,7 +85,7 @@ public:
 	{
 		unsigned int mapResolution = 1024;
 		float mapLength = 512.0;
-		DirectX::XMFLOAT2 wind = { 15.f,0.f };
+		DirectX::XMFLOAT2 wind = { 20.f,0.f };
 		float amplitude = 0.000003f;
 		float gravity = 9.81f;
 		DirectX::XMFLOAT2 v0 = { 0.f,0.f };
@@ -174,9 +176,9 @@ public:
 				return Vertex{ {xPos,0.f,zPos},{u,v} };
 			};
 
-			for (int z = 0; z < 128; z++)
+			for (int z = 0; z < tildeNum * 32; z++)
 			{
-				for (int x = 0; x < 128; x++)
+				for (int x = 0; x < tildeNum * 32; x++)
 				{
 					vertices.push_back(getVertexAt(x, z));
 					vertices.push_back(getVertexAt(x, z + 1));
@@ -297,12 +299,12 @@ public:
 		context->DSSetSRV({ Dxyz }, 0);
 		context->PSSetSRV({ normalJacobian,textureCube }, 0);
 
-		context->PSSetSampler({ States::linearWrapSampler }, 0);
-		context->DSSetSampler({ States::linearWrapSampler }, 0);
+		context->PSSetSampler({ States::anisotropicWrapSampler }, 0);
+		context->DSSetSampler({ States::anisotropicWrapSampler }, 0);
 
 		context->PSSetConstantBuffer({ Camera::getViewBuffer() }, 1);
 
-		context->Draw(4 * 128 * 128, 0);
+		context->Draw(4 * tildeNum * 32 * tildeNum * 32, 0);
 
 		context->HSUnbindShader();
 		context->DSUnbindShader();

@@ -22,12 +22,12 @@ static const float sindTheta = sin(-3.1415926535 / float(EDGENUM));
 
 float2 rotTheta(float2 v)
 {
-    return float2(v.x * cosdTheta - v.y * sindTheta, v.x * sindTheta + v.y * cosdTheta);
+    return float2(dot(v, float2(cosdTheta, -sindTheta)), dot(v, float2(sindTheta, cosdTheta)));
 }
 
 float2 rotNTheta(float2 v)
 {
-    return float2(v.x * cosdTheta + v.y * sindTheta, -v.x * sindTheta + v.y * cosdTheta);
+    return float2(dot(v, float2(cosdTheta, sindTheta)), dot(v, float2(-sindTheta, cosdTheta)));
 }
 
 [maxvertexcount(2 * EDGENUM + 2)]

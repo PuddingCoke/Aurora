@@ -23,7 +23,7 @@ TextureCube skyTexture : register(t1);
 
 SamplerState linearSampler : register(s0);
 
-static const float3 L = normalize(float3(1.0, 1.0, 1.0));
+static const float3 L = normalize(float3(0.0, 1.0, -1.0));
 static const float3 oceanColor = float3(0.0000, 0.3307, 0.3613);
 
 float4 main(PixelInput input) : SV_TARGET
@@ -34,21 +34,30 @@ float4 main(PixelInput input) : SV_TARGET
     
     float3 V = normalize(viewPos.xyz - input.position.xyz);
     
-    float3 R = normalize(reflect(-V, N));
-    
-    float3 H = normalize(V + R);
-    
     float F0 = 0.020018673;
     
     float F = F0 + (1.0 - F0) * pow(saturate(1.0 - dot(N, V)), 5.0);
+    
+    float3 R = normalize(reflect(-V, N));
+    
+    if (R.y < 0.0)
+    {
+        R = -R;
+    }
+    
+    float3 H = normalize(V + L);
     
     float3 reflectColor = skyTexture.Sample(linearSampler, R).rgb;
     
     float turbulence = max(1.6 - NJ.w, 0.0);
     
-    float highlightMul = 1.0 + 3.0 * smoothstep(1.2, 1.8, turbulence);
+    float highlightMul = 1.0 + 2.0 * smoothstep(1.2, 1.8, turbulence);
     
-    float3 color = lerp(oceanColor, reflectColor * highlightMul, F);
+    float spec = pow(max(dot(N, H), 0.0), 2048.0);
+    
+    float3 color = oceanColor + spec * float3(1.0, 1.0, 1.0);
+    
+    color = lerp(color, reflectColor * highlightMul, F);
     
     float fogFactor = distance(viewPos.xz, input.position.xz);
     
@@ -56,7 +65,7 @@ float4 main(PixelInput input) : SV_TARGET
     
     float3 fogColor = skyTexture.Sample(linearSampler, float3(fogTexcoord.x, 0.0, fogTexcoord.y)).rgb;
     
-    fogFactor = smoothstep(0.0, 1024.0, fogFactor);
+    fogFactor = pow(smoothstep(0.0, 1536.0, fogFactor), 0.5);
     
-    return float4(color * (1.0 - fogFactor) + fogColor * fogFactor, 1.0);
+    return float4(lerp(color, fogColor, fogFactor), 1.0);
 }

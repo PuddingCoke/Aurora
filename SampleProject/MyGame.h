@@ -56,11 +56,11 @@ public:
 		ImCtx::get()->HSUnbindShader();
 		ImCtx::get()->GSUnbindShader();
 
-		//ImCtx::get()->DrawQuad();
+		ImCtx::get()->DrawQuad();
 
 		batch->begin();
 
-		batch->drawLine(500, 500, 700, 500, 1.f, 1.f, 1.f);
+		batch->drawRoundCapLine(500, 500, 700, 500, 100.f, 1.f, 1.f, 1.f);
 
 		batch->end();
 
