@@ -38,18 +38,18 @@ float3 HSVtoRGB(float h, float s, float v)
 
 float3 getColor1(float d)
 {
-    float hue = d * 360.0 + 200.0; // map d to hue     
-    float saturation = 1.0 - d; // set saturation to 1     
-    float value = 1.0 - d; // set value to 1
+    float hue = pow(d, 16.0) * 360.0 + 200.0; // map d to hue     
+    float saturation = 1.0; // set saturation to 1     
+    float value = 1.0; // set value to 1
     
     return HSVtoRGB(hue, saturation, value); // convert HSV to RGB 
 }
 
 float3 getColor2(float d)
 {
-    float hue = d * 360.0+100.0; // map d to hue     
-    float saturation = 1.0 - d; // set saturation to 1     
-    float value = 1.0 - d; // set value to 1
+    float hue = d * 360.0 + 200.0; // map d to hue     
+    float saturation = 1.0; // set saturation to 1     
+    float value = 1.0; // set value to 1
     
     return HSVtoRGB(hue, saturation, value); // convert HSV to RGB 
 }
@@ -85,9 +85,9 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float d = sqrt(dot(z, z) / dot(dz, dz)) * log(dot(z, z));
     
-    d = sqrt(saturate(8.0 / size * d));
+    d = sqrt(saturate(10.0 / size * d));
     
     dist = pow(saturate(dist * 0.4), 0.5);
     
-    return float4(lerp(getColor1(d), getColor2(dist), 1.0 - dist), 1.0);
+    return float4(sqrt(getColor1(d) * (1.0 - d) * (1.0 - d) * (1.0 - d) + getColor2(dist) * (1.0 - dist)), 1.0);
 }
