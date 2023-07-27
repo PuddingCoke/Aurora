@@ -34,11 +34,13 @@ public:
 
 	Texture2D(const std::string& filePath);
 
+	Texture2D(ComPtr<ID3D11Texture2D> id3d11Texture2D);
+
 	Texture2D(const UINT& width, const UINT& height, const TextureType& type);
 
 	Texture2D(const UINT& width, const UINT& height, const FMT& format, const UINT& bindFlags, const bool& enableMSAA = false);
 
-	Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const FMT& format, const UINT& bindFlags, const UINT& miscFlags);
+	Texture2D(const UINT& width, const UINT& height, const UINT& mipLevels, const UINT& arraySize, const FMT& format, const UINT& bindFlags, const UINT& miscFlags, const D3D11_USAGE& usage = D3D11_USAGE_DEFAULT, const UINT& cpuAccessFlags = 0);
 
 	const UINT& getWidth() const;
 

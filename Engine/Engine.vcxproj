@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="External\stb_image\stb_image_write.h" />
     <ClInclude Include="Inc\Aurora\Camera\OrbitCamera.h" />
     <ClInclude Include="Inc\Aurora\Core\GraphicsContext.h" />
     <ClInclude Include="Inc\Aurora\Core\DX\View\Special\RenderOnlyRTV.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="Inc\Aurora\Resource\ResourceDepthTexture.h" />
     <ClInclude Include="Inc\Aurora\Resource\ResourceTexture.h" />
     <ClInclude Include="Inc\Aurora\Resource\StructuredBuffer.h" />
+    <ClInclude Include="Inc\Aurora\Utils\ScreenGrab.h" />
     <ClInclude Include="Inc\Aurora\VideoEncoder\NvidiaEncoder.h" />
     <ClInclude Include="Inc\Aurora\Core\ParticleSystem.h" />
     <ClInclude Include="Inc\Aurora\Core\PrimitiveBatch.h" />
@@ -283,6 +285,7 @@
     <ClCompile Include="Src\Aurora\Resource\ResourceDepthTexture.cpp" />
     <ClCompile Include="Src\Aurora\Resource\ResourceTexture.cpp" />
     <ClCompile Include="External\stb_image\stb_image.cpp" />
+    <ClCompile Include="Src\Aurora\Utils\ScreenGrab.cpp" />
     <ClCompile Include="Src\Aurora\VideoEncoder\NvidiaEncoder.cpp" />
     <ClCompile Include="Src\Aurora\Core\PrimitiveBatch.cpp" />
     <ClCompile Include="Src\Aurora\Utils\Random.cpp" />

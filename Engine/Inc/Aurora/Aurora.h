@@ -33,6 +33,8 @@
 #include<Aurora/VideoEncoder/NvidiaEncoder.h>
 #include<Aurora/Wallpaper/WallpaperHelper.h>
 
+#include<Aurora/Utils/ScreenGrab.h>
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 enum class GPUManufacturer
@@ -80,6 +82,8 @@ private:
 	ComPtr<ID3D11Texture2D> backBuffer;
 
 	ComPtr<ID3D11Texture2D> msaaTexture;
+
+	ScreenGrab* screenGrab;
 
 	void runGame();
 

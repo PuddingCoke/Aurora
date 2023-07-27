@@ -274,36 +274,98 @@ bool ScatterRay(in Ray ray, in HitRecord rec, inout float3 attenuation, inout Ra
     return false;
 }
 
+float3 ShadeRay(float3 P, float3 N, int materialType, float3 D)
+{
+    if (materialType != MATERIAL_DIELECTRIC)
+    {
+        float3 diffuseSun;
+        
+        float3 diffuseSky;
+        
+        {
+            float3 L = normalize(float3(1.0, 1.0, 1.0));
+            
+            Ray tmpRay = CreateRay(P, L);
+            
+            HitRecord tmpRec;
+            
+            diffuseSun = float3(1.0, 1.0, 1.0) * max(dot(N, L), 0.0) * (1.0 - Trace(tmpRay, tmpRec));
+        }
+        
+        {
+            Ray tmpRay = CreateRay(P, D);
+            
+            HitRecord tmpRec;
+            
+            diffuseSky = float3(0.5, 0.7, 1.0) * (1.0 - Trace(tmpRay, tmpRec));
+        }
+        
+        return diffuseSun + diffuseSky;
+    }
+    else
+    {
+        return float3(0.0, 0.0, 0.0);
+    }
+}
+
 float3 Radiance(Ray ray)
 {
-    float3 color = float3(1.0, 1.0, 1.0);
+    float3 atten = float3(1.0, 1.0, 1.0);
+    
+    float3 color = float3(0.0, 0.0, 0.0);
+    
+    bool shaded = false;
     
     HitRecord rec;
     
-    [unroll]
+    [loop]
     for (uint i = 0; i < 8; i++)
     {
-        if (Trace(ray, rec))
+        bool hit = Trace(ray, rec);
+        
+        if (!hit)
         {
-            Ray scattered;
-            float3 attenuation;
-            if (ScatterRay(ray, rec, attenuation, scattered))
+            if (i == 0)
             {
-                color *= attenuation;
-                ray = scattered;
+                return GetBackgroundColor(ray.d.y * 0.5 + 0.5);
             }
             else
             {
+                if (!shaded)
+                {
+                    color += atten * GetBackgroundColor(ray.d.y * 0.5 + 0.5);
+                }
+                
                 break;
             }
         }
+        
+        if (rec.material.type != MATERIAL_DIELECTRIC)
+        {
+            shaded = true;
+        }
         else
         {
-            return color * GetBackgroundColor(ray.d.y * 0.5 + 0.5);
+            shaded = false;
         }
+        
+        Ray scattered;
+        
+        float3 attenuation;
+        
+        if (!ScatterRay(ray, rec, attenuation, scattered))
+        {
+            break;
+        }
+        
+        ray = scattered;
+        
+        atten *= attenuation;
+        
+        color += atten * ShadeRay(ray.o, rec.n, rec.material.type, ray.d);
     }
     
-    return float3(0.0, 0.0, 0.0);
+    return color;
 }
 
 float4 main(float2 texCoord : TEXCOORD, float4 pixelCoord : SV_POSITION) : SV_TARGET

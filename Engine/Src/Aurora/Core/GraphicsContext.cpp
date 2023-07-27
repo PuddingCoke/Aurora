@@ -641,6 +641,11 @@ void GraphicsContext::UpdateSubresource(Resource* res, const UINT& dstSubresourc
 	getContext()->UpdateSubresource(res->getResource(), dstSubresource, pDstBox, data, rowPitch, depthPitch);
 }
 
+void GraphicsContext::CopyResource(Resource* const dstResource, Resource* const srcResource)
+{
+	getContext()->CopyResource(dstResource->getResource(), srcResource->getResource());
+}
+
 void GraphicsContext::FinishCommandList(ID3D11CommandList** commandList)
 {
 	getContext()->FinishCommandList(false, commandList);

@@ -249,6 +249,12 @@
     <ClInclude Include="Inc\Aurora\Resource\ComputeStructuredBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Aurora\Utils\ScreenGrab.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="External\stb_image\stb_image_write.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Aurora\Aurora.cpp">
@@ -468,6 +474,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Src\Aurora\Core\DX\Resource\Resource.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Aurora\Utils\ScreenGrab.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

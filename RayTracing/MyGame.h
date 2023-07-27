@@ -57,6 +57,8 @@ public:
 
 		//prev*(1.0-1.0/frameCount)+cur*(1.0/frameCount)
 
+		Graphics::setRecordConfig(1800, 60);
+
 		cameraParamBuffer = new ConstantBuffer(sizeof(CameraParam), D3D11_USAGE_DYNAMIC, &cameraParam);
 	}
 

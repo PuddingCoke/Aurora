@@ -306,6 +306,11 @@ void Aurora::destroy()
 {
 	ImCtx::get()->ClearState();
 
+	if (screenGrab)
+	{
+		delete screenGrab;
+	}
+
 	delete game;
 
 	delete winform;
@@ -355,7 +360,7 @@ void Aurora::destroy()
 }
 
 Aurora::Aurora() :
-	encodeTexture(nullptr), winform(nullptr), game(nullptr), enableImGui(false), usage(Configuration::EngineUsage::Normal), manufacturer(GPUManufacturer::UNKNOWN)
+	encodeTexture(nullptr), winform(nullptr), game(nullptr), enableImGui(false), usage(Configuration::EngineUsage::Normal), manufacturer(GPUManufacturer::UNKNOWN), screenGrab(nullptr)
 {
 
 }
@@ -527,6 +532,13 @@ void Aurora::iniRenderer(const UINT& msaaLevel, const UINT& screenWidth, const U
 	new Graphics(screenWidth, screenHeight, msaaLevel);
 
 	new Camera();
+
+	if (usage == Configuration::EngineUsage::Normal)
+	{
+		std::cout << "[class Aurora] Create ScreenGrab instance\n";
+
+		screenGrab = new ScreenGrab(backBuffer);
+	}
 
 	if (usage == Configuration::EngineUsage::AnimationRender)
 	{

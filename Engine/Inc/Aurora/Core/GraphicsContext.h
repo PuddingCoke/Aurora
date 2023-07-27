@@ -124,6 +124,8 @@ public:
 
 	void UpdateSubresource(Resource* const res, const UINT& dstSubresource, const D3D11_BOX* const pDstBox, const void* const data, const UINT& rowPitch, const UINT& depthPitch);
 
+	void CopyResource(Resource* const dstResource, Resource* const srcResource);
+
 	void FinishCommandList(ID3D11CommandList** commandList);
 
 	void GenerateMips(ShaderResourceView* const srv);
