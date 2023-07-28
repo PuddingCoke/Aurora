@@ -129,7 +129,7 @@ float3 ShadeRay(float3 P, float3 N, float3 D)
 {
     float3 diffuseSun = float3(1.0, 1.0, 1.0) * max(dot(N, L), 0.0) * ShadowRayMarch(P + 0.05 * L, L);
    
-    float3 diffuseSky = float3(0.5, 0.7, 1.0) * max(dot(N, L), 0.0) * ShadowRayMarch(P + 0.05 * D, D);
+    float3 diffuseSky = float3(0.5, 0.7, 1.0) * ShadowRayMarch(P + 0.05 * D, D);
         
     return diffuseSun + diffuseSky;
 }
