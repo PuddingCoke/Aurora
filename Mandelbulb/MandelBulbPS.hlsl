@@ -121,15 +121,20 @@ float ShadowRayMarch(float3 P, float3 D)
     return 1.0;
 }
 
-static const float3 materialColor = float3(0.7, 0.7, 0.7);
+static const float3 materialColor = float3(0.6, 0.6, 0.6);
 
 static const float3 L = normalize(float3(1.0, 1.0, 1.0));
+
+float3 GetBackgroundColor(in float y)
+{
+    return lerp(float3(1.0, 1.0, 1.0), float3(0.5, 0.7, 1.0), y);
+}
 
 float3 ShadeRay(float3 P, float3 N, float3 D)
 {
     float3 diffuseSun = float3(1.0, 1.0, 1.0) * max(dot(N, L), 0.0) * ShadowRayMarch(P + 0.05 * L, L);
    
-    float3 diffuseSky = float3(0.5, 0.7, 1.0) * ShadowRayMarch(P + 0.05 * D, D);
+    float3 diffuseSky = GetBackgroundColor(D.y * 0.5 + 0.5) * max(dot(N, D), 0.0) * ShadowRayMarch(P + 0.05 * D, D);
         
     return diffuseSun + diffuseSky;
 }

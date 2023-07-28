@@ -12,6 +12,8 @@ public:
 
 	Shader* mandelBulbPS;
 
+	Shader* displayPS;
+
 	ConstantBuffer* simulationBuffer;
 
 	float targetRadius;
@@ -31,6 +33,7 @@ public:
 	MyGame() :
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1)),
 		mandelBulbPS(new Shader("MandelBulbPS.hlsl", ShaderType::Pixel)),
+		displayPS(new Shader("DisplayPS.hlsl", ShaderType::Pixel)),
 		param{ 0.f,0.f,3.0f,8.f }
 	{
 		targetRadius = param.radius;
@@ -60,6 +63,7 @@ public:
 	{
 		delete renderTexture;
 		delete mandelBulbPS;
+		delete displayPS;
 		delete simulationBuffer;
 	}
 
@@ -100,12 +104,12 @@ public:
 
 		ImCtx::get()->OMSetDefRTV(nullptr);
 		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
-		
+
 		ImCtx::get()->PSSetSRV({ renderTexture }, 0);
 		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		ImCtx::get()->BindShader(Shader::fullScreenVS);
-		ImCtx::get()->BindShader(Shader::fullScreenPS);
+		ImCtx::get()->BindShader(displayPS);
 
 		ImCtx::get()->DrawQuad();
 	}
