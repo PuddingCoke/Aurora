@@ -35,7 +35,7 @@ public:
 		rayTracingPS(new Shader(Utils::getRootFolder() + "RayTracingPS.cso", ShaderType::Pixel)),
 		displayPS(new Shader("DisplayPS.hlsl", ShaderType::Pixel)),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN)),
-		randomTexture(new ComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RG32F, FMT::RG32F, FMT::RG32F, 1, 1)),
+		randomTexture(new ComputeTexture(1, 1, FMT::RG32F, FMT::RG32F, FMT::RG32F, 1, 1)),
 		cameraParam{ 0.25f,0.0f,12.0f,0.1f }
 	{
 		targetRadius = cameraParam.radius;
@@ -78,7 +78,7 @@ public:
 	void update(const float& dt) override
 	{
 		cameraParam.radius = Math::lerp(cameraParam.radius, targetRadius, 10.f * dt);
-		//cameraParam.theta += dt * 0.5f;
+		cameraParam.theta += dt * 0.5f;
 
 		memcpy(ImCtx::get()->Map(cameraParamBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &cameraParam, sizeof(CameraParam));
 		ImCtx::get()->Unmap(cameraParamBuffer, 0);
@@ -102,7 +102,7 @@ public:
 
 		ImCtx::get()->BindShader(rayTracingPS);
 
-		for (UINT i = 0; i < 4; i++)
+		for (UINT i = 0; i < 480; i++)
 		{
 			const float clearValue[4] = { i + 1,Random::Float() * 100.f,0.f,0.f };
 

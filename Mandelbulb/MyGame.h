@@ -4,6 +4,7 @@
 #include<Aurora/EngineAPI/ImCtx.h>
 #include<Aurora/Utils/Math.h>
 #include<Aurora/Resource/RenderTexture.h>
+#include<Aurora/Resource/ComputeTexture.h>
 
 //这是一个模板项目，在项目选项中选择导出模板即可
 class MyGame :public Game
@@ -16,6 +17,9 @@ public:
 
 	ConstantBuffer* simulationBuffer;
 
+	//r frame rendered g random seed 
+	ComputeTexture* randomTexture;
+
 	float targetRadius;
 
 	struct SimulationParam
@@ -24,17 +28,19 @@ public:
 		float theta;
 		float radius;
 		float POWER;
-		UINT frameIndex;
-		DirectX::XMFLOAT3 v0;
 	} param;
 
 	RenderTexture* renderTexture;
 
+	UINT frameIndex;
+
 	MyGame() :
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1)),
+		randomTexture(new ComputeTexture(1, 1, FMT::RG32F, FMT::RG32F, FMT::RG32F, 1, 1)),
 		mandelBulbPS(new Shader("MandelBulbPS.hlsl", ShaderType::Pixel)),
 		displayPS(new Shader("DisplayPS.hlsl", ShaderType::Pixel)),
-		param{ 0.f,0.f,3.0f,8.f }
+		param{ Math::pi / 4.f + 0.4f,0.f,3.0f,8.f },
+		frameIndex(0)
 	{
 		targetRadius = param.radius;
 
@@ -45,7 +51,8 @@ public:
 					param.phi -= Mouse::getDY() * Graphics::getDeltaTime();
 					param.theta += Mouse::getDX() * Graphics::getDeltaTime();
 					param.phi = Math::clamp(param.phi, -Math::half_pi + 0.01f, Math::half_pi - 0.01f);
-					param.frameIndex = 0;
+
+					frameIndex = 0;
 				}
 			});
 
@@ -53,8 +60,10 @@ public:
 			{
 				targetRadius -= Mouse::getWheelDelta() * 0.1f;
 
-				param.frameIndex = 0;
+				frameIndex = 0;
 			});
+
+		Graphics::setRecordConfig(1800, 60);
 
 		simulationBuffer = new ConstantBuffer(sizeof(SimulationParam), D3D11_USAGE_DYNAMIC, &param);
 	}
@@ -62,6 +71,7 @@ public:
 	~MyGame()
 	{
 		delete renderTexture;
+		delete randomTexture;
 		delete mandelBulbPS;
 		delete displayPS;
 		delete simulationBuffer;
@@ -81,7 +91,7 @@ public:
 
 		param.radius = targetRadius;
 
-		param.frameIndex++;
+		//param.theta += dt;
 
 		BufferUpdate::pushBufferUpdateParam(simulationBuffer, &param, sizeof(SimulationParam));
 	}
@@ -91,24 +101,43 @@ public:
 		ImCtx::get()->IASetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		ImCtx::get()->OMSetBlendState(States::defBlendState);
 
-		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
-		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		ImCtx::get()->PSSetConstantBuffer({ simulationBuffer }, 1);
-
-		ImCtx::get()->BindShader(Shader::fullScreenVS);
-		ImCtx::get()->BindShader(mandelBulbPS);
-
-		ImCtx::get()->DrawQuad();
-
-		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
-
-		ImCtx::get()->OMSetDefRTV(nullptr);
-		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
-
-		ImCtx::get()->PSSetSRV({ renderTexture }, 0);
 		ImCtx::get()->PSSetSampler({ States::linearClampSampler }, 0);
 
 		ImCtx::get()->BindShader(Shader::fullScreenVS);
+
+		//ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
+
+		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
+		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
+		ImCtx::get()->PSSetSRV({ randomTexture }, 0);
+
+		ImCtx::get()->BindShader(mandelBulbPS);
+
+		frameIndex++;
+
+		const float clearValue[4] = { frameIndex,Random::Float() * 100.f,0.f,0.f };
+
+		ImCtx::get()->ClearUAV(randomTexture->getMip(0), clearValue);
+
+		ImCtx::get()->DrawQuad();
+
+		/*for (UINT i = 0; i < 120; i++)
+		{
+			const float clearValue[4] = { i + 1,Random::Float() * 1000.f,0.f,0.f };
+
+			ImCtx::get()->ClearUAV(randomTexture->getMip(0), clearValue);
+
+			ImCtx::get()->DrawQuad();
+		}*/
+
+		ImCtx::get()->OMSetBlendState(nullptr);
+
+		ImCtx::get()->ClearDefRTV(DirectX::Colors::Black);
+		ImCtx::get()->OMSetDefRTV(nullptr);
+
+		ImCtx::get()->PSSetSRV({ renderTexture }, 0);
+
 		ImCtx::get()->BindShader(displayPS);
 
 		ImCtx::get()->DrawQuad();

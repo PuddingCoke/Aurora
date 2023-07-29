@@ -4,6 +4,8 @@
 
 #define RAYMARCHITERATION 150
 
+Texture2D<float2> randomTexture : register(t0);
+
 cbuffer DeltaTime : register(b0)
 {
     float dt;
@@ -18,8 +20,6 @@ cbuffer SimulationParam : register(b1)
     float theta;
     float RADIUS;
     float POWER;
-    uint frameIndex;
-    float3 v0;
 }
 
 static float hashSeed = 0.0;
@@ -90,7 +90,6 @@ float SDF(const float3 pos)
     return log(r) * r / dr * 0.5;
 }
 
-//calculate finite diff maybe?
 float3 GetNormal(float3 pos)
 {
     float2 eps = float2(0.0, 0.00001);
@@ -121,27 +120,29 @@ float ShadowRayMarch(float3 P, float3 D)
     return 1.0;
 }
 
-static const float3 materialColor = float3(0.65, 0.7, 0.7);
+static const float3 materialColor = float3(0.65, 0.65, 0.65);
 
 static const float3 L = normalize(float3(1.0, 1.0, 1.0));
 
-float3 GetBackgroundColor(in float y)
+float3 GetBackgroundColor(in float z)
 {
-    return lerp(float3(1.0, 1.0, 1.0), float3(0.5, 0.7, 1.0), y);
+    return lerp(float3(1.0, 1.0, 1.0), float3(0.5, 0.7, 1.0), z);
 }
 
 float3 ShadeRay(float3 P, float3 N, float3 D)
 {
     float3 diffuseSun = float3(1.0, 1.0, 1.0) * max(dot(N, L), 0.0) * ShadowRayMarch(P + 0.05 * L, L);
    
-    float3 diffuseSky = GetBackgroundColor(D.y * 0.5 + 0.5) * max(dot(N, D), 0.0) * ShadowRayMarch(P + 0.05 * D, D);
+    float3 diffuseSky = GetBackgroundColor(D.z * 0.5 + 0.5) * max(dot(N, D), 0.0) * ShadowRayMarch(P + 0.05 * D, D);
         
     return diffuseSun + diffuseSky;
 }
 
 float4 main(float2 texCoord : TEXCOORD, float4 pixelCoord : SV_POSITION) : SV_TARGET
 {
-    hashSeed = float(BaseHash(asuint(pixelCoord.xy))) / float(0xffffffffU) + uintSeed * 100.0;
+    hashSeed = float(BaseHash(asuint(pixelCoord.xy))) / float(0xffffffffU) + randomTexture[uint2(0, 0)].g;
+    
+    const uint frameIndex = randomTexture[uint2(0, 0)].r;
     
     float2 planePos = (floor(pixelCoord.xy) + Hash2(hashSeed)) / float2(1920.0, 1080.0) * 2.0 - 1.0;
     planePos.x *= 16.0 / 9.0;
@@ -162,7 +163,7 @@ float4 main(float2 texCoord : TEXCOORD, float4 pixelCoord : SV_POSITION) : SV_TA
     float3 color = float3(0.0, 0.0, 0.0);
     
     [loop]
-    for (uint marchIteration = 0; marchIteration < RAYMARCHITERATION; marchIteration++)
+    for (uint marchIteration = 0; marchIteration < 150; marchIteration++)
     {
         float distance = SDF(curPos);
         
@@ -186,12 +187,14 @@ float4 main(float2 texCoord : TEXCOORD, float4 pixelCoord : SV_POSITION) : SV_TA
         color += atten * ShadeRay(curPos, N, rayDir);
         
         curPos += 0.05 * rayDir;
+        
     }
     else
     {
-        return float4(color, 1.0 / float(frameIndex));
+        return float4(float3(0.5, 0.5, 0.5), 1.0 / float(frameIndex));
     }
     
+    [loop]
     for (uint i = 0; i < 4; i++)
     {
         hit = false;
