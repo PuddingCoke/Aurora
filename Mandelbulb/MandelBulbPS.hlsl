@@ -121,7 +121,7 @@ float ShadowRayMarch(float3 P, float3 D)
     return 1.0;
 }
 
-static const float3 materialColor = float3(0.6, 0.6, 0.6);
+static const float3 materialColor = float3(0.65, 0.7, 0.7);
 
 static const float3 L = normalize(float3(1.0, 1.0, 1.0));
 
