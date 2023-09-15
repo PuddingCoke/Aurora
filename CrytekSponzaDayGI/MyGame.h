@@ -24,9 +24,9 @@ public:
 		DirectX::XMFLOAT3 start = { -142.f,-16.f,-74.f };
 		float spacing = 18.2f;
 		DirectX::XMUINT3 count = { 17,9,12 };
-		float irradianceDistanceBias = 0.8f;
+		float irradianceDistanceBias = 0.f;
 		float irradianceVarianceBias = 0.f;
-		float irradianceChebyshevBias = -1.0f;
+		float irradianceChebyshevBias = 0.f;
 		DirectX::XMFLOAT2 padding;
 	} irradianceVolumeParam;
 
