@@ -65,3 +65,29 @@ void OrbitCamera::rotateX(const float& angle)
 
 	eye = DirectX::XMVector3Transform(eye, rotMat);
 }
+
+void OrbitCamera::rotateY(const float& angle)
+{
+	float eyeUpAngle;
+
+	DirectX::XMStoreFloat(&eyeUpAngle, DirectX::XMVector3AngleBetweenNormals(eye, up));
+
+	const float destAngle = eyeUpAngle + angle;
+
+	float rotAngle = angle;
+
+	if (destAngle > Math::pi - Camera::epsilon)
+	{
+		rotAngle = Math::pi - Camera::epsilon - eyeUpAngle;
+	}
+	else if (destAngle < Camera::epsilon)
+	{
+		rotAngle = Camera::epsilon - eyeUpAngle;
+	}
+
+	const DirectX::XMVECTOR upCrossLookDir = DirectX::XMVector3Cross(up, eye);
+
+	const DirectX::XMMATRIX upRotMat = DirectX::XMMatrixRotationAxis(upCrossLookDir, rotAngle);
+
+	eye = DirectX::XMVector3Transform(eye, upRotMat);
+}

@@ -25,6 +25,8 @@ public:
 
 	void rotateX(const float& angle);
 
+	void rotateY(const float& angle);
+
 private:
 
 	DirectX::XMVECTOR eye;

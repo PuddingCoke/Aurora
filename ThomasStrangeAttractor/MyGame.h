@@ -40,7 +40,7 @@ public:
 	} param;
 
 	MyGame() :
-		attractor(100000),
+		attractor(10000),
 		depthTexture(new DepthTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F)),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, DirectX::Colors::Black)),
 		bloomEffect(ImCtx::get(), Graphics::getWidth(), Graphics::getHeight()),
@@ -58,6 +58,8 @@ public:
 			});
 
 		param.factor = 0.180f;
+
+		camera.rotateY(-Math::half_pi / 2.f - 0.1f);
 
 		Camera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.01f, 100.f);
 	}
@@ -92,7 +94,10 @@ public:
 	{
 		ImCtx::get()->CSSetConstantBuffer({ simulationBuffer }, 1);
 
-		attractor.update(Graphics::getDeltaTime());
+		if (Graphics::getSTime() > 1.5f)
+		{
+			attractor.update(Graphics::getDeltaTime());
+		}
 
 		ImCtx::get()->ClearDSV(depthTexture, D3D11_CLEAR_DEPTH);
 		ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);

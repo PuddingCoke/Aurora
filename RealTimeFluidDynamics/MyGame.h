@@ -243,33 +243,28 @@ public:
 		ImCtx::get()->OMSetBlendState(nullptr);
 		ImCtx::get()->BindShader(Shader::fullScreenVS);
 
-		//求旋度
 		ImCtx::get()->OMSetRTV({ curlTex->getMip(0) }, nullptr);
 		ImCtx::get()->BindShader(curlPS);
 		ImCtx::get()->PSSetSRV({ velocityTex->read() }, 0);
 		ImCtx::get()->DrawQuad();
 
-		//通过已经求得的散度对速度图施加漩涡
 		ImCtx::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
 		ImCtx::get()->BindShader(vorticityPS);
 		ImCtx::get()->PSSetSRV({ velocityTex->read(),curlTex }, 0);
 		ImCtx::get()->DrawQuad();
 		velocityTex->swap();
 
-		//求散度
 		ImCtx::get()->OMSetRTV({ divergenceTex->getMip(0) }, nullptr);
 		ImCtx::get()->BindShader(divergencePS);
 		ImCtx::get()->PSSetSRV({ velocityTex->read() }, 0);
 		ImCtx::get()->DrawQuad();
 
-		//对压力图进行消散处理
 		ImCtx::get()->OMSetRTV({ pressureTex->write()->getMip(0) }, nullptr);
 		ImCtx::get()->BindShader(pressureDissipationPS);
 		ImCtx::get()->PSSetSRV({ pressureTex->read() }, 0);
 		ImCtx::get()->DrawQuad();
 		pressureTex->swap();
 
-		//进行雅可比迭代
 		ImCtx::get()->BindShader(viscousDiffusionPS);
 		for (unsigned int i = 0; i < config.pressureIteraion; i++)
 		{
@@ -279,21 +274,18 @@ public:
 			pressureTex->swap();
 		}
 
-		//速度图减去它的散度来求得没有散度的速度图
 		ImCtx::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
 		ImCtx::get()->BindShader(pressureGradientSubtractPS);
 		ImCtx::get()->PSSetSRV({ pressureTex->read(),velocityTex->read() }, 0);
 		ImCtx::get()->DrawQuad();
 		velocityTex->swap();
 
-		//速度移动并进行消散处理
 		ImCtx::get()->OMSetRTV({ velocityTex->write()->getMip(0) }, nullptr);
 		ImCtx::get()->BindShader(velocityAdvectionDissipationPS);
 		ImCtx::get()->PSSetSRV({ velocityTex->read() }, 0);
 		ImCtx::get()->DrawQuad();
 		velocityTex->swap();
 
-		//颜色移动并进行消散处理
 		ImCtx::get()->RSSetViewport(colorTex->width, colorTex->height);
 		ImCtx::get()->OMSetRTV({ colorTex->write()->getMip(0) }, nullptr);
 		ImCtx::get()->BindShader(colorAdvectionDissipationPS);
@@ -337,7 +329,6 @@ public:
 
 		step();
 
-		//最后进行简单的渲染
 		ImCtx::get()->OMSetBlendState(blendState.Get());
 		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
 		ImCtx::get()->ClearRTV(originTexture->getMip(0), DirectX::Colors::Black);

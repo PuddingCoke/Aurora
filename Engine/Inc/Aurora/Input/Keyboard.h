@@ -118,11 +118,9 @@ public:
 		Left_Shift = 340,
 		Left_Control = 341,
 		Left_Alt = 342,
-		Left_Super = 343,
 		Right_Shift = 344,
 		Right_Control = 345,
 		Right_Alt = 346,
-		Right_Super = 347,
 		Menu = 348
 	};
 

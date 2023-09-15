@@ -23,6 +23,8 @@ public:
 
 	ComputeTexture* randomTexture;
 
+	UINT frameIndex;
+
 	struct CameraParam
 	{
 		float phi;
@@ -36,7 +38,8 @@ public:
 		displayPS(new Shader("DisplayPS.hlsl", ShaderType::Pixel)),
 		renderTexture(new RenderTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN)),
 		randomTexture(new ComputeTexture(1, 1, FMT::RG32F, FMT::RG32F, FMT::RG32F, 1, 1)),
-		cameraParam{ 0.25f,0.0f,12.0f,0.1f }
+		cameraParam{ 0.25f,0.0f,12.0f,0.1f },
+		frameIndex(0)
 	{
 		targetRadius = cameraParam.radius;
 
@@ -47,12 +50,16 @@ public:
 					cameraParam.phi -= Mouse::getDY() * Graphics::getDeltaTime();
 					cameraParam.theta += Mouse::getDX() * Graphics::getDeltaTime();
 					cameraParam.phi = Math::clamp(cameraParam.phi, 0.01f, Math::half_pi - 0.01f);
+
+					frameIndex = 0;
 				}
 			});
 
 		Mouse::addScrollEvent([this]()
 			{
 				targetRadius -= Mouse::getWheelDelta() * 1.f;
+
+				frameIndex = 0;
 			});
 
 		//prev*(1.0-1.0/frameCount)+cur*(1.0/frameCount)
@@ -73,12 +80,13 @@ public:
 
 	void imGUICall() override
 	{
+		ImGui::Text("Frame rendered %d", frameIndex);
 	}
 
 	void update(const float& dt) override
 	{
-		cameraParam.radius = Math::lerp(cameraParam.radius, targetRadius, 10.f * dt);
-		cameraParam.theta += dt * 0.5f;
+		cameraParam.radius = targetRadius;
+		//cameraParam.theta += dt * 0.5f;
 
 		memcpy(ImCtx::get()->Map(cameraParamBuffer, 0, D3D11_MAP_WRITE_DISCARD).pData, &cameraParam, sizeof(CameraParam));
 		ImCtx::get()->Unmap(cameraParamBuffer, 0);
@@ -94,7 +102,7 @@ public:
 
 		ImCtx::get()->BindShader(Shader::fullScreenVS);
 
-		ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
+		//ImCtx::get()->ClearRTV(renderTexture->getMip(0), DirectX::Colors::Black);
 
 		ImCtx::get()->OMSetRTV({ renderTexture->getMip(0) }, nullptr);
 		ImCtx::get()->RSSetViewport(Graphics::getWidth(), Graphics::getHeight());
@@ -102,14 +110,22 @@ public:
 
 		ImCtx::get()->BindShader(rayTracingPS);
 
-		for (UINT i = 0; i < 480; i++)
+		frameIndex++;
+
+		const float clearValue[4] = { frameIndex,Random::Float() * 1000.f,0.f,0.f };
+
+		ImCtx::get()->ClearUAV(randomTexture->getMip(0), clearValue);
+
+		ImCtx::get()->DrawQuad();
+
+		/*for (UINT i = 0; i < 480; i++)
 		{
 			const float clearValue[4] = { i + 1,Random::Float() * 100.f,0.f,0.f };
 
 			ImCtx::get()->ClearUAV(randomTexture->getMip(0), clearValue);
 
 			ImCtx::get()->DrawQuad();
-		}
+		}*/
 
 		ImCtx::get()->OMSetBlendState(nullptr);
 

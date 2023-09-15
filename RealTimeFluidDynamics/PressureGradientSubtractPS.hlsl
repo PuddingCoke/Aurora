@@ -39,6 +39,6 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     const float T = pressureTex.Sample(pointSampler, texCoord + float2(0.0, simTexelSize.y));
     const float B = pressureTex.Sample(pointSampler, texCoord - float2(0.0, simTexelSize.y));
     float2 velocity = velocityTex.Sample(linearSampler, texCoord);
-    velocity.xy -= float2(R - L, T - B);
+    velocity.xy -= 0.5 * float2(R - L, T - B);
     return float4(velocity, 0.0, 1.0);
 }

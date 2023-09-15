@@ -101,11 +101,9 @@ std::map<Keyboard::Key, Event> Keyboard::keyDownEvents=
 	{Left_Shift, Event()},
 	{Left_Control, Event()},
 	{Left_Alt, Event()},
-	{Left_Super, Event()},
 	{Right_Shift, Event()},
 	{Right_Control, Event()},
 	{Right_Alt, Event()},
-	{Right_Super, Event()},
 	{Menu, Event()}
 };
 
@@ -210,11 +208,9 @@ std::map<Keyboard::Key, Event> Keyboard::keyUpEvents =
 	{Left_Shift, Event()},
 	{Left_Control, Event()},
 	{Left_Alt, Event()},
-	{Left_Super, Event()},
 	{Right_Shift, Event()},
 	{Right_Control, Event()},
 	{Right_Alt, Event()},
-	{Right_Super, Event()},
 	{Menu, Event()}
 };
 
@@ -319,11 +315,9 @@ std::unordered_map<Keyboard::Key, bool> Keyboard::keyDownMap =
 	{Left_Shift, false},
 	{Left_Control, false},
 	{Left_Alt, false},
-	{Left_Super, false},
 	{Right_Shift, false},
 	{Right_Control, false},
 	{Right_Alt, false},
-	{Right_Super, false},
 	{Menu, false}
 };
 

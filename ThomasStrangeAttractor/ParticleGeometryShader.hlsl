@@ -24,11 +24,13 @@ cbuffer SimulationParam : register(b3)
     float3 padding;
 }
 
+#define TRAILNODENUM 10
+
 void GetNextPosition(inout float4 pos)
 {
     //iteration number decide trail length
     [unroll]
-    for (int i = 0; i < 30; i++)
+    for (int i = 0; i < 25; i++)
     {
         const float dx = (sin(pos.y) - factor * pos.x) * dt;
         const float dy = (sin(pos.z) - factor * pos.y) * dt;
@@ -38,7 +40,7 @@ void GetNextPosition(inout float4 pos)
     }
 }
 
-[maxvertexcount(13)]
+[maxvertexcount(1 + TRAILNODENUM * 2)]
 void main(
 	point GSOutput input[1],
 	inout TriangleStream<GSOutput> output
@@ -57,7 +59,7 @@ void main(
     float3 normal = normalize(cross(cameraRight, cameraUp));
     
     [unroll]
-    for (uint i = 0; i < 6; i++)
+    for (uint i = 0; i < TRAILNODENUM; i++)
     {
         float4 prevPos = position;
         
@@ -65,9 +67,9 @@ void main(
         
         float3 vec = normalize(cross(normal, normalize(position.xyz - prevPos.xyz)));
         
-        float factor = 1.0 - float(i + 1) / 6.0;
+        float factor = 1.0 - float(i + 1) / float(TRAILNODENUM);
         
-        float width = 0.01 * factor;
+        float width = 0.015 * factor * (1.0 - max(abs(dot(normal, normalize(position.xyz - prevPos.xyz))), 0.0));
         
         o.color = float4(input[0].color.rgb * factor, 1.0);
         

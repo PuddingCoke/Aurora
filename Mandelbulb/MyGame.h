@@ -116,7 +116,7 @@ public:
 
 		frameIndex++;
 
-		const float clearValue[4] = { frameIndex,Random::Float() * 100.f,0.f,0.f };
+		const float clearValue[4] = { frameIndex,Random::Float() * 1000.f,0.f,0.f };
 
 		ImCtx::get()->ClearUAV(randomTexture->getMip(0), clearValue);
 
