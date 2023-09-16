@@ -14,7 +14,7 @@ cbuffer ProjMatrices : register(b1)
 };
 
 #define TWO_PI     6.2831853071
-#define SAMPLECOUNT 256
+#define SAMPLECOUNT 64
 
 
 static float hashSeed = 0.0;
@@ -57,16 +57,24 @@ void main(uint2 DTid : SV_DispatchThreadID)
     
         float radialDepth = depthCube.SampleLevel(linearClampSampler, dir, 0.0);
         
+        float radialDepthSquare = radialDepth * radialDepth;
+        
         for (uint i = 0; i < SAMPLECOUNT; i++)
         {
             float3 randDir = normalize(dir + RandomPointInUnitSphere(hashSeed));
 
-            radialDepth += depthCube.SampleLevel(linearClampSampler, randDir, 0.0);
+            float depth = depthCube.SampleLevel(linearClampSampler, randDir, 0.0);
+            
+            radialDepth += depth;
+            
+            radialDepthSquare += depth * depth;
         }
         
         radialDepth /= float(SAMPLECOUNT) + 1.0;
         
-        depthOctahedralMap[uint3(DTid, probeIndex)] = float2(radialDepth, radialDepth * radialDepth);
+        radialDepthSquare /= float(SAMPLECOUNT) + 1.0;
+        
+        depthOctahedralMap[uint3(DTid, probeIndex)] = float2(radialDepth, radialDepthSquare);
     }
     
     AllMemoryBarrierWithGroupSync();
