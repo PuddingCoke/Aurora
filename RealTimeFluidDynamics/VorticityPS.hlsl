@@ -41,7 +41,7 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     const float C = curlTex.Sample(pointSampler, texCoord);
     
     float2 force = 0.5 * float2(abs(B) - abs(T), abs(R) - abs(L));
-    force *= 1.0 / (length(force) + 0.0001) * curlIntensity * C;
+    force = force / (length(force) + 1e-5) * curlIntensity * C;
     
     const float2 curVel = velocityTex.Sample(linearSampler, texCoord);
     

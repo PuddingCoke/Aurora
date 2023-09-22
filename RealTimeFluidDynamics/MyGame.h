@@ -130,12 +130,12 @@ public:
 
 			colorTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(colorRes.x, colorRes.y, FMT::RGBA16F); });
 
-			velocityTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(simRes.x, simRes.y, FMT::RG16F); });
+			velocityTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(simRes.x, simRes.y, FMT::RG32F); });
 
-			pressureTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(simRes.x, simRes.y, FMT::R16F); });
+			pressureTex = new SwapTexture<RenderTexture>([=] {return new RenderTexture(simRes.x, simRes.y, FMT::R32F); });
 
-			curlTex = new RenderTexture(simRes.x, simRes.y, FMT::R16F);
-			divergenceTex = new RenderTexture(simRes.x, simRes.y, FMT::R16F);
+			curlTex = new RenderTexture(simRes.x, simRes.y, FMT::R32F);
+			divergenceTex = new RenderTexture(simRes.x, simRes.y, FMT::R32F);
 
 			simulationParam =
 			{
