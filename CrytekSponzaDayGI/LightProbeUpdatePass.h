@@ -86,8 +86,8 @@ public:
 				float Ylm[9];
 			};
 
-			const unsigned int sampleCount = 256;
-			const unsigned int sampleCountSqrt = 16;
+			const unsigned int sampleCount = 64;
+			const unsigned int sampleCountSqrt = 8;
 			const double oneoverN = 1.0 / (double)sampleCountSqrt;
 
 			unsigned int i = 0;
