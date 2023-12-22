@@ -1,5 +1,4 @@
 #include<Aurora/Window/Win32Form.h>
-#include<iostream>
 
 Win32Form::Win32Form(const std::wstring& title, const UINT& startX, const UINT& startY, const UINT& width, const UINT& height, const DWORD& windowStyle, LRESULT(*windowCallBack)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)) :
 	hwnd(nullptr), msg{}

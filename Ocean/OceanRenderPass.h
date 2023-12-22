@@ -81,12 +81,12 @@ public:
 
 	static constexpr unsigned int patchSize = 32;
 
-	struct Param
+	const struct Param
 	{
 		unsigned int mapResolution = 1024;
 		float mapLength = 512.0;
 		DirectX::XMFLOAT2 wind = { 20.f,0.f };
-		float amplitude = 0.000003f;
+		float amplitude = 0.0000006f;
 		float gravity = 9.81f;
 		DirectX::XMFLOAT2 v0 = { 0.f,0.f };
 	}param;

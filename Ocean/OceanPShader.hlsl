@@ -53,7 +53,7 @@ float4 main(PixelInput input) : SV_TARGET
     
     float highlightMul = 1.0 + 2.0 * smoothstep(1.2, 1.8, turbulence);
     
-    float spec = pow(max(dot(N, H), 0.0), 2048.0);
+    float spec = pow(max(dot(N, H), 0.0), 3072.0);
     
     float3 color = oceanColor + spec * float3(1.0, 1.0, 1.0);
     
